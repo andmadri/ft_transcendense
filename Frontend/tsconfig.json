@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["DOM", "ES2015"],
+    "outDir": "build/js",
+	"strict": true
+  },
+  "include": ["src"]
+}

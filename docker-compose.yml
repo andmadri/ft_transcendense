@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+
+  backend:
+    image: backend
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      -database_volume
+    env_file:
+      - .env
+    networks:
+      - transcendence
+
+  server:
+    image: server
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - transcendence
+    depends_on:
+      - backend
+
+networks:
+  transcendence:
+    name: transcendence
+    driver: bridge
+
+volumes:
+  database_volume:
+    name: database_volume
+    driver: local
+    driver_opts:
+      type: none
+      device: ./Database
+      o: bind
