@@ -1,22 +1,21 @@
-version: '3.8'
 
 services:
 
   backend:
-    image: backend
+    image: node
     build:
       context: ./Backend
       dockerfile: Dockerfile
     restart: always
     volumes:
-      -database_volume
+      - database_volume:/Database
     env_file:
       - .env
     networks:
       - transcendence
 
   server:
-    image: server
+    image: nginx
     build:
       context: ./Server
       dockerfile: Dockerfile
@@ -35,7 +34,6 @@ networks:
 
 volumes:
   database_volume:
-    name: database_volume
     driver: local
     driver_opts:
       type: none

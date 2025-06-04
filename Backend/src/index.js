@@ -1,27 +1,36 @@
 import Fastify from 'fastify'
 import WebSocketServer from "ws";
 
+const fastify = Fastify();
 const websock = new WebSocketServer({ port: 8080 });
 
 let yLeft = 300;
 let yRight = 300;
 
-wss.on("connection", (ws) => {
-  ws.on("message", (data) => {
-	const data = JSON.parse(data.toString());
 
-	if (data.key === "w")
-		yLeft -= 10;
-	else if (data.key === "s")
-		yLeft += 10;
-	else if (data.key === "arrowup")
-		yRight -= 10;
-	else if (data.key === "arrowdown")
-		yRight += 10;
+fastify.listen({ port: 3000 }, (err, address) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  websock.on("connection", (ws) => {
+	  ws.on("message", (input) => {
+		const msg = JSON.parse(input.toString());
 
-	yLeft = Math.max(0, Math.min(600, yLeft));
-	yRight = Math.max(0, Math.min(600, yRight));
+		if (msg.key === "w")
+			yLeft -= 10;
+		else if (msg.key === "s")
+			yLeft += 10;
+		else if (msg.key === "arrowup")
+			yRight -= 10;
+		else if (msg.key === "arrowdown")
+			yRight += 10;
 
-	websock.send(JSON.stringify({ yLeft, yRight }));
-  });
+		yLeft = Math.max(0, Math.min(600, yLeft));
+		yRight = Math.max(0, Math.min(600, yRight));
+
+		websock.send(JSON.stringify({ yLeft, yRight }));
+	  });
+	});
+  console.log(`Fastify listening on ${address}`);
 });
