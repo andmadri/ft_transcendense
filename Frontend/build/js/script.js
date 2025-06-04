@@ -1,19 +1,51 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-const button = document.getElementById('click');
-const blok = document.getElementById('blok');
-button.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield fetch('/api/move', { method: 'POST' });
-    const data = yield res.json();
-    if (data.top !== undefined) {
-        blok.style.top = `${data.top}px`;
+const socket = new WebSocket("ws://localhost:8080");
+const left = document.getElementById("playerleft");
+const right = document.getElementById("playerright");
+if (!left || !right) {
+    throw new Error("Error");
+}
+// Send key in JSON format to websocket
+window.addEventListener("keydown", (event) => {
+    const key = event.key.toLowerCase();
+    if (key === "arrowup" || key === "arrowdown") {
+        socket.send(JSON.stringify({ key }));
     }
-}));
+    else if (key === "w" || key === "s") {
+        socket.send(JSON.stringify({ key }));
+    }
+});
+// receive string message from websocket
+socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+    left.style.top = `${data.yLeftPos}px`;
+    right.style.top = `${data.yRightPos}px`;
+});
+// MOVE TO BACKEND (REMOVE!)
+let yLeftPos = 300;
+let yRightPos = 300;
+window.addEventListener("keydown", (event) => {
+    const key = event.key.toLowerCase();
+    if (key === "arrowup") {
+        yRightPos -= 10;
+    }
+    else if (key === "arrowdown") {
+        yRightPos += 10;
+    }
+    else if (key === "w") {
+        yLeftPos -= 10;
+    }
+    else if (key === "s") {
+        yLeftPos += 10;
+    }
+    if (yLeftPos < 0)
+        yLeftPos = 0;
+    if (yLeftPos > 600)
+        yLeftPos = 600;
+    if (yRightPos < 0)
+        yRightPos = 0;
+    if (yRightPos > 600)
+        yRightPos = 600;
+    left.style.top = `${yLeftPos}px`;
+    right.style.top = `${yRightPos}px`;
+});
