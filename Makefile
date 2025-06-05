@@ -6,7 +6,7 @@ all:	up
 
 up:		
 	mkdir -p Database
-	./Frontend/TStoJS.sh
+	cp -r Frontend/* Server/
 	docker-compose -f docker-compose.yml up
 
 down:
@@ -36,7 +36,8 @@ clean: stop
 	@if [ "$(docker images -qa)" ]; then docker rmi -f $(docker images -qa); fi
 	@if [ "$(docker volume ls -q)" ]; then docker volume rm $(docker volume ls -q); fi
 	@if [ "$(docker network ls -q)" ]; then docker network rm $(docker network ls -q); fi
-	rm -rf Server/build
+	rm -rf Server/src
+	rm -rf Server/*.json
 	@echo "containers, images and network are removed"
 
 re:	clean up

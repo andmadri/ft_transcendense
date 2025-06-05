@@ -1,20 +1,15 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/script.ts",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon",
-    "start": "node build/js/script.js",
     "build": "tsc --project ./"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3",
+    "undici-types": "^5.26.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "nodemon": "^3.1.10"
   },
   "dependencies": {
     "ws": "^8.15.1"

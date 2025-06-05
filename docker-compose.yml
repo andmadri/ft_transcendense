@@ -2,7 +2,6 @@
 services:
 
   backend:
-    image: node
     build:
       context: ./Backend
       dockerfile: Dockerfile
@@ -13,9 +12,10 @@ services:
       - .env
     networks:
       - transcendence
+    expose:
+      - "3000"
 
   server:
-    image: nginx
     build:
       context: ./Server
       dockerfile: Dockerfile
@@ -26,6 +26,8 @@ services:
       - transcendence
     depends_on:
       - backend
+    ports:
+      - "8080:80"
 
 networks:
   transcendence:

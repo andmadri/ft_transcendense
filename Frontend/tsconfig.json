@@ -2,8 +2,11 @@
   "compilerOptions": {
     "target": "ES6",
     "lib": ["DOM", "ES2015"],
-    "outDir": "build/js",
-	"strict": true
+    "typeRoots": ["./node_modules/@types"],
+    // "outDir": "build/js",
+	"outDir": "dist",
+    "strict": true,
+    "skipLibCheck": true,
   },
   "include": ["src"]
 }
