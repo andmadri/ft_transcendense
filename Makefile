@@ -7,19 +7,19 @@ all:	up
 up:		
 	mkdir -p Database
 	cp -r Frontend/* Server/
-	docker-compose -f docker-compose.yml up
+	docker compose -f docker-compose.yml up
 
 down:
-	docker-compose -f docker-compose.yml down
+	docker compose -f docker-compose.yml down
 
 start:
-	docker-compose -f docker-compose.yml start
+	docker compose -f docker-compose.yml start
 
 stop:
-	docker-compose -f docker-compose.yml stop
+	docker compose -f docker-compose.yml stop
 
 build:
-	docker-compose -f docker-compose.yml build
+	docker compose -f docker-compose.yml build
 
 build_volumes:
 	mkdir -p $(VOLUME)
