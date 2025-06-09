@@ -1,78 +1,31 @@
-// import Fastify from 'fastify';
-// // import WebSocketServer from 'ws';
+import Fastify from 'fastify';
+import websocket from '@fastify/websocket';
 
-// const fastify = Fastify();
-// // const wws = new WebSocketServer({ port: 8080 });
+const fastify = Fastify();
+await fastify.register(websocket);
 
-// let yLeft = 300;
-// let yRight = 300;
+fastify.get('/ws', { websocket: true }, (connection /* SocketStream */, req) => {
+  connection.socket.on('message', (message) => {
+    console.log('Ontvangen van client:', message.toString());
 
-// // wss.on("connection", (ws) => {
-// //   ws.on("message", (data) => {
-// // 	const msg = JSON.parse(data.toString());
-
-// // 	if (msg.key === "w")
-// // 	  yLeft -= 10;
-// // 	else if (msg.key === "s")
-// // 	  yLeft += 10;
-// // 	else if (msg.key === "arrowup")
-// // 	  yRight -= 10;
-// // 	else if (msg.key === "arrowdown")
-// // 	  yRight += 10;
-
-// // 	yLeft = Math.max(0, Math.min(600, yLeft));
-// // 	yRight = Math.max(0, Math.min(600, yRight));
-
-// // 	ws.send(JSON.stringify({ yLeft, yRight }));
-// //   });
-// // });
-
-// const start = async () => {
-//   try {
-// 	const address = await fastify.listen({ port: 8080 });
-// 	console.log(`Fastify listening on ${address}`);
-//   } catch (err) {
-// 	console.error(err);
-// 	process.exit(1);
-//   }
-// };
-
-// console.log("WebSocket server is running on port 8080");
-// while (true) {
-
-// }
-
-// src/index.js
-import { WebSocketServer } from 'ws';  // let op: import via ESM (package.json moet "type":"module" hebben)
-
-const PORT = 3000;
-const wss = new WebSocketServer({ port: PORT });
-
-wss.on('connection', socket => {
-  console.log('🟢 Client verbonden via WebSocket');
-
-  // Als client iets stuurt:
-  socket.on('message', (data) => {
-    console.log('Ontvangen van client:', data.toString());
-
-    // Bijvoorbeeld: echo terug (of verwerk en stuur een ander object)
-    const ontvangen = JSON.parse(data.toString());
-    // Stel, ontvangen is { key: 'w' } of iets dergelijks:
-    // Verwerk hier je game‐logica, bereken nieuwe posities, enz.
-    const antwoord = {
-      yLeft: Math.floor(Math.random() * 500),
-      yRight: Math.floor(Math.random() * 500)
-    };
-
-    // Stuur JSON terug naar diezelfde socket:
-    socket.send(JSON.stringify(antwoord));
-  });
-
-  socket.on('close', () => {
-    console.log('🔴 Client heeft verbinding gesloten');
+    // Stuur iets terug
+    connection.socket.send(JSON.stringify({ antwoord: 'pong', ontvangen: message.toString() }));
   });
 });
 
-wss.on('listening', () => {
-  console.log(`WebSocket-server draait op ws://localhost:${PORT}`);
+fastify.listen({ port: 3000 }, (err, address) => {
+  if (err) throw err;
+  console.log(`✅ Server draait op ${address}`);
 });
+
+fastify.setNotFoundHandler(function (request, reply) {
+  reply.status(404).send({ error: 'Not Found' });
+});
+
+// statische frontend files serveren
+// fastify.register(import('@fastify/static'), {
+//   root: path.join(__dirname, 'public'),
+//   prefix: '/',
+// });
+
+fastify.listen({ port: 3000, host: '0.0.0.0' });

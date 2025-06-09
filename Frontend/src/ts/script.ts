@@ -80,9 +80,14 @@ socket.addEventListener('message', (event) => {
   log('⬅️ Ontvangen van server: ' + JSON.stringify(data));
 });
 
-socket.addEventListener('close', () => {
-  log('❌ WebSocket gesloten');
+socket.addEventListener('close', event => {
+  console.log('WebSocket gesloten:', event.code, event.reason);
 });
+
+socket.onerror = (err) => console.error('⚠️ WebSocket error:', err);
+socket.onclose = (event) => {
+  console.warn('❌ WebSocket gesloten:', event.code, event.reason);
+};
 
 // Druk iets af in het log-vak op de pagina
 function log(msg: string) {

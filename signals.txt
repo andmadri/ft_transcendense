@@ -1,0 +1,22 @@
+
+
+Client
+
+- if button press -> signal button+on
+- if button release -> signal button+off
+- if ball hit -> signal calculation next path
+- if missed -> signal 
+
+
+Server
+
+- GET -> servers file
+- other -> send to fastify
+
+
+
+
+Backend
+
+- register signal
+- send signal to all clients

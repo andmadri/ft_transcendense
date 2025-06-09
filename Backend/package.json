@@ -5,12 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-	"dev": "nodemon index.js"
+    "start": "node index.js"
   },
   "dependencies": {
 	"fastify": "^4.22.0",
-	"ws": "^8.13.0"
+	"ws": "^8.13.0",
+	"@fastify/websocket": "^8.0.0",
+	"@fastify/static": "^6.8.0"
   },
   "keywords": [],
   "author": "",
