@@ -4,7 +4,9 @@ import websocket from '@fastify/websocket';
 const fastify = Fastify();
 await fastify.register(websocket);
 
+
 fastify.get('/ws', { websocket: true }, (connection /* SocketStream */, req) => {
+
   connection.socket.on('message', (message) => {
     const msg = JSON.parse(message.toString());
 

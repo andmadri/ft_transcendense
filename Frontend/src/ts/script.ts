@@ -54,6 +54,11 @@ window.addEventListener("keydown", (e: KeyboardEvent) => {
   }
 });
 
+function drawBall() {
+	const ball = document.getElementById("ball");
+	
+}
+
 // window.addEventListener("keyup", (e: KeyboardEvent) => {
 // 	if (socket.readyState === WebSocket.OPEN &&
 // 		(e.key === "arrowup" || e.key === "arrowdown" || e.key === "w" || e.key === "s")) {
