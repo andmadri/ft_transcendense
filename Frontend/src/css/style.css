@@ -48,7 +48,7 @@ h1 {
 	border-radius: 50%;
 	display: inline-block;
 	position: absolute;
-	top: 150px;
-	left: 300px;
-	transition: transform 0.2s ease;
+	top: 0px;
+	left: 0px;
+	transform: translate(-50%, -50%)
 }
