@@ -8,6 +8,7 @@ if (!left || !right) {
 // Send key in JSON format to websocket
 window.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase();
+    console.log("This is the key pressed: ${key}");
     if (key === "arrowup" || key === "arrowdown") {
         socket.send(JSON.stringify({ key }));
     }

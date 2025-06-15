@@ -10,7 +10,7 @@ if (!left || !right) {
 // Send key in JSON format to websocket
 window.addEventListener("keydown", (event: KeyboardEvent) => {
 	const key = event.key.toLowerCase();
-
+	console.log("This is the key pressed: ${key}");
 	if (key === "arrowup" || key === "arrowdown") {
 		socket.send(JSON.stringify({ key }));
 	} else if (key === "w" || key === "s") {
@@ -26,36 +26,3 @@ socket.addEventListener("message", (event) => {
 	right.style.top = `${msg.yRightPos}px`;
 
 });
-
-// MOVE TO BACKEND (REMOVE!)
-// let yLeftPos = 300;
-// let yRightPos = 300;
-
-// window.addEventListener("keydown", (event: KeyboardEvent) => {
-// 	const key = event.key.toLowerCase();
-
-// 	if (key === "arrowup") {
-// 		yRightPos -= 10;
-// 	} else if (key === "arrowdown") {
-// 		yRightPos += 10;
-// 	} else if (key === "w") {
-// 		yLeftPos -= 10;
-// 	} else if (key === "s") {
-// 		yLeftPos += 10;
-// 	}
-
-// 	if (yLeftPos < 0) 
-// 		yLeftPos = 0;
-// 	if (yLeftPos > 600) 
-// 		yLeftPos = 600;
-
-// 	if (yRightPos < 0) 
-// 		yRightPos = 0;
-// 	if (yRightPos > 600) 
-// 		yRightPos = 600;
-
-// 	left.style.top = `${yLeftPos}px`;
-// 	right.style.top = `${yRightPos}px`;
-// });
-
-

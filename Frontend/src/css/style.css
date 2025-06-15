@@ -24,7 +24,7 @@ h1 {
 }
 
 .playerleft {
-	background-color: yellow;
+	background-color: rgb(34, 255, 0);
 	width: 10px;
 	height: 100px;
 	position: absolute;
