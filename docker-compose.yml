@@ -1,22 +1,21 @@
-version: '3.8'
 
 services:
 
   backend:
-    image: backend
     build:
       context: ./Backend
       dockerfile: Dockerfile
     restart: always
     volumes:
-      -database_volume
+      - database_volume:/Database
     env_file:
       - .env
     networks:
       - transcendence
+    ports:
+      - "3000:3000"
 
   server:
-    image: server
     build:
       context: ./Server
       dockerfile: Dockerfile
@@ -27,6 +26,8 @@ services:
       - transcendence
     depends_on:
       - backend
+    ports:
+      - "8080:8080"
 
 networks:
   transcendence:
@@ -35,7 +36,6 @@ networks:
 
 volumes:
   database_volume:
-    name: database_volume
     driver: local
     driver_opts:
       type: none

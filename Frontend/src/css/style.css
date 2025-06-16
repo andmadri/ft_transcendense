@@ -1,11 +1,54 @@
 body {
-	background-color: blue;
+	background-color: white;
 }
 
 p    {
 	color: red;
 }
 
+h1 {
+	text-align: center;
+}
+
 .button	{
 	color: green;
+}
+
+.container {
+	background-color: black;
+	width: 1200px;
+	height: 700px;
+	display: flex;
+	position: relative;
+	margin: 0 auto;
+}
+
+.playerleft {
+	background-color: yellow;
+	width: 10px;
+	height: 100px;
+	position: absolute;
+	top: 300px;
+	left: 0px;
+}
+
+.playerright {
+	background-color: purple;
+	width: 10px;
+	height: 100px;
+	position: absolute;
+	top: 300px;
+	right: 0px;
+}
+
+.ball {
+	height: 25px;
+	width: 25px;
+	background-color: white;
+	border-radius: 50%;
+	display: inline-block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	transform: translate(-50%, -50%)
 }
