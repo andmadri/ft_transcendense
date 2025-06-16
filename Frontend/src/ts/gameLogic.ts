@@ -7,8 +7,8 @@ function checkAndMovePadel(padel: string, movement: number) {
 	if (currentPadel) {
 		if (newPosition < 0)
 			newPosition = 0;
-		else if (newPosition > Field.height) 
-			newPosition = Field.height;
+		else if (newPosition > Field.height - currentPadel.clientHeight) 
+			newPosition = Field.height - currentPadel.clientHeight;
 		currentPadel.style.top = `${newPosition}px`;
 	}
 }

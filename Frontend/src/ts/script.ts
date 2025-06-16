@@ -105,6 +105,58 @@ window.addEventListener("keyup", (e: KeyboardEvent) => {
 	}
 });
 
+window.addEventListener("resize", InitAfterResize);
+
+function InitAfterResize() {
+	const ball = document.getElementById("ball");
+	const playerOne = document.getElementById("rPlayer");
+	const playerTwo = document.getElementById("lPlayer");
+	const field = document.getElementById("field");
+
+	if (ball && playerOne && playerTwo && field) {
+		const newWidth = window.innerWidth * 0.8;
+		const newHeight = newWidth * 0.7;
+
+		const scaleFactorX = newWidth / Field.width;
+		const scaleFactorY = newHeight / Field.height;
+
+		// Ball
+		Objects["ball"].x *= scaleFactorX;
+		Objects["ball"].y *= scaleFactorY;
+		Objects["ball"].width *= scaleFactorX;
+		Objects["ball"].height *= scaleFactorY;
+		ball.style.left = `${Objects["ball"].x}px`;
+		ball.style.top = `${Objects["ball"].y}px`;
+		ball.style.width = `${Objects["ball"].width}px`;
+		ball.style.height = `${Objects["ball"].height}px`;
+
+		// Player 1
+		Objects["player1"].y *= scaleFactorY;
+		Objects["player1"].width *= scaleFactorX;
+		Objects["player1"].height *= scaleFactorY;
+		playerOne.style.left = `${Objects["player1"].x}px`;
+		playerOne.style.top = `${Objects["player1"].y}px`;
+		playerOne.style.width = `${Objects["player1"].width}px`;
+		playerOne.style.height = `${Objects["player1"].height}px`;
+
+		// Player 2
+		Objects["player2"].y *= scaleFactorY;
+		Objects["player2"].width *= scaleFactorX;
+		Objects["player2"].height *= scaleFactorY;
+		playerTwo.style.left = `${Objects["player2"].x}px`;
+		playerTwo.style.top = `${Objects["player2"].y}px`;
+		playerTwo.style.width = `${Objects["player2"].width}px`;
+		playerTwo.style.height = `${Objects["player2"].height}px`;
+
+		Field.width = newWidth;
+		Field.height = newHeight;
+		field.style.width = `${Field.width}px`;
+		field.style.height = `${Field.height}px`;
+	} else {
+		console.log("Something went wrong, close game?");
+	}
+}
+
 // Get start position of ball
 function initPositions() {
 	const ball = document.getElementById("ball");
@@ -114,19 +166,31 @@ function initPositions() {
 
 	if (ball && playerOne && playerTwo && field)
 	{
-		Field.height = field.clientHeight - playerOne.clientHeight;
-		Field.width = field.clientWidth;
+		// Field
+		Field.width = window.innerWidth * 0.8;
+		Field.height = Field.width * (7 / 10);
+		field.style.height = `${Field.height}px`;
+		field.style.width = `${Field.width}px`;
+
+		// Ball
+		ball.style.height = `${Field.width * 0.05}px`;
+		ball.style.width = `${Field.width * 0.05}px`;
 		Objects["ball"].height = ball.clientHeight;
 		Objects["ball"].width = ball.clientWidth;
 		Objects["ball"].x = (field.clientWidth / 2) - (Objects["ball"].width / 2);
 		Objects["ball"].y = (field.clientHeight / 2) - (Objects["ball"].height / 2);
-		Objects["player1"].y = parseInt(playerOne.style.top);
-		Objects["player1"].x = parseInt(playerOne.style.left);
-		Objects["player2"].y = parseInt(playerTwo.style.top);
-		Objects["player2"].x = parseInt(playerTwo.style.left);
+
+		// Players
+		playerOne.style.height = `${Field.height * 0.30}px`;
+		playerTwo.style.height = `${Field.height * 0.30}px`;
+		playerOne.style.width = `${Field.width * 0.02}px`;
+		playerTwo.style.width = `${Field.width * 0.02}px`;
 		Objects["player1"].height = playerOne.clientHeight;
 		Objects["player1"].width = playerOne.clientWidth;
-
+		Objects["player1"].y = playerOne.offsetTop;
+		Objects["player1"].x = playerOne.offsetLeft;
+		Objects["player2"].y = playerTwo.offsetTop;
+		Objects["player2"].x = 0;
 	} else {
 		console.log("Something went wrong, close game?");
 	}
