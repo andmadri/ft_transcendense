@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 const { Database } = sqlite3.verbose();
-const dbpath = './db/pong.db';
+const dbpath = './pong.db';
 
 function createTables(db) {
 	db.exec(`
@@ -11,8 +11,7 @@ function createTables(db) {
 		email VARCHAR(50) NOT NULL UNIQUE,
 		avatar_url TEXT,
 		wins INTEGER DEFAULT 0,
-		looses INTEGER DEFAULT 0
-
+		losses INTEGER DEFAULT 0
 	);
 	`);
 
@@ -33,11 +32,11 @@ function createTables(db) {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		player_1_id INTEGER,
 		player_2_id INTEGER,
-		FOREIGN KEY(player_1_id) REFERENCES Users(id),
-		FOREIGN KEY(player_2_id) REFERENCES Users(id),
 		player_1_score INTEGER DEFAULT 0,
 		player_2_score INTEGER DEFAULT 0,
-		date VARCHAR(11) NOT NULL
+		date VARCHAR(11) NOT NULL,
+		FOREIGN KEY(player_1_id) REFERENCES Users(id),
+		FOREIGN KEY(player_2_id) REFERENCES Users(id)
 	);
 	`);
 }

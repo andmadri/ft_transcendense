@@ -1,4 +1,5 @@
-import { controller, Objects, socket, Field } from './script.js'
+import { Game } from './script.js'
+import * as S from './structs.js'
 
 function checkAndMovePadel(padel: string, movement: number) {
 	const currentPadel = document.getElementById(padel);
@@ -7,24 +8,24 @@ function checkAndMovePadel(padel: string, movement: number) {
 	if (currentPadel) {
 		if (newPosition < 0)
 			newPosition = 0;
-		else if (newPosition > Field.height - currentPadel.clientHeight) 
-			newPosition = Field.height - currentPadel.clientHeight;
+		else if (newPosition > S.Objects['field'].height - currentPadel.clientHeight) 
+			newPosition = S.Objects['field'].height - currentPadel.clientHeight;
 		currentPadel.style.top = `${newPosition}px`;
 	}
 }
 
 function movePadel(key: string) {
 	if (key === "w" || key === "s") {
-		checkAndMovePadel("lPlayer", controller[key].dir);
+		checkAndMovePadel("lPlayer", S.Keys[key].dir);
 	} else if (key === "ArrowUp" || key === "ArrowDown") {
-		checkAndMovePadel("rPlayer", controller[key].dir);
+		checkAndMovePadel("rPlayer", S.Keys[key].dir);
 	}
 }
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
-	for (let key in controller) {
-		if (controller[key].pressed === true) {
+	for (let key in S.Keys) {
+		if (S.Keys[key].pressed === true) {
 			movePadel(key);
 			moved = true;
 		}
@@ -35,32 +36,38 @@ export function checkPadelMovement(): boolean {
 export function updatePadelPosition() {
 	const leftPadel = document.getElementById("rPlayer");
 	const rightPadel = document.getElementById("lPlayer");
-	if (socket.readyState != WebSocket.OPEN)
+	if (Game.socket.readyState != WebSocket.OPEN)
 		return ;
 	if (leftPadel && rightPadel) {
-		const msg = { lHeight: leftPadel.offsetTop, rHeight: rightPadel.offsetTop };
-		socket.send(JSON.stringify(msg));
+		const msg = { 
+			action: "padelUpdate",
+			lHeight: leftPadel.offsetTop,
+			rHeight: rightPadel.offsetTop };
+		Game.socket.send(JSON.stringify(msg));
 	} else {
 		console.log("No lP ot rP");
 	}
 }
 
 export function calculateBallDir() {
-	Objects["ball"].y += Math.sin(Objects["ball"].angle) * Objects["ball"].speed;
-	Objects["ball"].x += Math.cos(Objects["ball"].angle) * Objects["ball"].speed;
-	if (Objects["ball"].y < 0)
-		Objects["ball"].y = 0;
-	else if (Objects["ball"].y + Objects["ball"].height > Field.height)
-		Objects["ball"].y = Field.height - Objects["ball"].height;
-	if (Objects["ball"].x < 0)
-		Objects["ball"].x = 0;
-	else if (Objects["ball"].x + Objects["ball"].width > Field.width)
-		Objects["ball"].x = Field.width - Objects["ball"].width;
+	S.Objects["ball"].y += Math.sin(S.Objects["ball"].angle) * S.Objects["ball"].speed;
+	S.Objects["ball"].x += Math.cos(S.Objects["ball"].angle) * S.Objects["ball"].speed;
+	if (S.Objects["ball"].y < 0)
+		S.Objects["ball"].y = 0;
+	else if (S.Objects["ball"].y + S.Objects["ball"].height > S.Objects['field'].height)
+		S.Objects["ball"].y = S.Objects['field'].height - S.Objects["ball"].height;
+	if (S.Objects["ball"].x < 0)
+		S.Objects["ball"].x = 0;
+	else if (S.Objects["ball"].x + S.Objects["ball"].width > S.Objects['field'].width)
+		S.Objects["ball"].x = S.Objects['field'].width - S.Objects["ball"].width;
 }
 
 export function updateBallPosition() {
-	const msg = { "ballY": Objects["ball"].y, ballX: Objects["ball"].x};
-	socket.send(JSON.stringify(msg));
+	const msg = { 
+		action: "ballUpdate",
+		ballY: S.Objects["ball"].y,
+		ballX: S.Objects["ball"].x};
+	Game.socket.send(JSON.stringify(msg));
 }
 
 function normalizeAngle(angle: number) {
@@ -69,12 +76,12 @@ function normalizeAngle(angle: number) {
 }
 
 export function checkWallCollision() {
-	if (Objects["ball"].y <= 0 || Objects["ball"].y + Objects["ball"].height >= Field.height)
-		Objects["ball"].angle = normalizeAngle(-Objects["ball"].angle);
+	if (S.Objects["ball"].y <= 0 || S.Objects["ball"].y + S.Objects["ball"].height >= S.Objects['field'].height)
+		S.Objects["ball"].angle = normalizeAngle(-S.Objects["ball"].angle);
 	
 }
 
 export function checkPaddelCollision() {
-	if (Objects["ball"].x <= 0 || Objects["ball"].x + Objects["ball"].width >= Field.width)
-		Objects["ball"].angle = normalizeAngle(Math.PI - Objects["ball"].angle);	
+	if (S.Objects["ball"].x <= 0 || S.Objects["ball"].x + S.Objects["ball"].width >= S.Objects['field'].width)
+		S.Objects["ball"].angle = normalizeAngle(Math.PI - S.Objects["ball"].angle);	
 }
