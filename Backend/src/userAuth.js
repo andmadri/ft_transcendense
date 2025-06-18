@@ -39,7 +39,7 @@ async function addUser(msg, socket) {
 		return sendBackToFrontend('signUpCheck', socket, "no", "No valid email");
 	if (!checkPassword(msg.password))
 		return sendBackToFrontend('signUpCheck', socket, "no", "No valid password");
-	if (dbFunctions.userAlreadyExist(msg.email)) {
+	if (await dbFunctions.userAlreadyExist(msg.email)) {
 		//we are not stopped here
 		return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
 	}
@@ -50,7 +50,10 @@ async function addUser(msg, socket) {
 			VALUES (?, ?, ?)
 		`);
 		insert.run(msg.name, msg.email, hashedPassword);
-		return sendBackToFrontend('signUpCheck', socket, "yes", "User created");
+		const stmt = db.prepare(`SELECT * FROM Users`);
+		const allUsers = stmt.all();
+		console.log(allUsers);
+		return sendBackToFrontend('signUpCheck', socket, "no", "User created");
 	} catch (err) {
 		console.error(err);
 		return sendBackToFrontend('error', socket, "no", "Error while inserting new user");
@@ -58,8 +61,12 @@ async function addUser(msg, socket) {
 }
 
 async function validateLogin(msg, socket) {
+	const stmt = db.prepare(`SELECT * FROM Users`);
+	const allUsers = stmt.all();
+	console.log(allUsers);
 	const user = dbFunctions.getUserRowByEmail(msg.email);
-	if (!user || !user.name)
+	console.log("user:", user);
+	if (!user || !user.email)
 		return sendBackToFrontend('loginCheck', socket, "no", "User not found");
 	console.log(`user password: ${msg.password}, encrypted password: ${user.password}`);
 	const isValidPassword = await bcrypt.compare(msg.password, user.password);

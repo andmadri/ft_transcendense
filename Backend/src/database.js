@@ -82,7 +82,7 @@ export function isOnline(email) {
 	return Boolean(row.online_status);
 }
 
-export function userAlreadyExist(email)
+export async function userAlreadyExist(email)
 {
 	const query = db.prepare(`
 		SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists;
@@ -101,7 +101,7 @@ export function getUserRowByEmail(email) {
 export function getWins(email) {
 	const query = db.prepare(`
 		SELECT wins FROM Users 
-WHERE email = ?
+		WHERE email = ?
 	`)
 	const row = query.get(email);
 	return row.wins;
