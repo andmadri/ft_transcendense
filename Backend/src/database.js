@@ -14,7 +14,7 @@ function createTables(db) {
 		email VARCHAR(254) NOT NULL UNIQUE,
 		password TEXT NOT NULL,
 		avatar_url TEXT,
-		status INTEGER DEFAULT 0,
+		online_status INTEGER DEFAULT 0,
 		wins INTEGER DEFAULT 0,
 		losses INTEGER DEFAULT 0
 	);
@@ -56,7 +56,7 @@ export function createDatabase() {
 		}
 		console.log('Connected to the database.');
 		db.run("PRAGMA foreign_keys = ON");
-		if (existDb)
+		if (!existDb)
 		{
 			console.log('Created database tables.');
 			createTables(db);
@@ -65,28 +65,37 @@ export function createDatabase() {
 	return db;
 }
 
-export function updateStatus(email, newStatus) {
+export function updateOnlineStatus(email, newStatus) {
 	const update = db.prepare(`
 		UPDATE Users
-		SET status = ?
+		SET online_status = ?
 		WHERE email = ?
 	`);
 	update.run(newStatus ? 1 : 0, email);
 }
 
-export function getStatus(email) {
+export function isOnline(email) {
 	const query = db.prepare(`
-		SELECT status FROM Users WHERE email = ?
+		SELECT online_status FROM Users WHERE email = ?
 	`);
 	const row = query.get(email);
-	return row ? Boolean(row.status) : null;
+	return Boolean(row.online_status);
 }
+
+export function userAlreadyExist(email)
+{
+	const query = db.prepare(`
+		SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists;
+	`);
+	const result = query.get(email);
+	return result.row_exists === 1;
+	}
 
 export function getUserRowByEmail(email) {
 	const query = db.prepare(`
 		SELECT * FROM Users WHERE email = ?
 	`);
-	return query.get(email); //what does query return if they can't find email?
+	return query.get(email);
 }
 
 export function getWins(email) {

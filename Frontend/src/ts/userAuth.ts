@@ -23,11 +23,11 @@ export function changeLoginMode() {
 		}
 	}
 	if (submitButton)
-		submitButton.textContent = mode === 'login' ? 'Login' : 'sign up';
+		submitButton.textContent = mode === 'login' ? 'Login' : 'Sign up';
 	if (toggleButton)
 		toggleButton.textContent = mode === 'login' ? 'Switch to Sign Up' : 'Switch to Login';
 	if (authTitle)
-		authTitle.textContent = mode === 'login' ? 'Login' : 'sign up';
+		authTitle.textContent = mode === 'login' ? 'Login' : 'Sign up';
 }
 
 export function submitAuthForm(e: Event) {
