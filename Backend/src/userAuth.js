@@ -1,13 +1,14 @@
-import { db } from './database.js';
+import * as dbFunctions from './database.js';
+import { db } from './index.js';
 import bcrypt from 'bcrypt';
 
-function sendBackToFrontend(connection, accessUserAuth, reasonMsg) {
+function sendBackToFrontend(actionable, socket, accessible, reasonMsg) {
 	const msg = {
-		action: "loginCheck",
-		access: accessUserAuth,
+		action: actionable,
+		access: accessible,
 		reason: reasonMsg
 	}
-	connection.socket.send(JSON.stringify(msg));
+	socket.send(JSON.stringify(msg));
 }
 
 function checkName(name) {
@@ -31,15 +32,15 @@ function checkPassword(password) {
 	return passwordRegex.test(password);
 }
 
-async function addUser(msg, connection) {
+async function addUser(msg, socket) {
 	if (!checkName(msg.name))
-		return sendBackToFrontend(connection, "no", "No valid name");
+		return sendBackToFrontend('signUpCheck', socket, "no", "No valid name");
 	if (!checkEmail(msg.email))
-		return sendBackToFrontend(connection, "no", "No valid email");
+		return sendBackToFrontend('signUpCheck', socket, "no", "No valid email");
 	if (!checkPassword(msg.password))
-		return sendBackToFrontend(connection, "no", "No valid password");
-	if (db.getUserRowByEmail(msg)) {
-		return sendBackToFrontend(connection, "ok", "User allready exist");
+		return sendBackToFrontend('signUpCheck', socket, "no", "No valid password");
+	if (dbFunctions.getUserRowByEmail(msg)) {
+		return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
 	}
 	const hashedPassword = bcrypt.hash(msg.password, 10);
 	const insert = db.prepare(`
@@ -48,26 +49,29 @@ async function addUser(msg, connection) {
 	`);
 	insert.run(msg.name, msg.email, hashedPassword);
 	db.updateStatus(msg.email, db.getStatus(msg.email));
-	return sendBackToFrontend(connection, "ok", "User created");
+	return sendBackToFrontend('signUpCheck', socket, "yes", "User created");
 }
 
-async function validateLogin(msg, connection) {
-	const user = db.getUserRowByEmail(msg.email);
-	if (!user)
-		return sendBackToFrontend(connection, "no", "User not found");
-	const isValidPassword = await bcrypt.compare(msg.password, user.password);
+async function validateLogin(msg, socket) {
+	const user = dbFunctions.getUserRowByEmail(msg.email);
+	console.log(`user name: ${user.user}`);
+	if (!user.user)
+		return sendBackToFrontend('loginCheck', socket, "no", "User not found");
+	console.log(`user password: ${msg.password}, encrypted password: ${user.password}`);
+	const isValidPassword = await bcrypt.compare(user.password, msg.password);
 	if (!isValidPassword)
-		return sendBackToFrontend(connection, "no", "Incorrect password");
+		return sendBackToFrontend('loginCheck', socket, "no", "Incorrect password");
 	db.updateStatus(msg.email, db.getStatus(msg.email))
-	return sendBackToFrontend(connection, "ok", "Login successful")
+	return sendBackToFrontend('loginCheck', socket, "yes", "Login successful")
 }
 
-export async function handleUserAuth(msg, connection) {
-	if (msg.action == "registerUser")
+export async function handleUserAuth(msg, socket) {
+	console.log("handleUserAuth function...");
+	if (msg.action == "signUpUser")
 		return addUser(msg);
 	else if (msg.action == "loginUser")
-		return validateLogin(msg, connection);
-	return sendBackToFrontend(connection, "no", "Unkown action");
+		return validateLogin(msg, socket);
+	return sendBackToFrontend('error', socket, "no", "Unkown action");
 }
 
 

@@ -15,17 +15,25 @@ export function errorSocket(err: Event) {
 
 export function receiveFromWS(e: MessageEvent) {
 	const data = JSON.parse(e.data);
-	// log('Received from server: ' + JSON.stringify(data));
+	log('Received from server: ' + JSON.stringify(data));
 	
 	const action = data.action;
-	if (!action) {
+	if (!action)
 		log("no action");
-	} else if (action == "loginCheck") {
-		if (data.access && data.access == "ok")
+	else if (action == "loginCheck") {
+		log("in action == loginCheck...");
+		if (data.access && data.access == "yes")
 			loginSuccessfull();
 		else
 			log(data.reason);
 		return ;
+	} else if (action == "signUpCheck") {
+		log("in action == signUpCheck...");
+		if (data.access && data.access == "yes")
+			log('signup ok'); // signUpSuccessfull
+		else
+			log(data.reason);
+		return ;		
 	} else if (action == "ballUpdate") {
  		if ('ballX' in data) {
 			const ball = document.getElementById('ball');

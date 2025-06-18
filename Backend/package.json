@@ -12,8 +12,8 @@
 	"ws": "^8.13.0",
 	"@fastify/websocket": "^8.0.0",
 	"@fastify/static": "^6.8.0",
-  "sqlite3": "^5.1.6",
-  "bcrypt": "^5.0.0"
+  	"sqlite3": "^5.1.6",
+  	"bcrypt": "^5.0.0"
   },
   "keywords": [],
   "author": "",

@@ -3,7 +3,7 @@
 
 import * as GameLogic from './gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { submitAuthForm, loginSuccessfull } from './userAuth.js' //imports two functions from login.js
+import { submitAuthForm, loginSuccessfull, changeLoginMode } from './userAuth.js' //imports two functions from login.js
 import { initPositions } from './initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { openSocket, closeSocket, errorSocket, receiveFromWS } from './socketEvents.js'
@@ -36,7 +36,7 @@ window.addEventListener("resize", initAfterResize);
 
 // addEventListeners for Login form
 document.getElementById('authForm')?.addEventListener('submit', submitAuthForm);
-
+document.getElementById('toggle-mode')?.addEventListener('click', changeLoginMode);
 
 function gameLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN && Game.loggedIn) {

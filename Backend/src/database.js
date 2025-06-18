@@ -1,4 +1,7 @@
 import sqlite3 from "sqlite3";
+import fs from "fs";
+import { db } from './index.js'
+
 const { Database } = sqlite3.verbose();
 const dbpath = './pong.db';
 
@@ -45,14 +48,19 @@ function createTables(db) {
 	`);
 }
 
-function createDatabase() {
+export function createDatabase() {
+	const existDb = fs.existsSync(dbpath);
 	const db = new Database(dbpath, (err) => {
 		if (err) {
 			return console.error('Error openinig database:', err.message);
 		}
 		console.log('Connected to the database.');
 		db.run("PRAGMA foreign_keys = ON");
-		createTables(db);
+		if (existDb)
+		{
+			console.log('Created database tables.');
+			createTables(db);
+		}
 	});
 	return db;
 }
@@ -83,7 +91,8 @@ export function getUserRowByEmail(email) {
 
 export function getWins(email) {
 	const query = db.prepare(`
-		SELECT wins FROM Users WHERE email = ?
+		SELECT wins FROM Users 
+WHERE email = ?
 	`)
 	const row = query.get(email);
 	return row.wins;
@@ -128,4 +137,4 @@ export function updateLosses(email) {
 
 // }
 
-export const db = createDatabase();
+

@@ -2,21 +2,21 @@
 
 <html lang="en">
 
-  <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	<title>Pong Game</title>
-	<link rel="stylesheet" href="/css/style.css">
-  </head>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Pong Game</title>
+		<link rel="stylesheet" href="/css/style.css">
+	</head>
   	
- 	<body>
+	<body>
 		<div id="log"></div>
 		<script type="module" src="/js/ts/script.js"></script>
 		<main>
 			<h1>Pong</h1>  
 		</main>
 		<div id="auth">
-			<h2 id="authTitle">Login</h2>
+			<h2 id="authTitle">Sign Up</h2>
 			<form id="authForm">
 				<div id="nameField">
 					<label for="name">Name: </label>
@@ -26,10 +26,10 @@
 				<input type="email" id="email" name="email" required><br>
 				<label for="password">Password: </label>
 				<input type="password" id="password" name="password" required><br>
-				<button id="submitBtn" type="submit">Login</button>
+				<button id="submitBtn" type="submit">Sign Up</button>
 			</form>
-			<p id="modelabel">Login mode</p>
-			<button type="button" id="toggle-mode">Switch to Sign Up</button>
+			<p id="modelabel">Sign Up mode</p>
+			<button type="button" id="toggle-mode">Switch to Login</button>
 		</div>
 		<div id="game">
 			<div id="field" class="game">
