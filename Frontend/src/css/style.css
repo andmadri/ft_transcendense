@@ -14,12 +14,13 @@ h1 {
 	color: green;
 }
 
-/* AUTHENTICATION */
-#authForm {
-	background-color: white;
-	padding: 10px;
+#log {
+	display: flex;
+	position: fixed;
+	align-items: right;
 }
 
+/* AUTHENTICATION */
 #auth {
 	background-color: lightblue;
 	width: 100%;
@@ -31,13 +32,38 @@ h1 {
 	z-index: 999;
 }
 
+#authForm {
+	background-color: white;
+	padding: 10px;
+	margin: 10px;
+}
+
+.formInput {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 10px;
+}
+
+.formInput label {
+  flex: 1;
+  text-align: left;
+  margin: 5px;
+}
+
+.formInput input {
+  flex: 2;
+  text-align: left;
+  padding: 0.25rem;
+}
+
 #modelabel {
 	color: black;
 	display: none;
 }
 
-#authForm input {
-	align-items: right;
+#submitBtnDiv {
+	text-align: right;
 }
 
 /* MAIN PAGE */

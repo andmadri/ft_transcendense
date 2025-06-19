@@ -21,6 +21,12 @@ stop:
 build:
 	docker compose -f docker-compose.yml build
 
+server:
+	rm -rf Server/src
+	rm -rf Server/*.json
+	cp -r Frontend/* Server/
+	docker compose up -d --build --force-recreate server
+
 build_volumes:
 	mkdir -p $(VOLUME)
 	chmod -R 777 $(VOLUME)
