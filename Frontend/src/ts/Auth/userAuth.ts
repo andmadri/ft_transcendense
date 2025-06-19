@@ -1,7 +1,27 @@
-import * as S from './structs.js'
-import { Game, log } from './script.js'
+import * as S from '../structs.js'
+import { Game, log } from '../script.js'
 
 let mode: ('login' | 'sign up') = 'sign up';
+
+// PROCESS INFORMATION FROM SERVER
+export function processSignUpCheck(data: any) {
+	log("in action == signUpCheck...");
+	if (data.access && data.access == "yes") {
+		mode = 'login';
+		changeLoginMode();
+	} else {
+		log(data.reason);
+	}
+}
+
+export function processLoginCheck(data: any) {
+	if (data.access && data.access == "yes") {
+		loginSuccessfull();
+	}
+	else
+		log(data.reason);
+}
+
 
 export function changeLoginMode() {
 	mode = mode === 'login' ? 'sign up' : 'login';
@@ -31,14 +51,12 @@ export function changeLoginMode() {
 }
 
 export function submitAuthForm(e: Event) {
-	log("submit auth form");
 	e.preventDefault();
 	const name = (document.querySelector<HTMLInputElement>('#name')?.value ?? '').trim();
 	const email = (document.querySelector<HTMLInputElement>('#email')?.value ?? '').trim();
 	const password = (document.querySelector<HTMLInputElement>('#password')?.value ?? '').trim();
 
 	if (!email || !password || (mode == 'sign up' && !name)) {
-		log("alert?");
 		alert("Please fill in all required fileds");
 		return;
 	}
@@ -53,9 +71,14 @@ export function loginSuccessfull() {
 	const popup = document.getElementById('auth');
 	if (popup)
 		popup.style.display = 'none';
+
+
+	const mainPage = document.getElementById('mainPage');
+	if (mainPage)
+		mainPage.style.display = 'grid';
 	const game = document.getElementById('game');
 	if (game)
-		game.style.display = 'block';
+		game.style.display = 'none';
 
 	Game.loggedIn = true;
 }

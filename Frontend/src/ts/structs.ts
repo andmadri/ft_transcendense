@@ -1,11 +1,12 @@
 // GAME
 export type gameInfo = {
 	loggedIn: boolean;
+	gameOn: boolean;
+	opponentType: string;
+	matchFormat: string;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
 }
-
-
 
 // KEYS
 type Key = {

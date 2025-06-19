@@ -3,7 +3,7 @@ body {
 }
 
 p {
-	color: red;
+	color: black;
 }
 
 h1 {
@@ -14,19 +14,86 @@ h1 {
 	color: green;
 }
 
+/* AUTHENTICATION */
+#authForm {
+	background-color: white;
+	padding: 10px;
+}
+
 #auth {
-	/* background-color: yellow; */
-	width: 50%;
-	height: 50%;
+	background-color: lightblue;
+	width: 100%;
+	height: 100%;
 	position: fixed;
-	top: 50px;
-	left: 50px;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: center;
 	z-index: 999;
 }
 
+#modelabel {
+	color: black;
+	display: none;
+}
+
+#authForm input {
+	align-items: right;
+}
+
+/* MAIN PAGE */
+.sectionTitle {
+	text-align: center;
+}
+
+#mainPage {
+	background-color: yellow;
+	display: none;
+	grid-template-columns: 1fr 2fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	height: 100vh;
+	gap: 0;
+}
+
+/* left */
+#online {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+	background-color: #f0f0f0;
+	padding: 1rem;
+	border-right: 1px solid #ccc;
+	background-color: lightblue;
+}
+
+/*right */
+#highscores {
+	grid-column: 3;
+	grid-row: 1 / span 2;
+	background-color: #f0f0f0;
+	padding: 1rem;
+	border-left: 1px solid #ccc;
+	background-color: lightcyan;
+}
+
+/* middle top */
+#menu {
+	grid-column: 2;
+	grid-row: 1;
+	background-color: #fff;
+	padding: 1rem;
+	border-bottom: 1px solid #000;
+	background-color: lightgreen;
+}
+
+/* middle bottom */
+#friends {
+	grid-column: 2;
+	grid-row: 2;
+	background-color: #fff;
+	padding: 1rem;
+	background-color: lightgrey;
+}
+
+/* GAME */
 .game {
 	display: none;
 	background-color: black;

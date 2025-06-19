@@ -1,4 +1,41 @@
-import * as S from './structs.js'
+import * as S from '../structs.js'
+import { Game, log } from '../script.js'
+
+export function startGame() {
+	if (Game.opponentType == "1 vs 1") {
+
+	} else if (Game.opponentType == "1 vs COM") {
+
+	} else if (Game.opponentType == "Online") {
+
+	} else {
+		log("No opponent type choosen");
+		return ;
+	}
+
+	if (Game.matchFormat == "single game") {
+
+	} else if (Game.matchFormat == "tournament") {
+
+	} else {
+		log("No match format choosen");
+		return ;
+	}
+	const mainPage = document.getElementById('mainPage');
+	if (mainPage)
+		mainPage.style.display = 'none';
+	const game = document.getElementById('game');
+	if (game)
+		game.style.display = 'flex';
+}
+
+export function changeOpponentMode(option: string) {
+	Game.opponentType = option;
+}
+
+export function changeMatchFormat(option: string) {
+	Game.matchFormat = option;
+}
 
 // Get start position of ball
 export function initPositions() {

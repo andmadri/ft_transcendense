@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
-import { handleUserAuth } from './userAuth.js';
-import { createDatabase } from './database.js'
+import { handleUserAuth } from './Auth/userAuth.js';
+import { createDatabase } from './Database/database.js'
 
 const fastify = Fastify();
 await fastify.register(websocket);

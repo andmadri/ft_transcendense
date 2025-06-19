@@ -1,5 +1,32 @@
-import { Game } from './script.js'
-import * as S from './structs.js'
+import { Game } from '../script.js'
+import * as S from '../structs.js'
+
+export function processBallUpdate(data: any) {
+	if ('ballX' in data) {
+		const ball = document.getElementById('ball');
+		if (ball && typeof data.ballX === 'number')
+			ball.style.left = `${data.ballX}px`;
+		if (ball && typeof data.ballY === 'number')
+			ball.style.top = `${data.ballY}px`;
+	}
+}
+
+export function processPadelUpdate(data: any) {
+	if ('rPlayerX' in data) {
+		const rPlayer = document.getElementById('p1');
+		if (rPlayer && typeof data.playerOneX === 'number')
+			rPlayer.style.left = `${data.playerOneX}px`;
+		if (rPlayer && typeof data.playerOneY === 'number')
+			rPlayer.style.top = `${data.playerOneY}px`;
+	}
+	if ('lPlayerX' in data) {
+		const lPlayer = document.getElementById('p2');
+		if (lPlayer && typeof data.playerTwoX === 'number')
+			lPlayer.style.left = `${data.playerTwoX}px`;
+		if (lPlayer && typeof data.playerTwoY === 'number')
+			lPlayer.style.top = `${data.playerTwoY}px`;		
+	}
+}
 
 function checkAndMovePadel(padel: string, movement: number) {
 	const currentPadel = document.getElementById(padel);

@@ -1,5 +1,5 @@
-import * as dbFunctions from './database.js';
-import { db } from './index.js';
+import * as dbFunctions from '../Database/database.js';
+import { db } from '../index.js';
 import bcrypt from 'bcrypt';
 
 function sendBackToFrontend(actionable, socket, accessible, reasonMsg) {
@@ -39,20 +39,13 @@ async function addUser(msg, socket) {
 		return sendBackToFrontend('signUpCheck', socket, "no", "No valid email");
 	if (!checkPassword(msg.password))
 		return sendBackToFrontend('signUpCheck', socket, "no", "No valid password");
-	if (await dbFunctions.userAlreadyExist(msg.email)) {
-		//we are not stopped here
-		return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
-	}
-	const hashedPassword = await bcrypt.hash(msg.password, 10);
+	dbFunctions.userAlreadyExist(msg.email, (exists) => {
+		if (exists)
+			return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
+	});
+		
 	try {
-		const insert = db.prepare(`
-			INSERT INTO Users (name, email, password)
-			VALUES (?, ?, ?)
-		`);
-		insert.run(msg.name, msg.email, hashedPassword);
-		const stmt = db.prepare(`SELECT * FROM Users`);
-		const allUsers = stmt.all();
-		console.log(allUsers);
+		dbFunctions.addUserToDB(msg);
 		return sendBackToFrontend('signUpCheck', socket, "no", "User created");
 	} catch (err) {
 		console.error(err);
@@ -60,19 +53,18 @@ async function addUser(msg, socket) {
 	}
 }
 
-async function validateLogin(msg, socket) {
-	const stmt = db.prepare(`SELECT * FROM Users`);
-	const allUsers = stmt.all();
-	console.log(allUsers);
-	const user = dbFunctions.getUserRowByEmail(msg.email);
-	console.log("user:", user);
-	if (!user || !user.email)
-		return sendBackToFrontend('loginCheck', socket, "no", "User not found");
-	console.log(`user password: ${msg.password}, encrypted password: ${user.password}`);
-	const isValidPassword = await bcrypt.compare(msg.password, user.password);
-	if (!isValidPassword)
-		return sendBackToFrontend('loginCheck', socket, "no", "Incorrect password");
-	dbFunctions.updateStatus(msg.email, !dbFunctions.isOnline(msg.email))
+function validateLogin(msg, socket) {
+	dbFunctions.getUserByEmail(msg.email, (user) => {
+		if (!user)
+			return sendBackToFrontend('loginCheck', socket, "no", "User not found");
+		const isValidPassword = bcrypt.compare(msg.password, user.password);
+		if (!isValidPassword)
+			return sendBackToFrontend('loginCheck', socket, "no", "Incorrect password");
+	});
+
+	dbFunctions.isOnline(msg.email, (online) => {
+		dbFunctions.updateOnlineStatus(msg.email, !online);
+	});
 	return sendBackToFrontend('loginCheck', socket, "yes", "Login successful")
 }
 

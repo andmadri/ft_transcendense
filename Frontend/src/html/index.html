@@ -15,11 +15,13 @@
 		<main>
 			<h1>Pong</h1>  
 		</main>
+
+		<!-- AUTHENTICATION FORM -->
 		<div id="auth">
 			<h2 id="authTitle">Sign Up</h2>
 			<form id="authForm">
 				<div id="nameField">
-					<label for="name">Name: </label>
+					<label for="name">Username: </label>
 					<input type="text" id="name" name="name" required><br>
 				</div>
 				<label for="email">Email: </label>
@@ -31,6 +33,51 @@
 			<p id="modelabel">Sign Up mode</p>
 			<button type="button" id="toggle-mode">Switch to Login</button>
 		</div>
+
+		<!-- MAIN PAGE -->
+		<div id="mainPage">
+
+			<!-- ONLINE PLAYERS -->
+			<div id="online">
+				<h2 class="sectionTitle">Online</h2>
+				<div id="listOnlinePlayers">
+					<!-- add here online players -->
+				</div>
+			</div>
+
+			<!-- FRIENDS -->
+			<div id="friends">
+				<h2 class="sectionTitle">Friends</h2>
+				<div id="listFriends">
+					<!-- add here friends and if they are online -->
+				</div>
+			</div>
+
+			<!-- HIGHSCORES -->
+			<div id="highscores">
+				<h2 class="sectionTitle">highscores</h2>
+				<div id="listHighscores">
+					<!-- add here top 10 Players with score -->
+				</div>		
+			</div>
+
+			<div id="menu">
+				<h2 class="sectionTitle">Menu</h2>
+				<!-- selecting type and format, maybe dropdown menu? -->
+				<div id="opponentTypes" class="opponentTypes">
+					<button type="button" onclick="changeOpponentType('1 vs 1')">1 VS 1</button>
+					<button type="button" onclick="changeOpponentType('1 vs COM')">1 VS COM</button>
+					<button type="button" onclick="changeOpponentType('Online')">Online</button>
+				</div>
+				<div class="opponentTypes">
+					<button type="button" onclick="changeMatchFormat('single game')">1 VS 1</button>
+					<button type="button" onclick="changeMatchFormat('tournament')">1 VS COM</button>
+				</div>
+				<button id="startGame" type="button" onclick="startGame()">PLAY</button>
+			</div>
+		</div>
+
+		<!-- GAMEFIELD -->
 		<div id="game">
 			<div id="field" class="game">
 				<div id="ball" class="ball"></div>
@@ -38,20 +85,6 @@
 				<div id="rPlayer" class="playerright"></div>
 			</div>
 		</div>
+
 	</body>
 </html>
-<!-- </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>WebSocket Demo</title>
-  <link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-  <h1>WebSocket Test</h1>
-  <div id="log"></div>
-  <button id="sendBtn">Stuur bericht</button>
-  <script src="/js/ts/script.js"></script>
-</body>
-</html> -->
