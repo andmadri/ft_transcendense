@@ -2,11 +2,14 @@ FROM node:24-alpine
 
 WORKDIR /usr/app
 
+# RUN apk add sqlite3
+
 COPY package*.json ./
-COPY ./src/index.js ./
+COPY ./src ./src
 
 RUN npm install
 
+
 EXPOSE 8080 3000
 
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]
