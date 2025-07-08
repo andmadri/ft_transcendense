@@ -20,7 +20,7 @@ export const Game: S.gameInfo = {
 	opponentType: 'none',
 	matchFormat: 'none',
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('ws://localhost:8080/ws')
+	socket: new WebSocket('wss://localhost:8443/wss')
 }
 
 log('Test log: start');
@@ -29,7 +29,7 @@ startSocketListeners();
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-window.addEventListener('resize', initAfterResize);
+// window.addEventListener('resize', initAfterResize);
 
 function mainLoop() {
 	if (!Game.loggedIn)

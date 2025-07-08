@@ -8,7 +8,7 @@ await fastify.register(websocket);
 //change how you create database
 export const db = await createDatabase();
 
-fastify.get('/ws', { websocket: true }, (connection, req) => {
+fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 	connection.socket.on('message', (message) => {
 		const msg = JSON.parse(message.toString());

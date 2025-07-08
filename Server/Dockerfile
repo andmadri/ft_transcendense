@@ -27,9 +27,12 @@ FROM nginx:alpine
 # Copies from first stage the whole folder to the nginx docker
 COPY --from=frontend /app/build /usr/share/nginx/html/
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+
+COPY tools /etc/nginx/ssl
  
-RUN chmod +x /etc/nginx/nginx.conf
+RUN chmod +x /etc/nginx/nginx.conf && \
+	chmod 600 /etc/nginx/ssl
 
 EXPOSE 8080
 
