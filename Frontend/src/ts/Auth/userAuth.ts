@@ -6,17 +6,17 @@ let mode: ('login' | 'sign up') = 'sign up';
 
 // PROCESS INFORMATION FROM SERVER
 export function processSignUpCheck(data: any) {
-	log("in action == signUpCheck...");
 	if (data.access && data.access == "yes") {
-		mode = 'login';
+		log("User is created");
 		changeLoginMode();
-	} else {
-		log(data.reason);
 	}
+	else
+		log(data.reason);
 }
 
 export function processLoginCheck(data: any) {
 	if (data.access && data.access == "yes") {
+		log("Login successfull");
 		loginSuccessfull();
 	}
 	else

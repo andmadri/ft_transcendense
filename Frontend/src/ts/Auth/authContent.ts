@@ -6,7 +6,6 @@ export function getAuthField() {
 	if (!body)
 		return ;
 
-	log('get AuthField');
 	const	auth = document.createElement('div');
 	auth.id = 'auth';
 	auth.style.backgroundColor = 'lightblue';
@@ -113,7 +112,6 @@ export function removeAuthField() {
 	const	body = document.getElementById('body');
 	const	auth = document.getElementById('auth');
 	
-	log('Remove authfield');
 	if (body && auth)
 		body.removeChild(auth);
 

@@ -27,6 +27,9 @@ server:
 	cp -r Frontend/* Server/
 	docker compose up -d --build --force-recreate server
 
+backend:
+	docker compose up -d --build --force-recreate backend
+
 build_volumes:
 	mkdir -p $(VOLUME)
 	chmod -R 777 $(VOLUME)

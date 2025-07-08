@@ -6,7 +6,7 @@ import { createDatabase } from './Database/database.js'
 const fastify = Fastify();
 await fastify.register(websocket);
 //change how you create database
-export const db = createDatabase();
+export const db = await createDatabase();
 
 fastify.get('/ws', { websocket: true }, (connection, req) => {
 

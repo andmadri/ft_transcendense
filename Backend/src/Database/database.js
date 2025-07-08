@@ -47,170 +47,205 @@ function createTables(db) {
 	`);
 }
 
-export function addUserToDB(msg) {
-	const hashedPassword = bcrypt.hashSync(msg.password, 10);
+export async function addUserToDB(msg) {
+	const hashedPassword = await bcrypt.hash(msg.password, 10);
 
-	db.run(
-		`INSERT INTO Users (name, email, password) VALUES (?, ?, ?)`,
-		[msg.name, msg.email, hashedPassword],
-		function (err) {
-			if (err)
-				console.error("Insert error:", err.message);
-		}
-	);
+	return new Promise((resolve, reject) => {
+		db.run(
+			`INSERT INTO Users (name, email, password) VALUES (?, ?, ?)`,
+			[msg.name, msg.email, hashedPassword],
+			(err) => {
+				if (err)
+					reject(err);
+				else
+					resolve();
+			}
+		);
+	})	
 }
 
-export function getUserByEmail(email, callback) {
-	db.get(
-		`SELECT * FROM Users WHERE email = ?`,
-		[email],
-		(err, row) => {
-			if (err) {
-				console.error("Query error:", err.message);
-				callback(null);
-			} else
-				callback(row);
-		}
-	);
+export async function getUserByEmail(email) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT * FROM Users WHERE email = ?`,
+			[email],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(row);
+			}
+		);
+	});
 }
 
-export function createDatabase() {
+export async function createDatabase() {
 	const existDb = fs.existsSync(dbpath);
-	const db = new Database(dbpath, (err) => {
+	const newdDB = new Database(dbpath, (err) => {
 		if (err)
 			return console.error('Error openinig database:', err.message);
 
 		console.log('Connected to the database.');
-		db.run("PRAGMA foreign_keys = ON");
+		newdDB.run("PRAGMA foreign_keys = ON");
 		if (!existDb) {
 			console.log('Created database tables.');
-			createTables(db);
+			createTables(newdDB);
 		}
 	});
-	return db;
+	return newdDB;
 }
 
-export function updateOnlineStatus(email, newStatus) {
-	db.run(
-		`UPDATE Users SET online_status = ? WHERE email = ?`,
-		[newStatus ? 1 : 0, email],
-		function(err) {
-			if (err)
-				console.error("Update error:", err.message);
-		}
-	);
-}
-
-export function isOnline(email, callback) {
-	db.get(
-		`SELECT online_status FROM Users WHERE email = ?`,
-		[email],
-		(err, row) => {
-			if (err) {
-				console.error("Query error:", err.message);
-				callback(false);
-				return;
+export async function updateOnlineStatus(email, newStatus) {
+	return new Promise((resolve, reject) => {
+		db.run(
+			`UPDATE Users SET online_status = ? WHERE email = ?`,
+			[newStatus ? 1 : 0, email],
+			(err) => {
+				if (err)
+					reject(err);
+				else
+					resolve();
 			}
-			callback(Boolean(row ? row.online_status : 0));
-		}
-	);
+		);
+	})
 }
 
-export function userAlreadyExist(email, callback) {
-	db.get(
-		`SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists`,
-		[email],
-		(err, row) => {
-			if (err) {
-				console.error("Query error:", err.message);
-				callback(false);
-			} else
-				callback(row.row_exists === 1);
-		}
-	);
-}
-
-
-export function getWins(email, callback) {
-	db.get(
-		`SELECT wins FROM Users WHERE email = ?`,
-		[email],
-		(err, row) => {
-			if (err) {
-				console.error("Query error:", err.message);
-				callback(null);
-				return;
+export async function isOnline(email) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT online_status FROM Users WHERE email = ?`,
+			[email],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(Boolean(row ? row.online_status : 0));
 			}
-			callback(row ? row.wins : 0);
-		}
-	);
+		);
+	})
 }
 
-export function getLosses(email, callback) {
-	db.get(
-		`SELECT losses FROM Users WHERE email = ?`,
-		[email],
-		(err, row) => {
-			if (err) {
-				console.error("Query error:", err.message);
-				callback(null);
-				return;
+export async function userAlreadyExist(email) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists`,
+			[email],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(row.row_exists === 1);
 			}
-			callback(row ? row.losses : 0);
-		}
-	);
+		);
+	})
+}
+
+
+export async function getWins(email) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT wins FROM Users WHERE email = ?`,
+			[email],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(row ? row.wins : 0);
+			}
+		);
+	})
+}
+
+export async function getLosses(email) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT losses FROM Users WHERE email = ?`,
+			[email],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(row ? row.losses : 0);
+			}
+		);
+	})
 }
 
 // export function getUserId() {
 // }
 
-export function updateWins(email) {
-	getWins(email, (wins) => {
+export async function updateWins(email) {
+	let	wins;
+
+	try {
+		wins = await getWins(email);
+	} catch(err) {
+		return ;
+	}
+	return new Promise((resolve, reject) => {
 		db.run(
 			`UPDATE Users SET wins = ? WHERE email = ?`,
 			[wins + 1, email],
-			function(err) {
+			(err) => {
 				if (err)
-					console.error("Update error:", err.message);
+					reject(err);
+				else
+					resolve();
 			}
 		);
 	});
 }
 
-export function updateLosses(email) {
-	getLosses(email, (losses) => {
+export async function updateLosses(email) {
+	let	losses;
+
+	try {
+		losses = await getLosses(email);
+	} catch(err) {
+		return ;
+	}
+	return new Promise((resolve, reject) => {
 		db.run(
 			`UPDATE Users SET losses = ? WHERE email = ?`,
 			[losses + 1, email],
-			function(err) {
+			(err) => {
 				if (err)
-					console.error("Update error:", err.message);
+					reject(err);
+				else
+					resolve();
 			}
 		);
-	});
+	})
 }
 
-export function addFriend(user_id, friend_id) {
-	db.run(
-		`INSERT INTO Friends (user_id, friend_id) VALUES (?, ?)`,
-		[user_id, friend_id],
-		function (err) {
-			if (err)
-				console.error("Insert error:", err.message);
-		}
-	)
+export async function addFriend(user_id, friend_id) {
+	return new Promise((resolve, reject) => {
+		db.run(
+			`INSERT INTO Friends (user_id, friend_id) VALUES (?, ?)`,
+			[user_id, friend_id],
+			(err) =>{
+				if (err)
+					reject(err);
+				else
+					resolve();
+			}
+		)
+	})
 }
 
 export function deleteFriend(user_id, friend_id) {
-	db.run(
-		`DELETE FROM Friends WHERE user_id = ? AND friend_id = ?`,
-		[user_id, friend_id],
-		function (err) {
-			if (err) {
-				console.error("Delete error:", err.message);
+	return new Promise((resolve, reject) => {
+		db.run(
+			`DELETE FROM Friends WHERE user_id = ? AND friend_id = ?`,
+			[user_id, friend_id],
+			function (err) {
+				if (err)
+					reject(err);
+				else
+					resolve();
 			}
-		}
-	)
+		)
+	})
 }
 
 // all wins - losses = points? only for the online version?

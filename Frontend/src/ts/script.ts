@@ -17,39 +17,39 @@ createLog();
 export const Game: S.gameInfo = {
 	loggedIn: false,
 	gameOn: false,
-	opponentType: "none",
-	matchFormat: "none",
+	opponentType: 'none',
+	matchFormat: 'none',
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('ws://localhost:8080/ws')
 }
 
-log("Test log: start");
+log('Test log: start');
 startSocketListeners();
 
 // addEventListeners for Window
-window.addEventListener("keydown", pressButton);
-window.addEventListener("keyup", releaseButton);
-// window.addEventListener("resize", initAfterResize);
+window.addEventListener('keydown', pressButton);
+window.addEventListener('keyup', releaseButton);
+// window.addEventListener('resize', initAfterResize);
 
 function mainLoop() {
 	if (!Game.loggedIn)
 	{
-		if (!document.getElementById("auth"))
+		if (!document.getElementById('auth'))
 			getAuthField();
 	}
 	if (Game.loggedIn) {
-		if (document.getElementById("auth"))
+		if (document.getElementById('auth'))
 			removeAuthField();
 
 		if (!Game.gameOn) {
-			if (!document.getElementById("menu"))
+			if (!document.getElementById('menu'))
 				getMenu();
-			if (document.getElementById("game"))
+			if (document.getElementById('game'))
 				removeGameField();
 		} else {
-			if (document.getElementById("menu"))
+			if (document.getElementById('menu'))
 				removeMenu();
-			if (!document.getElementById("game"))
+			if (!document.getElementById('game'))
 			{
 				getGameField();
 				initPositions();

@@ -107,12 +107,12 @@ export function getGameSettings(): HTMLDivElement {
 
 	const btnSingleGame = document.createElement('button');
 	btnSingleGame.type = 'button';
-	btnSingleGame.textContent = '1 VS 1';
+	btnSingleGame.textContent = 'single game';
 	btnSingleGame.addEventListener('click', () => changeMatchFormat('single game'));
 
 	const btnTournament = document.createElement('button');
 	btnTournament.type = 'button';
-	btnTournament.textContent = '1 VS COM';
+	btnTournament.textContent = 'tournament';
 	btnTournament.addEventListener('click', () => changeMatchFormat('tournament'));
 
 	matchTypesDiv.appendChild(btnSingleGame);

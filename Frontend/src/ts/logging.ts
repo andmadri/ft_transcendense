@@ -9,10 +9,11 @@ export function createLog() {
 	logDiv.style.display= 'flex';
 	logDiv.style.position = 'fixed';
 	logDiv.style.alignItems = 'center';
+	logDiv.style.zIndex = '9999';
 	body?.appendChild(logDiv);
 }
 
-// print msg in element 
+// print msg in element on top (zIndex)
 export function log(msg: string) {
 	Game.logDiv.innerHTML = '';
 	const p = document.createElement('p');
