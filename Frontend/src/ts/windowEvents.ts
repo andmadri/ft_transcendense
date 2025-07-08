@@ -38,25 +38,25 @@ export function initAfterResize() {
 		ball.style.width = `${S.Objects["ball"].width}px`;
 		ball.style.height = `${S.Objects["ball"].height}px`;
 
-		S.Objects["p1"].x *= scaleFactorX;
-		S.Objects["p1"].y *= scaleFactorY;
-		S.Objects["p1"].width *= scaleFactorX;
-		S.Objects["p1"].height *= scaleFactorY;
+		S.Objects["rPlayer"].x *= scaleFactorX;
+		S.Objects["rPlayer"].y *= scaleFactorY;
+		S.Objects["rPlayer"].width *= scaleFactorX;
+		S.Objects["rPlayer"].height *= scaleFactorY;
 
-		rPlayer.style.left = `${S.Objects["p1"].x}px`;
-		rPlayer.style.top = `${S.Objects["p1"].y}px`;
-		rPlayer.style.width = `${S.Objects["p1"].width}px`;
-		rPlayer.style.height = `${S.Objects["p1"].height}px`;
+		rPlayer.style.left = `${S.Objects["rPlayer"].x}px`;
+		rPlayer.style.top = `${S.Objects["rPlayer"].y}px`;
+		rPlayer.style.width = `${S.Objects["rPlayer"].width}px`;
+		rPlayer.style.height = `${S.Objects["rPlayer"].height}px`;
 
-		S.Objects["p2"].x *= scaleFactorX;
-		S.Objects["p2"].y *= scaleFactorY;
-		S.Objects["p2"].width *= scaleFactorX;
-		S.Objects["p2"].height *= scaleFactorY;
+		S.Objects["lPlayer"].x *= scaleFactorX;
+		S.Objects["lPlayer"].y *= scaleFactorY;
+		S.Objects["lPlayer"].width *= scaleFactorX;
+		S.Objects["lPlayer"].height *= scaleFactorY;
 
-		lPlayer.style.left = `${S.Objects["p2"].x}px`;
-		lPlayer.style.top = `${S.Objects["p2"].y}px`;
-		lPlayer.style.width = `${S.Objects["p2"].width}px`;
-		lPlayer.style.height = `${S.Objects["p2"].height}px`;
+		lPlayer.style.left = `${S.Objects["lPlayer"].x}px`;
+		lPlayer.style.top = `${S.Objects["lPlayer"].y}px`;
+		lPlayer.style.width = `${S.Objects["lPlayer"].width}px`;
+		lPlayer.style.height = `${S.Objects["lPlayer"].height}px`;
 
 		S.Objects["field"].width = newWidth;
 		S.Objects["field"].height = newHeight;

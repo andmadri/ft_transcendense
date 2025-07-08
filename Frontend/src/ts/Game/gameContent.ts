@@ -31,12 +31,14 @@ export function getGameField() {
 
 	const	game = document.createElement('div');
 	game.id = 'game';
-	styleElement(game, '1200px', '700px', 'relative', '', '', '', 'black');
+	styleElement(game, '1200px', '700px', 'relative', '50px', '0px', '0px', 'green');
 	game.style.display = 'flex';
 	game.style.margin = '0 auto';
 
 	const	field = document.createElement('div');
 	field.id = 'field';
+	game.style.display = 'flex';
+	styleElement(field, '1200px', '700px', 'relative', '0px', '0px', '0px', 'black');
 
 	const	ball = document.createElement('div');
 	ball.id = 'ball';

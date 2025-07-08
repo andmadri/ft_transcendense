@@ -135,6 +135,10 @@ export function getMenu() {
 	const body = document.getElementById('body');
 	const menu = document.createElement('div');
 	menu.id = 'menu';
+	menu.style.display = 'flex';
+	menu.style.flexDirection = 'column';
+	menu.style.alignItems = 'center';
+	menu.style.justifyContent = 'center';
 
 	menu.appendChild(getGameSettings());
 	menu.appendChild(getFriends());

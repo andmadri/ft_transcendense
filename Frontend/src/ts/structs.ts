@@ -34,7 +34,7 @@ type Object = {
 
 export const Objects: {[key: string]: Object} = {
 	"ball":	{angle: 0.33, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "white"},
-	"p1": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "green"},
-	"p2": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
+	"rPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "green"},
+	"lPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
 	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
 }
