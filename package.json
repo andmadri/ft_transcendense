@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "typescript": "^5.8.3",
+    "ws": "^8.18.2"
   }
 }

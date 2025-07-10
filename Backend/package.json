@@ -2,18 +2,17 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js",
+	"dev": "nodemon src/index.js"
   },
   "dependencies": {
-	"fastify": "^4.22.0",
-	"ws": "^8.13.0",
-	"@fastify/websocket": "^8.0.0",
-	"@fastify/static": "^6.8.0",
-  	"sqlite3": "^5.1.6",
-  	"bcrypt": "^5.0.0"
+    "fastify": "^5.3.3",
+    "@fastify/static": "^5.0.0",
+    "sqlite3": "^5.x.x",
+    "ws": "^8.18.2"
   },
   "keywords": [],
   "author": "",

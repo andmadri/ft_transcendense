@@ -15,20 +15,6 @@ services:
     ports:
       - "3000:3000"
 
-  server:
-    build:
-      context: ./Server
-      dockerfile: Dockerfile
-    restart: always
-    env_file:
-      - .env
-    networks:
-      - transcendence
-    depends_on:
-      - backend
-    ports:
-      - "8443:443"
-
 networks:
   transcendence:
     name: transcendence
