@@ -57,6 +57,20 @@ function movePadel(key: string) {
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
+	if (Game.opponentType == 'ai') {
+		if (Game.timeGame - Game.timeAi > 1000) {
+			Game.timeAi = Game.timeGame;
+			const bally = S.Objects['ball'].y;
+			const padel = S.Objects['rPlayer'];
+			const padelCenter = padel.y + padel.height / 2;
+			if (bally < padelCenter) {
+				Game.targetDirectionAi = 'ArrowUp';
+			} else {
+				Game.targetDirectionAi = 'ArrowDown';
+			}
+		}
+		movePadel(Game.targetDirectionAi);
+	}
 	for (let key in S.Keys) {
 		if (S.Keys[key].pressed === true) {
 			movePadel(key);

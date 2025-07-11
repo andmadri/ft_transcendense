@@ -5,25 +5,20 @@ import { getGameField } from './gameContent.js';
 
 export function startGame() {
 	log('start Game?');
-	if (Game.opponentType == '1 vs 1') {
-
-	} else if (Game.opponentType == '1 vs COM') {
-
-	} else if (Game.opponentType == 'Online') {
-
-	} else {
-		log('No opponent type choosen');
-		return ;
-	}
-
-	if (Game.matchFormat == 'single game') {
-
-	} else if (Game.matchFormat == 'tournament') {
-
-	} else {
-		log('No match format choosen');
-		return ;
-	}
+	// if (Game.opponentType == '1 vs 1') {
+	// } else if (Game.opponentType == '1 vs COM') {
+	// } else if (Game.opponentType == 'Online') {
+	// } else {
+	// 	log('No opponent type choosen');
+	// 	return ;
+	// }
+	// if (Game.matchFormat == 'single game') {
+	// } else if (Game.matchFormat == 'tournament') {
+	// } else {
+	// 	log('No match format choosen');
+	// 	return ;
+	// }
+	Game.opponentType = 'ai';
 	Game.gameOn = true ;
 }
 

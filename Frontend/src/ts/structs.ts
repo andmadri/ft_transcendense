@@ -6,6 +6,9 @@ export type gameInfo = {
 	matchFormat: string;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
+	timeAi: number;
+	timeGame: number;
+	targetDirectionAi: string;
 }
 
 // KEYS

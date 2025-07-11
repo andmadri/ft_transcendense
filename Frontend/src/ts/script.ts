@@ -20,7 +20,10 @@ export const Game: S.gameInfo = {
 	opponentType: 'none',
 	matchFormat: 'none',
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss')
+	socket: new WebSocket('wss://localhost:8443/wss'),
+	timeAi: 0,
+	timeGame: 0,
+	targetDirectionAi: 'ArrowUp',
 }
 
 log('Test log: start');
@@ -56,6 +59,7 @@ function mainLoop() {
 			}
 
 			if (Game.socket.readyState == WebSocket.OPEN) {
+				Game.timeGame = performance.now();
 				GameLogic.checkWallCollision();
 				GameLogic.checkPaddelCollision();
 				GameLogic.calculateBallDir();
