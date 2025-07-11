@@ -80,6 +80,7 @@ export function submitAuthForm(e: Event, player: number) {
 	const name = (document.querySelector<HTMLInputElement>('#name' + player)?.value ?? '').trim();
 	const email = (document.querySelector<HTMLInputElement>('#email' + player)?.value ?? '').trim();
 	const password = (document.querySelector<HTMLInputElement>('#password' + player)?.value ?? '').trim();
+	
 	if (!email || !password || (modes[player] == 'sign up' && !name)) {
 		alert("Please fill in all required fileds");
 		return;

@@ -37,7 +37,7 @@ export type gameInfo = {
 	name2: string;
 	player2Login: Boolean;
 
-	playerLogin: number;
+	playerLogin: number; // if online => player one or two (so left or right field)
 }
 
 // KEYS
@@ -47,10 +47,10 @@ type Key = {
 }
 
 export const Keys: {[key: string]: Key} = {
-	"ArrowUp": 		{pressed: false, dir: -10},
-	"ArrowDown": 	{pressed: false, dir: 10},
-	"w": 			{pressed: false, dir: -10},
-	"s": 			{pressed: false, dir: 10}
+	'ArrowUp': 		{pressed: false, dir: -10},
+	'ArrowDown': 	{pressed: false, dir: 10},
+	'w': 			{pressed: false, dir: -10},
+	's': 			{pressed: false, dir: 10}
 };
 
 // OBJECTS
@@ -65,8 +65,8 @@ type Object = {
 }
 
 export const Objects: {[key: string]: Object} = {
-	"ball":	{angle: 0.33, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "white"},
-	"rPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "green"},
-	"lPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
-	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
+	'ball':	{angle: 0.33, speed: 10, x: 0, y: 0, width: 0, height: 0, color: 'white'},
+	'rPlayer': {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: 'green'},
+	'lPlayer': {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: 'yellow'},
+	'field': {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: 'black'}
 }

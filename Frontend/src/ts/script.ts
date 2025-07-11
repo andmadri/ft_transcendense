@@ -29,8 +29,6 @@ export const Game: S.gameInfo = {
 	playerLogin: 1
 }
 
-log('Test log: start');
-
 startSocketListeners();
 
 // addEventListeners for Window
