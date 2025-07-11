@@ -15,7 +15,7 @@ export function closeSocket(e: CloseEvent) {
 }
 
 export function openSocket(e: Event) {
-	log('✅ WebSocket is open');
+	// log('✅ WebSocket is open');
 }
 
 export function errorSocket(err: Event) {
@@ -27,19 +27,19 @@ export function receiveFromWS(e: MessageEvent) {
 	
 	const action = data.action;
 	if (!action)
-		log("no action");
+		log('no action');
 
 	switch(action) {
-		case "loginCheck":
+		case 'loginCheck':
 			processLoginCheck(data);
 			break ;
-		case "signUpCheck":
+		case 'signUpCheck':
 			processSignUpCheck(data);
 			break ;
-		case "ballUpdate":
+		case 'ballUpdate':
  			processBallUpdate(data);
 			break ;
-		case "padelUpdate":
+		case 'padelUpdate':
 			processPadelUpdate(data);
 			break ;
 		default:

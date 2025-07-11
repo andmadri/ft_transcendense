@@ -164,3 +164,12 @@ export function checkPaddelCollision() {
 		}
 	}
 }
+
+export function game() {
+	checkWallCollision();
+	checkPaddelCollision();
+	calculateBallDir();
+	updateBallPosition();
+	if (checkPadelMovement())
+		updatePadelPosition();
+}

@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import { handleUserAuth } from './Auth/userAuth.js';
 import { createDatabase } from './Database/database.js'
+import { initGame, update } from './Game/gameLogic.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -23,6 +24,10 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 		if (action == 'loginUser' || action == 'signUpUser')
 			return handleUserAuth(msg, connection.socket);
+		else if (action == 'init')
+			return initGame(msg, connection.socket);
+		else if (action == 'ballUpdate' || action == 'padelUpdate')
+			return update(msg, connection.socket);
 		else // send now same message back
 			connection.socket.send(JSON.stringify(msg));
 	});

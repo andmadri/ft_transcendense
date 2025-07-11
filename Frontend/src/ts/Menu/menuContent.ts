@@ -1,5 +1,7 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { log } from '../logging.js'
+import { removeAuthField } from '../Auth/authContent.js'
+import { removeGameField } from '../Game/gameContent.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -132,6 +134,13 @@ export function getGameSettings(): HTMLDivElement {
 }
 
 export function getMenu() {
+	if (document.getElementById('auth1'))
+		removeAuthField(1);
+	if (document.getElementById('auth2'))
+		removeAuthField(2);
+	if (document.getElementById('game'))
+		removeGameField();
+
 	const body = document.getElementById('body');
 	const menu = document.createElement('div');
 	menu.id = 'menu';

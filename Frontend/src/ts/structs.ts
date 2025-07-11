@@ -1,11 +1,43 @@
+export enum State {
+	Menu,
+	Login,
+	Login2,
+	Pending,
+	Game
+}
+
+export enum OT {
+	Empty,
+	ONEvsONE,
+	ONEvsCOM,
+	Online
+}
+
+export enum MF {
+	Empty,
+	SingleGame,
+	Tournament
+}
+
 // GAME
 export type gameInfo = {
-	loggedIn: boolean;
-	gameOn: boolean;
-	opponentType: string;
-	matchFormat: string;
+	state: State,
+	opponentType: OT;
+	matchFormat: MF;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
+
+	// Player that is logged in
+	id: number;
+	name: string;
+	player1Login: Boolean;
+
+	// if there is another player on the same computer (1 vs 1 mode)
+	id2: number;
+	name2: string;
+	player2Login: Boolean;
+
+	playerLogin: number;
 }
 
 // KEYS

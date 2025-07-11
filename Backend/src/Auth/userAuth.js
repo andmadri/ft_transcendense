@@ -2,11 +2,18 @@ import * as dbFunctions from '../Database/database.js';
 import { db } from '../index.js';
 import bcrypt from 'bcrypt';
 
-function sendBackToFrontend(actionable, socket, accessible, reasonMsg) {
+function sendBackToFrontend(actionable, socket, accessible, reasonMsg, user, player) {
 	const msg = {
 		action: actionable,
 		access: accessible,
 		reason: reasonMsg
+	}
+	if (user) {
+		msg.userId = user.id;
+		msg.userName = user.name;
+	}
+	if (player) {
+		msg.player = player;
 	}
 	socket.send(JSON.stringify(msg));
 }
@@ -66,7 +73,7 @@ async function addUser(msg, socket) {
 			return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
 		await dbFunctions.addUserToDB(msg);
 		console.log("User: ", msg.name, " is created");
-		return sendBackToFrontend('signUpCheck', socket, "yes", "User created");
+		return sendBackToFrontend('signUpCheck', socket, "yes", "User created", '', msg.playerLogin);
 	}
 	catch(err) {
 		console.error(err);
@@ -97,7 +104,7 @@ async function validateLogin(msg, socket) {
 	catch(err) {
 		console.error(err.msg);
 	}
-	return sendBackToFrontend('loginCheck', socket, "yes", "Login successful")
+	return sendBackToFrontend('loginCheck', socket, "yes", "Login successful", user, msg.player)
 }
 
 export async function handleUserAuth(msg, socket) {
