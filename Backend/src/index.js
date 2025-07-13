@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import { handleUserAuth } from './Auth/userAuth.js';
+import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { createDatabase } from './Database/database.js'
 
 const fastify = Fastify();
@@ -23,6 +24,8 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 		if (action == 'loginUser' || action == 'signUpUser')
 			return handleUserAuth(msg, connection.socket);
+		else if (action == 'getOnlinePlayers') 
+			return handleOnlinePlayers(msg, connection.socket);
 		else // send now same message back
 			connection.socket.send(JSON.stringify(msg));
 	});

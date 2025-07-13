@@ -125,6 +125,22 @@ export async function isOnline(email) {
 	})
 }
 
+export async function getOnlineUsers() {
+	return new Promise((resolve, reject) => {
+		db.all(
+			// SECET names and avatar of online users only
+			`SELECT name, avatar_url FROM Users WHERE online_status = 0 OR online_status = 1`,
+			[],
+			(err, rows) => {
+				if (err)
+					reject(err);
+				else
+					resolve(rows);
+			}
+		);
+	});
+}
+
 export async function userAlreadyExist(email) {
 	return new Promise((resolve, reject) => {
 		db.get(
