@@ -6,10 +6,3 @@ p {
 	color: black;
 }
 
-ul.online-markers li {
-	color: black; /* Text color */
-}
-
-ul.online-markers li::marker {
-	color: green; /* Marker (bullet) color */
-}
