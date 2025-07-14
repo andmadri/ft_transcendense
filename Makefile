@@ -5,7 +5,6 @@ VOLUME	= "./Database"
 all:	up
 
 up:		
-	rm -rf Server/src
 	mkdir -p Database
 	cp -r Frontend/* Server/
 	docker compose -f docker-compose.yml up
@@ -14,15 +13,12 @@ down:
 	docker compose -f docker-compose.yml down
 
 start:
-	@echo "=== Start Docker ==="
 	docker compose -f docker-compose.yml start
 
 stop:
-	@echo "=== Stop Docker ==="
 	docker compose -f docker-compose.yml stop
 
 build:
-	@echo "=== Building Docker Image ==="
 	docker compose -f docker-compose.yml build
 
 server:

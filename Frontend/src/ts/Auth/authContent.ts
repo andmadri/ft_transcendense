@@ -1,34 +1,31 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js' //imports two functions from login.js
+import { submitAuthForm, loginSuccessfull, changeLoginMode } from './userAuth.js' //imports two functions from login.js
 import { log } from '../logging.js'
-import { removeMenu } from '../Menu/menuContent.js'
-import { Game } from '../script.js'
-import * as S from '../structs.js'
 
-export function getAuthField(player: number, mandatoy: Boolean) {
+export function getAuthField() {
+	const	body = document.getElementById('body');
+	if (!body)
+		return ;
+
 	const	auth = document.createElement('div');
-	auth.id = 'auth' + player;
+	auth.id = 'auth';
 	auth.style.backgroundColor = 'lightblue';
-	auth.style.width = '50%';
+	auth.style.width = '100%';
 	auth.style.height = '100%';
 	auth.style.position = 'fixed';
 	auth.style.display = 'flex';
 	auth.style.flexDirection = 'column';
 	auth.style.alignItems = 'center';
 	auth.style.zIndex = '999';
-	if (player == 2) {
-		auth.style.left = '50%';
-		auth.style.backgroundColor = 'lightgreen';
-	}
 
 	const	authTitle = document.createElement('h2');
-	authTitle.id = 'authTitle' + player;
-	authTitle.textContent = 'Sign Up Player' + player;
+	authTitle.id = 'authTitle';
+	authTitle.textContent = 'Sign Up';
 
 	const authForm = document.createElement('form');
-	authForm.id = 'authForm' + player;
+	authForm.id = 'authForm';
 
 	const nameField = document.createElement('div');
-	nameField.id = 'nameField' + player;
+	nameField.id = 'nameField';
 	nameField.classList.add('formInput');
 
 	const nameLabel = document.createElement('label');
@@ -37,9 +34,9 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 
 	const nameInput = document.createElement('input');
 	nameInput.type = 'text';
-	nameInput.id = 'name' + player;
+	nameInput.id = 'name';
 	nameInput.name = 'name';
-	// nameInput.required = true;
+	nameInput.required = true;
 
 	nameField.appendChild(nameLabel);
 	nameField.appendChild(nameInput);
@@ -53,9 +50,9 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 
 	const emailInput = document.createElement('input');
 	emailInput.type = 'email';
-	emailInput.id = 'email' + player;
+	emailInput.id = 'email';
 	emailInput.name = 'email';
-	// emailInput.required = true;
+	emailInput.required = true;
 
 	emailField.appendChild(emailLabel);
 	emailField.appendChild(emailInput);
@@ -69,28 +66,22 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 
 	const passwordInput = document.createElement('input');
 	passwordInput.type = 'password';
-	passwordInput.id = 'password'  + player;
+	passwordInput.id = 'password';
 	passwordInput.name = 'password';
-	// passwordInput.required = true;
+	passwordInput.required = true;
 
 	passwordField.appendChild(passwordLabel);
 	passwordField.appendChild(passwordInput);
 
 	const submitBtnDiv = document.createElement('div');
-	submitBtnDiv.id = 'submitBtnDiv' + player;
+	submitBtnDiv.id = 'submitBtnDiv';
 
 	const submitBtn = document.createElement('button');
-	submitBtn.id = 'submitBtn' + player;
+	submitBtn.id = 'submitBtn';
 	submitBtn.type = 'submit';
-	submitBtn.textContent = 'Sign Up Player ' + player;
-	submitBtnDiv.appendChild(submitBtn);
+	submitBtn.textContent = 'Sign Up';
 
-	if (!mandatoy) {
-		const guestBtn = document.createElement('button');
-		guestBtn.id = 'guestBtn' + player;
-		guestBtn.textContent = 'Guest';
-		submitBtnDiv.appendChild(guestBtn);
-	}
+	submitBtnDiv.appendChild(submitBtn);
 
 	authForm.appendChild(nameField);
 	authForm.appendChild(emailField);
@@ -98,56 +89,28 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	authForm.appendChild(submitBtnDiv);
 
 	const modeLabel = document.createElement('p');
-	modeLabel.id = 'modelabel' + player;
+	modeLabel.id = 'modelabel';
 	modeLabel.textContent = 'Sign Up mode';
 
 	const toggleBtn = document.createElement('button');
 	toggleBtn.type = 'button';
-	toggleBtn.id = 'toggle-mode' + player;
+	toggleBtn.id = 'toggle-mode';
 	toggleBtn.textContent = 'Switch to Login';
 
 	auth.appendChild(authTitle);
 	auth.appendChild(authForm);
 	auth.appendChild(modeLabel);
 	auth.appendChild(toggleBtn);
-	return (auth);
-}
-
-export function getLoginFields() {
-	if (document.getElementById('menu'))
-		removeMenu();
-
-	const	body = document.getElementById('body');
-	if (!body)
-		return ;
-
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
-		const auth = getAuthField(1, true); 
-		body.appendChild(auth);
-	} else {
-		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-		const auth1 = getAuthField(1, false);
-		const auth2 = getAuthField(2, false);
-		body.appendChild(auth1);
-		body.appendChild(auth2);
-		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			const auth = getAuthField(1, false);
-			body.appendChild(auth);
-		}
-	}
+	body.appendChild(auth);
 
 	// addEventListeners for Login form
-	document.getElementById('authForm1')?.addEventListener('submit', (e) => submitAuthForm(e, 1));
-	document.getElementById('authForm2')?.addEventListener('submit', (e) => submitAuthForm(e, 2));
-	document.getElementById('toggle-mode1')?.addEventListener('click', (e) => changeLoginMode(1));
-	document.getElementById('toggle-mode2')?.addEventListener('click', (e) => changeLoginMode(2));
-	document.getElementById('guestBtn1')?.addEventListener('click', (e) => addGuest(e, 1));
-	document.getElementById('guestBtn2')?.addEventListener('click', (e) => addGuest(e, 2));
+	document.getElementById('authForm')?.addEventListener('submit', submitAuthForm);
+	document.getElementById('toggle-mode')?.addEventListener('click', changeLoginMode);	
 }
 
-export function removeAuthField(player: number) {
+export function removeAuthField() {
 	const	body = document.getElementById('body');
-	const	auth = document.getElementById('auth' + player);
+	const	auth = document.getElementById('auth');
 	
 	if (body && auth)
 		body.removeChild(auth);

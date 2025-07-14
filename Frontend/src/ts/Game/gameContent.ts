@@ -1,5 +1,3 @@
-import { removeAuthField } from '../Auth/authContent.js';
-import { removeMenu } from '../Menu/menuContent.js'
 import { log } from '../logging.js'
 
 function styleElement(
@@ -29,12 +27,6 @@ function styleElement(
 }
 
 export function getGameField() {
-	if (document.getElementById('auth1'))
-		removeAuthField(1);
-	if (document.getElementById('auth2'))
-		removeAuthField(2);
-	if (document.getElementById('menu'))
-		removeMenu();
 	const	body = document.getElementById('body');
 
 	const	game = document.createElement('div');
