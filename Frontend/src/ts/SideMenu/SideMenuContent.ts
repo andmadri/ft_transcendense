@@ -24,7 +24,7 @@ function getPlayer(nr: number) {
 	logout.id = 'logoutbutton' + nr;
 	logout.textContent = 'Logout';
 	logout.addEventListener('click', () => {
-		const msg = { action: 'logout', player: 1, id: Game.id};
+		const msg = { action: 'online', subaction: 'logout', player: 1, id: Game.id};
 		if (nr == 1)
 		{
 			Game.name = 'unknown';

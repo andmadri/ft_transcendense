@@ -74,7 +74,8 @@ export function updatePadelPosition() {
 		return ;
 	if (leftPadel && rightPadel) {
 		const msg = { 
-			action: 'padelUpdate',
+			action: 'game',
+			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
 			rHeight: rightPadel.offsetTop };
 		Game.socket.send(JSON.stringify(msg));
@@ -99,7 +100,8 @@ export function calculateBallDir() {
 
 export function updateBallPosition() {
 	const msg = { 
-		action: 'ballUpdate',
+		action: 'game',
+		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
 		ballX: S.Objects['ball'].x};
 	Game.socket.send(JSON.stringify(msg));
@@ -177,4 +179,22 @@ export function game() {
 	updateBallPosition();
 	if (checkPadelMovement())
 		updatePadelPosition();	
+}
+
+export function actionGame(data: any) {
+	if (!data.subaction) {
+		log('no subaction');
+		return ;
+	}
+
+	switch(data.subaction) {
+		case 'ballUpdate':
+ 			processBallUpdate(data);
+			break ;
+		case 'padelUpdate':
+			processPadelUpdate(data);
+			break ;
+		default:
+			log(`(actionGame) Unknown action: ${data.subaction}`);
+	}
 }

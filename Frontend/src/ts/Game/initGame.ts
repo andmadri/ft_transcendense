@@ -110,7 +110,8 @@ export function initGameServer() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		if (Game.opponentType != S.OT.Online) {
 			const initGame1 = {
-				action: 'init',
+				action: 'game',
+				subaction: 'init',
 				player: 'one',
 				playerId: Game.id,
 				playerName: Game.name,
@@ -119,7 +120,8 @@ export function initGameServer() {
 		}
 		if (Game.opponentType == S.OT.ONEvsONE) { // how to name??
 			const initGame2 = {
-				action: 'init',
+				action: 'game',
+				subaction: 'init',
 				player: 'two',
 				playerId: Game.id2,
 				playerName: Game.name2,
@@ -128,7 +130,8 @@ export function initGameServer() {
 		}
 		else if (Game.opponentType == S.OT.ONEvsCOM) {
 			const initGame2 = {
-				action: 'init',
+				action: 'game',
+				subaction: 'init',
 				player: 'two',
 				playerId: -1,
 				playerName: 'Computer',
@@ -137,7 +140,8 @@ export function initGameServer() {
 		}
 		else {
 			const initGame = {
-				action: 'init',
+				action: 'game',
+				subaction: 'init',
 				player: 'one', // or two...decide by server?
 				playerId: Game.id,
 				playerName: Game.name,

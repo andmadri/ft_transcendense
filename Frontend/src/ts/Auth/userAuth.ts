@@ -86,8 +86,8 @@ export function submitAuthForm(e: Event, player: number) {
 		return;
 	}
 	const msg = modes[player] == 'sign up'
-		? {action: 'signUpUser', name, email, password, player: player}
-		: {action: 'loginUser', email, password, player: player};
+		? {subaction: 'signUpUser', name, email, password, player: player}
+		: {subaction: 'loginUser', email, password, player: player};
 	Game.socket.send(JSON.stringify(msg));
 }
 
@@ -121,4 +121,22 @@ export function addGuest(e: Event, player: number) {
 		Game.player2Login = true;
 	}
 	loginSuccessfull(player);
+}
+
+export function actionLogin(data: any) {
+	if (!data.subaction) {
+		log('no subaction');
+		return ;
+	}
+
+	switch(data.subaction) {
+		case 'loginCheck':
+			processLoginCheck(data);
+			break ;
+		case 'signUpcheck':
+			processSignUpCheck(data);
+			break ;
+		default:
+			log(`(actionLogin) Unknown action: ${data.subaction}`);
+	}
 }
