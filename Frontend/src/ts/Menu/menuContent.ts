@@ -1,5 +1,8 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
-import { log } from '../logging.js'
+
+import { Game } from '../script.js'
+import { removeAuthField } from '../Auth/authContent.js'
+import { removeGameField } from '../Game/gameContent.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -36,6 +39,7 @@ function getFriends(): HTMLDivElement {
 	return friends;
 }
 
+
 function getOnlineList(): HTMLDivElement {
 	const online = document.createElement('div');
 	online.id = 'online';
@@ -44,12 +48,23 @@ function getOnlineList(): HTMLDivElement {
 
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';
-	title.textContent = 'Online';
+	title.textContent = 'Online123';
 
 	const list = document.createElement('div');
 	list.id = 'listOnlinePlayers';
 
+
+	const html_list = document.createElement('ul');
+	html_list.id = 'htmllistOnlinePlayers';
+	html_list.className = 'online-markers';
+
+	// backend request to the DB for all online players
+	// const online_players = ['Player1', 'Player2', 'Player3']; // This should be replaced with actual data from the backend
+	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
+	Game.socket.send(JSON.stringify(msg));
+
 	online.appendChild(title);
+	list.appendChild(html_list);
 	online.appendChild(list);
 
 	return online;
@@ -132,6 +147,13 @@ export function getGameSettings(): HTMLDivElement {
 }
 
 export function getMenu() {
+	if (document.getElementById('auth1'))
+		removeAuthField(1);
+	if (document.getElementById('auth2'))
+		removeAuthField(2);
+	if (document.getElementById('game'))
+		removeGameField();
+
 	const body = document.getElementById('body');
 	const menu = document.createElement('div');
 	menu.id = 'menu';

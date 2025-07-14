@@ -1,38 +1,60 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { getGameField } from './gameContent.js';
 
 export function startGame() {
 	log('start Game?');
-	if (Game.opponentType == '1 vs 1') {
-
-	} else if (Game.opponentType == '1 vs COM') {
-
-	} else if (Game.opponentType == 'Online') {
-
-	} else {
-		log('No opponent type choosen');
-		return ;
+	switch (Game.opponentType) {
+		case S.OT.ONEvsONE: {
+			Game.state = S.State.Login;
+			log("check here start gamE?");			
+			break ;
+		}
+		case S.OT.ONEvsCOM: {
+			Game.state = S.State.Game;
+			break ;
+		}
+		case S.OT.Online: {
+			Game.state = S.State.Pending;
+			break ;
+		}
+		default: {
+			log('No opponent type choosen');
+			return ;
+		}
 	}
 
-	if (Game.matchFormat == 'single game') {
-
-	} else if (Game.matchFormat == 'tournament') {
-
-	} else {
-		log('No match format choosen');
-		return ;
+	switch (Game.matchFormat) {
+		case S.MF.Tournament: {
+			// create tournament once?
+			break ;
+		}
+		case S.MF.Tournament: {
+			// create tournament once?
+			break ;
+		}
+		default: {
+			log('No match format choosen');
+			return ;
+		}
 	}
-	Game.gameOn = true ;
+	log('Game state after startGame: ' + Game.state);
 }
 
 export function changeOpponentType(option: string) {
-	Game.opponentType = option;
+	if (option == '1 vs 1')
+		Game.opponentType = S.OT.ONEvsONE;
+	else if (option == '1 vs COM')
+		Game.opponentType = S.OT.ONEvsCOM;
+	else
+		Game.opponentType = S.OT.Online;
 }
 
 export function changeMatchFormat(option: string) {
-	Game.matchFormat = option;
+	if (option == 'single game')
+		Game.matchFormat = S.MF.SingleGame;
+	else
+		Game.matchFormat = S.MF.Tournament;
 }
 
 // Get start position of ball
@@ -81,5 +103,50 @@ export function initPositions() {
 		S.Objects['lPlayer'].x = 0;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
+	}
+}
+
+export function initGameServer() {
+	if (Game.socket.readyState == WebSocket.OPEN) {
+		if (Game.opponentType != S.OT.Online) {
+			const initGame1 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'one',
+				playerId: Game.id,
+				playerName: Game.name,
+			}
+			Game.socket.send(JSON.stringify(initGame1));
+		}
+		if (Game.opponentType == S.OT.ONEvsONE) { // how to name??
+			const initGame2 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'two',
+				playerId: Game.id2,
+				playerName: Game.name2,
+			}
+			Game.socket.send(JSON.stringify(initGame2));
+		}
+		else if (Game.opponentType == S.OT.ONEvsCOM) {
+			const initGame2 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'two',
+				playerId: -1,
+				playerName: 'Computer',
+			}
+			Game.socket.send(JSON.stringify(initGame2));
+		}
+		else {
+			const initGame = {
+				action: 'game',
+				subaction: 'init',
+				player: 'one', // or two...decide by server?
+				playerId: Game.id,
+				playerName: Game.name,
+			}
+			Game.socket.send(JSON.stringify(initGame));
+		}
 	}
 }
