@@ -17,17 +17,17 @@ export function processSignUpCheck(data: any) {
 
 function updateLoginPlayer(data: any) {
 	if (data.player == 1) {
-		if (data.id)
-			Game.id = data.id;
-		if (data.name)
-			Game.name = data.name;
+		if (data.userId)
+			Game.id = data.userId;
+		if (data.userName)
+			Game.name = data.userName;
 		Game.playerLogin = 1;
 		Game.player1Login = true;
 	} else {
-		if (data.id)
-			Game.id2 = data.id;
-		if (data.name)
-			Game.name2 = data.name;
+		if (data.UserId)
+			Game.id2 = data.UserId;
+		if (data.userName)
+			Game.name2 = data.userName;
 		Game.player2Login = true;
 		Game.playerLogin = 2;
 	}

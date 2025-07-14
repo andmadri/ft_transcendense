@@ -1,5 +1,6 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { log } from '../logging.js'
+import { Game } from '../script.js'
 import { removeAuthField } from '../Auth/authContent.js'
 import { removeGameField } from '../Game/gameContent.js'
 
@@ -38,6 +39,30 @@ function getFriends(): HTMLDivElement {
 	return friends;
 }
 
+function insertOnlinePlayers(online_players: any) {
+	const html_list = document.getElementById('htmllistOnlinePlayers') as HTMLUListElement;
+	if (!html_list) {
+		log("HTML list for online players not found");
+		return;
+	}
+	// json online_players mapping to array with names
+	const playerNames: string[] = online_players.map((player: { name: string, avatar_url: string }) => player.name);
+	for (const curr_player of playerNames) {
+		log(`Adding player ${curr_player} to online list`);
+		const html_list_element = document.createElement('li');
+		html_list.id = 'playerOfOnlineList';
+		html_list_element.textContent = curr_player;
+		html_list.appendChild(html_list_element);
+	}
+}
+
+export function processOnlinePlayers(data: any) {
+	if (data.access && data.access == "yes")
+		insertOnlinePlayers(data.content);
+	else
+		log("Access to DB: " + data.access);
+}
+
 function getOnlineList(): HTMLDivElement {
 	const online = document.createElement('div');
 	online.id = 'online';
@@ -46,12 +71,23 @@ function getOnlineList(): HTMLDivElement {
 
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';
-	title.textContent = 'Online';
+	title.textContent = 'Online123';
 
 	const list = document.createElement('div');
 	list.id = 'listOnlinePlayers';
 
+
+	const html_list = document.createElement('ul');
+	html_list.id = 'htmllistOnlinePlayers';
+	html_list.className = 'online-markers';
+
+	// backend request to the DB for all online players
+	// const online_players = ['Player1', 'Player2', 'Player3']; // This should be replaced with actual data from the backend
+	const msg = {action: 'getOnlinePlayers'};
+	Game.socket.send(JSON.stringify(msg));
+
 	online.appendChild(title);
+	list.appendChild(html_list);
 	online.appendChild(list);
 
 	return online;

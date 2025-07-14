@@ -76,7 +76,7 @@ async function addUser(msg, socket) {
 		return sendBackToFrontend('signUpCheck', socket, "yes", "User created", '', msg.playerLogin);
 	}
 	catch(err) {
-		console.error(err);
+		console.error("err" + err.msg);
 		return sendBackToFrontend('error', socket, "no", "Error while inserting new user");
 	}
 }

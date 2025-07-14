@@ -10,6 +10,7 @@ import { getLoginFields, removeAuthField } from './Auth/authContent.js'
 import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
+import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
 
 createLog();
 
@@ -23,9 +24,11 @@ export const Game: S.gameInfo = {
 	id: 0,
 	name: 'unknown',
 	player1Login: false,
-	id2: 1,
+	score: 0,
+	id2: 0,
 	name2: 'unknown',
 	player2Login: false,
+	score2: 0,
 	playerLogin: 1
 }
 
@@ -36,38 +39,45 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
 
+getSideMenu();
+
 function mainLoop() {
-	switch (Game.state) {
-		case S.State.Menu: {
-			if (!document.getElementById('menu'))
-				getMenu();
-			break ;
-		}
-		case S.State.Login: {
-			if (!document.getElementById('auth1'))
-				getLoginFields();
-			break ;
-		}
-		case S.State.Login2: {
-			if (!document.getElementById('auth2'))
-				getLoginFields();
-			break ;
-		}
-		case S.State.Pending: {
-			// waiting for opponement
-			break ;
-		}
-		case S.State.Game: {
-			if (!document.getElementById('game')) {
-				getGameField();
-				initPositions();
-				initGameServer();
+	if (Game.socket.readyState == WebSocket.OPEN) {
+		switch (Game.state) {
+			case S.State.Menu: {
+				if (!document.getElementById('menu'))
+					getMenu();
+				break ;
 			}
-			if (Game.socket.readyState == WebSocket.OPEN) {
+			case S.State.Login: {
+				if (!document.getElementById('auth1'))
+					getLoginFields();
+				break ;
+			}
+			case S.State.Login2: {
+				if (!document.getElementById('auth2'))
+					getLoginFields();
+				break ;
+			}
+			case S.State.Pending: {
+				// waiting for opponement
+				break ;
+			}
+			case S.State.Game: {
+				if (!document.getElementById('game')) {
+					getGameField();
+					initPositions();
+					initGameServer();
+					updateNamesMenu();
+					resetScoreMenu();
+				}
 				game();
+				if (!Game.player1Login || !Game.player2Login)
+					Game.state = S.State.Menu;
+				break ;
 			}
-			break ;
 		}
+		
 	}
 	window.requestAnimationFrame(mainLoop);
 }

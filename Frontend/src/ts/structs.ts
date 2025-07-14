@@ -31,11 +31,13 @@ export type gameInfo = {
 	id: number;
 	name: string;
 	player1Login: Boolean;
+	score: number;
 
 	// if there is another player on the same computer (1 vs 1 mode)
 	id2: number;
 	name2: string;
 	player2Login: Boolean;
+	score2: number;
 
 	playerLogin: number; // if online => player one or two (so left or right field)
 }

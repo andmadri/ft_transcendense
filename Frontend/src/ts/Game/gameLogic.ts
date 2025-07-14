@@ -2,6 +2,7 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
+import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -147,6 +148,8 @@ export function checkPaddelCollision() {
 		else
 		{
 			// MISS
+			Game.score++;			
+			updateScoreMenu();
 			resetBall();
 		}
 	}
@@ -160,6 +163,8 @@ export function checkPaddelCollision() {
 		else
 		{
 			// MISS
+			Game.score2++;
+			updateScoreMenu();
 			resetBall();
 		}
 	}
@@ -171,5 +176,5 @@ export function game() {
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
-		updatePadelPosition();
+		updatePadelPosition();	
 }

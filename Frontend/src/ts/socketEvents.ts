@@ -1,5 +1,6 @@
 import { processSignUpCheck, processLoginCheck } from './Auth/userAuth.js';
 import { processBallUpdate, processPadelUpdate } from './Game/gameLogic.js'
+import { processOnlinePlayers } from './Menu/menuContent.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
 
@@ -41,6 +42,9 @@ export function receiveFromWS(e: MessageEvent) {
 			break ;
 		case 'padelUpdate':
 			processPadelUpdate(data);
+			break ;
+		case "retOnlinePlayers":
+			processOnlinePlayers(data);
 			break ;
 		default:
 			log(`Unknown action: ${action}`);
