@@ -2,11 +2,19 @@ import * as dbFunctions from '../Database/database.js';
 import { db } from '../index.js';
 import bcrypt from 'bcrypt';
 
-function sendBackToFrontend(actionable, socket, accessible, reasonMsg) {
+function sendBackToFrontend(actionable, sub, socket, accessible, reasonMsg, user, player) {
 	const msg = {
 		action: actionable,
+		subaction: sub,
 		access: accessible,
 		reason: reasonMsg
+	}
+	if (user) {
+		msg.userId = user.id;
+		msg.userName = user.name;
+	}
+	if (player) {
+		msg.player = player;
 	}
 	socket.send(JSON.stringify(msg));
 }
@@ -53,24 +61,24 @@ async function addUser(msg, socket) {
 	
 	errorMsg = checkName(msg.name);
 	if (errorMsg)
-		return sendBackToFrontend('signUpCheck', socket, "no", errorMsg);
+		return sendBackToFrontend('login', 'signUpCheck', socket, "no", errorMsg);
 	errorMsg = checkEmail(msg.email);
 	if (errorMsg)
-		return sendBackToFrontend('signUpCheck', socket, "no", errorMsg);
+		return sendBackToFrontend('login', 'signUpCheck', socket, "no", errorMsg);
 	errorMsg = checkPassword(msg.password);
 	if (errorMsg)
-		return sendBackToFrontend('signUpCheck', socket, "no", errorMsg);
+		return sendBackToFrontend('login', 'signUpCheck', socket, "no", errorMsg);
 	try {
 		const exists = await dbFunctions.userAlreadyExist(msg.email);
 		if (exists)
 			return sendBackToFrontend('signUpCheck', socket, "no", "User allready exist");
 		await dbFunctions.addUserToDB(msg);
 		console.log("User: ", msg.name, " is created");
-		return sendBackToFrontend('signUpCheck', socket, "yes", "User created");
+		return sendBackToFrontend('login', 'signUpCheck', socket, "yes", "User created", '', msg.playerLogin);
 	}
 	catch(err) {
-		console.error(err);
-		return sendBackToFrontend('error', socket, "no", "Error while inserting new user");
+		console.error("err" + err.msg);
+		return sendBackToFrontend('error', 'error', socket, "no", "Error while inserting new user");
 	}
 }
 
@@ -84,11 +92,11 @@ async function validateLogin(msg, socket) {
 		console.error("Error with getting user by email");
 	}
 	if (!user || !user.password)
-		return sendBackToFrontend('loginCheck', socket, "no", "User not found");
+		return sendBackToFrontend('login', 'loginCheck', socket, "no", "User not found");
 
 	const isValidPassword = await bcrypt.compare(msg.password, user.password);
 	if (!isValidPassword)
-		return sendBackToFrontend('loginCheck', socket, "no", "Incorrect password");
+		return sendBackToFrontend('login', 'loginCheck', socket, "no", "Incorrect password");
 
 	try {
 		const online = await dbFunctions.isOnline(msg.email, (online));
@@ -97,7 +105,7 @@ async function validateLogin(msg, socket) {
 	catch(err) {
 		console.error(err.msg);
 	}
-	return sendBackToFrontend('loginCheck', socket, "yes", "Login successful")
+	return sendBackToFrontend('login', 'loginCheck', socket, "yes", "Login successful", user, msg.player)
 }
 
 export async function handleUserAuth(msg, socket) {
@@ -106,7 +114,7 @@ export async function handleUserAuth(msg, socket) {
 		return addUser(msg, socket);
 	else if (msg.action == "loginUser")
 		return validateLogin(msg, socket);
-	return sendBackToFrontend('error', socket, "no", "Unkown action");
+	return sendBackToFrontend('error', 'error', socket, "no", "Unkown action");
 }
 
 
