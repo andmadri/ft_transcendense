@@ -113,7 +113,7 @@ async function validateLogin(msg, socket) {
 
 async function logoutPlayer(msg, socket) {
 	try {
-		// console.log("want to log out: " + msg.id);
+		console.log("want to log out: " + msg.id);
 		if (msg.id == 0)
 			return ;
 		dbFunctions.updateOnlineStatus(msg.id, false);
