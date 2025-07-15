@@ -83,6 +83,9 @@ export function checkPadelMovement(): boolean {
 		movePadel(Game.targetDirectionAi);
 	}
 	for (let key in S.Keys) {
+		if (Game.opponentType == 'ai' && (key == 'ArrowUp' || key == 'ArrowDown')) {
+			continue;
+		}
 		if (S.Keys[key].pressed === true) {
 			movePadel(key);
 			moved = true;

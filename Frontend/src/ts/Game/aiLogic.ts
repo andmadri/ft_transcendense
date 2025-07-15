@@ -55,7 +55,6 @@ function predictBall() {
 
 export function aiAlgorithm() {
 	const ball = S.Objects['ball'];
-	const dx = Math.cos(ball.angle) * ball.speed;
 	const paddle = S.Objects['rPlayer'];
 
 	if (Game.timeGame - AI.lastReaction > AI.reactionTime) {
