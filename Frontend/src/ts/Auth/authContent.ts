@@ -41,8 +41,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	nameInput.name = 'name';
 	// nameInput.required = true;
 
-	nameField.appendChild(nameLabel);
-	nameField.appendChild(nameInput);
+	nameField.append(nameLabel, nameInput);
 
 	const emailField = document.createElement('div');
 	emailField.classList.add('formInput');
@@ -57,8 +56,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	emailInput.name = 'email';
 	// emailInput.required = true;
 
-	emailField.appendChild(emailLabel);
-	emailField.appendChild(emailInput);
+	emailField.append(emailLabel, emailInput);
 
 	const passwordField = document.createElement('div');
 	passwordField.classList.add('formInput');
@@ -73,8 +71,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	passwordInput.name = 'password';
 	// passwordInput.required = true;
 
-	passwordField.appendChild(passwordLabel);
-	passwordField.appendChild(passwordInput);
+	passwordField.append(passwordLabel, passwordInput);
 
 	const submitBtnDiv = document.createElement('div');
 	submitBtnDiv.id = 'submitBtnDiv' + player;
@@ -92,10 +89,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 		submitBtnDiv.appendChild(guestBtn);
 	}
 
-	authForm.appendChild(nameField);
-	authForm.appendChild(emailField);
-	authForm.appendChild(passwordField);
-	authForm.appendChild(submitBtnDiv);
+	authForm.append(nameField, emailField, passwordField, submitBtnDiv);
 
 	const modeLabel = document.createElement('p');
 	modeLabel.id = 'modelabel' + player;
@@ -106,10 +100,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	toggleBtn.id = 'toggle-mode' + player;
 	toggleBtn.textContent = 'Switch to Login';
 
-	auth.appendChild(authTitle);
-	auth.appendChild(authForm);
-	auth.appendChild(modeLabel);
-	auth.appendChild(toggleBtn);
+	auth.append(authTitle, authForm, modeLabel, toggleBtn);
 	return (auth);
 }
 
@@ -126,13 +117,9 @@ export function getLoginFields() {
 		body.appendChild(auth);
 	} else {
 		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-		const auth1 = getAuthField(1, false);
-		const auth2 = getAuthField(2, false);
-		body.appendChild(auth1);
-		body.appendChild(auth2);
+		body.append(getAuthField(1, false), getAuthField(2, false));
 		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			const auth = getAuthField(1, false);
-			body.appendChild(auth);
+			body.appendChild(getAuthField(1, false));
 		}
 	}
 

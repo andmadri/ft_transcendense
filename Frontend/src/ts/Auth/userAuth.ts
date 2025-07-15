@@ -6,13 +6,13 @@ type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
 
 // PROCESS INFORMATION FROM SERVER
-export function processSignUpCheck(data: any) {
+function processSignUp(data: any) {
 	if (data.access && data.access == "yes") {
 		log("User is created");
 		changeLoginMode(data.player);
 	}
 	else
-		log(data.reason);
+		log('Not sign up:' + data.reason);
 }
 
 function updateLoginPlayer(data: any) {
@@ -33,14 +33,14 @@ function updateLoginPlayer(data: any) {
 	}
 }
 
-export function processLoginCheck(data: any) {
+export function processLogin(data: any) {
 	if (data.access && data.access == "yes") {
 		log("Process Login Check => player: " + data.player);
 		updateLoginPlayer(data);
 		loginSuccessfull(data.player);
 	}
 	else
-		log(data.reason);
+		log('Not logged in: ' + data.reason);
 }
 
 
@@ -86,8 +86,8 @@ export function submitAuthForm(e: Event, player: number) {
 		return;
 	}
 	const msg = modes[player] == 'sign up'
-		? {action: 'signUpUser', name, email, password, player: player}
-		: {action: 'loginUser', email, password, player: player};
+		? {action: 'login', subaction: 'signupUser', name, email, password, player: player}
+		: {action: 'login', subaction: 'loginUser', email, password, player: player};
 	Game.socket.send(JSON.stringify(msg));
 }
 
@@ -121,4 +121,32 @@ export function addGuest(e: Event, player: number) {
 		Game.player2Login = true;
 	}
 	loginSuccessfull(player);
+}
+
+function logoutPlayer(data: any) {
+	log('logoutPlayer:' + `${data.reason}`);
+	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
+	Game.socket.send(JSON.stringify(msg));
+}
+
+
+export function actionLogin(data: any) {
+	if (!data.subaction) {
+		log('no subaction');
+		return ;
+	}
+
+	switch(data.subaction) {
+		case 'login':
+			processLogin(data);
+			break ;
+		case 'signup':
+			processSignUp(data);
+			break ;
+		case 'logout':
+			logoutPlayer(data);
+			break ;
+		default:
+			log(`(actionLogin) Unknown action: ${data.subaction}`);
+	}
 }

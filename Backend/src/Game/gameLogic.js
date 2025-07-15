@@ -13,16 +13,21 @@ export function initGame(msg, socket) {
 	GameStats.ball.angle = msg.ballAngle;
 	GameStats.ball.x = msg.ballX;
 	GameStats.ball.y = msg.ballY;
+	return true ;
 }
 
-export function update(msg, socket) {
-	if (msg.action == 'ballUpdate') {
+export function gameUpdate(msg, socket) {
+	if (!msg.subaction) {
+		console.log('no subaction');
+		return ;
+	}
+	if (msg.subaction == 'ballUpdate') {
 		GameStats.ball.angle = msg.ballAngle;
 		GameStats.ball.x = msg.ballX;
 		GameStats.ball.y = msg.ballY;
 	}
 
-	if (msg.action == 'padelUpdate') {
+	if (msg.subaction == 'padelUpdate') {
 		msg.player1Score = GameStats.player1.score;
 		msg.player1Paddle = GameStats.player1.paddle;
 		msg.player1Up = GameStats.player1.pressUp;
@@ -34,4 +39,5 @@ export function update(msg, socket) {
 		msg.player2Down = GameStats.player2.pressDown;
 	}
 	socket.send(JSON.stringify(msg));
+	return true ;
 }
