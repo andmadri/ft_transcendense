@@ -62,9 +62,7 @@ export function getGameField() {
 	rPlayer.id = 'rPlayer';
 	styleElement(rPlayer, '10px', '100px', 'absolute', '300px', '0px', '', 'purple');
 
-	field.appendChild(ball);
-	field.appendChild(lPlayer);
-	field.appendChild(rPlayer);
+	field.append(ball, lPlayer, rPlayer);
 	game.appendChild(field);
 	body?.appendChild(game);
 }

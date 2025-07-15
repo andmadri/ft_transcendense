@@ -36,16 +36,31 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		}
 
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
-		if (action == 'login')
-			return handleUserAuth(msg, connection.socket);
-		else if (action == 'online') 
-			return handleOnlinePlayers(msg, connection.socket);
-		else if (action == 'game' && msg.subaction == 'init')
-			return initGame(msg, connection.socket);
-		else if (action == 'game')
-			return gameUpdate(msg, connection.socket);
-		else // send now same message back
-			connection.socket.send(JSON.stringify(msg));
+		switch (action) {
+			case 'login':
+				return handleUserAuth(msg, connection.socket);
+			case 'playerInfo':
+				break ;
+			case 'online':
+				return handleOnlinePlayers(msg, connection.socket);
+			case 'friends':
+				break ;
+			case 'pending':
+				break ;
+			case 'game':
+				if (msg.subaction == 'init')
+					return initGame(msg, connection.socket);
+				else
+					return gameUpdate(msg, connection.socket);
+			case 'error':
+				console.log('Error from frontend..');
+				connection.socket.send(JSON.stringify(msg));
+				break ;
+			default:
+				console.log('No valid action: ' + action);
+				connection.socket.send(JSON.stringify(msg));
+				return ;
+		}			
 	});
 });
 

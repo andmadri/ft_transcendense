@@ -23,25 +23,15 @@ async function getOnlinePlayers(msg, socket) {
 	}
 	catch(err) {
 		console.error(err);
-		return sendContentToFrontend('error', 'error', socket, "no", "Error while requesting online players");
+		return sendContentToFrontend('error', '', socket, "no", "Error while requesting online players");
 	}
 }
 
-async function logoutPlayer(msg, socket) {
-	try {
-		dbFunctions.updateOnlineStatus(msg.id, false);
-	}
-	catch(err) {
-		console.error(err.msg);
-		return sendContentToFrontend('error', 'error', socket, "no", "Error while logging out");
-	}
-}
+
 
 export async function handleOnlinePlayers(msg, socket) {
 	console.log("handleOnlinePlayers function...", msg.action);
-	if (msg.action == "getOnlinePlayers")
+	if (msg.subaction == "getOnlinePlayers")
 		return getOnlinePlayers(msg, socket);
-	if (msg.action == 'logout')
-		return logoutPlayer(msg, socket);
-	return sendContentToFrontend('error', 'error', socket, "no", "Unkown action");
+	return sendContentToFrontend('error', '', socket, "no", "Unkown action");
 }

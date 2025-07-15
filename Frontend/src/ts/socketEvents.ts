@@ -47,14 +47,23 @@ export function receiveFromWS(e: MessageEvent) {
 		case 'login':
 			actionLogin(data);
 			break ;
-		case 'game':
-			actionGame(data);
+		case 'playerInfo':
 			break ;
 		case 'online':
 			actionOnline(data);
 			break ;
+		case 'friends':
+			break ;
+		case 'pending':
+			break ;
+		case 'game':
+			actionGame(data);
+			break ;
 		case 'error':
-			log('error');
+			if (data.reason)
+				log('error' + `${data.reason}`);
+			else
+				log('data received from ws' + data);
 			break ;
 		default:
 			log(`(receiveFromWS) Unknown action: ${action}`);

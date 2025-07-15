@@ -13,6 +13,7 @@ export function initGame(msg, socket) {
 	GameStats.ball.angle = msg.ballAngle;
 	GameStats.ball.x = msg.ballX;
 	GameStats.ball.y = msg.ballY;
+	return true ;
 }
 
 export function gameUpdate(msg, socket) {
@@ -38,4 +39,5 @@ export function gameUpdate(msg, socket) {
 		msg.player2Down = GameStats.player2.pressDown;
 	}
 	socket.send(JSON.stringify(msg));
+	return true ;
 }

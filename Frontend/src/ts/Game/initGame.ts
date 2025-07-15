@@ -3,11 +3,9 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 
 export function startGame() {
-	log('start Game?');
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login;
-			log("check here start gamE?");			
+			Game.state = S.State.Login;		
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
@@ -42,26 +40,37 @@ export function startGame() {
 }
 
 export function changeOpponentType(option: string) {
-	if (option == '1 vs 1')
-		Game.opponentType = S.OT.ONEvsONE;
-	else if (option == '1 vs COM')
-		Game.opponentType = S.OT.ONEvsCOM;
-	else
-		Game.opponentType = S.OT.Online;
+	switch (option) {
+		case '1 vs 1':
+			Game.opponentType = S.OT.ONEvsONE;
+			break ;
+		case '1 vs COM':
+			Game.opponentType = S.OT.ONEvsCOM;
+			break ;
+		case 'online':
+			Game.opponentType = S.OT.Online;
+			break ;
+		default:
+			log(`unknown opponent type? ${option}`);
+	}
 }
 
 export function changeMatchFormat(option: string) {
-	if (option == 'single game')
-		Game.matchFormat = S.MF.SingleGame;
-	else
-		Game.matchFormat = S.MF.Tournament;
+	switch (option) {
+		case 'single game':
+			Game.matchFormat = S.MF.SingleGame;
+			break ;
+		case 'tournament':
+			Game.matchFormat = S.MF.Tournament;
+			break ;
+		default:
+			log(`unknown match format? ${option}`);
+	}	
 }
 
 // Get start position of ball
 export function initPositions() {
 	const ball = document.getElementById('ball');
-	if (!ball)
-		log('no ball');
 	const playerOne = document.getElementById('rPlayer');
 	const playerTwo = document.getElementById('lPlayer');
 	const field = document.getElementById('field');
@@ -118,7 +127,7 @@ export function initGameServer() {
 			}
 			Game.socket.send(JSON.stringify(initGame1));
 		}
-		if (Game.opponentType == S.OT.ONEvsONE) { // how to name??
+		if (Game.opponentType == S.OT.ONEvsONE) {
 			const initGame2 = {
 				action: 'game',
 				subaction: 'init',

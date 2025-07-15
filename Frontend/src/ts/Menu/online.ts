@@ -1,4 +1,5 @@
 import { log } from '../logging.js'
+import { Game } from '../script.js'
 
 function insertOnlinePlayers(online_players: any) {
 	const html_list = document.getElementById('htmllistOnlinePlayers') as HTMLUListElement;
@@ -11,7 +12,7 @@ function insertOnlinePlayers(online_players: any) {
 	for (const curr_player of playerNames) {
 		log(`Adding player ${curr_player} to online list`);
 		const html_list_element = document.createElement('li');
-		html_list.id = 'playerOfOnlineList';
+		html_list.className = 'playerOfOnlineList';
 		html_list_element.textContent = curr_player;
 		html_list.appendChild(html_list_element);
 	}
@@ -26,13 +27,14 @@ function processOnlinePlayers(data: any) {
 
 export function actionOnline(data: any) {
 	if (!data.subaction) {
-		log('no subaction');
+		log('no subaction online');
 		return ;
 	}
 	
 	switch(data.subaction) {
 		case "retOnlinePlayers":
 			processOnlinePlayers(data);
+			break ;
 		default:
 			log(`(actionOnline) Unknown action: ${data.subaction}`);
 	}
