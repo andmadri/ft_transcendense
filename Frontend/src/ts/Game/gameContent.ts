@@ -49,13 +49,15 @@ export function getGameField() {
 	game.style.padding = '10px';
 	game.style.boxSizing = 'border-box';
 	game.style.gap = '20px';
+	game.style.flexDirection = 'column';
+	game.style.textAlign = 'center';
 
 	body.appendChild(game);
 
 	const title = document.createElement('div');
 	title.id = 'gameTitle';
 	title.textContent = 'PONG';
-	title.style.position = 'absolute';
+	title.style.position = 'relative';
 	title.style.fontFamily = '"Courier New", monospace';
 	title.style.fontSize = '2rem';
 	title.style.color = 'black';
@@ -64,7 +66,7 @@ export function getGameField() {
 	
 	const	field = document.createElement('div');
 	field.id = 'field';
-	styleElement(field, '95%', '80%', 'relative', '', '', '', 'black');
+	styleElement(field, '800px', '600px', 'relative', '10%', '', '25%', 'black');
 	field.style.borderRadius = '20px';
 	field.style.overflow = 'hidden';
 	field.style.position = 'relative';
