@@ -2,6 +2,8 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
+import { aiAlgorithm } from './aiLogic.js';
+import { resetAI } from './aiLogic.js';
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -47,7 +49,7 @@ function checkAndMovePadel(padel: string, movement: number) {
 	}
 }
 
-function movePadel(key: string) {
+export function movePadel(key: string) {
 	if (key === 'w' || key === 's') {
 		checkAndMovePadel('lPlayer', S.Keys[key].dir);
 	} else if (key === 'ArrowUp' || key === 'ArrowDown') {
@@ -55,32 +57,10 @@ function movePadel(key: string) {
 	}
 }
 
-function aiAlgorithm() {
-	const ball = S.Objects['ball'];
-	const dx = Math.cos(ball.angle) * ball.speed;
-	const padel = S.Objects['rPlayer'];
-	//decide where to which direction to move
-	if (Game.timeGame - Game.timeAi > 1000) {
-		Game.timeAi = Game.timeGame; //update the time 
-		const padelCenter = padel.y + (padel.height / 2);
-		if (ball.y < padelCenter) {
-			Game.targetDirectionAi = 'ArrowUp';
-		} else {
-			Game.targetDirectionAi = 'ArrowDown';
-		}
-	}
-	//decide to move if the ball is approaching you
-	if (dx > 0) {
-		movePadel(Game.targetDirectionAi);
-	}
-}
-
-//ai logic
 export function checkPadelMovement(): boolean {
 	let moved = false;
 	if (Game.opponentType == 'ai') {
 		aiAlgorithm();
-		movePadel(Game.targetDirectionAi);
 	}
 	for (let key in S.Keys) {
 		if (Game.opponentType == 'ai' && (key == 'ArrowUp' || key == 'ArrowDown')) {
@@ -144,8 +124,7 @@ export function checkWallCollision() {
 	
 }
 
-function resetBall()
-{
+function resetBall(){
 	const field = document.getElementById("field");
 	const ball = document.getElementById("ball");
 	const ballSize = S.Objects["field"].width * 0.05;
@@ -157,6 +136,9 @@ function resetBall()
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}
+	if (Game.opponentType == 'ai') {
+		resetAI();
+	}
 }
 
 export function checkPaddelCollision() {
@@ -167,7 +149,7 @@ export function checkPaddelCollision() {
 
 	if (ball.x + radius >= rightPadel.x)
 	{
-		if (ball.y + radius >= rightPadel.y && ball.y - radius <= rightPadel.y + rightPadel.height)
+		if ((ball.y - radius < rightPadel.y + rightPadel.height) && (ball.y + radius > rightPadel.y))
 		{
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
@@ -180,7 +162,7 @@ export function checkPaddelCollision() {
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
 	{
-		if (ball.y - radius >= leftPadel.y && ball.y + radius <= leftPadel.y + leftPadel.height)
+		if ((ball.y - radius < leftPadel.y + leftPadel.height) && (ball.y + radius > leftPadel.y))
 		{
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
