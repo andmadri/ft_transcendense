@@ -5,21 +5,34 @@ VOLUME	= "./Database"
 all:	up
 
 up:		
+	rm -rf Server/src
 	mkdir -p Database
-	./Frontend/TStoJS.sh
-	docker-compose -f docker-compose.yml up
+	cp -r Frontend/* Server/
+	docker compose -f docker-compose.yml up
 
 down:
-	docker-compose -f docker-compose.yml down
+	docker compose -f docker-compose.yml down
 
 start:
-	docker-compose -f docker-compose.yml start
+	@echo "=== Start Docker ==="
+	docker compose -f docker-compose.yml start
 
 stop:
-	docker-compose -f docker-compose.yml stop
+	@echo "=== Stop Docker ==="
+	docker compose -f docker-compose.yml stop
 
 build:
-	docker-compose -f docker-compose.yml build
+	@echo "=== Building Docker Image ==="
+	docker compose -f docker-compose.yml build
+
+server:
+	rm -rf Server/src
+	rm -rf Server/*.json
+	cp -r Frontend/* Server/
+	docker compose up -d --build --force-recreate server
+
+backend:
+	docker compose up -d --build --force-recreate backend
 
 build_volumes:
 	mkdir -p $(VOLUME)
@@ -36,7 +49,8 @@ clean: stop
 	@if [ "$(docker images -qa)" ]; then docker rmi -f $(docker images -qa); fi
 	@if [ "$(docker volume ls -q)" ]; then docker volume rm $(docker volume ls -q); fi
 	@if [ "$(docker network ls -q)" ]; then docker network rm $(docker network ls -q); fi
-	rm -rf Server/build
+	rm -rf Server/src
+	rm -rf Server/*.json
 	@echo "containers, images and network are removed"
 
 re:	clean up

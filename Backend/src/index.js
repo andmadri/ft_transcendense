@@ -1,66 +1,72 @@
-// import Fastify from 'fastify'
-// import WebSocketServer from "ws";
-
-// const fastify = Fastify();
-// const websock = new WebSocketServer({ port: 8080 });
-
-// let yLeft = 300;
-// let yRight = 300;
-
-
-// fastify.listen({ port: 3000 }, (err, address) => {
-//   if (err) {
-//     console.error(err);
-//     process.exit(1);
-//   }
-//   websock.on("connection", (ws) => {
-// 	  ws.on("message", (input) => {
-// 		const msg = JSON.parse(input.toString());
-
-// 		if (msg.key === "w")
-// 			yLeft -= 10;
-// 		else if (msg.key === "s")
-// 			yLeft += 10;
-// 		else if (msg.key === "arrowup")
-// 			yRight -= 10;
-// 		else if (msg.key === "arrowdown")
-// 			yRight += 10;
-
-// 		yLeft = Math.max(0, Math.min(600, yLeft));
-// 		yRight = Math.max(0, Math.min(600, yRight));
-
-// 		websock.send(JSON.stringify({ yLeft, yRight }));
-// 	  });
-// 	});
-//   console.log(`Fastify listening on ${address}`);
-// });
-
 import Fastify from 'fastify';
-import fastifyStatic from '@fastify/static';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import WebSocket from 'ws';
+import websocket from '@fastify/websocket';
+import { handleUserAuth } from './Auth/userAuth.js';
+import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { createDatabase } from './Database/database.js'
+import { initGame, gameUpdate } from './Game/gameLogic.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fastify = Fastify();
+await fastify.register(websocket);
+//change how you create database
+export const db = await createDatabase();
 
-const fastify = Fastify({ logger: true })
 
-fastify.register(fastifyStatic, {
-	root: path.join(__dirname, "../build"),
-	prefix: '/',
+/*
+FROM frontend TO backend				
+• login => loginUpser / signUpUser / logout				
+• playerInfo => changeName / addAvatar / delAvatar		
+• chat => outgoing										
+• online => getOnlinePlayers / getOnlinePlayersWaiting	
+• friends => getFriends / addFriend / deleteFriend		
+• pending => addToWaitlist / acceptGame					
+• game => init / ballUpdate / padelUpdate / scoreUpdate	
+• error => crash		
+*/
+
+fastify.get('/wss', { websocket: true }, (connection, req) => {
+
+	connection.socket.on('message', (message) => {
+		const msg = JSON.parse(message.toString());
+		const action = msg.action;
+		// console.log('Received from frontend: ' + message);
+		if (!action) {
+			const returnMsg = { action: "Error" }
+			connection.socket.send(JSON.stringify(returnMsg));
+			return ;
+		}
+
+		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
+		switch (action) {
+			case 'login':
+				return handleUserAuth(msg, connection.socket);
+			case 'playerInfo':
+				break ;
+			case 'online':
+				return handleOnlinePlayers(msg, connection.socket);
+			case 'friends':
+				break ;
+			case 'pending':
+				break ;
+			case 'game':
+				if (msg.subaction == 'init')
+					return initGame(msg, connection.socket);
+				else
+					return gameUpdate(msg, connection.socket);
+			case 'error':
+				console.log('Error from frontend..');
+				connection.socket.send(JSON.stringify(msg));
+				break ;
+			default:
+				console.log('No valid action: ' + action);
+				connection.socket.send(JSON.stringify(msg));
+				return ;
+		}			
+	});
 });
 
-fastify.get('/', function (request, reply) {
-	reply.send({hello: 'world'})
-})
+fastify.setNotFoundHandler(function (request, reply) {
+  reply.status(404).send({ error: 'Not Found' });
+});
 
-const websock = new WebSocketServer({ port: 8080 });
+fastify.listen({ port: 3000, host: '0.0.0.0' });
 
-fastify.listen({ port: 3000, host: '0.0.0.0' }, function (err, address) {
-	if (err) {
-		fastify.log.error(err)
-		process.exit(1)
-	}
-	fastify.log.info('server listening on ${address}')
-})
