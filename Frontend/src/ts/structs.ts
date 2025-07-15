@@ -6,9 +6,7 @@ export type gameInfo = {
 	matchFormat: string;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
-	timeAi: number;
 	timeGame: number;
-	targetDirectionAi: string;
 }
 
 // KEYS
@@ -41,3 +39,18 @@ export const Objects: {[key: string]: Object} = {
 	"lPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
 	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
 }
+
+// AI
+type AIPrediction = {
+	x: number;
+	y: number;
+	dx: number;
+	dy: number;
+};
+
+export type AIInfo = {
+	prediction: AIPrediction | null;
+	reactionTime: number; // ms
+	lastReaction: number; // timestamp of last reaction
+	targetDirection: string; // 'ArrowUp' or 'ArrowDown'
+};

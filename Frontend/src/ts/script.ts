@@ -21,9 +21,7 @@ export const Game: S.gameInfo = {
 	matchFormat: 'none',
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
-	timeAi: 0,
 	timeGame: 0,
-	targetDirectionAi: 'ArrowUp',
 }
 
 log('Test log: start');
