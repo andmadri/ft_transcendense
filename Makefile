@@ -21,7 +21,7 @@ stop:
 build:
 	docker compose -f docker-compose.yml build
 
-server:
+server: Frontend/*
 	rm -rf Server/src
 	rm -rf Server/*.json
 	cp -r Frontend/* Server/
@@ -53,3 +53,5 @@ re:	clean up
 
 prune: clean clean_volumes
 	docker system prune -a --volumes -f
+
+.PHONY: all up down start stop build server backend build_volumes clean_volumes clean re prune

@@ -73,7 +73,7 @@ export function initPositions() {
 		S.Objects['lPlayer'].height = playerTwo.clientHeight;
 		S.Objects['lPlayer'].width = playerTwo.clientWidth;
 		S.Objects['lPlayer'].y = playerTwo.offsetTop;
-		S.Objects['lPlayer'].x = 0;
+		S.Objects['lPlayer'].x = playerTwo.offsetLeft;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
 	}

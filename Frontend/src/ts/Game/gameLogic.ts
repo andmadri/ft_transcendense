@@ -42,7 +42,7 @@ function checkAndMovePadel(padel: string, movement: number) {
 		return ;
 	let top = currentPadel.offsetTop;
 	const paddleH = currentPadel.clientHeight;
-	const nextPos = top + movement;
+	const nextPos = top + (movement * S.Objects[padel].speed);
 	const newPosition = Math.max(0, Math.min(nextPos, fieldH - paddleH));
 	currentPadel.style.top = `${newPosition}px`;
 	S.Objects[padel].y = newPosition;
