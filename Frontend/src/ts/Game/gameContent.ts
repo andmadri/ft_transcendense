@@ -58,6 +58,7 @@ export function getGameField() {
 	title.style.position = 'relative';
 	title.style.fontFamily = '"Courier New", monospace';
 	title.style.fontSize = '2rem';
+	title.style.fontWeight = 'bold';
 	title.style.color = 'black';
 	title.style.zIndex = '5';
 	title.style.pointerEvents = 'none';
@@ -87,6 +88,31 @@ export function getGameField() {
 	styleElement(centerLine, '0', '100%', 'absolute', '0', '', '50%');
 	centerLine.style.borderLeft = '4px dotted white';
 	centerLine.style.transform = 'translateX(-50%)';
+
+	const scoreContainer = document.createElement('div');
+	scoreContainer.id = 'scoreContainer';
+	scoreContainer.style.position = 'absolute';
+	scoreContainer.style.top = '20px';
+	scoreContainer.style.left = '50%';
+	scoreContainer.style.transform = 'translateX(-50%)';
+	scoreContainer.style.display = 'flex';
+	scoreContainer.style.gap = '40px';
+	scoreContainer.style.fontFamily = '"Courier New", monospace';
+	scoreContainer.style.fontSize = '2rem';
+	scoreContainer.style.color = 'white';
+	scoreContainer.style.zIndex = '10';
+
+	const leftScore = document.createElement('div');
+	leftScore.id = 'leftScore';
+	leftScore.textContent = '0';
+
+	const rightScore = document.createElement('div');
+	rightScore.id = 'rightScore';
+	rightScore.textContent = '0';
+
+	scoreContainer.appendChild(leftScore);
+	scoreContainer.appendChild(rightScore);
+	field.appendChild(scoreContainer);
 
 	field.appendChild(centerLine);
 	field.appendChild(ball);
