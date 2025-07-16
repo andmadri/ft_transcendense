@@ -22,6 +22,8 @@ export const Game: S.gameInfo = {
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
 	timeGame: 0,
+	scoreLeft: 0,
+	scoreRight: 0,
 }
 
 log('Test log: start');
@@ -58,6 +60,10 @@ function mainLoop() {
 
 			if (Game.socket.readyState == WebSocket.OPEN) {
 				Game.timeGame = performance.now();
+				// if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+				// 	GameLogic.handleGameOver();
+				// 	break ;
+				// }
 				GameLogic.checkWallCollision();
 				GameLogic.checkPaddelCollision();
 				GameLogic.calculateBallDir();

@@ -7,6 +7,8 @@ export type gameInfo = {
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
 	timeGame: number;
+	scoreLeft: number;
+	scoreRight: number;
 }
 
 // KEYS
@@ -34,7 +36,7 @@ type Object = {
 }
 
 export const Objects: {[key: string]: Object} = {
-	"ball":	{angle: 0.33, speed: 20, x: 0, y: 0, width: 0, height: 0, color: "white"},
+	"ball":	{angle: 0.33, speed: 5, x: 0, y: 0, width: 0, height: 0, color: "white"},
 	"rPlayer": {angle: 0, speed: 1, x: 0, y: 0, width: 0, height: 0, color: "green"},
 	"lPlayer": {angle: 0, speed: 1, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
 	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}

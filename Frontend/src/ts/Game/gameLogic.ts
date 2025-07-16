@@ -141,6 +141,14 @@ function resetBall(){
 	}
 }
 
+export function updateScoreDisplay(side: string, newScore: number) {
+	const scoreSide = document.getElementById(side);
+	if (scoreSide) {
+		scoreSide.textContent = newScore.toString();
+	}
+	resetBall();
+}
+
 export function checkPaddelCollision() {
 	const ball = S.Objects['ball'];
 	const radius = ball.width / 2;
@@ -154,10 +162,8 @@ export function checkPaddelCollision() {
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
 		}
-		else
-		{
-			// MISS
-			resetBall();
+		else {
+			updateScoreDisplay('leftScore', ++Game.scoreLeft);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -167,10 +173,31 @@ export function checkPaddelCollision() {
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
 		}
-		else
-		{
-			// MISS
-			resetBall();
+		else {
+			updateScoreDisplay('rightScore', ++Game.scoreRight);
 		}
+	}
+}
+
+export function handleGameOver() {
+	Game.gameOn = false;
+	log("Game Over!");
+	if (document.getElementById('gameOver')) {
+		const gameOver = document.createElement('div');
+		gameOver.id = 'gameOver';
+		gameOver.style.position = 'absolute';
+		gameOver.style.top = '50%';
+		gameOver.style.left = '50%';
+		gameOver.style.padding = '20px';
+		gameOver.style.backgroundColor = 'black';
+		gameOver.style.color = 'white';
+		gameOver.style.fontSize = '2rem';
+		gameOver.style.textAlign = 'center';
+		gameOver.style.borderRadius = '10px';
+		gameOver.innerHTML = `
+		<p>Game Over!</p>
+		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
+		`;
+		document.body.appendChild(gameOver);
 	}
 }
