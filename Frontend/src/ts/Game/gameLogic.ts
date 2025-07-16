@@ -36,17 +36,16 @@ export function processPadelUpdate(data: any) {
 }
 
 function checkAndMovePadel(padel: string, movement: number) {
+	const fieldH = S.Objects['field'].height;
 	const currentPadel = document.getElementById(padel);
-	let top = parseInt(currentPadel?.style.top || '0');
-	let newPosition = top + movement;
-	if (currentPadel) {
-		if (newPosition < 0)
-			newPosition = 0;
-		else if (newPosition > S.Objects['field'].height - currentPadel.clientHeight) 
-			newPosition = S.Objects['field'].height - currentPadel.clientHeight;
-		currentPadel.style.top = `${newPosition}px`;
-		S.Objects[padel].y = newPosition;
-	}
+	if (!currentPadel)
+		return ;
+	let top = currentPadel.offsetTop;
+	const paddleH = currentPadel.clientHeight;
+	const nextPos = top + movement;
+	const newPosition = Math.max(0, Math.min(nextPos, fieldH - paddleH));
+	currentPadel.style.top = `${newPosition}px`;
+	S.Objects[padel].y = newPosition;
 }
 
 export function movePadel(key: string) {
@@ -96,6 +95,7 @@ export function calculateBallDir() {
 	S.Objects['ball'].x += Math.cos(S.Objects['ball'].angle) * S.Objects['ball'].speed;
 	if (S.Objects['ball'].y - ballSize < 0)
 		S.Objects['ball'].y = ballSize;
+	//this line keeps the ball from going past the bottom
 	else if (S.Objects['ball'].y + ballSize > S.Objects['field'].height)
 		S.Objects['ball'].y = S.Objects['field'].height - ballSize;
 	if (S.Objects['ball'].x - ballSize < 0)

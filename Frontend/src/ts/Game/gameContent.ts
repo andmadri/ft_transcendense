@@ -43,13 +43,11 @@ export function getGameField() {
 	const	game = document.createElement('div');
 	game.id = 'game';
 	styleElement(game, '100vw', '100vh', 'relative', '', '', '', 'gold');
-	game.style.display = 'flex';
 	game.style.justifyContent = 'center';
 	game.style.alignItems = 'center';
 	game.style.padding = '10px';
 	game.style.boxSizing = 'border-box';
 	game.style.gap = '20px';
-	game.style.flexDirection = 'column';
 	game.style.textAlign = 'center';
 
 	body.appendChild(game);
@@ -66,9 +64,8 @@ export function getGameField() {
 	
 	const	field = document.createElement('div');
 	field.id = 'field';
-	styleElement(field, '800px', '600px', 'relative', '10%', '', '25%', 'black');
-	field.style.borderRadius = '20px';
-	field.style.overflow = 'hidden';
+	styleElement(field, '800px', '600px', 'relative', '', '', '', 'black');
+	field.style.borderRadius = '30px';
 	field.style.position = 'relative';
 	
 	const	ball = document.createElement('div');
@@ -79,12 +76,19 @@ export function getGameField() {
 	
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';
-	styleElement(lPlayer, '10px', '100px', 'absolute', '300px', '', '10px', 'white');
+	styleElement(lPlayer, '10px', '100px', 'absolute', '35%', '', '10px', 'white');
 
 	const	rPlayer = document.createElement('div');
 	rPlayer.id = 'rPlayer';
-	styleElement(rPlayer, '10px', '100px', 'absolute', '300px', '10px', '', 'white');
+	styleElement(rPlayer, '10px', '100px', 'absolute', '35%', '10px', '', 'white');
 	
+	const centerLine = document.createElement('div');
+	centerLine.id = 'centerLine';
+	styleElement(centerLine, '0', '100%', 'absolute', '0', '', '50%');
+	centerLine.style.borderLeft = '4px dotted white';
+	centerLine.style.transform = 'translateX(-50%)';
+
+	field.appendChild(centerLine);
 	field.appendChild(ball);
 	field.appendChild(lPlayer);
 	field.appendChild(rPlayer);
