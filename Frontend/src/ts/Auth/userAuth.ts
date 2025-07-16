@@ -36,6 +36,8 @@ function updateLoginPlayer(data: any) {
 export function processLogin(data: any) {
 	if (data.access && data.access == "yes") {
 		log("Process Login Check => player: " + data.player);
+		// set cookie with WSS
+		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
 		updateLoginPlayer(data);
 		loginSuccessfull(data.player);
 	}

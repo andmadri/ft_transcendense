@@ -1,6 +1,7 @@
 import * as dbFunctions from '../Database/database.js';
 import { db } from '../index.js';
 import bcrypt from 'bcrypt';
+import { signFastifyJWT } from "../utils/jwt.js";
 
 function sendBackFront(actionable, sub, socket, accessible, reasonMsg, user, player) {
 	const msg = {
@@ -73,6 +74,9 @@ async function addUser(msg, socket) {
 		const exists = await dbFunctions.userAlreadyExist(msg.email);
 		if (exists)
 			return sendBackFront('signup', socket, 'no', 'User allready exist', '', '');
+		// Add avatar_url if provided, otherwise set to null
+		if (!msg.avatar_url)
+			msg.avatar_url = null;
 		await dbFunctions.addUserToDB(msg);
 		console.log('User: ', msg.name, ' is created');
 		return sendBackFront('login', 'signup', socket, 'yes', 'User created', '', msg.playerLogin);
@@ -83,7 +87,7 @@ async function addUser(msg, socket) {
 	}
 }
 
-async function validateLogin(msg, socket) {
+async function validateLogin(msg, socket, fastify) {
 	let user;
 
 	try {
@@ -108,7 +112,16 @@ async function validateLogin(msg, socket) {
 		console.error(err.msg);
 		// failed?
 	}
-	return sendBackFront('login', 'login', socket, 'yes', 'Login successfull', user, msg.player)
+	const jwtToken = signFastifyJWT(user, fastify);
+	console.log('Generated JWT:', jwtToken);
+	// socket.setCookie('jwtAuthToken', jwtToken, {
+	// 	httpOnly: true,      // Prevents JS access
+	// 	secure: true,        // Only sent over HTTPS
+	// 	sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+	// 	path: '/',
+	// 	maxAge: 60 * 60      // 1 hour
+	// })
+	return sendBackFront('login', 'login', socket, 'yes', jwtToken, user, msg.player)
 }
 
 async function logoutPlayer(msg, socket) {
@@ -124,7 +137,7 @@ async function logoutPlayer(msg, socket) {
 	}
 }
 
-export async function handleUserAuth(msg, socket) {
+export async function handleUserAuth(msg, socket, fastify) {
 	if (!msg.subaction) {
 		return sendBackFront('error', '', socket, 'no', `No subaction for ${msg.action}`, '', '');
 	}
@@ -133,7 +146,7 @@ export async function handleUserAuth(msg, socket) {
 		case 'signupUser':
 			return addUser(msg, socket);
 		case 'loginUser':
-			return validateLogin(msg, socket);
+			return validateLogin(msg, socket, fastify);
 		case 'logout':
 			return logoutPlayer(msg, socket);
 		default:

@@ -52,8 +52,8 @@ export async function addUserToDB(msg) {
 
 	return new Promise((resolve, reject) => {
 		db.run(
-			`INSERT INTO Users (name, email, password) VALUES (?, ?, ?)`,
-			[msg.name, msg.email, hashedPassword],
+			`INSERT INTO Users (name, email, password, avatar_url) VALUES (?, ?, ?, ?)`,
+			[msg.name, msg.email, hashedPassword, msg.avatar_url],
 			(err) => {
 				if (err)
 					reject(err);

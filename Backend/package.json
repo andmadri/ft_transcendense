@@ -8,12 +8,15 @@
     "start": "node index.js"
   },
   "dependencies": {
-	"fastify": "^4.22.0",
-	"ws": "^8.13.0",
-	"@fastify/websocket": "^8.0.0",
-	"@fastify/static": "^6.8.0",
+    "fastify": "^4.22.0",
+    "ws": "^8.13.0",
+    "@fastify/websocket": "^8.0.0",
+    "@fastify/static": "^6.8.0",
+    "@fastify/cookie": "^7.x.x",
+    "@fastify/jwt": "^7.0.0",
   	"sqlite3": "^5.1.6",
-  	"bcrypt": "^5.0.0"
+  	"bcrypt": "^5.0.0",
+    "axios": "^1.6.1"
   },
   "keywords": [],
   "author": "",
