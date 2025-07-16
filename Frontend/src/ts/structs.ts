@@ -16,10 +16,10 @@ type Key = {
 }
 
 export const Keys: {[key: string]: Key} = {
-	"ArrowUp": 		{pressed: false, dir: -10},
-	"ArrowDown": 	{pressed: false, dir: 10},
-	"w": 			{pressed: false, dir: -10},
-	"s": 			{pressed: false, dir: 10}
+	"ArrowUp": 		{pressed: false, dir: -20},
+	"ArrowDown": 	{pressed: false, dir: 20},
+	"w": 			{pressed: false, dir: -20},
+	"s": 			{pressed: false, dir: 20}
 };
 
 // OBJECTS
@@ -34,9 +34,9 @@ type Object = {
 }
 
 export const Objects: {[key: string]: Object} = {
-	"ball":	{angle: 0.33, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "white"},
-	"rPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "green"},
-	"lPlayer": {angle: 0, speed: 10, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
+	"ball":	{angle: 0.33, speed: 20, x: 0, y: 0, width: 0, height: 0, color: "white"},
+	"rPlayer": {angle: 0, speed: 1, x: 0, y: 0, width: 0, height: 0, color: "green"},
+	"lPlayer": {angle: 0, speed: 1, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
 	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
 }
 
