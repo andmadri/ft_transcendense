@@ -10,6 +10,7 @@ import { getAuthField, removeAuthField } from './Auth/authContent.js'
 import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
+import { trainingSet, collectTrainingData, downloadTrainingData } from './Game/aiTraining.js'
 
 createLog();
 
@@ -60,16 +61,22 @@ function mainLoop() {
 
 			if (Game.socket.readyState == WebSocket.OPEN) {
 				Game.timeGame = performance.now();
-				// if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-				// 	GameLogic.handleGameOver();
-				// 	break ;
-				// }
+				if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+					GameLogic.handleGameOver();
+					downloadTrainingData();
+					trainingSet.length = 0;
+					return ;
+				}
 				GameLogic.checkWallCollision();
 				GameLogic.checkPaddelCollision();
 				GameLogic.calculateBallDir();
 				GameLogic.updateBallPosition();
 				if (GameLogic.checkPadelMovement())
 					GameLogic.updatePadelPosition();
+				const data = collectTrainingData();
+				if (data != null) {
+					trainingSet.push(data);
+				}
 			}
 		}
 	}
