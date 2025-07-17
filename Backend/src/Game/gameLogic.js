@@ -2,8 +2,7 @@ import { matches } from './gameMatch.js';
 
 export function updateBall(msg, socket) {
 	const match = matches.get(msg.matchID);
-	if (!match)
-	{
+	if (!match) {
 		console.log(`No match with updateBall ${msg.matchID}`);
 		return ;
 	}
@@ -15,8 +14,7 @@ export function updateBall(msg, socket) {
 
 export function updatePadel(msg, socket) {
 	const match = matches.get(msg.matchID);
-	if (!match)
-	{
+	if (!match) {
 		console.log(`No match with updateBall ${msg.matchID}`);
 		return ;
 	}
@@ -34,8 +32,7 @@ export function updatePadel(msg, socket) {
 export function updateScore(msg, socket) {
 	const playerID = msg.player;
 	const match = matches.get(msg.matchID);
-	if (!match)
-	{
+	if (!match) {
 		console.log(`No match with updateBall ${msg.matchID}`);
 		return ;
 	}

@@ -33,6 +33,21 @@ export async function getUserByEmail(email) {
 	});
 }
 
+export async function getUserByID(id) {
+	return new Promise((resolve, reject) => {
+		db.get(
+			`SELECT * FROM Users WHERE id = ?`,
+			[id],
+			(err, row) => {
+				if (err)
+					reject(err);
+				else
+					resolve(row);
+			}
+		);
+	});
+}
+
 export async function updateOnlineStatus(email, newStatus) {
 	return new Promise((resolve, reject) => {
 		db.run(

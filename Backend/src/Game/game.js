@@ -1,5 +1,7 @@
 import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
-import { createMatch, saveMatch } from './gameMatch.js';
+import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
+
+
 
 export function handleGame(msg, socket) {
 	if (!msg.subaction) {
@@ -18,6 +20,8 @@ export function handleGame(msg, socket) {
 			return updateScore(msg, socket);
 		case 'save':
 			return saveMatch(msg, socket);
+		case 'quit':
+			return quitMatch(msg, socket);
 		default:
 			console.log("subaction not found: " + msg.subaction);
 	}

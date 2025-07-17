@@ -1,4 +1,5 @@
 import { saveMatchDB } from '../Database/match.js'
+import { getUserByID } from '../Database/user.js';
 
 let				matchnr = 0;
 export const 	matches = new Map();
@@ -67,8 +68,35 @@ export function createMatch(msg, socket) {
 		subaction: 'init',
 		id,
 		player1ID,
-		player2ID }));
+		player2ID
+	}));
 }
+
+export async function quitMatch(msg, socket) {
+	const match = matches.get(msg.matchID);
+	if (!match) {
+		console.log(`No match with quitMatch: ${msg.matchID}`);
+		return ;
+	}
+	let name;
+	try {
+		const rowPlayer = await getUserByID(msg.player);
+		name = rowPlayer.name;
+	} catch(err) {
+		console.log("Error getting User by ID" + err.message);
+		// return ;
+	}
+
+	match.stage = Stage.Finish;
+	socket.send(JSON.stringify({
+		action: 'game',
+		subaction: 'quit',
+		matchID: match.matchID,
+		// reason: `match quit by player ${name}`
+		reason: 'match is quit'
+	}));	
+}
+
 
 export function saveMatch(msg, socket) {
 	const match = matches.get(msg.matchID);

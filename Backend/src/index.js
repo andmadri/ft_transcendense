@@ -19,7 +19,7 @@ FROM frontend TO backend
 • online => getOnlinePlayers / getOnlinePlayersWaiting	
 • friends => getFriends / addFriend / deleteFriend		
 • pending => addToWaitlist / acceptGame					
-• game => init / ballUpdate / padelUpdate / scoreUpdate	
+• game => init / ballUpdate / padelUpdate / scoreUpdate	 / save
 • error => crash		
 */
 
