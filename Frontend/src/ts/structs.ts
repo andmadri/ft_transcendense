@@ -3,7 +3,9 @@ export enum State {
 	Login,
 	Login2,
 	Pending,
-	Game
+	Init,
+	Game,
+	End
 }
 
 export enum OT {
@@ -26,6 +28,8 @@ export type gameInfo = {
 	matchFormat: MF;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
+
+	matchID: number;
 
 	// Player that is logged in
 	id: number;

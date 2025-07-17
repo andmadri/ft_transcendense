@@ -11,6 +11,7 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
+import { saveGame } from './Game/initGame.js';
 
 createLog();
 
@@ -21,6 +22,7 @@ export const Game: S.gameInfo = {
 	matchFormat: S.MF.Empty,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
+	matchID: -1,
 	id: 0,
 	name: 'unknown',
 	player1Login: false,
@@ -44,38 +46,40 @@ getSideMenu();
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		switch (Game.state) {
-			case S.State.Menu: {
+			case S.State.Menu:
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
-			}
-			case S.State.Login: {
+			case S.State.Login:
 				if (!document.getElementById('auth1'))
 					getLoginFields();
 				break ;
-			}
-			case S.State.Login2: {
+			case S.State.Login2:
 				if (!document.getElementById('auth2'))
 					getLoginFields();
 				break ;
-			}
-			case S.State.Pending: {
+			case S.State.Pending:
 				// waiting for opponement
+				// if ready -> make match
 				break ;
-			}
-			case S.State.Game: {
-				if (!document.getElementById('game')) {
+			case S.State.Init:
+				log("init game");
+				if (!document.getElementById('game'))
 					getGameField();
-					initPositions();
-					initGameServer();
-					updateNamesMenu();
-					resetScoreMenu();
-				}
-				game();
+				initPositions();
+				initGameServer();
+				updateNamesMenu();
+				resetScoreMenu();
+				Game.state = S.State.Game;
+			case S.State.Game:
 				if (!Game.player1Login || !Game.player2Login)
-					Game.state = S.State.Menu;
+					Game.state = S.State.End;
+				if (Game.matchID >= 0) // waiting till the match is made by backend
+					game();
 				break ;
-			}
+			case S.State.End:
+				saveGame();
+				Game.state = S.State.Menu;
 		}
 		
 	}

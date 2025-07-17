@@ -1,5 +1,4 @@
-import * as dbFunctions from '../Database/database.js';
-import { db } from '../index.js';
+import * as dbUsers from '../Database/user.js';
 import bcrypt from 'bcrypt';
 
 function sendBackFront(actionable, sub, socket, accessible, reasonMsg, user, player) {
@@ -70,10 +69,10 @@ async function addUser(msg, socket) {
 	if (errorMsg)
 		return sendBackFront('login', 'signup', socket, 'no', errorMsg, '', '');
 	try {
-		const exists = await dbFunctions.userAlreadyExist(msg.email);
+		const exists = await dbUsers.userAlreadyExist(msg.email);
 		if (exists)
 			return sendBackFront('signup', socket, 'no', 'User allready exist', '', '');
-		await dbFunctions.addUserToDB(msg);
+		await dbUsers.addUserToDB(msg);
 		console.log('User: ', msg.name, ' is created');
 		return sendBackFront('login', 'signup', socket, 'yes', 'User created', '', msg.playerLogin);
 	}
@@ -87,7 +86,7 @@ async function validateLogin(msg, socket) {
 	let user;
 
 	try {
-		user = await dbFunctions.getUserByEmail(msg.email);
+		user = await dbUsers.getUserByEmail(msg.email);
 	}
 	catch (err) {
 		console.error('Error with getting user by email');
@@ -101,8 +100,8 @@ async function validateLogin(msg, socket) {
 		return sendBackFront('login', 'login', socket, 'no', 'Incorrect password', '', '');
 
 	try {
-		const online = await dbFunctions.isOnline(msg.email, (online));
-		await dbFunctions.updateOnlineStatus(msg.email, !online);
+		const online = await dbUsers.isOnline(msg.email, (online));
+		await dbUsers.updateOnlineStatus(msg.email, !online);
 	}
 	catch(err) {
 		console.error(err.msg);
@@ -116,7 +115,7 @@ async function logoutPlayer(msg, socket) {
 		console.log("want to log out: " + msg.id);
 		if (msg.id == 0)
 			return ;
-		dbFunctions.updateOnlineStatus(msg.id, false);
+		dbUsers.updateOnlineStatus(msg.id, false);
 		return sendBackFront('login', 'logout', socket, 'yes', 'Logout successfull', '', '');
 	}
 	catch(err) {

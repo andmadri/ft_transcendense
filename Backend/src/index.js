@@ -3,7 +3,7 @@ import websocket from '@fastify/websocket';
 import { handleUserAuth } from './Auth/userAuth.js';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { createDatabase } from './Database/database.js'
-import { initGame, gameUpdate } from './Game/gameLogic.js';
+import { handleGame } from './Game/game.js'
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -48,10 +48,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			case 'pending':
 				break ;
 			case 'game':
-				if (msg.subaction == 'init')
-					return initGame(msg, connection.socket);
-				else
-					return gameUpdate(msg, connection.socket);
+				return handleGame(msg, connection.socket);
 			case 'error':
 				console.log('Error from frontend..');
 				connection.socket.send(JSON.stringify(msg));

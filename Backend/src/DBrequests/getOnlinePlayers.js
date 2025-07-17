@@ -1,4 +1,4 @@
-import * as dbFunctions from '../Database/database.js';
+import * as dbUsers from '../Database/user.js';
 import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
@@ -13,7 +13,7 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 
 async function getOnlinePlayers(msg, socket) {
 	try {
-		const onlineUsers = await dbFunctions.getOnlineUsers();
+		const onlineUsers = await dbUsers.getOnlineUsers();
 		// console.log("Recieved DB content: ", onlineUsers);
 		if (!onlineUsers || onlineUsers.length === 0 || onlineUsers == "[]" || onlineUsers == "undefined") {
 			console.log("No online players found");

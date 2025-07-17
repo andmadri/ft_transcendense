@@ -1,7 +1,6 @@
 import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
-import { initPositions } from './initGame.js';
 import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 
 export function processBallUpdate(data: any) {
@@ -77,7 +76,8 @@ export function updatePadelPosition() {
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
-			rHeight: rightPadel.offsetTop };
+			rHeight: rightPadel.offsetTop,
+			matchID: Game.matchID };
 		Game.socket.send(JSON.stringify(msg));
 	} else {
 		console.log('No lP ot rP');
@@ -103,7 +103,9 @@ export function updateBallPosition() {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
-		ballX: S.Objects['ball'].x};
+		ballX: S.Objects['ball'].x,
+		matchID: Game.matchID
+	};
 	Game.socket.send(JSON.stringify(msg));
 }
 
@@ -134,6 +136,26 @@ function resetBall()
 	}
 }
 
+function updateScores(player: number) {
+	const msg = { 
+		action: 'game',
+		subaction: 'scoreUpdate',
+		player: 0,
+		matchID: Game.matchID
+	};
+
+	if (player == 1) {
+		Game.score++;
+		msg.player = Game.id;
+	} else {
+		Game.score2++;	
+		msg.player = Game.id2;
+	}
+	Game.socket.send(JSON.stringify(msg));	
+	updateScoreMenu();
+	resetBall();
+}
+
 export function checkPaddelCollision() {
 	const ball = S.Objects['ball'];
 	const radius = ball.width / 2;
@@ -149,10 +171,7 @@ export function checkPaddelCollision() {
 		}
 		else
 		{
-			// MISS
-			Game.score++;			
-			updateScoreMenu();
-			resetBall();
+			updateScores(1);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -164,10 +183,7 @@ export function checkPaddelCollision() {
 		}
 		else
 		{
-			// MISS
-			Game.score2++;
-			updateScoreMenu();
-			resetBall();
+			updateScores(2);
 		}
 	}
 }
@@ -179,22 +195,4 @@ export function game() {
 	updateBallPosition();
 	if (checkPadelMovement())
 		updatePadelPosition();	
-}
-
-export function actionGame(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'ballUpdate':
- 			processBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			processPadelUpdate(data);
-			break ;
-		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
-	}
 }

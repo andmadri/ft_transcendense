@@ -117,45 +117,24 @@ export function initPositions() {
 
 export function initGameServer() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		if (Game.opponentType != S.OT.Online) {
-			const initGame1 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one',
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame1));
+		let initGame = {
+			action: 'game',
+			subaction: 'init',
+			opponentMode: Game.opponentType,
+			player1ID: Game.id,
+			player2ID: Game.id2
 		}
-		if (Game.opponentType == S.OT.ONEvsONE) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: Game.id2,
-				playerName: Game.name2,
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else if (Game.opponentType == S.OT.ONEvsCOM) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: -1,
-				playerName: 'Computer',
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else {
-			const initGame = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one', // or two...decide by server?
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame));
-		}
+		Game.socket.send(JSON.stringify(initGame));
+	} else {
+		//problem..
 	}
+}
+
+export function saveGame() {
+	const saveGameMsg = {
+		action: 'game',
+		subaction: 'save',
+		matchID: Game.matchID
+	}
+	Game.socket.send(JSON.stringify(saveGameMsg));
 }

@@ -94,17 +94,20 @@ export function submitAuthForm(e: Event, player: number) {
 export function loginSuccessfull(player: number) {
 	if (player == 1) {
 		log("Login Successfull (player one)");
-		if (Game.opponentType != S.OT.ONEvsONE)
-			Game.state = S.State.Game;
-		else {
+
+		if (Game.opponentType == S.OT.ONEvsONE) {
 			if (Game.player2Login)
-				Game.state = S.State.Game;
+				Game.state = S.State.Init;
+		} else if(Game.opponentType == S.OT.Online) {
+			Game.state = S.State.Pending;
+		} else {
+			Game.state = S.State.Init;
 		}
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two)");
 		if (Game.player1Login)
-			Game.state = S.State.Game;
+			Game.state = S.State.Init;
 	}
 }
 
