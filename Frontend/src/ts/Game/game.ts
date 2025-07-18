@@ -2,7 +2,7 @@
 import { processBallUpdate, processPadelUpdate } from "./gameLogic.js";
 import { log } from '../logging.js'
 import { Game } from "../script.js";
-import { State } from "../structs.js";
+import * as S from "../structs.js";
 
 function processMatch(data: any) {
 	Game.matchID = data.id;
@@ -18,7 +18,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	Game.state = Game.state = State.End;
+	Game.state = S.State.End;
 	log(data.reason);
 }
 

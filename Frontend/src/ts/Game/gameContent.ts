@@ -36,6 +36,7 @@ export function getGameField() {
 		removeAuthField(2);
 	if (document.getElementById('menu'))
 		removeMenu();
+
 	const	body = document.getElementById('body');
 
 	const	quiting = document.createElement('div');
@@ -51,7 +52,8 @@ export function getGameField() {
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.matchID,
-			player: Game.id
+			player: Game.id,
+			name: Game.name
 		}));
 	})
 	quiting.appendChild(quit);
@@ -90,7 +92,12 @@ export function getGameField() {
 export function removeGameField() {
 	const	body = document.getElementById('body');
 	const	game = document.getElementById('game');
+	const	quit = document.getElementById('quitBtn');
 
-	if (body && game)
+	if (!body)
+		return ;
+	if (game)
 		body.removeChild(game);
+	if (quit)
+		body.removeChild(quit);
 }

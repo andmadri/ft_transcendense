@@ -21,8 +21,8 @@ function insertOnlinePlayers(online_players: any) {
 function processOnlinePlayers(data: any) {
 	if (data.access && data.access == "yes")
 		insertOnlinePlayers(data.content);
-	else
-		log("Access to DB: " + data.access);
+	// else
+	// 	log("Access to DB: " + data.access);
 }
 
 export function actionOnline(data: any) {

@@ -78,23 +78,15 @@ export async function quitMatch(msg, socket) {
 		console.log(`No match with quitMatch: ${msg.matchID}`);
 		return ;
 	}
-	let name;
-	try {
-		const rowPlayer = await getUserByID(msg.player);
-		name = rowPlayer.name;
-	} catch(err) {
-		console.log("Error getting User by ID" + err.message);
-		// return ;
-	}
 
+	const name = msg.name ? msg.name : 'unknown player';
 	match.stage = Stage.Finish;
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
-		// reason: `match quit by player ${name}`
-		reason: 'match is quit'
-	}));	
+		reason: `match quit by player ${msg.name}`
+	}));
 }
 
 

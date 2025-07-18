@@ -2,6 +2,8 @@ import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGa
 import { Game } from '../script.js'
 import { removeAuthField } from '../Auth/authContent.js'
 import { removeGameField } from '../Game/gameContent.js'
+import { log } from '../logging.js'
+import { getSideMenu } from '../SideMenu/SideMenuContent.js';
 
 function styleElement(
 	element: HTMLElement,
@@ -148,14 +150,11 @@ export function getGameSettings(): HTMLDivElement {
 }
 
 export function getMenu() {
-	if (document.getElementById('auth1'))
-		removeAuthField(1);
-	if (document.getElementById('auth2'))
-		removeAuthField(2);
-	if (document.getElementById('game'))
-		removeGameField();
-
 	const body = document.getElementById('body');
+	if (!body)
+		return ;
+
+	body.innerHTML = "";
 	const menu = document.createElement('div');
 	menu.id = 'menu';
 	menu.style.display = 'flex';
@@ -164,8 +163,9 @@ export function getMenu() {
 	menu.style.justifyContent = 'center';
 
 	menu.append(getGameSettings(), getFriends(), getHighscores(), getOnlineList());
-
 	body?.appendChild(menu);
+	getSideMenu();
+
 }
 
 export function removeMenu() {

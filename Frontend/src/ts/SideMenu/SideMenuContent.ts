@@ -17,7 +17,6 @@ function getPlayer(nr: number) {
 	player.style.padding = '5px';
 	player.style.height = '70px';
 	player.style.width = '500px';
-	player.style.backgroundColor = 'yellow';
 	player.style.position = 'relative';
 
 	logout.id = 'logoutbutton' + nr;

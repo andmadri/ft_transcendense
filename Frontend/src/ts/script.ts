@@ -49,6 +49,8 @@ function mainLoop() {
 			case S.State.Menu:
 				if (!document.getElementById('menu'))
 					getMenu();
+				else
+					log("menu is already there");
 				break ;
 			case S.State.Login:
 				if (!document.getElementById('auth1'))
@@ -71,6 +73,7 @@ function mainLoop() {
 				updateNamesMenu();
 				resetScoreMenu();
 				Game.state = S.State.Game;
+				break ;
 			case S.State.Game:
 				if (!Game.player1Login || !Game.player2Login)
 					Game.state = S.State.End;
@@ -79,10 +82,15 @@ function mainLoop() {
 				break ;
 			case S.State.End:
 				saveGame();
+				log("saved game?");
 				Game.state = S.State.Menu;
+				break ;
+			default:
+				log("no valid state");
+
 		}
-		
-	}
+	} else
+		log("socket is closed")
 	window.requestAnimationFrame(mainLoop);
 }
 
