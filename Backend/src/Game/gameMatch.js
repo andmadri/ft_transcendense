@@ -47,7 +47,7 @@ export function newMatch(id, name, id2, name2) {
 
 /*
 	-> if player wants to play a game (1vs1, 1vsCOM, Online)
-	1vs1 	=> if both logged in => new match + save match db
+	1vs1 	=> if both logged in => new match
 			=> if one or both guest => new match not in db
 	1vsCOM	=> if logged in or guest => new match not in db
 	Online	=> new match + save match db

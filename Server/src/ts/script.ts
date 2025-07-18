@@ -12,26 +12,27 @@ import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
 import { saveGame } from './Game/initGame.js';
+import { getLoadingPage, removeLoadingPage } from './Loading/loadContent.js'
 
+getLoadingPage();
 createLog();
 
-// Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Menu,
-	opponentType: S.OT.Empty,
-	matchFormat: S.MF.Empty,
-	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss'),
-	matchID: -1,
-	id: 0,
-	name: 'unknown',
-	player1Login: false,
-	score: 0,
-	id2: 0,
-	name2: 'unknown',
-	player2Login: false,
-	score2: 0,
-	playerLogin: 1
+		state: S.State.Menu,
+		opponentType: S.OT.Empty,
+		matchFormat: S.MF.Empty,
+		logDiv: document.getElementById('log') as HTMLDivElement,
+		socket: new WebSocket('wss://localhost:8443/wss'),
+		matchID: -1,
+		id: 0,
+		name: 'unknown',
+		player1Login: false,
+		score: 0,
+		id2: 0,
+		name2: 'unknown',
+		player2Login: false,
+		score2: 0,
+		playerLogin: 1
 }
 
 startSocketListeners();
@@ -40,8 +41,6 @@ startSocketListeners();
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
-
-getSideMenu();
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
@@ -86,4 +85,10 @@ function mainLoop() {
 	window.requestAnimationFrame(mainLoop);
 }
 
-mainLoop();
+setTimeout(() => {
+	removeLoadingPage();
+	getSideMenu();
+	mainLoop();
+}, 5000);
+
+
