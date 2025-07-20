@@ -1,4 +1,4 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js' //imports two functions from login.js
+import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js'
 import { log } from '../logging.js'
 import { removeMenu } from '../Menu/menuContent.js'
 import { Game } from '../script.js'
@@ -10,7 +10,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	auth.style.backgroundColor = 'lightblue';
 	auth.style.width = '50%';
 	auth.style.height = '100%';
-	auth.style.position = 'fixed';
+	auth.style.position = 'center';
 	auth.style.display = 'flex';
 	auth.style.flexDirection = 'column';
 	auth.style.alignItems = 'center';
@@ -100,7 +100,12 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	toggleBtn.id = 'toggle-mode' + player;
 	toggleBtn.textContent = 'Switch to Login';
 
-	auth.append(authTitle, authForm, modeLabel, toggleBtn);
+	const googleAuth = document.createElement('button');
+	googleAuth.type = 'button';
+	googleAuth.id = 'google-login-btn' + player;
+	googleAuth.textContent = 'Login with Google';
+
+	auth.append(authTitle, authForm, modeLabel, toggleBtn, googleAuth);
 	return (auth);
 }
 
@@ -126,6 +131,13 @@ export function getLoginFields() {
 	// addEventListeners for Login form
 	document.getElementById('authForm1')?.addEventListener('submit', (e) => submitAuthForm(e, 1));
 	document.getElementById('authForm2')?.addEventListener('submit', (e) => submitAuthForm(e, 2));
+	document.getElementById('google-login-btn1')?.addEventListener('click', (e) => {
+		window.location.href = 'https://localhost:8443/api/auth/google?player=1';
+		
+	});
+	document.getElementById('google-login-btn2')?.addEventListener('click', (e) => {
+		window.location.href = 'https://localhost:8443/api/auth/google?player=2';
+	});
 	document.getElementById('toggle-mode1')?.addEventListener('click', (e) => changeLoginMode(1));
 	document.getElementById('toggle-mode2')?.addEventListener('click', (e) => changeLoginMode(2));
 	document.getElementById('guestBtn1')?.addEventListener('click', (e) => addGuest(e, 1));
@@ -140,3 +152,4 @@ export function removeAuthField(player: number) {
 		body.removeChild(auth);
 
 }
+

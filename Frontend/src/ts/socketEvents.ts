@@ -3,9 +3,11 @@ import { actionGame } from './Game/gameLogic.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
+import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 
 export function startSocketListeners() {
 	Game.socket.addEventListener('open', openSocket);
+	Game.socket.addEventListener('open', () => { getPlayerData(); });
 	Game.socket.addEventListener('error', errorSocket);
 	Game.socket.addEventListener('message', receiveFromWS);
 	Game.socket.addEventListener('close', closeSocket);
@@ -16,7 +18,7 @@ export function closeSocket(e: CloseEvent) {
 }
 
 export function openSocket(e: Event) {
-	// log('✅ WebSocket is open');
+	log('✅ WebSocket is open');
 }
 
 export function errorSocket(err: Event) {
@@ -28,7 +30,7 @@ export function errorSocket(err: Event) {
 /*
 FROM backend TO frontend
 • login => loginCheck / signUpCheck / logout
-• playerInfo => getName / getAvatar
+• playerInfo => getName / getAvatar / revicePlayerData
 • chat => incomming
 • online => retOnlinePlayers / retOnlinePlayersWaiting
 • friends => retFriends
@@ -48,6 +50,7 @@ export function receiveFromWS(e: MessageEvent) {
 			actionLogin(data);
 			break ;
 		case 'playerInfo':
+			actionPlayerInfo(data);
 			break ;
 		case 'online':
 			actionOnline(data);

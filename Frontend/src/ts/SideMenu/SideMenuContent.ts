@@ -1,4 +1,7 @@
 import { Game } from '../script.js'
+import { submitLogout } from '../Auth/logout.js';
+import { updatePlayerData } from '../SideMenu/updatePlayerData.js';
+import { log } from '../logging.js';
 
 function getPlayer(nr: number) {
 	const	player = document.createElement('div');
@@ -22,37 +25,12 @@ function getPlayer(nr: number) {
 
 	logout.id = 'logoutbutton' + nr;
 	logout.textContent = 'Logout';
-	logout.addEventListener('click', () => {
-		const msg = {
-			action: 'login',
-			subaction: 'logout',
-			player: nr,
-			id: isPlayer1 ? Game.id : Game.id2
-		};
-
-		if (isPlayer1) {
-			Game.name = 'unknown';
-			Game.score = 0;
-			Game.player1Login = false;
-			Game.id = 0;
-		} else {
-			Game.name2 = 'unknown';
-			Game.score = 0;
-			Game.player2Login = false;
-			Game.id2 = 0;
-		}
-		playername.textContent = 'unknown';
-		playerscore.textContent = '0';
-
-		Game.socket.send(JSON.stringify(msg));
-		console.log(`Logging out player ${nr}`);
-	});
-
+	logout.addEventListener('click', (e) => submitLogout(e, nr));
 	player.append(playername, playerscore, logout);
 	return (player);
 }
 
-export function getSideMenu() {
+export async function getSideMenu() {
 	const body = document.getElementById('body');
 	if (!body) return ;
 	const menu = document.createElement('div');
@@ -60,7 +38,7 @@ export function getSideMenu() {
 
 	menu.id = 'sidemenu';
 	menu.style.width = '100%';
-	menu.style.position = 'fixed';
+	menu.style.position = 'center';
 	menu.style.bottom = '0';
 	menu.style.left = '0';
 	menu.style.width = '100%';
@@ -69,9 +47,14 @@ export function getSideMenu() {
 	menu.style.zIndex = '1000';
 	menu.style.gridTemplateColumns = '1fr 1fr';
 	menu.style.gap = '1rem';
-
 	menu.append(getPlayer(1), getPlayer(2));
 	body.appendChild(menu);
+	try {
+		await updatePlayerData();
+	} catch (error) {
+		log('Error updating player data: ' + error);
+	}
+	// updatePlayerData();
 }
 
 function updateTextbyId(id: string, value: string) {

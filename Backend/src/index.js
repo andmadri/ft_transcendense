@@ -2,30 +2,44 @@ import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
-import { handleUserAuth } from './Auth/userAuth.js';
+import fastifyCors from '@fastify/cors';
+// import { validateLogin, addUser } from './Auth/userAuth.js';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { createDatabase } from './Database/database.js'
 import { initGame, gameUpdate } from './Game/gameLogic.js';
 import googleAuthRoutes from './routes/googleAuth.js';
+import userAuthRoutes from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
+// import { updateOnlineStatus } from './Database/database.js';
+
 
 const fastify = Fastify();
 await fastify.register(websocket);
-// Register the cookie plugin
-fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-// Register the JWT plugin
-fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
-// Register the auth route plugin
-await fastify.register(googleAuthRoutes);
 
 //change how you create database
 export const db = await createDatabase();
+
+// Register the cookie plugin
+fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
+
+// Register the JWT plugin
+fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
+
+// Register the auth route plugins for HTTPS API Auth endpoints:
+// POST /api/signup - Sign up a new user
+// POST /api/login - Log in an existing user
+// POST /api/logout - Log out a user
+// GET /api/auth/google - Redirect to Google OAuth
+// GET /api/auth/google/callback - Handle Google OAuth callback
+await fastify.register(googleAuthRoutes);
+await fastify.register(userAuthRoutes);
 
 
 /*
 FROM frontend TO backend				
 • login => loginUpser / signUpUser / logout				
-• playerInfo => changeName / addAvatar / delAvatar		
+• playerInfo => changeName / addAvatar / delAvatar / getPlayerData
 • chat => outgoing										
 • online => getOnlinePlayers / getOnlinePlayersWaiting	
 • friends => getFriends / addFriend / deleteFriend		
@@ -38,20 +52,33 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 	// Check if the request has a valid JWT token in cookies
 	const cookies = req.headers.cookie;
-	const authToken = parseAuthTokenFromCookies(cookies);
+	const authTokens = parseAuthTokenFromCookies(cookies);
 
-	try {
-		const decoded = fastify.jwt.verify(authToken);
-		const userId = decoded.userId;
-
-		// Store the user ID on the connection
-		connection.user = { id: userId };
-		console.log(`JWT verified for user ID: ${userId}`);
-		console.log(`User ${decoded.email} connected via WebSocket`);
-	} catch (err) {
-		console.error('JWT verification failed:', err);
-		// connection.socket.send(JSON.stringify(msg));
-		// return;
+	let decoded;
+	let userId1 = null;
+	let userId2 = null;
+	if (authTokens && authTokens.jwtAuthToken1) {
+		try {
+			decoded = fastify.jwt.verify(authTokens.jwtAuthToken1);
+			userId1 = decoded.userId;
+			// Use userId or decoded as needed for player 1
+		} catch (err) {
+			console.error('JWT1 verification failed:', err);
+		}
+	}
+	if (authTokens && authTokens.jwtAuthToken2) {
+		try {
+			decoded = fastify.jwt.verify(authTokens.jwtAuthToken2);
+			userId2 = decoded.userId;
+			// Use userId or decoded as needed for player 2
+		} catch (err) {
+			console.error('JWT2 verification failed:', err);
+		}
+	}
+	if (!userId1 && !userId2) {
+		console.error('No valid auth tokens found in cookies');
+		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
+		return ;
 	}
 
 
@@ -67,10 +94,10 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 		switch (action) {
-			case 'login':
-				return handleUserAuth(msg, connection.socket, fastify);
+			// case 'login':
+			// 	return handleUserAuth(msg, connection.socket, fastify);
 			case 'playerInfo':
-				break ;
+				return handlePlayerInfo(msg, connection.socket, userId1, userId2);
 			case 'online':
 				return handleOnlinePlayers(msg, connection.socket);
 			case 'friends':
@@ -93,20 +120,6 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		}			
 	});
 });
-
-
-
-// fastify.get('/api/protected', async (request, reply) => {
-// 	try {
-// 		const user = await request.jwtVerify(); 
-// 		// Verifies JWT from Authorization header or cookie
-// 		// Proceed with user info
-// 		reply.send({ message: 'Protected data', user });
-// 	} catch (err) {
-// 		reply.code(401).send({ error: 'Unauthorized' });
-// 	}
-// });
-
 
 fastify.setNotFoundHandler(function (request, reply) {
   reply.status(404).send({ error: 'Not Found' });

@@ -78,17 +78,22 @@ async function handleGoogleAuth(user) {
  */
 export default async function googleAuthRoutes(fastify, opts) {
 	fastify.get('/api/auth/google', async (request, reply) => {
+		const player = request.query.player || '1';
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+		const state = encodeURIComponent(player);
+		console.log('backend: Google OAuth for player:', state);
 
-		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent`;
+		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${state}`;
 		reply.redirect(redirectURL);
 	});
 
 	fastify.get('/api/auth/google/callback', async (request, reply) => {
-		const { code } = request.query;
+		const { code, state } = request.query;
+		console.log('callback: Google OAuth for player:', state);
 
 		try {
+			// 
 			const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
 			code,
 			client_id: process.env.GOOGLE_CLIENT_ID,
@@ -111,7 +116,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 
 			const jwtToken = signFastifyJWT(dbUserObj, fastify);
 			console.log('Generated JWT:', jwtToken);
-			reply.setCookie('jwtAuthToken', jwtToken, {
+			reply.setCookie('jwtAuthToken' + state, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)

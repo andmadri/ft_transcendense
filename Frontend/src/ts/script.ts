@@ -16,18 +16,18 @@ createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Menu,
-	opponentType: S.OT.Empty,
-	matchFormat: S.MF.Empty,
+	state: S.State.Login,
+	opponentType: S.OT.ONEvsONE,
+	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
 	id: 0,
 	name: 'unknown',
-	player1Login: false,
+	player1Login: false, // should be Cookie
 	score: 0,
 	id2: 0,
 	name2: 'unknown',
-	player2Login: false,
+	player2Login: false, // should be Cookie
 	score2: 0,
 	playerLogin: 1
 }
