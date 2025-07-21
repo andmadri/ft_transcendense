@@ -124,6 +124,7 @@ export function initGameServer() {
 			player1ID: Game.id,
 			player2ID: Game.id2
 		}
+		log("init game..");
 		Game.socket.send(JSON.stringify(initGame));
 	} else {
 		//problem..

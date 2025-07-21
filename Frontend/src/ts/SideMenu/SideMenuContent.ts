@@ -1,10 +1,11 @@
 import { Game } from '../script.js'
 
-function getPlayer(nr: number) {
+function getPlayer(nr: number, hasLogoutBtn: boolean) {
 	const	player = document.createElement('div');
 	const	playername = document.createElement('p');
 	const	playerscore = document.createElement('p');
-	const	logout = document.createElement('button');
+	let		logoutBtn;
+	
 
 	const	isPlayer1 = nr === 1;
 
@@ -19,39 +20,44 @@ function getPlayer(nr: number) {
 	player.style.width = '500px';
 	player.style.position = 'relative';
 
-	logout.id = 'logoutbutton' + nr;
-	logout.textContent = 'Logout';
-	logout.addEventListener('click', () => {
-		const msg = {
-			action: 'login',
-			subaction: 'logout',
-			player: nr,
-			id: isPlayer1 ? Game.id : Game.id2
-		};
+	if (hasLogoutBtn) {
+		logoutBtn = document.createElement('button');
+		logoutBtn.id = 'logoutbutton' + nr;
+		logoutBtn.textContent = 'Logout';
+		logoutBtn.addEventListener('click', () => {
+			const msg = {
+				action: 'login',
+				subaction: 'logout',
+				player: nr,
+				id: isPlayer1 ? Game.id : Game.id2
+			};
 
-		if (isPlayer1) {
-			Game.name = 'unknown';
-			Game.score = 0;
-			Game.player1Login = false;
-			Game.id = 0;
-		} else {
-			Game.name2 = 'unknown';
-			Game.score = 0;
-			Game.player2Login = false;
-			Game.id2 = 0;
-		}
-		playername.textContent = 'unknown';
-		playerscore.textContent = '0';
+			if (isPlayer1) {
+				Game.name = 'unknown';
+				Game.score = 0;
+				Game.player1Login = false;
+				Game.id = 0;
+			} else {
+				Game.name2 = 'unknown';
+				Game.score = 0;
+				Game.player2Login = false;
+				Game.id2 = 0;
+			}
+			playername.textContent = 'unknown';
+			playerscore.textContent = '0';
 
-		Game.socket.send(JSON.stringify(msg));
-		console.log(`Logging out player ${nr}`);
-	});
+			Game.socket.send(JSON.stringify(msg));
+			console.log(`Logging out player ${nr}`);
+		});
+	}
 
-	player.append(playername, playerscore, logout);
+	player.append(playername, playerscore);
+	if (hasLogoutBtn && logoutBtn)
+		player.append(logoutBtn);
 	return (player);
 }
 
-export function getSideMenu() {
+export function getSideMenu(hasLogoutBtn: boolean) {
 	const body = document.getElementById('body');
 	if (!body) return ;
 	const menu = document.createElement('div');
@@ -69,8 +75,16 @@ export function getSideMenu() {
 	menu.style.gridTemplateColumns = '1fr 1fr';
 	menu.style.gap = '1rem';
 
-	menu.append(getPlayer(1), getPlayer(2));
+	menu.append(getPlayer(1, hasLogoutBtn), getPlayer(2, hasLogoutBtn));
 	body.appendChild(menu);
+}
+
+export function removeSideMenu() {
+	const body = document.getElementById('body');
+	const menu = document.getElementById('sidemenu');
+
+	if (body && menu)
+		body.removeChild(menu);
 }
 
 function updateTextbyId(id: string, value: string) {

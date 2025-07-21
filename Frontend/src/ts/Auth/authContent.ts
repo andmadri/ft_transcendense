@@ -4,8 +4,9 @@ import { removeMenu } from '../Menu/menuContent.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
 
-export function getAuthField(player: number, mandatoy: Boolean) {
+function createAuthField(player: number) {
 	const	auth = document.createElement('div');
+
 	auth.id = 'auth' + player;
 	auth.style.backgroundColor = 'lightblue';
 	auth.style.width = '50%';
@@ -19,6 +20,31 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 		auth.style.left = '50%';
 		auth.style.backgroundColor = 'lightgreen';
 	}
+	return (auth);
+}
+
+export function getLoggedInField(player: number) {
+	let auth = document.getElementById('auth' + player);
+	if (!auth)
+		auth = createAuthField(player);
+
+	const	loggedInElement = document.createElement('h2');
+	loggedInElement.id = 'loggedIn' + player;
+	loggedInElement.textContent = "Player " + player + " is logged in";
+	auth.innerHTML = "";
+
+	auth.appendChild(loggedInElement);
+	return (auth);
+}
+
+export function getAuthField(player: number, mandatoy: Boolean) {
+	if (player == 1 && Game.player1Login) {
+		return (getLoggedInField(1));
+	} else if (player == 2 && Game.player2Login) {
+		return (getLoggedInField(2));
+	}
+
+	const auth = createAuthField(player);
 
 	const	authTitle = document.createElement('h2');
 	authTitle.id = 'authTitle' + player;
@@ -100,8 +126,24 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	toggleBtn.id = 'toggle-mode' + player;
 	toggleBtn.textContent = 'Switch to Login';
 
-	auth.append(authTitle, authForm, modeLabel, toggleBtn);
+	auth?.append(authTitle, authForm, modeLabel, toggleBtn);
 	return (auth);
+}
+
+function isAlreadyLoggedIn(minPlayers: number, newState: S.State) {
+	if (!Game.player1Login)
+		return false;
+	if (minPlayers == 2 && !Game.player2Login)
+		return false;
+	Game.state = newState;
+	return true ;
+}
+
+function initComputer() {
+	Game.player2Login = true;
+	Game.id2 = 2;
+	Game.name2 = 'Computer';
+	Game.score2 = 0;
 }
 
 export function getLoginFields() {
@@ -112,15 +154,34 @@ export function getLoginFields() {
 	if (!body)
 		return ;
 
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
-		const auth = getAuthField(1, true); 
-		body.appendChild(auth);
-	} else {
-		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-		body.append(getAuthField(1, false), getAuthField(2, false));
-		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			body.appendChild(getAuthField(1, false));
-		}
+	switch (Game.opponentType) {
+		case (S.OT.Online):
+			initComputer();
+			if (isAlreadyLoggedIn(1, S.State.Pending))
+				return ;
+			const auth = getAuthField(1, true); 
+			if (!auth)
+				return ;
+			body.appendChild(auth);
+			break ;
+		case (S.OT.ONEvsONE):
+			if (isAlreadyLoggedIn(2, S.State.Init))
+				return ;
+			const fieldOne = getAuthField(1, false);
+			const fieldTwo = getAuthField(2, false);
+			if (fieldOne && fieldTwo) // two login not mandatory
+				body.append(fieldOne, fieldTwo);
+			break ;
+		case (S.OT.ONEvsCOM): // one login not mandatory
+			initComputer();
+			if (isAlreadyLoggedIn(1, S.State.Init))
+				return ;
+			const field = getAuthField(1, false);
+			if (field)
+				body.appendChild(field);
+			break ;
+		default:
+			log("No opponentType")
 	}
 
 	// addEventListeners for Login form

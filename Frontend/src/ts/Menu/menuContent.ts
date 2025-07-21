@@ -3,7 +3,7 @@ import { Game } from '../script.js'
 import { removeAuthField } from '../Auth/authContent.js'
 import { removeGameField } from '../Game/gameContent.js'
 import { log } from '../logging.js'
-import { getSideMenu } from '../SideMenu/SideMenuContent.js';
+import { getSideMenu, removeSideMenu } from '../SideMenu/SideMenuContent.js';
 
 function styleElement(
 	element: HTMLElement,
@@ -164,8 +164,7 @@ export function getMenu() {
 
 	menu.append(getGameSettings(), getFriends(), getHighscores(), getOnlineList());
 	body?.appendChild(menu);
-	getSideMenu();
-
+	getSideMenu(true);
 }
 
 export function removeMenu() {
@@ -174,4 +173,5 @@ export function removeMenu() {
 
 	if (body && menu)
 		body.removeChild(menu);
+	removeSideMenu();
 }

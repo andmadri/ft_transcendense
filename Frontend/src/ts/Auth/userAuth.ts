@@ -1,6 +1,7 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { getLoggedInField } from './authContent.js'
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
@@ -92,6 +93,7 @@ export function submitAuthForm(e: Event, player: number) {
 }
 
 export function loginSuccessfull(player: number) {
+	getLoggedInField(player);
 	if (player == 1) {
 		log("Login Successfull (player one)");
 

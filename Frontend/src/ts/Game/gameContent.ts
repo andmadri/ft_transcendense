@@ -1,5 +1,6 @@
 import { removeAuthField } from '../Auth/authContent.js';
 import { removeMenu } from '../Menu/menuContent.js'
+import { getSideMenu } from '../SideMenu/SideMenuContent.js';
 import { log } from '../logging.js'
 import { Game } from '../script.js'
 
@@ -87,6 +88,7 @@ export function getGameField() {
 	field.append(ball, lPlayer, rPlayer);
 	game.appendChild(field);
 	body?.appendChild(game);
+	getSideMenu(false);
 }
 
 export function removeGameField() {
