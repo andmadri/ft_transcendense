@@ -59,11 +59,11 @@ export function movePadel(key: string) {
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
-	if (Game.opponentType == 'ai') {
+	if (Game.opponentType == S.OT.ONEvsCOM) {
 		aiAlgorithm();
 	}
 	for (let key in S.Keys) {
-		if (Game.opponentType == 'ai' && (key == 'ArrowUp' || key == 'ArrowDown')) {
+		if (Game.opponentType == S.OT.ONEvsCOM && (key == 'ArrowUp' || key == 'ArrowDown')) {
 			continue;
 		}
 		if (S.Keys[key].pressed === true) {
