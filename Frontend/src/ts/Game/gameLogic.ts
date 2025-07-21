@@ -139,7 +139,7 @@ function resetBall(){
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}
-	if (Game.opponentType == 'ai') {
+	if (Game.opponentType == S.OT.ONEvsCOM) {
 		resetAI();
 	}
 }
@@ -202,5 +202,49 @@ export function handleGameOver() {
 		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
 		`;
 		document.body.appendChild(gameOver);
+	}
+}
+
+export function game() {
+	checkWallCollision();
+	checkPaddelCollision();
+	calculateBallDir();
+	updateBallPosition();
+	if (checkPadelMovement())
+		updatePadelPosition();	
+	// Game.timeGame = performance.now();
+	// 			if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+	// 				GameLogic.handleGameOver();
+	// 				downloadTrainingData();
+	// 				trainingSet.length = 0;
+	// 				return ;
+	// 			}
+	// 			GameLogic.checkWallCollision();
+	// 			GameLogic.checkPaddelCollision();
+	// 			GameLogic.calculateBallDir();
+	// 			GameLogic.updateBallPosition();
+	// 			if (GameLogic.checkPadelMovement())
+	// 				GameLogic.updatePadelPosition();
+	// 			const data = collectTrainingData();
+	// 			if (data != null) {
+	// 				trainingSet.push(data);
+	// 			}
+}
+
+export function actionGame(data: any) {
+	if (!data.subaction) {
+		log('no subaction');
+		return ;
+	}
+
+	switch(data.subaction) {
+		case 'ballUpdate':
+ 			processBallUpdate(data);
+			break ;
+		case 'padelUpdate':
+			processPadelUpdate(data);
+			break ;
+		default:
+			log(`(actionGame) Unknown action: ${data.subaction}`);
 	}
 }
