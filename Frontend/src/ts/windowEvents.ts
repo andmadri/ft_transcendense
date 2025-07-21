@@ -37,16 +37,18 @@ export function initAfterResize() {
 		S.Objects['ball'].y *= scaleFactor;
 		S.Objects['ball'].width *= scaleFactor;
 		S.Objects['ball'].height *= scaleFactor;
+		S.Objects['ball'].speed *= scaleFactor;
 
 		ball.style.left = `${S.Objects['ball'].x}px`;
 		ball.style.top = `${S.Objects['ball'].y}px`;
 		ball.style.width = `${S.Objects['ball'].width}px`;
 		ball.style.height = `${S.Objects['ball'].height}px`;
-
+		
 		S.Objects['rPlayer'].x *= scaleFactor;
 		S.Objects['rPlayer'].y *= scaleFactor;
 		S.Objects['rPlayer'].width *= scaleFactor;
 		S.Objects['rPlayer'].height *= scaleFactor;
+		S.Objects['rPlayer'].speed *= scaleFactor;
 
 		rPlayer.style.left = `${S.Objects['rPlayer'].x}px`;
 		rPlayer.style.top = `${S.Objects['rPlayer'].y}px`;
@@ -57,6 +59,7 @@ export function initAfterResize() {
 		S.Objects['lPlayer'].y *= scaleFactor;
 		S.Objects['lPlayer'].width *= scaleFactor;
 		S.Objects['lPlayer'].height *= scaleFactor;
+		S.Objects['lPlayer'].speed *= scaleFactor;
 
 		lPlayer.style.left = `${S.Objects['lPlayer'].x}px`;
 		lPlayer.style.top = `${S.Objects['lPlayer'].y}px`;
@@ -71,7 +74,7 @@ export function initAfterResize() {
 
 		S.Objects['field'].width = newWidth;
 		S.Objects['field'].height = newHeight;
-
+		console.log(`Resized field to ${S.Objects['field'].width}x${S.Objects['field'].height}`);
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
 	}

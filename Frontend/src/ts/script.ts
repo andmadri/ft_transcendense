@@ -11,6 +11,7 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
+import { trainingSet, collectTrainingData, downloadTrainingData } from './Game/aiTraining.js'
 
 createLog();
 
@@ -21,6 +22,9 @@ export const Game: S.gameInfo = {
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
+	timeGame: 0,
+	scoreLeft: 0,
+	scoreRight: 0,
 	id: 0,
 	name: 'unknown',
 	player1Login: false, // should be Cookie
@@ -40,6 +44,19 @@ window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
 
 getSideMenu();
+
+let lastSpeedIncreaseTime = 0;
+
+//test to increment ball speed every minute for better AI data and more exciting game
+function incrementBallSpeed() {
+  if (!Game.timeGame) return;
+
+  // Check if at least 60,000ms (1 minute) passed since last increment
+  if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
+    S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
+    lastSpeedIncreaseTime = Game.timeGame;
+  }
+}
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {

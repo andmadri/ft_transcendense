@@ -28,44 +28,120 @@ function styleElement(
 		element.style.backgroundColor = backgroundColor;
 }
 
+function removeLogDiv() {
+	const logDiv = document.getElementById('log');
+	logDiv?.remove();
+}
+
 export function getGameField() {
-	if (document.getElementById('auth1'))
-		removeAuthField(1);
-	if (document.getElementById('auth2'))
-		removeAuthField(2);
-	if (document.getElementById('menu'))
-		removeMenu();
-	const	body = document.getElementById('body');
+	removeLogDiv();
+
+	const	body = document.body;
+	body.style.margin = '0';
+	body.style.padding = '0';
+	body.style.backgroundColor = 'gold';
+	body.style.display = 'grid';
+	body.style.placeItems = 'center';
+
+	//wrapper for title and field
+	const container = document.createElement('div');
+	container.style.display = 'flex';
+	container.style.flexDirection = 'column';
+	container.style.alignItems = 'center'; // center horizontally
+	container.style.gap = '20px'; // spacing between title and field
+	container.style.flexShrink = '0';
+	
 
 	const	game = document.createElement('div');
-	game.id = 'game';
-	styleElement(game, '1200px', '700px', 'relative', '50px', '0px', '0px', 'green');
 	game.style.display = 'flex';
-	game.style.margin = '0 auto';
+	game.style.flexDirection = 'column';
+	game.id = 'game';
+	styleElement(game, '100vw', '100vh', 'relative', '', '', '', 'gold');
+	game.style.alignItems = 'center';
+	game.style.padding = '10px';
+	game.style.boxSizing = 'border-box';
+	game.style.gap = '20px';
+	game.style.textAlign = 'center';
+	
 
+	const title = document.createElement('div');
+	title.id = 'gameTitle';
+	title.textContent = 'PONG';
+	title.style.position = 'relative';
+	title.style.fontFamily = '"Courier New", monospace';
+	title.style.fontSize = '3rem';
+	title.style.color = 'gold';
+	title.style.textShadow = `	-2px -2px 0 black,
+	2px -2px 0 black,
+	-2px  2px 0 black,
+	2px  2px 0 black	`;
+	title.style.zIndex = '5';
+	title.style.pointerEvents = 'none';
+	
 	const	field = document.createElement('div');
 	field.id = 'field';
-	game.style.display = 'flex';
-	styleElement(field, '1200px', '700px', 'relative', '0px', '0px', '0px', 'black');
-
+	styleElement(field, '800px', '600px', 'relative', '', '', '', 'black');
+	field.style.border = '30px solid black'; //maybe this will fuck up collision and scaling
+	field.style.borderRadius = '30px';
+	//field.style.padding = '30px';
+	field.style.position = 'relative';
+	
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
-	styleElement(ball, '25px', '25px', 'absolute', '0px', '', '0px', 'white');
+	styleElement(ball, '25px', '25px', 'absolute', '50%', '', '50%', 'white');
 	ball.style.borderRadius = '50%';
 	ball.style.transform = 'translate(-50%, -50%)';
-
+	
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';
-	styleElement(lPlayer, '10px', '100px', 'absolute', '300px', '', '0px', 'yellow');
-
+	styleElement(lPlayer, '10px', '100px', 'absolute', '35%', '', '10px', 'white');
+	
 	const	rPlayer = document.createElement('div');
 	rPlayer.id = 'rPlayer';
-	styleElement(rPlayer, '10px', '100px', 'absolute', '300px', '0px', '', 'purple');
+	styleElement(rPlayer, '10px', '100px', 'absolute', '35%', '10px', '', 'white');
+	
+	const centerLine = document.createElement('div');
+	centerLine.id = 'centerLine';
+	styleElement(centerLine, '0', '100%', 'absolute', '0', '', '50%');
+	centerLine.style.borderLeft = '4px dotted white';
+	centerLine.style.transform = 'translateX(-50%)';
 
-	field.append(ball, lPlayer, rPlayer);
-	game.appendChild(field);
-	body?.appendChild(game);
+	const scoreContainer = document.createElement('div');
+	scoreContainer.id = 'scoreContainer';
+	scoreContainer.style.position = 'absolute';
+	scoreContainer.style.top = '20px';
+	scoreContainer.style.left = '50%';
+	scoreContainer.style.transform = 'translateX(-50%)';
+	scoreContainer.style.display = 'flex';
+	scoreContainer.style.gap = '40px';
+	scoreContainer.style.fontFamily = '"Courier New", monospace';
+	scoreContainer.style.fontSize = '2rem';
+	scoreContainer.style.color = 'white';
+	scoreContainer.style.zIndex = '10';
+
+	const leftScore = document.createElement('div');
+	leftScore.id = 'leftScore';
+	leftScore.textContent = '0';
+
+	const rightScore = document.createElement('div');
+	rightScore.id = 'rightScore';
+	rightScore.textContent = '0';
+
+	scoreContainer.appendChild(leftScore);
+	scoreContainer.appendChild(rightScore);
+	field.appendChild(scoreContainer);
+
+	field.appendChild(centerLine);
+	field.appendChild(ball);
+	field.appendChild(lPlayer);
+	field.appendChild(rPlayer);
+	container.appendChild(title);
+	container.appendChild(field);
+	game.appendChild(container);
+	body.appendChild(game);
+	
 }
+
 
 export function removeGameField() {
 	const	body = document.getElementById('body');
