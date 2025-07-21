@@ -5,6 +5,7 @@ import { initPositions } from './initGame.js';
 import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { aiAlgorithm } from './aiLogic.js';
 import { resetAI } from './aiLogic.js';
+import { trainingSet, collectTrainingData, downloadTrainingData } from './aiTraining.js'
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -183,7 +184,7 @@ export function checkPaddelCollision() {
 }
 
 export function handleGameOver() {
-	Game.gameOn = false;
+	Game.state = S.State.Menu;
 	log("Game Over!");
 	if (document.getElementById('gameOver')) {
 		const gameOver = document.createElement('div');
@@ -206,29 +207,29 @@ export function handleGameOver() {
 }
 
 export function game() {
+	// checkWallCollision();
+	// checkPaddelCollision();
+	// calculateBallDir();
+	// updateBallPosition();
+	// if (checkPadelMovement())
+	// 	updatePadelPosition();	
+	Game.timeGame = performance.now();
+	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+		handleGameOver();
+		downloadTrainingData();
+		trainingSet.length = 0;
+		return ;
+	}
 	checkWallCollision();
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
-		updatePadelPosition();	
-	// Game.timeGame = performance.now();
-	// 			if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-	// 				GameLogic.handleGameOver();
-	// 				downloadTrainingData();
-	// 				trainingSet.length = 0;
-	// 				return ;
-	// 			}
-	// 			GameLogic.checkWallCollision();
-	// 			GameLogic.checkPaddelCollision();
-	// 			GameLogic.calculateBallDir();
-	// 			GameLogic.updateBallPosition();
-	// 			if (GameLogic.checkPadelMovement())
-	// 				GameLogic.updatePadelPosition();
-	// 			const data = collectTrainingData();
-	// 			if (data != null) {
-	// 				trainingSet.push(data);
-	// 			}
+		updatePadelPosition();
+	const data = collectTrainingData();
+	if (data != null) {
+		trainingSet.push(data);
+	}
 }
 
 export function actionGame(data: any) {

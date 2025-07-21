@@ -11,7 +11,6 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
-import { trainingSet, collectTrainingData, downloadTrainingData } from './Game/aiTraining.js'
 
 createLog();
 
@@ -89,7 +88,8 @@ function mainLoop() {
 					resetScoreMenu();
 				}
 				game();
-				if (!Game.player1Login || !Game.player2Login)
+				//if you are playing with the AI and you log out yourself there is a problem
+				if (Game.opponentType != S.OT.ONEvsCOM && (!Game.player1Login || !Game.player2Login))
 					Game.state = S.State.Menu;
 				break ;
 			}
