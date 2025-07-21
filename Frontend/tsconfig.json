@@ -7,7 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
-    
+    "typeRoots": ["./node_modules/@types", "./src/ts/types"],
     "lib": ["DOM", "ES2015"], // maybe not needed
     // "typeRoots": ["./node_modules/@types"], not needed I think
     // "module": "commonjs",

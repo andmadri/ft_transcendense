@@ -6,6 +6,7 @@ import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 // import { aiAlgorithm } from './aiLogic.js';
 // import { resetAI } from './aiLogic.js';
 import { trainingSet, collectTrainingData, downloadTrainingData } from './aiTraining.js'
+import { predictAction } from './aiLogic.js';
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -207,12 +208,6 @@ export function handleGameOver() {
 }
 
 export function game() {
-	// checkWallCollision();
-	// checkPaddelCollision();
-	// calculateBallDir();
-	// updateBallPosition();
-	// if (checkPadelMovement())
-	// 	updatePadelPosition();	
 	Game.timeGame = performance.now();
 	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
 		handleGameOver();
