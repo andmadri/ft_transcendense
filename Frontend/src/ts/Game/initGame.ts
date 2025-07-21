@@ -1,40 +1,76 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { getGameField } from './gameContent.js';
 
 export function startGame() {
-	log('start Game?');
-	// if (Game.opponentType == '1 vs 1') {
-	// } else if (Game.opponentType == '1 vs COM') {
-	// } else if (Game.opponentType == 'Online') {
-	// } else {
-	// 	log('No opponent type choosen');
-	// 	return ;
-	// }
-	// if (Game.matchFormat == 'single game') {
-	// } else if (Game.matchFormat == 'tournament') {
-	// } else {
-	// 	log('No match format choosen');
-	// 	return ;
-	// }
-	Game.opponentType = 'ai';
-	Game.gameOn = true ;
+	switch (Game.opponentType) {
+		case S.OT.ONEvsONE: {
+			Game.state = S.State.Login;		
+			break ;
+		}
+		case S.OT.ONEvsCOM: {
+			Game.state = S.State.Game;
+			break ;
+		}
+		case S.OT.Online: {
+			Game.state = S.State.Pending;
+			break ;
+		}
+		default: {
+			log('No opponent type choosen');
+			return ;
+		}
+	}
+
+	switch (Game.matchFormat) {
+		case S.MF.Tournament: {
+			// create tournament once?
+			break ;
+		}
+		case S.MF.Tournament: {
+			// create tournament once?
+			break ;
+		}
+		default: {
+			log('No match format choosen');
+			return ;
+		}
+	}
+	log('Game state after startGame: ' + Game.state);
 }
 
 export function changeOpponentType(option: string) {
-	Game.opponentType = option;
+	switch (option) {
+		case '1 vs 1':
+			Game.opponentType = S.OT.ONEvsONE;
+			break ;
+		case '1 vs COM':
+			Game.opponentType = S.OT.ONEvsCOM;
+			break ;
+		case 'online':
+			Game.opponentType = S.OT.Online;
+			break ;
+		default:
+			log(`unknown opponent type? ${option}`);
+	}
 }
 
 export function changeMatchFormat(option: string) {
-	Game.matchFormat = option;
+	switch (option) {
+		case 'single game':
+			Game.matchFormat = S.MF.SingleGame;
+			break ;
+		case 'tournament':
+			Game.matchFormat = S.MF.Tournament;
+			break ;
+		default:
+			log(`unknown match format? ${option}`);
+	}	
 }
 
 // Get start position of ball
 export function initPositions() {
 	const ball = document.getElementById('ball');
-	if (!ball)
-		log('no ball');
 	const playerOne = document.getElementById('rPlayer');
 	const playerTwo = document.getElementById('lPlayer');
 	const field = document.getElementById('field');
@@ -79,5 +115,50 @@ export function initPositions() {
 		S.Objects['lPlayer'].speed = field.clientHeight * 0.015;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
+	}
+}
+
+export function initGameServer() {
+	if (Game.socket.readyState == WebSocket.OPEN) {
+		if (Game.opponentType != S.OT.Online) {
+			const initGame1 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'one',
+				playerId: Game.id,
+				playerName: Game.name,
+			}
+			Game.socket.send(JSON.stringify(initGame1));
+		}
+		if (Game.opponentType == S.OT.ONEvsONE) {
+			const initGame2 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'two',
+				playerId: Game.id2,
+				playerName: Game.name2,
+			}
+			Game.socket.send(JSON.stringify(initGame2));
+		}
+		else if (Game.opponentType == S.OT.ONEvsCOM) {
+			const initGame2 = {
+				action: 'game',
+				subaction: 'init',
+				player: 'two',
+				playerId: -1,
+				playerName: 'Computer',
+			}
+			Game.socket.send(JSON.stringify(initGame2));
+		}
+		else {
+			const initGame = {
+				action: 'game',
+				subaction: 'init',
+				player: 'one', // or two...decide by server?
+				playerId: Game.id,
+				playerName: Game.name,
+			}
+			Game.socket.send(JSON.stringify(initGame));
+		}
 	}
 }

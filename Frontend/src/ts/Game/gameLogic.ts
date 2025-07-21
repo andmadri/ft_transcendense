@@ -2,6 +2,7 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
+import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { aiAlgorithm } from './aiLogic.js';
 import { resetAI } from './aiLogic.js';
 
@@ -80,7 +81,8 @@ export function updatePadelPosition() {
 		return ;
 	if (leftPadel && rightPadel) {
 		const msg = { 
-			action: 'padelUpdate',
+			action: 'game',
+			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
 			rHeight: rightPadel.offsetTop };
 		Game.socket.send(JSON.stringify(msg));
@@ -106,7 +108,8 @@ export function calculateBallDir() {
 
 export function updateBallPosition() {
 	const msg = { 
-		action: 'ballUpdate',
+		action: 'game',
+		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
 		ballX: S.Objects['ball'].x};
 	Game.socket.send(JSON.stringify(msg));

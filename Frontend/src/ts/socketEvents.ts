@@ -1,5 +1,6 @@
-import { processSignUpCheck, processLoginCheck } from './Auth/userAuth.js';
-import { processBallUpdate, processPadelUpdate } from './Game/gameLogic.js'
+import { actionLogin } from './Auth/userAuth.js';
+import { actionGame } from './Game/gameLogic.js'
+import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
 
@@ -15,34 +16,56 @@ export function closeSocket(e: CloseEvent) {
 }
 
 export function openSocket(e: Event) {
-	log('✅ WebSocket is open');
+	// log('✅ WebSocket is open');
 }
 
 export function errorSocket(err: Event) {
 	log('⚠️ WebSocket error: ' + err);
 }
 
+
+
+/*
+FROM backend TO frontend
+• login => loginCheck / signUpCheck / logout
+• playerInfo => getName / getAvatar
+• chat => incomming
+• online => retOnlinePlayers / retOnlinePlayersWaiting
+• friends => retFriends
+• pending => getWaitlist / createGame / startGame
+• game => ballUpdate / padelUpdate / scoreUpdate
+• error => checkError / errorPage?
+*/
 export function receiveFromWS(e: MessageEvent) {
 	const data = JSON.parse(e.data);
 	
 	const action = data.action;
 	if (!action)
-		log("no action");
+		log('no action');
 
 	switch(action) {
-		case "loginCheck":
-			processLoginCheck(data);
+		case 'login':
+			actionLogin(data);
 			break ;
-		case "signUpCheck":
-			processSignUpCheck(data);
+		case 'playerInfo':
 			break ;
-		case "ballUpdate":
- 			processBallUpdate(data);
+		case 'online':
+			actionOnline(data);
 			break ;
-		case "padelUpdate":
-			processPadelUpdate(data);
+		case 'friends':
+			break ;
+		case 'pending':
+			break ;
+		case 'game':
+			actionGame(data);
+			break ;
+		case 'error':
+			if (data.reason)
+				log('error' + `${data.reason}`);
+			else
+				log('data received from ws' + data);
 			break ;
 		default:
-			log(`Unknown action: ${action}`);
+			log(`(receiveFromWS) Unknown action: ${action}`);
 	}
 }

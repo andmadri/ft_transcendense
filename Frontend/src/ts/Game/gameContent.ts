@@ -1,3 +1,5 @@
+import { removeAuthField } from '../Auth/authContent.js';
+import { removeMenu } from '../Menu/menuContent.js'
 import { log } from '../logging.js'
 
 function styleElement(

@@ -1,12 +1,27 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import { handleUserAuth } from './Auth/userAuth.js';
+import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { createDatabase } from './Database/database.js'
+import { initGame, gameUpdate } from './Game/gameLogic.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
 //change how you create database
 export const db = await createDatabase();
+
+
+/*
+FROM frontend TO backend				
+• login => loginUpser / signUpUser / logout				
+• playerInfo => changeName / addAvatar / delAvatar		
+• chat => outgoing										
+• online => getOnlinePlayers / getOnlinePlayersWaiting	
+• friends => getFriends / addFriend / deleteFriend		
+• pending => addToWaitlist / acceptGame					
+• game => init / ballUpdate / padelUpdate / scoreUpdate	
+• error => crash		
+*/
 
 fastify.get('/wss', { websocket: true }, (connection, req) => {
 
@@ -21,10 +36,31 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		}
 
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
-		if (action == 'loginUser' || action == 'signUpUser')
-			return handleUserAuth(msg, connection.socket);
-		else // send now same message back
-			connection.socket.send(JSON.stringify(msg));
+		switch (action) {
+			case 'login':
+				return handleUserAuth(msg, connection.socket);
+			case 'playerInfo':
+				break ;
+			case 'online':
+				return handleOnlinePlayers(msg, connection.socket);
+			case 'friends':
+				break ;
+			case 'pending':
+				break ;
+			case 'game':
+				if (msg.subaction == 'init')
+					return initGame(msg, connection.socket);
+				else
+					return gameUpdate(msg, connection.socket);
+			case 'error':
+				console.log('Error from frontend..');
+				connection.socket.send(JSON.stringify(msg));
+				break ;
+			default:
+				console.log('No valid action: ' + action);
+				connection.socket.send(JSON.stringify(msg));
+				return ;
+		}			
 	});
 });
 
