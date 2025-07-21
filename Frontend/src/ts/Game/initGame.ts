@@ -1,6 +1,7 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 
 export function startGame() {
 	switch (Game.opponentType) {
@@ -161,4 +162,20 @@ export function initGameServer() {
 			Game.socket.send(JSON.stringify(initGame));
 		}
 	}
+}
+
+export function initGame() {
+	initPositions();
+	initGameServer();
+	updateNamesMenu();
+	resetScoreMenu();
+}
+
+export function saveGame() {
+	const saveGameMsg = {
+		action: 'game',
+		subaction: 'save',
+		matchID: Game.matchID
+	}
+	Game.socket.send(JSON.stringify(saveGameMsg));
 }

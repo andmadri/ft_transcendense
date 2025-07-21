@@ -1,4 +1,4 @@
-import * as dbFunctions from '../Database/database.js';
+import * as userDB from '../Database/user.js';
 
 async function getPlayerData(msg, socket, userId1, userId2) {
 	let returnMsg = {
@@ -8,7 +8,7 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	let player1 = null;
 	let player2 = null;
 	if (userId1) {
-		player1 = await dbFunctions.getUserById(userId1);
+		player1 = await userDB.getUserByID(userId1);
 	}
 	// console.log('Player 1:', player1);
 	returnMsg.name = player1?.name || 'unknown';
@@ -16,7 +16,7 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	returnMsg.player1Login = player1?.online || false;
 	returnMsg.score = player1?.score || 0;
 	if (userId2) {
-		player2 = await dbFunctions.getUserById(userId2);
+		player2 = await userDB.getUserByID(userId2);
 	}
 	// console.log('Player 2:', player2);
 	returnMsg.name2 = player2?.name || 'unknown';

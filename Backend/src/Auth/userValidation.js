@@ -1,4 +1,4 @@
-import * as dbFunctions from '../Database/database.js';
+import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/user.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
 
@@ -52,12 +52,12 @@ export async function addUser(msg) {
 	if (errorMsg)
 		return (errorMsg);
 	try {
-		const exists = await dbFunctions.userAlreadyExist(msg.email);
+		const exists = await userAlreadyExist(msg.email);
 		if (exists)
 			return (exists);
 		if (!msg.avatar_url)
 			msg.avatar_url = null;
-		await dbFunctions.addUserToDB(msg);
+		await addUserToDB(msg);
 		console.log('User: ', msg.name, ' is created');
 		return (1);
 	}
@@ -71,7 +71,7 @@ export async function validateLogin(msg, fastify) {
 	let user;
 
 	try {
-		user = await dbFunctions.getUserByEmail(msg.email);
+		user = await getUserByEmail(msg.email);
 	} catch (err) {
 		console.error('Error with getting user by email');
 		return (err);
@@ -84,8 +84,8 @@ export async function validateLogin(msg, fastify) {
 		return ({ error: 'Incorrect password' });
 
 	try {
-		const online = await dbFunctions.isOnline(msg.email, (online));
-		await dbFunctions.updateOnlineStatus(msg.email, !online);
+		const online = await isOnline(msg.email, (online));
+		await updateOnlineStatus(msg.email, !online);
 	} catch(err) {
 		console.error(err.msg);
 		// failed?

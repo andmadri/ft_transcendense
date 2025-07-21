@@ -3,8 +3,8 @@ import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
 import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
-import { aiAlgorithm } from './aiLogic.js';
-import { resetAI } from './aiLogic.js';
+import { aiAlgorithm, resetAI } from './aiLogic.js';
+import { trainingSet, downloadTrainingData, collectTrainingData } from './aiTraining.js'
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -84,7 +84,8 @@ export function updatePadelPosition() {
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
-			rHeight: rightPadel.offsetTop };
+			rHeight: rightPadel.offsetTop,
+			matchID: Game.matchID };
 		Game.socket.send(JSON.stringify(msg));
 	} else {
 		console.log('No lP ot rP');
@@ -111,7 +112,9 @@ export function updateBallPosition() {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
-		ballX: S.Objects['ball'].x};
+		ballX: S.Objects['ball'].x,
+		matchID: Game.matchID
+	};
 	Game.socket.send(JSON.stringify(msg));
 }
 
@@ -152,6 +155,18 @@ export function updateScoreDisplay(side: string, newScore: number) {
 	resetBall();
 }
 
+function updateScoreServer(id: number) {
+	const msg = { 
+		action: 'game',
+		subaction: 'scoreUpdate',
+		player: 0,
+		matchID: Game.matchID
+	};
+
+	msg.player = id;
+	Game.socket.send(JSON.stringify(msg));	
+}
+
 export function checkPaddelCollision() {
 	const ball = S.Objects['ball'];
 	const radius = ball.width / 2;
@@ -167,6 +182,7 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('leftScore', ++Game.scoreLeft);
+			updateScoreServer(Game.id);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -178,12 +194,13 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('rightScore', ++Game.scoreRight);
+			updateScoreServer(Game.id2);
 		}
 	}
 }
 
 export function handleGameOver() {
-	Game.gameOn = false;
+	Game.state = S.State.End;
 	log("Game Over!");
 	if (document.getElementById('gameOver')) {
 		const gameOver = document.createElement('div');
@@ -201,50 +218,33 @@ export function handleGameOver() {
 		<p>Game Over!</p>
 		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
 		`;
-		document.body.appendChild(gameOver);
+
+		const app = document.getElementById('app');
+		app?.appendChild(gameOver);
 	}
 }
 
 export function game() {
+	const AI = Game.opponentType == S.OT.ONEvsCOM ? true : false;
+	if (AI) {
+		Game.timeGame = performance.now();
+		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+			handleGameOver();
+			downloadTrainingData();
+			trainingSet.length = 0;
+			return ;
+		}
+	}
 	checkWallCollision();
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
-		updatePadelPosition();	
-	// Game.timeGame = performance.now();
-	// 			if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-	// 				GameLogic.handleGameOver();
-	// 				downloadTrainingData();
-	// 				trainingSet.length = 0;
-	// 				return ;
-	// 			}
-	// 			GameLogic.checkWallCollision();
-	// 			GameLogic.checkPaddelCollision();
-	// 			GameLogic.calculateBallDir();
-	// 			GameLogic.updateBallPosition();
-	// 			if (GameLogic.checkPadelMovement())
-	// 				GameLogic.updatePadelPosition();
-	// 			const data = collectTrainingData();
-	// 			if (data != null) {
-	// 				trainingSet.push(data);
-	// 			}
-}
-
-export function actionGame(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'ballUpdate':
- 			processBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			processPadelUpdate(data);
-			break ;
-		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
+		updatePadelPosition();
+	if (AI) {
+		const data = collectTrainingData();
+		if (data != null) {
+			trainingSet.push(data);
+		}
 	}
 }

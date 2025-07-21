@@ -28,12 +28,12 @@ function receivePlayerData(data: any) {
 		Game.player2Login = data.player2Login || false;
 		Game.score2 = data.score2 || 0;
 	}
-	const body = document.getElementById('body');
-	if (!body) return ;
+	const app = document.getElementById('app');
+	if (!app) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
 	// menu.append(getPlayer(1), getPlayer(2));
-	// body.appendChild(menu);
+	// app.appendChild(menu);
 	updateScoreMenu(); 
 	updateNamesMenu();
 }

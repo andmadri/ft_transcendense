@@ -7,7 +7,7 @@ import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { createDatabase } from './Database/database.js'
-import { initGame, gameUpdate } from './Game/gameLogic.js';
+import { handleGame } from './Game/game.js'
 import googleAuthRoutes from './routes/googleAuth.js';
 import userAuthRoutes from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
@@ -105,10 +105,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			case 'pending':
 				break ;
 			case 'game':
-				if (msg.subaction == 'init')
-					return initGame(msg, connection.socket);
-				else
-					return gameUpdate(msg, connection.socket);
+				return handleGame(msg, connection.socket);
 			case 'error':
 				console.log('Error from frontend..');
 				connection.socket.send(JSON.stringify(msg));

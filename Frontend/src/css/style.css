@@ -1,5 +1,21 @@
-body {
+html, body {
+	height: 100%;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+  }
+  
+#app {
+	flex: 9;
+	background-color: #ffd202;
+}
+  
+#log {
+	flex: 1;
 	background-color: white;
+	padding: 10px;
+	font-family: monospace;
+	overflow-y: auto;
 }
 
 p {

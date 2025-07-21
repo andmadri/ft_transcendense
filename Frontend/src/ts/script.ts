@@ -3,28 +3,26 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { changeMatchFormat, changeOpponentType, initPositions, startGame, initGameServer } from './Game/initGame.js'
+import { initGame, saveGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
-import { getLoginFields, removeAuthField } from './Auth/authContent.js'
-import { getGameField, removeGameField } from './Game/gameContent.js'
+import { getLoginFields } from './Auth/authContent.js'
+import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
-import { getMenu, removeMenu } from './Menu/menuContent.js'
-import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
-import { trainingSet, collectTrainingData, downloadTrainingData } from './Game/aiTraining.js'
+import { getMenu } from './Menu/menuContent.js'
+import { getLoadingPage } from './Loading/loadContent.js'
 
+getLoadingPage();
 createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Login,
+	state: S.State.Menu,
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
-	timeGame: 0,
-	scoreLeft: 0,
-	scoreRight: 0,
+	matchID: -1,
 	id: 0,
 	name: 'unknown',
 	player1Login: false, // should be Cookie
@@ -33,7 +31,10 @@ export const Game: S.gameInfo = {
 	name2: 'unknown',
 	player2Login: false, // should be Cookie
 	score2: 0,
-	playerLogin: 1
+	playerLogin: 1,
+	timeGame: 0,
+	scoreLeft: 0,
+	scoreRight: 0,
 }
 
 startSocketListeners();
@@ -42,8 +43,6 @@ startSocketListeners();
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
-
-getSideMenu();
 
 let lastSpeedIncreaseTime = 0;
 
@@ -61,14 +60,14 @@ function incrementBallSpeed() {
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		switch (Game.state) {
-			case S.State.Menu: {
-				if (!document.getElementById('menu'))
-					getMenu();
-				break ;
-			}
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
 					getLoginFields();
+				break ;
+			}
+			case S.State.Menu: {
+				if (!document.getElementById('menu'))
+					getMenu();
 				break ;
 			}
 			case S.State.Login2: {
@@ -80,23 +79,34 @@ function mainLoop() {
 				// waiting for opponement
 				break ;
 			}
-			case S.State.Game: {
-				if (!document.getElementById('game')) {
+			case S.State.Init:
+				log("init game");
+				if (!document.getElementById('game'))
+				{
 					getGameField();
-					initPositions();
-					initGameServer();
-					updateNamesMenu();
-					resetScoreMenu();
+					initGame();
 				}
+				break ;
+			case S.State.Game: {
+				// if (Game.matchID >= 0) 
 				game();
-				if (!Game.player1Login || !Game.player2Login)
-					Game.state = S.State.Menu;
+				// if (!Game.player1Login || !Game.player2Login)
+				// 	Game.state = S.State.Menu;
 				break ;
 			}
+			case S.State.End:
+				saveGame();
+				log("saved game?");
+				Game.state = S.State.Menu;
+				break ;
+			default:
+				log("no valid state");
 		}
 		
 	}
 	window.requestAnimationFrame(mainLoop);
 }
 
-mainLoop();
+setTimeout(() => {
+	mainLoop();
+}, 2000);

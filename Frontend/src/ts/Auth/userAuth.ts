@@ -110,6 +110,7 @@ export async function submitAuthForm(e: Event, player: number) {
 		if (response.ok) {
 			const data = await response.json();
 			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
+			loginSuccessfull(playerNr);
 		} else {
 			log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();
@@ -122,20 +123,25 @@ export async function submitAuthForm(e: Event, player: number) {
 
 
 export function loginSuccessfull(player: number) {
+	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 	if (player == 1) {
 		log("Login Successfull (player one)");
-		if (Game.opponentType != S.OT.ONEvsONE)
-			Game.state = S.State.Game;
-		else {
+
+		if (Game.opponentType == S.OT.ONEvsONE) {
 			if (Game.player2Login)
-				Game.state = S.State.Game;
+				Game.state = S.State.Init;
+		} else if(Game.opponentType == S.OT.Online) {
+			Game.state = S.State.Pending;
+		} else {
+			Game.state = S.State.Init;
 		}
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two)");
 		if (Game.player1Login)
-			Game.state = S.State.Game;
+			Game.state = S.State.Init;
 	}
+	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }
 
 export function addGuest(e: Event, player: number) {

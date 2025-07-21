@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { signFastifyJWT } from "../utils/jwt.js";
-import * as dbFunctions from '../Database/database.js';
+import * as userDB from '../Database/user.js';
 import bcrypt from 'bcrypt';
 
 
@@ -24,7 +24,7 @@ async function handleGoogleAuth(user) {
 			return null;
 		}
 
-		const exists = await dbFunctions.getUserByEmail(user.email);
+		const exists = await userDB.getUserByEmail(user.email);
 		if (exists) {
 			const isValidPassword = await bcrypt.compare(user.id, exists.password);
 			if (!isValidPassword) {
@@ -34,23 +34,23 @@ async function handleGoogleAuth(user) {
 			// User already exists, update their information if necessary
 			else if (exists.name !== user.name || exists.avatar_url !== user.picture) {
 				console.log('Updating user: ', user.name, ' in DB!');
-				await dbFunctions.updateUser({
-					name: user.name,
-					avatar_url: user.picture
-				});
+				// await userDB.updateUser({
+				// 	name: user.name,
+				// 	avatar_url: user.picture
+				// });
 			}
 			console.log('User: ', user.name, ' already exists');
-			const dbUserObj = await dbFunctions.getUserByEmail(user.email);
+			const dbUserObj = await userDB.getUserByEmail(user.email);
 			return dbUserObj;
 		} else {
-			await dbFunctions.addUserToDB({
+			await userDB.addUserToDB({
 				email: user.email,
 				name: user.name,
 				password: user.id,
 				avatar_url: user.picture
 			});
 			console.log('User: ', user.name, ' is created');
-			const dbUserObj = await dbFunctions.getUserByEmail(user.email);
+			const dbUserObj = await userDB.getUserByEmail(user.email);
 			return dbUserObj;
 		}
 	} catch (err) {

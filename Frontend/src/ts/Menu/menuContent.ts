@@ -1,7 +1,5 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { Game } from '../script.js'
-import { removeAuthField } from '../Auth/authContent.js'
-import { removeGameField } from '../Game/gameContent.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -148,14 +146,11 @@ export function getGameSettings(): HTMLDivElement {
 }
 
 export function getMenu() {
-	if (document.getElementById('auth1'))
-		removeAuthField(1);
-	if (document.getElementById('auth2'))
-		removeAuthField(2);
-	if (document.getElementById('game'))
-		removeGameField();
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
 
-	const body = document.getElementById('body');
 	const menu = document.createElement('div');
 	menu.id = 'menu';
 	menu.style.display = 'flex';
@@ -165,13 +160,5 @@ export function getMenu() {
 
 	menu.append(getGameSettings(), getFriends(), getHighscores(), getOnlineList());
 
-	body?.appendChild(menu);
-}
-
-export function removeMenu() {
-	const	body = document.getElementById('body');
-	const	menu = document.getElementById('menu');
-
-	if (body && menu)
-		body.removeChild(menu);
+	app?.appendChild(menu);
 }
