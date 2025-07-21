@@ -1,6 +1,7 @@
 from glob import glob
 import json
 import numpy as np
+import tensorflowjs as tfjs
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
@@ -57,7 +58,7 @@ def main():
 
 	model.fit(X, y, epochs=10, batch_size=32, validation_split=0.1)
 
-	model.save('pong_ai_model_V1.keras')
+	tfjs.converters.save_keras_model(model, '../model')
 
 if __name__ == '__main__':
 	main()
