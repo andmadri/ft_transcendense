@@ -11,5 +11,8 @@
     "undici-types": "^5.26.4",
     "ts-node": "^10.9.2",
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs":"^4.22.0"
   }
 }

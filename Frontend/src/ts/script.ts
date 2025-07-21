@@ -11,6 +11,7 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
+import { loadModel } from './Game/aiLogic.js'
 
 createLog();
 
@@ -86,6 +87,7 @@ function mainLoop() {
 					initGameServer();
 					updateNamesMenu();
 					resetScoreMenu();
+					//loadModel();
 				}
 				game();
 				//if you are playing with the AI and you log out yourself there is a problem
