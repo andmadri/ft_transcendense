@@ -8,6 +8,7 @@ up:
 	rm -rf Server/src
 	mkdir -p Database
 	cp -r Frontend/* Server/
+	cp -r aiTraining/aiModel Server/
 	docker compose -f docker-compose.yml up
 
 down:
@@ -29,6 +30,7 @@ server: Frontend/*
 	rm -rf Server/src
 	rm -rf Server/*.json
 	cp -r Frontend/* Server/
+	cp -r aiTraining/aiModel Server/
 	docker compose up -d --build --force-recreate server
 
 backend:
@@ -51,6 +53,7 @@ clean: stop
 	@if [ "$(docker network ls -q)" ]; then docker network rm $(docker network ls -q); fi
 	rm -rf Server/src
 	rm -rf Server/*.json
+	rm -rf Server/aiModel
 	@echo "containers, images and network are removed"
 
 re:	clean up

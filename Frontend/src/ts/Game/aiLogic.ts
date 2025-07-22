@@ -27,7 +27,7 @@ export async function loadModel() {
 	let model;
 	console.log('Loadmodel()');
 	try {
-		model = await tf.loadLayersModel('../../../../aiTraining/model/model.json')
+		model = await tf.loadLayersModel('/aiModel/model.json')
 		console.log('Layers model succesfully loaded');
 	}
 	catch(error) {

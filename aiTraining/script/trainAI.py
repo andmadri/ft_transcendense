@@ -36,7 +36,7 @@ def loadData(json_files):
 
 def build_model(input_shape, num_classes):
 	model = models.Sequential([
-		layers.Input(shape=input_shape),
+		layers.InputLayer(input_shape=input_shape),
 		layers.Dense(64, activation='relu'),
 		layers.Dense(64, activation='relu'),
 		layers.Dense(num_classes, activation='softmax')
@@ -58,7 +58,7 @@ def main():
 
 	model.fit(X, y, epochs=10, batch_size=32, validation_split=0.1)
 
-	tfjs.converters.save_keras_model(model, '../model')
+	tfjs.converters.save_keras_model(model, '../aiModel')
 
 if __name__ == '__main__':
 	main()

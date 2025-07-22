@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json tsconfig.json ./
 COPY src/ ./src/
 COPY build.js ./
+COPY aiModel ./aiModel/
 
 ENV NODE_ENV=development
 
@@ -19,7 +20,8 @@ RUN npm run build
 # folder with all the stuff for the frontend
 RUN mkdir -p build \
   && cp -r src/html build/ \
-  && cp -r src/css build/
+  && cp -r src/css build/ \
+  && cp -r aiModel build/
 
 # STAGE TWO: NGINX (only contains the compiled version of node, not the env)
 FROM nginx:alpine
