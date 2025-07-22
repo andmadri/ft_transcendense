@@ -1,0 +1,19 @@
+// Tells how the code has to compilerOptions
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "outDir": "./build/js",
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./src/ts/types"],
+    "lib": ["DOM", "ES2015"], // maybe not needed
+    // "typeRoots": ["./node_modules/@types"], not needed I think
+    // "module": "commonjs",
+    // "noImplicitAny": "any",
+    // "strictNullChecks": false,
+
+  },
+  "include": ["src/**/*"] // everything in src folder
+}
