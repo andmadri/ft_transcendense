@@ -1,5 +1,6 @@
 import { log } from '../logging.js'
 import { Game } from '../script.js'
+import * as S from '../structs.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -43,6 +44,7 @@ function getQuitBtn() {
 			player: Game.id,
 			name: Game.name
 		}));
+		Game.state = S.State.End;
 	})
 	quiting.appendChild(quit);
 	return (quiting);

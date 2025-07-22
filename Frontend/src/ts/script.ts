@@ -17,7 +17,7 @@ createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Menu,
+	state: S.State.Login,
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
@@ -62,7 +62,7 @@ function mainLoop() {
 		switch (Game.state) {
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
-					getLoginFields();
+					getLoginFields(1);
 				break ;
 			}
 			case S.State.Menu: {
@@ -72,11 +72,12 @@ function mainLoop() {
 			}
 			case S.State.Login2: {
 				if (!document.getElementById('auth2'))
-					getLoginFields();
+					getLoginFields(2);
 				break ;
 			}
 			case S.State.Pending: {
 				// waiting for opponement
+				log("No online mode yet...pending...");
 				break ;
 			}
 			case S.State.Init:
@@ -90,14 +91,10 @@ function mainLoop() {
 			case S.State.Game: {
 				// if (Game.matchID >= 0) 
 				game();
-				// if (!Game.player1Login || !Game.player2Login)
-				// 	Game.state = S.State.Menu;
 				break ;
 			}
 			case S.State.End:
 				saveGame();
-				log("saved game?");
-				Game.state = S.State.Menu;
 				break ;
 			default:
 				log("no valid state");

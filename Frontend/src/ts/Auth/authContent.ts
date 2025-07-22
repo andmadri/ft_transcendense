@@ -107,7 +107,7 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	return (auth);
 }
 
-export function getLoginFields() {
+export function getLoginFields(player: number) {
 	const	app = document.getElementById('app');
 	if (!app)
 		return ;
@@ -119,28 +119,18 @@ export function getLoginFields() {
 	app.style.gap = '20px';
 
 	if (Game.opponentType == S.OT.Online) { // one login mandatory
-		const auth = getAuthField(1, true); 
-		app.appendChild(auth);
+		app.appendChild(getAuthField(player, true));
 	} else {
-		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-			app.append(getAuthField(1, false), getAuthField(2, false));
-		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			app.appendChild(getAuthField(1, false));
-		}
+		app.append(getAuthField(player, false));
 	}
 
 	// addEventListeners for Login form
-	document.getElementById('authForm1')?.addEventListener('submit', (e) => submitAuthForm(e, 1));
-	document.getElementById('authForm2')?.addEventListener('submit', (e) => submitAuthForm(e, 2));
+	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
 	document.getElementById('google-login-btn1')?.addEventListener('click', (e) => {
-		window.location.href = 'https://localhost:8443/api/auth/google?player=1';
+		window.location.href = 'https://localhost:8443/api/auth/google?player=' + player;
 		
 	});
-	document.getElementById('google-login-btn2')?.addEventListener('click', (e) => {
-		window.location.href = 'https://localhost:8443/api/auth/google?player=2';
-	});
-	document.getElementById('toggle-mode1')?.addEventListener('click', (e) => changeLoginMode(1));
-	document.getElementById('toggle-mode2')?.addEventListener('click', (e) => changeLoginMode(2));
-	document.getElementById('guestBtn1')?.addEventListener('click', (e) => addGuest(e, 1));
-	document.getElementById('guestBtn2')?.addEventListener('click', (e) => addGuest(e, 2));
+
+	document.getElementById('toggle-mode' + player)?.addEventListener('click', (e) => changeLoginMode(player));
+	document.getElementById('guestBtn' + player)?.addEventListener('click', (e) => addGuest(e, player));
 }

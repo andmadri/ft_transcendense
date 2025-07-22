@@ -6,11 +6,11 @@ import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login;		
+			Game.state = S.State.Login2;		
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
-			Game.state = S.State.Game;
+			Game.state = S.State.Init;
 			break ;
 		}
 		case S.OT.Online: {
@@ -24,8 +24,7 @@ export function startGame() {
 	}
 
 	switch (Game.matchFormat) {
-		case S.MF.Tournament: {
-			// create tournament once?
+		case S.MF.SingleGame: {
 			break ;
 		}
 		case S.MF.Tournament: {
@@ -37,7 +36,6 @@ export function startGame() {
 			return ;
 		}
 	}
-	log('Game state after startGame: ' + Game.state);
 }
 
 export function changeOpponentType(option: string) {
@@ -48,7 +46,7 @@ export function changeOpponentType(option: string) {
 		case '1 vs COM':
 			Game.opponentType = S.OT.ONEvsCOM;
 			break ;
-		case 'online':
+		case 'Online':
 			Game.opponentType = S.OT.Online;
 			break ;
 		default:
@@ -121,45 +119,44 @@ export function initPositions() {
 
 export function initGameServer() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		if (Game.opponentType != S.OT.Online) {
-			const initGame1 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one',
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame1));
+		log("server init")
+		// PLAYER 1
+		const initGame1 = {
+			action: 'game',
+			subaction: 'init',
+			player: 'one',
+			playerId: Game.id,
+			playerName: Game.name,
+			opponentMode: Game.opponentType
 		}
-		if (Game.opponentType == S.OT.ONEvsONE) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: Game.id2,
-				playerName: Game.name2,
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else if (Game.opponentType == S.OT.ONEvsCOM) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: -1,
-				playerName: 'Computer',
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else {
-			const initGame = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one', // or two...decide by server?
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame));
+		Game.socket.send(JSON.stringify(initGame1));
+
+		// PLAYER 2 or COM
+		switch (Game.opponentType) {
+			case S.OT.Online:
+				break ;
+			case S.OT.ONEvsONE:
+				const init1vs1 = {
+					action: 'game',
+					subaction: 'init',
+					player: 'two',
+					playerId: Game.id2,
+					playerName: Game.name2,
+					opponentMode: Game.opponentType
+				}
+				Game.socket.send(JSON.stringify(init1vs1));
+				break ;
+			case S.OT.ONEvsCOM:
+				const init1vsCOM = {
+					action: 'game',
+					subaction: 'init',
+					player: 'two',
+					playerId: -1,
+					playerName: 'Computer',
+					opponentMode: Game.opponentType
+				}
+				Game.socket.send(JSON.stringify(init1vsCOM));
+				break ;
 		}
 	}
 }
@@ -178,4 +175,7 @@ export function saveGame() {
 		matchID: Game.matchID
 	}
 	Game.socket.send(JSON.stringify(saveGameMsg));
+
+	Game.score = 0;
+	Game.score2 = 0;
 }

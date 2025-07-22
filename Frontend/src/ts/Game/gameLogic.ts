@@ -200,51 +200,68 @@ export function checkPaddelCollision() {
 }
 
 export function handleGameOver() {
-	Game.state = S.State.End;
 	log("Game Over!");
-	if (document.getElementById('gameOver')) {
-		const gameOver = document.createElement('div');
-		gameOver.id = 'gameOver';
-		gameOver.style.position = 'absolute';
-		gameOver.style.top = '50%';
-		gameOver.style.left = '50%';
-		gameOver.style.padding = '20px';
-		gameOver.style.backgroundColor = 'black';
-		gameOver.style.color = 'white';
-		gameOver.style.fontSize = '2rem';
-		gameOver.style.textAlign = 'center';
-		gameOver.style.borderRadius = '10px';
-		gameOver.innerHTML = `
-		<p>Game Over!</p>
-		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
-		`;
 
-		const app = document.getElementById('app');
-		app?.appendChild(gameOver);
-	}
+	const gameOver = document.createElement('div');
+	gameOver.id = 'gameOver';
+	gameOver.style.position = 'absolute';
+	gameOver.style.top = '30%';
+	// gameOver.style.left = '50%';
+	gameOver.style.padding = '20px';
+	gameOver.style.backgroundColor = 'black';
+	gameOver.style.color = 'white';
+	gameOver.style.fontSize = '2rem';
+	gameOver.style.textAlign = 'center';
+	gameOver.style.borderRadius = '10px';
+	gameOver.innerHTML = `
+	<p>Game Over!</p>
+	<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
+	`;
+
+	const	backToMenu = document.createElement('button');
+	backToMenu.id = 'menuBtn';
+	backToMenu.textContent = 'Back to menu';
+
+	backToMenu.addEventListener('click', () => {
+		log("pushed back to menu button");
+		Game.state = S.State.Menu;
+		return ;
+	})
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
+	app.append(gameOver, backToMenu);
+	Game.state = S.State.End;
+
 }
 
 export function game() {
 	const AI = Game.opponentType == S.OT.ONEvsCOM ? true : false;
-	if (AI) {
+
+	if (AI)
 		Game.timeGame = performance.now();
-		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-			handleGameOver();
-			downloadTrainingData();
-			trainingSet.length = 0;
-			return ;
-		}
-	}
+	
+	if (Game.scoreRight == 5 || Game.scoreLeft == 5)
+		handleGameOver();
+	
+	// if (AI) {
+	// 	downloadTrainingData();
+	// 	trainingSet.length = 0;
+	// 	return ;
+	// }
+
 	checkWallCollision();
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
 		updatePadelPosition();
-	if (AI) {
-		const data = collectTrainingData();
-		if (data != null) {
-			trainingSet.push(data);
-		}
-	}
+
+	// if (AI) {
+	// 	const data = collectTrainingData();
+	// 	if (data != null) {
+	// 		trainingSet.push(data);
+	// 	}
+	// }
 }

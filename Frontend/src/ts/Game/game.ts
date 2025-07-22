@@ -13,9 +13,10 @@ function processMatch(data: any) {
 
 function processSavingMatch(data: any) {
 	if (data.success)
-		log("Saving match successful");
+		log("Save match successful");
 	else
 		log("Something went wrong saving match");
+	Game.state = S.State.Menu;
 }
 
 function processQuitMatch(data: any) {

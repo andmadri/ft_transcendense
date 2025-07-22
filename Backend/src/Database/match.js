@@ -7,7 +7,7 @@ export async function saveMatchDB(playerID1, playerID2, score1, score2) {
 
 	return new Promise((resolve, reject) => {
 		db.run(
-			`INSERT INTO Matches (player_1_id, player_2_id, player_1_score, player_2_score, date) VALUES (?, ?, ?)`,
+			`INSERT INTO Matches (player_1_id, player_2_id, player_1_score, player_2_score, date) VALUES (?, ?, ?, ?, ?)`,
 			[playerID1, playerID2, score1, score2, dateString],
 			function (err) {
 				if (err)

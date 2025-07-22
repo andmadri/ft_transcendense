@@ -60,9 +60,9 @@ export function createMatch(msg, socket) {
 	
 	const id = newMatch(msg.player1ID, msg.name, msg.player2ID, msg.name2);
 	if (opponentMode == 1 && player1ID != 0 && player2ID != 0) // both not guest or comp
-		matches[id].saveInDB = true;
+		matches.get(id).saveInDB = true;
 	else if (opponentMode == 2) // online
-		matches[id].saveInDB = true;
+		matches.get(id).saveInDB = true;
 	
 	socket.send(JSON.stringify({ 
 		action: 'game',

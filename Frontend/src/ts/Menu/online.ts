@@ -22,7 +22,7 @@ function processOnlinePlayers(data: any) {
 	if (data.access && data.access == "yes")
 		insertOnlinePlayers(data.content);
 	else
-		log("Access to DB: " + data.access);
+		log("Access to DB: " + data.access + " " + data.content);
 }
 
 export function actionOnline(data: any) {
