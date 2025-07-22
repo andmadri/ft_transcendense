@@ -3,6 +3,9 @@ import { Game } from '../script.js'
 import { movePadel } from './gameLogic.js'
 import * as tf from '@tensorflow/tfjs'
 
+let loadedModel: tf.LayersModel | null = null;
+let lastPredictionTime = 0;
+
 export function collectGameData(): number[] {
 	const fieldWidth = S.Objects['field'].width;
 	const fieldHeight = S.Objects['field'].height;
@@ -24,31 +27,49 @@ export function collectGameData(): number[] {
 }
 
 export async function loadModel() {
-	let model;
-	console.log('Loadmodel()');
+	// let model;
+	// console.log('Loadmodel()');
 	try {
-		model = await tf.loadLayersModel('/aiModel/model.json')
-		console.log('Layers model succesfully loaded');
+		if (!loadedModel) {
+			loadedModel = await tf.loadLayersModel('/aiModel/model.json')
+			console.log('Layers model succesfully loaded');
+		}
 	}
 	catch(error) {
 		console.error('Error loading the model:', error );
 	}
-	return model;
+	return loadedModel;
 }
 
-export async function predictAction(model: any) {
+export async function predictAction() {
+	console.log('PredicFunction is called');
+	if (!loadedModel) {
+		console.error('Model is not loaded yet, skipping prediction');
+		return ;
+	}
+	// console.log(`What is the game state? ${Game.state}`);
 	while (Game.state == S.State.Game) {
-		if (Game.timeGame % 1000 == 0) {
+		// console.log('Am I in the loop?');
+		// console.log(`time: ${Game.timeGame}`);
+		if (Game.timeGame - lastPredictionTime >= 1000) {
+			lastPredictionTime = Game.timeGame;
+			// console.log('making prediction');
 			const data = collectGameData();
 
 			//convert data into tensor2d
 			const inputTensor = tf.tensor2d([data]);
+			// console.log('after tensor2d');
 
-			const prediction = model.predict(inputTensor) as tf.Tensor;
+			const prediction = loadedModel.predict(inputTensor) as tf.Tensor;
+			// console.log('after prediction');
+
 			const predictionResult = await prediction.array();
+			// console.log('after predictionArray');
+
 			const predictionArray: number[][] = predictionResult as number[][];
 			const output : number[] = predictionArray[0];
 			const action = output.indexOf(Math.max(...output));
+			console.log(`Predicted action for movement: ${action}`);
 			switch (action) {
 				case 0:
 					movePadel('arrowUp');

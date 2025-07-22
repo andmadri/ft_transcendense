@@ -89,8 +89,10 @@ function mainLoop() {
 					updateNamesMenu();
 					resetScoreMenu();
 					if (Game.opponentType == S.OT.ONEvsCOM) {
-						const model = loadModel();
-						predictAction(model);
+						(async () => {
+							await loadModel();
+							predictAction();
+						})();
 					}
 				}
 				game();
