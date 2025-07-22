@@ -27,8 +27,6 @@ export function collectGameData(): number[] {
 }
 
 export async function loadModel() {
-	// let model;
-	// console.log('Loadmodel()');
 	try {
 		if (!loadedModel) {
 			loadedModel = await tf.loadLayersModel('/aiModel/model.json')
@@ -47,35 +45,29 @@ export async function predictAction() {
 		console.error('Model is not loaded yet, skipping prediction');
 		return ;
 	}
-	// console.log(`What is the game state? ${Game.state}`);
 	while (Game.state == S.State.Game) {
-		// console.log('Am I in the loop?');
-		// console.log(`time: ${Game.timeGame}`);
 		if (Game.timeGame - lastPredictionTime >= 1000) {
 			lastPredictionTime = Game.timeGame;
-			// console.log('making prediction');
 			const data = collectGameData();
 
-			//convert data into tensor2d
+			console.log(`Data collected: [${data}]`);
 			const inputTensor = tf.tensor2d([data]);
-			// console.log('after tensor2d');
 
 			const prediction = loadedModel.predict(inputTensor) as tf.Tensor;
-			// console.log('after prediction');
 
 			const predictionResult = await prediction.array();
-			// console.log('after predictionArray');
 
 			const predictionArray: number[][] = predictionResult as number[][];
 			const output : number[] = predictionArray[0];
 			const action = output.indexOf(Math.max(...output));
+			console.log(`Raw model output: ${output}`);
 			console.log(`Predicted action for movement: ${action}`);
 			switch (action) {
 				case 0:
-					movePadel('arrowUp');
+					movePadel('ArrowUp');
 					break;
 				case 1:
-					movePadel('arrowDown');
+					movePadel('ArrowDown');
 					break;
 				case 2:
 					break; //Do we need to change key.pressed to false or anything??

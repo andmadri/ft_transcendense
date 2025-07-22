@@ -22,7 +22,7 @@ export const Game: S.gameInfo = {
 	opponentType: S.OT.Empty,
 	matchFormat: S.MF.Empty,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss'),
+	socket: new WebSocket(`wss://${window.location.hostname}:8443/wss`),
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
