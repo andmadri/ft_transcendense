@@ -1,0 +1,5 @@
+tensorflow==2.14.0
+tensorflowjs==4.9.0
+jax==0.4.20
+jaxlib==0.4.20
+numpy==1.26.4
