@@ -1,5 +1,6 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { Game } from '../script.js'
+import { getSideMenu } from '../SideMenu/SideMenuContent.js';
 
 function styleElement(
 	element: HTMLElement,
@@ -159,6 +160,7 @@ export function getMenu() {
 	menu.style.justifyContent = 'center';
 
 	menu.append(getGameSettings(), getFriends(), getHighscores(), getOnlineList());
-
+	
 	app?.appendChild(menu);
+	getSideMenu()
 }

@@ -6,7 +6,6 @@ import { log } from '../logging.js';
 function getPlayer(nr: number) {
 	const	player = document.createElement('div');
 	const	playername = document.createElement('p');
-	const	playerscore = document.createElement('p');
 	const	logout = document.createElement('button');
 
 	const	isPlayer1 = nr === 1;
@@ -14,19 +13,16 @@ function getPlayer(nr: number) {
 	playername.textContent = isPlayer1 ? Game.name : Game.name2;
 	playername.id = 'playerName' + nr;
 
-	playerscore.textContent = '0';
-	playerscore.id = 'playerScore' + nr;
 	
 	player.style.padding = '5px';
 	player.style.height = '70px';
 	player.style.width = '500px';
-	player.style.backgroundColor = 'yellow';
 	player.style.position = 'relative';
 
 	logout.id = 'logoutbutton' + nr;
 	logout.textContent = 'Logout';
 	logout.addEventListener('click', (e) => submitLogout(e, nr));
-	player.append(playername, playerscore, logout);
+	player.append(playername, logout);
 	return (player);
 }
 
@@ -38,23 +34,17 @@ export async function getSideMenu() {
 
 	menu.id = 'sidemenu';
 	menu.style.width = '100%';
-	menu.style.position = 'center';
-	menu.style.bottom = '0';
-	menu.style.left = '0';
+	menu.style.position = 'fixed';
+	menu.style.bottom = '10%';
 	menu.style.width = '100%';
-	menu.style.height = '10%';
+	menu.style.height = '5%';
 	menu.style.display = 'grid';
 	menu.style.zIndex = '1000';
 	menu.style.gridTemplateColumns = '1fr 1fr';
 	menu.style.gap = '1rem';
 	menu.append(getPlayer(1), getPlayer(2));
 	app.appendChild(menu);
-	try {
-		await updatePlayerData();
-	} catch (error) {
-		log('Error updating player data: ' + error);
-	}
-	// updatePlayerData();
+	updatePlayerData();
 }
 
 function updateTextbyId(id: string, value: string) {

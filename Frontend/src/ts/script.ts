@@ -59,6 +59,9 @@ function incrementBallSpeed() {
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
+		// if (!Game.player1Login)
+		// 	Game.state = S.State.Login;
+
 		switch (Game.state) {
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
