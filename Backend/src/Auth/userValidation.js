@@ -1,4 +1,4 @@
-import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/user.js';
+import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
 
@@ -58,7 +58,7 @@ export async function addUser(msg) {
 		if (!msg.avatar_url)
 			msg.avatar_url = null;
 		await addUserToDB(msg);
-		console.log('User: ', msg.name, ' is created');
+		// console.log('User: ', msg.name, ' is created'); // DELETE THIS LATER
 		return (1);
 	}
 	catch(err) {

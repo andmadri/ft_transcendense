@@ -1,4 +1,4 @@
-import * as userDB from '../Database/user.js';
+import * as userDB from '../Database/users.js';
 import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {

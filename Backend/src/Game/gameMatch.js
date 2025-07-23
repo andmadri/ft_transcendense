@@ -1,5 +1,5 @@
 import { saveMatchDB } from '../Database/match.js'
-import { getUserByID } from '../Database/user.js';
+import { getUserByID } from '../Database/users.js';
 
 let				matchnr = 0;
 export const 	matches = new Map();

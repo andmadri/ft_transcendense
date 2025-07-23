@@ -11,6 +11,10 @@ import { handleGame } from './Game/game.js'
 import googleAuthRoutes from './routes/googleAuth.js';
 import userAuthRoutes from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
+import { addUserToDB } from './Database/users.js'; // DELETE THIS LATER
+import { addUserSessionToDB } from './Database/sessions.js'; // DELETE THIS LATER
+import { addMatchToDB } from './Database/match.js'; // DELETE THIS LATER
+
 // import { updateOnlineStatus } from './Database/database.js';
 
 
@@ -19,6 +23,53 @@ await fastify.register(websocket);
 
 //change how you create database
 export const db = await createDatabase();
+
+// DELETE THIS LATER
+await addUserToDB({
+	name: 'TestUser',
+	email: 'test@example.com',
+	password: 'secret',
+	avatar_url: null
+});
+
+// DELETE THIS LATER
+await addUserSessionToDB({
+	user_id: 1,
+	state: 'login'
+});
+
+// DELETE THIS LATER
+await addUserToDB({
+	name: 'TestUser2',
+	email: 'tes2t@example.com',
+	password: 'secret',
+	avatar_url: null
+});
+
+// DELETE THIS LATER
+await addUserSessionToDB({
+	user_id: 2,
+	state: 'login'
+});
+
+// DELETE THIS LATER
+await addMatchToDB({
+	player_1_id: 1,
+	player_2_id: null,
+	match_type: 'vs_ai',
+});
+
+// DELETE THIS LATER
+await addMatchToDB({
+	player_1_id: 1,
+	player_2_id: 2,
+	match_type: '1v1',
+});
+
+// await addUserSessionToDB({
+// 	user_id: 1,
+// 	state: 'logged_out'
+// });
 
 // Register the cookie plugin
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
