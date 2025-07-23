@@ -120,44 +120,18 @@ export function initPositions() {
 export function initGameServer() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		log("server init")
-		// PLAYER 1
-		const initGame1 = {
+		const initGame = {
 			action: 'game',
 			subaction: 'init',
-			player: 'one',
 			playerId: Game.id,
 			playerName: Game.name,
-			opponentMode: Game.opponentType
+			opponentMode: Game.opponentType,
+			playerId2: Game.id2,
+			playerName2: Game.name2
 		}
-		Game.socket.send(JSON.stringify(initGame1));
-
-		// PLAYER 2 or COM
-		switch (Game.opponentType) {
-			case S.OT.Online:
-				break ;
-			case S.OT.ONEvsONE:
-				const init1vs1 = {
-					action: 'game',
-					subaction: 'init',
-					player: 'two',
-					playerId: Game.id2,
-					playerName: Game.name2,
-					opponentMode: Game.opponentType
-				}
-				Game.socket.send(JSON.stringify(init1vs1));
-				break ;
-			case S.OT.ONEvsCOM:
-				const init1vsCOM = {
-					action: 'game',
-					subaction: 'init',
-					player: 'two',
-					playerId: -1,
-					playerName: 'Computer',
-					opponentMode: Game.opponentType
-				}
-				Game.socket.send(JSON.stringify(init1vsCOM));
-				break ;
-		}
+		if (Game.opponentType == S.OT.ONEvsCOM)
+			initGame.playerName2 = "Computer";
+		Game.socket.send(JSON.stringify(initGame));
 	}
 }
 
@@ -178,4 +152,7 @@ export function saveGame() {
 
 	Game.score = 0;
 	Game.score2 = 0;
+	Game.matchID = -1;
+	updateNamesMenu();
+	resetScoreMenu();
 }

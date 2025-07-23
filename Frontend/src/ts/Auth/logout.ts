@@ -1,4 +1,7 @@
 import { log } from '../logging.js'
+import { Game  } from '../script.js'
+import * as S from '../structs.js'
+import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 
 export async function submitLogout(e: Event, player: number) {
 	e.preventDefault();
@@ -23,5 +26,19 @@ export async function submitLogout(e: Event, player: number) {
 		}
 	} catch (err) {
 		alert("Network error during authentication");
+	}
+
+	if (playerNr == 1) {
+		Game.player1Login = false;
+		Game.id = -1;
+		Game.name = "";
+		Game.state = S.State.Login;
+	} else {
+		Game.player2Login = false;
+		Game.id2 = -1;
+		Game.name2 = "";
+		Game.state = S.State.Menu;
+		updateNamesMenu();
+		resetScoreMenu();
 	}
 }

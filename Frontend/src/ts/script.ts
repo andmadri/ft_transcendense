@@ -23,11 +23,11 @@ export const Game: S.gameInfo = {
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
 	matchID: -1,
-	id: 0,
+	id: -1,
 	name: 'unknown',
 	player1Login: false, // should be Cookie
 	score: 0,
-	id2: 0,
+	id2: -1,
 	name2: 'unknown',
 	player2Login: false, // should be Cookie
 	score2: 0,

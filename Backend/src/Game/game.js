@@ -1,5 +1,6 @@
 import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
+import { matches } from './gameMatch.js';
 
 export function handleGame(msg, socket) {
 	if (!msg.subaction) {
@@ -7,19 +8,31 @@ export function handleGame(msg, socket) {
 		return ;
 	}
 
+	if (msg.subaction == 'init')
+		return createMatch(msg, socket);
+
+	if (!msg.matchID) {
+		console.log("No matchID found in msg from frontend");
+		return ;
+	}
+
+	const match = matches.get(msg.matchID);
+	if (!match) {
+		console.log(`No match with handle Game ${msg.matchID}`);
+		return ;
+	}
+
 	switch (msg.subaction) {
-		case 'init':
-			return createMatch(msg, socket);
 		case 'ballUpdate':
-			return updateBall(msg, socket);
+			return updateBall(match, msg, socket);
 		case 'padelUpdate':
-			return updatePadel(msg, socket );
+			return updatePadel(match, msg, socket );
 		case 'scoreUpdate':
-			return updateScore(msg, socket);
+			return updateScore(match, msg, socket);
 		case 'save':
-			return saveMatch(msg, socket);
+			return saveMatch(match, msg, socket);
 		case 'quit':
-			return quitMatch(msg, socket);
+			return quitMatch(match, msg, socket);
 		default:
 			console.log("subaction not found: " + msg.subaction);
 	}

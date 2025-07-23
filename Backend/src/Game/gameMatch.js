@@ -71,36 +71,25 @@ export function createMatch(msg, socket) {
 		player1ID,
 		player2ID
 	}));
+	matches.get(id).stage = Stage.Playing;
 }
 
-export async function quitMatch(msg, socket) {
-	const match = matches.get(msg.matchID);
-	if (!match) {
-		console.log(`No match with quitMatch: ${msg.matchID}`);
-		return ;
-	}
-
+export async function quitMatch(match, msg, socket) {
 	const name = msg.name ? msg.name : 'unknown player';
-	match.stage = Stage.Finish;
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	}));
+	match.stage = Stage.Finish;
 }
 
 
-export function saveMatch(msg, socket) {
-	const match = matches.get(msg.matchID);
-	if (!match)
-	{
-		console.log(`No valid matchID with saveMatch ${msg.matchID}`);
-		return ;
-	}
+export function saveMatch(match, msg, socket) {
 	const player1 = match.player1;
 	const player2 = match.player2;
-	if (match.saveInDB) { //  && match.stage == Stage.Finish
+	if (match.saveInDB && match.stage == Stage.Finish) {
 		saveMatchDB(player1.id, player2.id, player1.score, player2.score);
 		matches.delete(match.matchID);
 		socket.send(JSON.stringify({

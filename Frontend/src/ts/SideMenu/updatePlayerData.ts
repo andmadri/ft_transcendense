@@ -32,8 +32,6 @@ function receivePlayerData(data: any) {
 	if (!app) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
-	// menu.append(getPlayer(1), getPlayer(2));
-	// app.appendChild(menu);
 	updateScoreMenu(); 
 	updateNamesMenu();
 }
@@ -43,6 +41,8 @@ export function getPlayerData() {
 	Game.socket.send(JSON.stringify(msg));
 }
 
-export function updatePlayerData() {
-	return getPlayerData();
+export function updatePlayerData(player: number) {
+	if (player != 0) // guest
+		getPlayerData();
+	updateNamesMenu();
 }

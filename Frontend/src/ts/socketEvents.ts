@@ -1,4 +1,3 @@
-import { actionLogin } from './Auth/userAuth.js';
 import { actionGame } from './Game/game.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
@@ -29,7 +28,6 @@ export function errorSocket(err: Event) {
 
 /*
 FROM backend TO frontend
-• login => loginCheck / signUpCheck / logout
 • playerInfo => getName / getAvatar / revicePlayerData
 • chat => incomming
 • online => retOnlinePlayers / retOnlinePlayersWaiting
@@ -46,9 +44,6 @@ export function receiveFromWS(e: MessageEvent) {
 		log('no action');
 
 	switch(action) {
-		case 'login':
-			actionLogin(data);
-			break ;
 		case 'playerInfo':
 			actionPlayerInfo(data);
 			break ;

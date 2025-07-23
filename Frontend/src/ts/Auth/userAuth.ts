@@ -1,19 +1,10 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
-
-// PROCESS INFORMATION FROM SERVER
-function processSignUp(data: any) {
-	if (data.access && data.access == "yes") {
-		log("User is created");
-		changeLoginMode(data.player);
-	}
-	else
-		log('Not sign up:' + data.reason);
-}
 
 function updateLoginPlayer(data: any) {
 	if (data.player == 1) {
@@ -23,6 +14,8 @@ function updateLoginPlayer(data: any) {
 			Game.name = data.userName;
 		Game.playerLogin = 1;
 		Game.player1Login = true;
+		updatePlayerData(1);
+
 	} else {
 		if (data.UserId)
 			Game.id2 = data.UserId;
@@ -30,6 +23,7 @@ function updateLoginPlayer(data: any) {
 			Game.name2 = data.userName;
 		Game.player2Login = true;
 		Game.playerLogin = 2;
+		updatePlayerData(2);
 	}
 }
 
@@ -110,7 +104,12 @@ export async function submitAuthForm(e: Event, player: number) {
 		if (response.ok) {
 			const data = await response.json();
 			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
-			loginSuccessfull(playerNr);
+
+			if (endpoint == "/api/login")
+				loginSuccessfull(playerNr);
+			else
+				changeLoginMode(playerNr);
+
 		} else {
 			log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();
@@ -150,32 +149,5 @@ export function addGuest(e: Event, player: number) {
 		Game.player2Login = true;
 	}
 	loginSuccessfull(player);
-}
-
-function logoutPlayer(data: any) {
-	log('logoutPlayer:' + `${data.reason}`);
-	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
-	Game.socket.send(JSON.stringify(msg));
-}
-
-
-export function actionLogin(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'login':
-			processLogin(data);
-			break ;
-		case 'signup':
-			processSignUp(data);
-			break ;
-		case 'logout':
-			logoutPlayer(data);
-			break ;
-		default:
-			log(`(actionLogin) Unknown action: ${data.subaction}`);
-	}
+	updatePlayerData(0);
 }

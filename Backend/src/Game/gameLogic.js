@@ -1,23 +1,17 @@
-import { matches } from './gameMatch.js';
+import { matches, Stage } from './gameMatch.js';
 
-export function updateBall(msg, socket) {
-	const match = matches.get(msg.matchID);
-	if (!match) {
-		console.log(`No match with updateBall ${msg.matchID}`);
+export function updateBall(match, msg, socket) {
+	if (match.stage != Stage.Playing)
 		return ;
-	}
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
 	socket.send(JSON.stringify(msg));
 }
 
-export function updatePadel(msg, socket) {
-	const match = matches.get(msg.matchID);
-	if (!match) {
-		console.log(`No match with updateBall ${msg.matchID}`);
+export function updatePadel(match, msg, socket) {
+	if (match.stage != Stage.Playing)
 		return ;
-	}
 	msg.player1Score = match.player1.score;
 	msg.player1Paddle = match.player1.paddle;
 	msg.player1Up = match.player1.pressUp;
@@ -29,13 +23,9 @@ export function updatePadel(msg, socket) {
 	socket.send(JSON.stringify(msg));
 }
 
-export function updateScore(msg, socket) {
-	const playerID = msg.player;
-	const match = matches.get(msg.matchID);
-	if (!match) {
-		console.log(`No match with updateBall ${msg.matchID}`);
+export function updateScore(match, msg, socket) {
+	if (match.stage != Stage.Playing)
 		return ;
-	}
 
 	if (match.player1.id == msg.playerID)
 		match.player1.score++;

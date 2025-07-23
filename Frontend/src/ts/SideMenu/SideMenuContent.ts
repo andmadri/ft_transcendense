@@ -44,7 +44,7 @@ export async function getSideMenu() {
 	menu.style.gap = '1rem';
 	menu.append(getPlayer(1), getPlayer(2));
 	app.appendChild(menu);
-	updatePlayerData();
+	updatePlayerData(0);
 }
 
 function updateTextbyId(id: string, value: string) {
