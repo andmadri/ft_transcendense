@@ -58,7 +58,7 @@ function createOnlineList(): HTMLDivElement {
 	return (online);
 }
 
-function getOnlineList(): HTMLDivElement {
+export function getOnlineList(): HTMLDivElement {
 	let online = document.getElementById('online') as HTMLDivElement;
 	
 	if (!online)

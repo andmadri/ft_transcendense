@@ -89,14 +89,14 @@ export async function quitMatch(match, msg, socket) {
 export function saveMatch(match, msg, socket) {
 	const player1 = match.player1;
 	const player2 = match.player2;
-	if (match.saveInDB && match.stage == Stage.Finish) {
+	console.log("Save match")
+	if (match.saveInDB)
 		saveMatchDB(player1.id, player2.id, player1.score, player2.score);
-		matches.delete(match.matchID);
-		socket.send(JSON.stringify({
-			action: 'game',
-			subaction: 'save',
-			matchID: match.matchID,
-			success: true
-		}));
-	}
+	matches.delete(match.matchID);
+	socket.send(JSON.stringify({
+		action: 'game',
+		subaction: 'save',
+		matchID: match.matchID,
+		success: true
+	}));
 }

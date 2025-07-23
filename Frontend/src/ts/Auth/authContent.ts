@@ -118,7 +118,7 @@ export function getLoginFields(player: number) {
 	app.style.alignItems = 'flex-start';
 	app.style.gap = '20px';
 
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
+	if (player == 1) { // one login mandatory
 		app.appendChild(getAuthField(player, true));
 	} else {
 		app.append(getAuthField(player, false));

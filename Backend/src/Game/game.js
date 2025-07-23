@@ -18,7 +18,6 @@ export function handleGame(msg, socket) {
 
 	const match = matches.get(msg.matchID);
 	if (!match) {
-		console.log(`No match with handle Game ${msg.matchID}`);
 		return ;
 	}
 
