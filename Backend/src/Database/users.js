@@ -1,21 +1,67 @@
 import { db } from '../index.js'
 import bcrypt from 'bcrypt';
 
-export async function addUserToDB(msg) {
-	const hashedPassword = await bcrypt.hash(msg.password, 10);
+// import { db } from '../database.js'; // ADD THIS LATER
+
+// *************************************************************************** //
+//                             ADD ROW TO SQL TABLE                            //
+// *************************************************************************** //
+
+/**
+ * @brief Adds a new user to the SQL Users table.
+ *
+ * @returns {Promise<number>} - Resolves with the ID of the inserted user.
+ *
+ * @throws {Error} - Rejects if the insert fails (e.g., duplicate email).
+ */
+export async function addUserToDB(user) {
+	const hashedPassword = await bcrypt.hash(user.password, 10);
+	const avatar_url = user.avatar_url || null;
 
 	return new Promise((resolve, reject) => {
-		db.run(
-			`INSERT INTO Users (name, email, password) VALUES (?, ?, ?)`,
-			[msg.name, msg.email, hashedPassword],
-			(err) => {
-				if (err)
-					reject(err);
-				else
-					resolve();
+		const sql = `INSERT INTO Users (name, email, password, avatar_url) VALUES (?, ?, ?, ?)`;
+		db.run(sql, [user.name, user.email, hashedPassword, avatar_url], function (err) {
+			if (err) {
+				console.error('Error SQL - addUserToDB:', err.message);
+				reject(err);
+			} else {
+				console.log(`User created: [${this.lastID}] ${user.name} (${user.email})`);
+				resolve(this.lastID);
 			}
-		);
-	})	
+		});
+	});
+}
+
+// *************************************************************************** //
+//                          CHANGE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
+// *************************************************************************** //
+//                          DELETE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
+// *************************************************************************** //
+//                           VIEW DATA FROM SQL TABLE                          //
+// *************************************************************************** //
+
+/**
+ * @brief Retrieves a user by ID from the Users table.
+ *
+ * @param {number} id - The user ID to look up.
+ * @returns {Promise<Object|null>} - Resolves with user data or null if not found.
+ */
+export async function getUserByID(id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM Users WHERE id = ?`;
+		db.get(sql, [id], (err, row) => {
+			if (err) {
+				console.error('Error SQL - getUserByID:', err.message);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
 }
 
 export async function getUserByEmail(email) {
@@ -23,21 +69,6 @@ export async function getUserByEmail(email) {
 		db.get(
 			`SELECT * FROM Users WHERE email = ?`,
 			[email],
-			(err, row) => {
-				if (err)
-					reject(err);
-				else
-					resolve(row);
-			}
-		);
-	});
-}
-
-export async function getUserByID(id) {
-	return new Promise((resolve, reject) => {
-		db.get(
-			`SELECT * FROM Users WHERE id = ?`,
-			[id],
 			(err, row) => {
 				if (err)
 					reject(err);

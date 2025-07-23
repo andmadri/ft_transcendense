@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { signFastifyJWT } from "../utils/jwt.js";
-import * as userDB from '../Database/user.js';
+import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
 
 

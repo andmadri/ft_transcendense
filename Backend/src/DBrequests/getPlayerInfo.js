@@ -1,4 +1,4 @@
-import * as userDB from '../Database/user.js';
+import * as userDB from '../Database/users.js';
 
 function isGuest() {
 	const player = {
