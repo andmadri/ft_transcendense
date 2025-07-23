@@ -1,70 +1,74 @@
-// export const AI: S.AIInfo = {
-// 	prediction : null,
-// 	reactionTime : 1000, //ms
-// 	lastReaction : 0,
-// 	targetDirection : 'ArrowUp'
-// };
+import * as S from '../structs.js'
+import { Game } from '../script.js'
+import { movePadel } from './gameLogic.js'
 
-// export function resetAI() {
-// 	AI.prediction = null;
-// 	AI.lastReaction = 0;
-// 	AI.targetDirection = 'ArrowUp';
-// }
+export const AI: S.AIInfo = {
+	prediction : null,
+	reactionTime : 1000, //ms
+	lastReaction : 0,
+	targetDirection : 'ArrowUp'
+};
 
-// function predictBall() {
-// 	const ball = S.Objects['ball'];
-// 	const ballRadius = ball.width / 2;
+export function resetAI() {
+	AI.prediction = null;
+	AI.lastReaction = 0;
+	AI.targetDirection = 'ArrowUp';
+}
 
-// 	//calculate dx and dy
-// 	const dx = Math.cos(ball.angle) * ball.speed;
-// 	const dy = Math.sin(ball.angle) * ball.speed;
+function predictBall() {
+	const ball = S.Objects['ball'];
+	const ballRadius = ball.width / 2;
 
-// 	//only predict if ball is moving towards AI
-// 	if (dx <= 0) {
-// 		AI.prediction = null;
-// 		return ;
-// 	}
+	//calculate dx and dy
+	const dx = Math.cos(ball.angle) * ball.speed;
+	const dy = Math.sin(ball.angle) * ball.speed;
 
-// 	//do not repredict if dy is the same as previous prediction
-// 	if (AI.prediction && Math.sign(dy) === Math.sign(Math.sin(ball.angle) * ball.speed)) {
-// 		return ;
-// 	}
+	//only predict if ball is moving towards AI
+	if (dx <= 0) {
+		AI.prediction = null;
+		return ;
+	}
 
-// 	const field = S.Objects['field'];
-// 	const paddle = S.Objects['rPlayer'];
+	//do not repredict if dy is the same as previous prediction
+	if (AI.prediction && Math.sign(dy) === Math.sign(Math.sin(ball.angle) * ball.speed)) {
+		return ;
+	}
 
-// 	//predict ball Y on paddle X
-// 	const distanceX = paddle.x - (ball.x + ballRadius);
-// 	const timeToReach = distanceX / dx;
-// 	const predictedY = ball.y + dy * timeToReach;
+	const field = S.Objects['field'];
+	const paddle = S.Objects['rPlayer'];
 
-// 	//clamp y to stay within field
-// 	const clampedY = Math.max(0, Math.min(predictedY, field.height));
+	//predict ball Y on paddle X
+	const distanceX = paddle.x - (ball.x + ballRadius);
+	const timeToReach = distanceX / dx;
+	const predictedY = ball.y + dy * timeToReach;
 
-// 	AI.prediction = {
-// 		x : paddle.x,
-// 		y : clampedY,
-// 		dx : dx,
-// 		dy : dy,
-// 	}
-// }
+	//clamp y to stay within field
+	const clampedY = Math.max(0, Math.min(predictedY, field.height));
 
-// export function aiAlgorithm() {
-// 	const ball = S.Objects['ball'];
-// 	const paddle = S.Objects['rPlayer'];
+	AI.prediction = {
+		x : paddle.x,
+		y : clampedY,
+		dx : dx,
+		dy : dy,
+	}
+}
 
-// 	if (Game.timeGame - AI.lastReaction > AI.reactionTime) {
-// 		AI.lastReaction = Game.timeGame;
-// 		predictBall()
-// 	}
-// 	if (AI.prediction) {
-// 		if (AI.prediction.y > paddle.y) {
-// 			AI.targetDirection = 'ArrowDown';
-// 			movePadel(AI.targetDirection);
-// 		}
-// 		if (AI.prediction.y < paddle.y) {
-// 			AI.targetDirection = 'ArrowUp';
-// 			movePadel(AI.targetDirection);
-// 		}
-// 	}
-// }
+export function aiAlgorithm() {
+	const ball = S.Objects['ball'];
+	const paddle = S.Objects['rPlayer'];
+
+	if (Game.timeGame - AI.lastReaction > AI.reactionTime) {
+		AI.lastReaction = Game.timeGame;
+		predictBall()
+	}
+	if (AI.prediction) {
+		if (AI.prediction.y > paddle.y) {
+			AI.targetDirection = 'ArrowDown';
+			movePadel(AI.targetDirection);
+		}
+		if (AI.prediction.y < paddle.y) {
+			AI.targetDirection = 'ArrowUp';
+			movePadel(AI.targetDirection);
+		}
+	}
+}

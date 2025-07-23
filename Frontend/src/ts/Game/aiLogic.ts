@@ -15,12 +15,10 @@ export function collectGameData(): number[] {
 
 	//divide by width || height so data is normalized (relative to field size)
 	return [
-		Game.timeGame / 1000, //divide by 1000 to convert to seconds (because thats how we trained it)
 		ball.x / fieldWidth,
 		ball.y / fieldHeight,
-		(Math.cos(ball.angle) * ball.speed) / fieldWidth,
-		(Math.sin(ball.angle) * ball.speed) / fieldHeight,
-		ball.speed / fieldWidth,
+		(Math.cos(ball.angle)),
+		(Math.sin(ball.angle)),
 		player.y / fieldHeight,
 		opponent.y / fieldHeight,
 	]

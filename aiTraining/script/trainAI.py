@@ -20,12 +20,10 @@ def loadData(json_files):
         for entry in data:
             if entry['gameTime'] - last_time >= 1000:
                 features = [
-                    entry['gameTime'] / 1000,  # convert ms to seconds
                     entry['ballX'],
                     entry['ballY'],
                     entry['ballDX'],
                     entry['ballDY'],
-                    entry['ballSpeed'],
                     entry['paddleY'],
                     entry['opponentY'],
                 ]

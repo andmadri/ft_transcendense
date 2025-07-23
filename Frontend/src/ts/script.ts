@@ -88,12 +88,12 @@ function mainLoop() {
 					initGameServer();
 					updateNamesMenu();
 					resetScoreMenu();
-					if (Game.opponentType == S.OT.ONEvsCOM) {
-						(async () => {
-							await loadModel();
-							predictAction();
-						})();
-					}
+					// if (Game.opponentType == S.OT.ONEvsCOM) {
+					// 	(async () => {
+					// 		await loadModel();
+					// 		predictAction();
+					// 	})();
+					// }
 				}
 				game();
 				//if you are playing with the AI and you log out yourself there is a problem
