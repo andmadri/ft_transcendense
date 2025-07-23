@@ -1,6 +1,7 @@
 import { log } from '../logging.js';
 import { Game } from '../script.js';
 import { updateScoreMenu, updateNamesMenu } from './SideMenuContent.js';
+import * as S from '../structs.js'
 
 
 export function actionPlayerInfo(data: any) {
@@ -28,6 +29,8 @@ function receivePlayerData(data: any) {
 		Game.player2Login = data.player2Login || false;
 		Game.score2 = data.score2 || 0;
 	}
+	if (Game.id != 0)
+		Game.state = S.State.Menu;
 	const app = document.getElementById('app');
 	if (!app) return ;
 	const menu = document.createElement('div');
