@@ -209,7 +209,7 @@ export function handleGameOver() {
 
 export function game() {
 	Game.timeGame = performance.now();
-	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+	if (Game.scoreRight == 10 || Game.scoreLeft == 10) {
 		handleGameOver();
 		downloadTrainingData();
 		trainingSet.length = 0;

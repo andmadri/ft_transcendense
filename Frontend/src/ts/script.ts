@@ -97,8 +97,8 @@ function mainLoop() {
 				}
 				game();
 				//if you are playing with the AI and you log out yourself there is a problem
-				if (Game.opponentType != S.OT.ONEvsCOM && (!Game.player1Login || !Game.player2Login))
-					Game.state = S.State.Menu;
+				// if (Game.opponentType != S.OT.ONEvsCOM && (!Game.player1Login || !Game.player2Login))
+				// 	Game.state = S.State.Menu;
 				break ;
 			}
 		}
