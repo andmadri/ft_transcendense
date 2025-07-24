@@ -61,13 +61,10 @@ export function movePadel(key: string) {
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
-	if (Game.opponentType == S.OT.ONEvsCOM) {
-		aiAlgorithm();
-	}
+	// if (Game.opponentType == S.OT.ONEvsCOM) {
+	// 	aiAlgorithm();
+	// }
 	for (let key in S.Keys) {
-		if (Game.opponentType == S.OT.ONEvsCOM && (key == 'ArrowUp' || key == 'ArrowDown')) {
-			continue;
-		}
 		if (S.Keys[key].pressed === true) {
 			movePadel(key);
 			moved = true;
@@ -141,9 +138,9 @@ function resetBall(){
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}
-	if (Game.opponentType == S.OT.ONEvsCOM) {
-		resetAI();
-	}
+// 	if (Game.opponentType == S.OT.ONEvsCOM) {
+// 		resetAI();
+// 	}
 }
 
 export function updateScoreDisplay(side: string, newScore: number) {
@@ -213,7 +210,7 @@ export function game() {
 	Game.timeGame = performance.now();
 	if (Game.scoreRight == 10 || Game.scoreLeft == 10) {
 		handleGameOver();
-		downloadTrainingData();
+		//downloadTrainingData();
 		trainingSet.length = 0;
 		return ;
 	}
@@ -221,15 +218,16 @@ export function game() {
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
+	predictAction();
 	if (checkPadelMovement())
 		updatePadelPosition();
-	if (Game.timeGame - collectDataTime >= 1000) {
-		collectDataTime = Game.timeGame;
-		const data = collectTrainingData();
-		if (data != null) {
-			trainingSet.push(data);
-		}
-	}
+	// if (Game.timeGame - collectDataTime >= 1000) {
+	// 	collectDataTime = Game.timeGame;
+	// 	const data = collectTrainingData();
+	// 	if (data != null) {
+	// 		trainingSet.push(data);
+	// 	}
+	// }
 }
 
 export function actionGame(data: any) {

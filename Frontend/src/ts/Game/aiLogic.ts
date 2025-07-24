@@ -43,34 +43,33 @@ export async function predictAction() {
 		console.error('Model is not loaded yet, skipping prediction');
 		return ;
 	}
-	while (Game.state == S.State.Game) {
-		if (Game.timeGame - lastPredictionTime >= 1000) {
-			lastPredictionTime = Game.timeGame;
-			const data = collectGameData();
+	if (Game.timeGame - lastPredictionTime >= 1000) {
+		lastPredictionTime = Game.timeGame;
+		const data = collectGameData();
 
-			console.log(`Data collected: [${data}]`);
-			const inputTensor = tf.tensor2d([data]);
+		console.log(`Data collected: [${data}]`);
+		const inputTensor = tf.tensor2d([data]);
 
-			const prediction = loadedModel.predict(inputTensor) as tf.Tensor;
+		const prediction = loadedModel.predict(inputTensor) as tf.Tensor;
 
-			const predictionResult = await prediction.array();
+		const predictionResult = await prediction.array();
 
-			const predictionArray: number[][] = predictionResult as number[][];
-			const output : number[] = predictionArray[0];
-			const action = output.indexOf(Math.max(...output));
-			console.log(`Raw model output: ${output}`);
-			console.log(`Predicted action for movement: ${action}`);
-			switch (action) {
-				case 0:
-					movePadel('ArrowUp');
-					break;
-				case 1:
-					movePadel('ArrowDown');
-					break;
-				case 2:
-					break; //Do we need to change key.pressed to false or anything??
-			}
+		const predictionArray: number[][] = predictionResult as number[][];
+		const output : number[] = predictionArray[0];
+		const action = output.indexOf(Math.max(output[0], output[1]));
+		console.log(`Raw model output: ${output}`);
+		console.log(`Predicted action for movement: ${action}`);
+		S.Keys['ArrowUp'].pressed = false;
+		S.Keys['ArrowDown'].pressed = false;
+		switch (action) {
+			case 0:
+				S.Keys['ArrowUp'].pressed = true;
+				break;
+			case 1:
+				S.Keys['ArrowDown'].pressed = true;
+				break;
+			case 2:
+				break; //Do we need to change key.pressed to false or anything??
 		}
-		await tf.nextFrame();
 	}
 }

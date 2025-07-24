@@ -64,7 +64,7 @@ def main():
     
     # Save as SavedModel format
     print("Saving model...")
-    model.save('../temp_model')
+    model.save('../temp_model/model.h5')
     
     print("\n" + "="*50)
     print("SUCCESS! Model trained and saved.")

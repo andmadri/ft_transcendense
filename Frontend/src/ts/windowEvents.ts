@@ -1,12 +1,19 @@
 import * as S from './structs.js'
+import { Game} from './script.js'
 
 export function releaseButton(e: KeyboardEvent) {
+	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		S.Keys[e.key].pressed = false;
 	}
 }
 
 export function pressButton(e: KeyboardEvent) {
+	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		S.Keys[e.key].pressed = true;
 	}
@@ -77,7 +84,6 @@ export function initAfterResize() {
 
 		S.Objects['field'].width = newWidth;
 		S.Objects['field'].height = newHeight;
-		console.log(`Resized field to ${S.Objects['field'].width}x${S.Objects['field'].height}`);
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
 	}

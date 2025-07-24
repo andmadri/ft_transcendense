@@ -70,7 +70,7 @@ type Object = {
 }
 
 export const Objects: {[key: string]: Object} = {
-	"ball":	{angle: 0.33, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "white"},
+	"ball":	{angle: -0.33, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "white"},
 	"rPlayer": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "green"},
 	"lPlayer": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
 	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
