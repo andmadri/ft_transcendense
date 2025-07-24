@@ -5,8 +5,8 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 
 ACTION_MAP = {
-    'arrowUp': 0,
-    'arrowDown': 1,
+    'ArrowUp': 0,
+    'ArrowDown': 1,
     'none': 2,
 }
 
@@ -18,18 +18,17 @@ def loadData(json_files):
             data = json.load(f)
         last_time = -1000
         for entry in data:
-            if entry['gameTime'] - last_time >= 1000:
-                features = [
-                    entry['ballX'],
-                    entry['ballY'],
-                    entry['ballDX'],
-                    entry['ballDY'],
-                    entry['paddleY'],
-                    entry['opponentY'],
-                ]
-                inputs.append(features)
-                labels.append(ACTION_MAP[entry['action']])
-                last_time = entry['gameTime']
+            features = [
+                entry['ballX'],
+                entry['ballY'],
+                entry['ballDX'],
+                entry['ballDY'],
+                entry['paddleY'],
+                entry['opponentY'],
+            ]
+            inputs.append(features)
+            labels.append(ACTION_MAP[entry['action']])
+            last_time = entry['gameTime']
     return np.array(inputs, dtype=np.float32), np.array(labels, dtype=np.int32)
 
 def build_model(input_shape, num_classes):

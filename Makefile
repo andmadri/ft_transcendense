@@ -6,6 +6,7 @@ all:	up
 
 up:		
 	rm -rf Server/src
+	rm -rf Server/aiModel
 	mkdir -p Database
 	cp -r Frontend/* Server/
 	cp -r aiTraining/aiModel Server/
@@ -29,6 +30,7 @@ build:
 server: Frontend/*
 	rm -rf Server/src
 	rm -rf Server/*.json
+	rm -rf Server/aiModel
 	cp -r Frontend/* Server/
 	cp -r aiTraining/aiModel Server/
 	docker compose up -d --build --force-recreate server

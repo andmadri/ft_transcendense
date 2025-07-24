@@ -207,6 +207,8 @@ export function handleGameOver() {
 	}
 }
 
+let collectDataTime : number = 0;
+
 export function game() {
 	Game.timeGame = performance.now();
 	if (Game.scoreRight == 10 || Game.scoreLeft == 10) {
@@ -221,9 +223,12 @@ export function game() {
 	updateBallPosition();
 	if (checkPadelMovement())
 		updatePadelPosition();
-	const data = collectTrainingData();
-	if (data != null) {
-		trainingSet.push(data);
+	if (Game.timeGame - collectDataTime >= 1000) {
+		collectDataTime = Game.timeGame;
+		const data = collectTrainingData();
+		if (data != null) {
+			trainingSet.push(data);
+		}
 	}
 }
 

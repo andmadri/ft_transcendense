@@ -9,17 +9,17 @@ interface trainingData {
 	ballDY: number;
 	paddleY: number;
 	opponentY: number;
-	action: 'arrowUp' | 'arrowDown' | 'none';
+	action: 'ArrowUp' | 'ArrowDown' | 'none';
 }
 
 export const trainingSet: trainingData[] = [];
 
-function getCurrentAction(): 'arrowUp' | 'arrowDown' | 'none' {
-	if (S.Keys['w'].pressed) {
-		return 'arrowUp';
+function getCurrentAction(): 'ArrowUp' | 'ArrowDown' | 'none' {
+	if (S.Keys['ArrowUp'].pressed) {
+		return 'ArrowUp';
 	}
-	if (S.Keys['s'].pressed) {
-		return 'arrowDown';
+	if (S.Keys['ArrowDown'].pressed) {
+		return 'ArrowDown';
 	}
 	return 'none';
 }
@@ -41,7 +41,7 @@ export function collectTrainingData(): trainingData | null {
 		ballDY: (Math.sin(ball.angle)),
 		paddleY: player.y / fieldHeight,
 		opponentY: opponent.y / fieldHeight,
-		action: getCurrentAction(),
+		action: getCurrentAction()
 	}
 }
 

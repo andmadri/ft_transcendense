@@ -23,8 +23,11 @@ export function initAfterResize() {
 		const oldWidth = S.Objects['field'].width;
 		const oldHeight = S.Objects['field'].height;
 
-		const newWidth = window.innerWidth * 0.7;
-		const newHeight = newWidth * (7 / 10);
+		// const newWidth = window.innerWidth * 0.7;
+		// const newHeight = newWidth * (7 / 10);
+
+		const newHeight = window.innerHeight * 0.7;
+		const newWidth = (window.innerHeight * 100) / 70;
 
 		if (oldWidth === 0 || oldHeight === 0) {
 			console.warn("Field too small!!");
