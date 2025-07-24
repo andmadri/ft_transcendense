@@ -7,7 +7,7 @@ WORKDIR /usr/app
 COPY package*.json ./
 COPY ./src ./src
 
-# added: sqlite sqlite-libs sqlite-dev 
+# CHANGE THIS LATER: added: sqlite sqlite-libs sqlite-dev 
 RUN apk add --no-cache sqlite sqlite-libs sqlite-dev python3 make g++ && \
     npm install && \
     apk del python3 make g++

@@ -1,11 +1,24 @@
-import { db } from '../index.js'
-
-// import { db } from '../database.js'; // ADD THIS LATER
+import { db } from './database.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
+/**
+ * @brief Inserts a new match into the Matches table. Call this function when the match will start.
+ *
+ * Supports both player-vs-player and player-vs-AI matches.
+ * Requires Player 1 to exist; Player 2 is optional.
+ *
+ * @param {Object} match - Match details.
+ * @param {number} match.player_1_id - ID of player 1 (required).
+ * @param {number|null} match.player_2_id - ID of player 2 (optional).
+ * @param {string} match.match_type - Match type (Accepts only '1v1', 'vs_ai', 'tournament')
+ *
+ * @returns {Promise<number>} - Resolves with the match ID on success.
+ *
+ * @throws {Error} - If required players do not exist or SQL insert fails.
+ */
 export async function addMatchToDB(match) {
 	const player1 = await getUserByID(match.player_1_id);
 	
@@ -36,6 +49,97 @@ export async function addMatchToDB(match) {
 	});
 }
 
+// *************************************************************************** //
+//                          CHANGE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
+/**
+ * @brief Updates match outcome and scores in the Matches table.
+ *
+ * Allows updating final scores, winner, and end time.
+ * Only the fields provided will be updated.
+ *
+ * @param {Object} match - Match update details.
+ * @param {number} match.match_id - The ID of the match to update.
+ * @param {number} [match.player_1_score] - (Final) score of player 1.
+ * @param {number} [match.player_2_score] - (Final) score of player 2.
+ * @param {number|null} [match.winner_id] - Winner's user ID - only set when the match is ended.
+ * @param {string|null} [match.end_time] - Match end timestamp (ISO 8601 or null) - only set when the match is ended.
+ *
+ * @returns {Promise<void>}
+ *
+ * @throws {Error} - If update fails.
+ */
+export async function updateMatchInDB(match) {
+	const existingMatch = await getMatchByID(match.match_id);
+	if (!existingMatch) {
+		throw new Error(`Match ID ${match.match_id} does not exist.`);
+	}
+	
+	return new Promise ((resolve, reject) => {
+		const updates = [];
+		const values = [];
+
+		if (match.player_1_score !== undefined) {
+			updates.push("player_1_score = ?");
+			values.push(match.player_1_score);
+		}
+		if (match.player_2_score !== undefined) {
+			updates.push("player_2_score = ?");
+			values.push(match.player_2_score);
+		}
+		if (match.winner_id !== undefined) {
+			updates.push("winner_id = ?");
+			values.push(match.winner_id);
+		}
+		if (match.end_time !== undefined) {
+			updates.push("end_time = ?");
+			values.push(match.end_time);
+		}
+
+		if (updates.length === 0) {
+			console.log("No fields provided to update.");
+			return resolve();
+		}
+
+		const sql = `UPDATE Matches SET ${updates.join(", ")} WHERE id = ?`;
+		values.push(match.match_id);
+
+		db.run(sql, values, function (err) {
+			if (err) {
+				console.error('Error SQL - updateMatchInDB:', err.message);
+				reject(err);
+			} else {
+				console.log(`Match updated: [${match.match_id}]`);
+				resolve();
+			}
+		});
+	});
+}
+
+// *************************************************************************** //
+//                           VIEW DATA FROM SQL TABLE                          //
+// *************************************************************************** //
+
+/**
+ * @brief Fetches a match row by its ID.
+ *
+ * @param {number} match_id - The ID of the match to retrieve.
+ * @returns {Promise<Object|null>} - Resolves with match object or null.
+ */
+export async function getMatchByID(match_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM Matches WHERE id = ?`;
+		db.get(sql, [match_id], (err, row) => {
+			if (err) {
+				console.error('Error SQL - getMatchByID:', err.message);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
 
 
 // returns ID nr of match to save

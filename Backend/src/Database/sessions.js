@@ -1,5 +1,4 @@
-import { db } from '../index.js'
-// import { db } from '../database.js'; // ADD THIS LATER
+import { db } from './database.js';
 import { getUserByID } from './users.js';
 
 // *************************************************************************** //

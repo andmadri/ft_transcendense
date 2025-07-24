@@ -1,7 +1,5 @@
-import { db } from '../index.js'
+import { db } from './database.js';
 import bcrypt from 'bcrypt';
-
-// import { db } from '../database.js'; // ADD THIS LATER
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
