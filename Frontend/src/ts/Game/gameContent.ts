@@ -34,6 +34,12 @@ function removeLogDiv() {
 }
 
 export function getGameField() {
+	if (document.getElementById('auth1')) {
+		removeAuthField(1);
+	}
+	if (document.getElementById('auth2')) {
+		removeAuthField(2);
+	}
 	removeLogDiv();
 
 	const	body = document.body;
@@ -139,7 +145,6 @@ export function getGameField() {
 	container.appendChild(field);
 	game.appendChild(container);
 	body.appendChild(game);
-	
 }
 
 

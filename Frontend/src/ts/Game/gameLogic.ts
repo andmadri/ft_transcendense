@@ -127,6 +127,7 @@ export function checkWallCollision() {
 	
 }
 
+//change direction of the ball on each reset
 function resetBall(){
 	const field = document.getElementById("field");
 	const ball = document.getElementById("ball");
@@ -183,7 +184,7 @@ export function checkPaddelCollision() {
 }
 
 export function handleGameOver() {
-	Game.gameOn = false;
+	Game.state = S.State.Menu;
 	log("Game Over!");
 	if (document.getElementById('gameOver')) {
 		const gameOver = document.createElement('div');
@@ -206,29 +207,17 @@ export function handleGameOver() {
 }
 
 export function game() {
+	Game.timeGame = performance.now();
+	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+		handleGameOver();
+		return ;
+	}
 	checkWallCollision();
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
-		updatePadelPosition();	
-	// Game.timeGame = performance.now();
-	// 			if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-	// 				GameLogic.handleGameOver();
-	// 				downloadTrainingData();
-	// 				trainingSet.length = 0;
-	// 				return ;
-	// 			}
-	// 			GameLogic.checkWallCollision();
-	// 			GameLogic.checkPaddelCollision();
-	// 			GameLogic.calculateBallDir();
-	// 			GameLogic.updateBallPosition();
-	// 			if (GameLogic.checkPadelMovement())
-	// 				GameLogic.updatePadelPosition();
-	// 			const data = collectTrainingData();
-	// 			if (data != null) {
-	// 				trainingSet.push(data);
-	// 			}
+		updatePadelPosition();
 }
 
 export function actionGame(data: any) {

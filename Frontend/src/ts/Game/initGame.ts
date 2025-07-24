@@ -94,7 +94,7 @@ export function initPositions() {
 		S.Objects['ball'].width = ballSize;
 		S.Objects['ball'].x = field.clientWidth / 2;
 		S.Objects['ball'].y = field.clientHeight / 2;
-		S.Objects['ball'].speed = field.clientWidth * 0.01;
+		S.Objects['ball'].speed = field.clientWidth * 0.015;
 		ball.style.left = `${S.Objects['ball'].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects['ball'].y - ballSize / 2}px`;
 

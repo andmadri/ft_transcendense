@@ -15,6 +15,8 @@ export function resetAI() {
 	AI.targetDirection = 'ArrowUp';
 }
 
+let errorMarginPercentage = 0.1;
+
 function predictBall() {
 	const ball = S.Objects['ball'];
 	const ballRadius = ball.width / 2;
@@ -40,10 +42,17 @@ function predictBall() {
 	//predict ball Y on paddle X
 	const distanceX = paddle.x - (ball.x + ballRadius);
 	const timeToReach = distanceX / dx;
-	const predictedY = ball.y + dy * timeToReach;
+
+	//add error margin
+
+	const errorMargin = Math.random() * field.height * errorMarginPercentage;
+	errorMarginPercentage += 0.1;
+
+	const predictedY = ball.y + (dy * timeToReach) + errorMargin;
 
 	//clamp y to stay within field
 	const clampedY = Math.max(0, Math.min(predictedY, field.height));
+
 
 	AI.prediction = {
 		x : paddle.x,
