@@ -11,7 +11,6 @@ export function collectGameData(): number[] {
 	const fieldHeight = S.Objects['field'].height;
 	const ball = S.Objects['ball'];
 	const player = S.Objects['rPlayer'];
-	const opponent = S.Objects['lPlayer'];
 
 	//divide by width || height so data is normalized (relative to field size)
 	return [
@@ -20,7 +19,6 @@ export function collectGameData(): number[] {
 		(Math.cos(ball.angle)),
 		(Math.sin(ball.angle)),
 		player.y / fieldHeight,
-		opponent.y / fieldHeight,
 	]
 }
 
@@ -56,7 +54,7 @@ export async function predictAction() {
 
 		const predictionArray: number[][] = predictionResult as number[][];
 		const output : number[] = predictionArray[0];
-		const action = output.indexOf(Math.max(output[0], output[1]));
+		const action = output.indexOf(Math.max(...output));
 		console.log(`Raw model output: ${output}`);
 		console.log(`Predicted action for movement: ${action}`);
 		S.Keys['ArrowUp'].pressed = false;

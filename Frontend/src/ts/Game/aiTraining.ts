@@ -8,7 +8,6 @@ interface trainingData {
 	ballDX: number;
 	ballDY: number;
 	paddleY: number;
-	opponentY: number;
 	action: 'ArrowUp' | 'ArrowDown' | 'none';
 }
 
@@ -30,7 +29,6 @@ export function collectTrainingData(): trainingData | null {
 	const fieldHeight = S.Objects['field'].height;
 	const ball = S.Objects['ball'];
 	const player = S.Objects['rPlayer'];
-	const opponent = S.Objects['lPlayer'];
 
 	//divide by width || height so data is normalized (relative to field size)
 	return {
@@ -40,7 +38,6 @@ export function collectTrainingData(): trainingData | null {
 		ballDX: (Math.cos(ball.angle)),
 		ballDY: (Math.sin(ball.angle)),
 		paddleY: player.y / fieldHeight,
-		opponentY: opponent.y / fieldHeight,
 		action: getCurrentAction()
 	}
 }
