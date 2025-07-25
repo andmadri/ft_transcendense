@@ -80,7 +80,8 @@ export function initPositions() {
 	{
 		// Field
 		S.Objects['field'].width = window.innerWidth * 0.7;
-		S.Objects['field'].height = S.Objects['field'].width * (7 / 10);
+		S.Objects['field'].height = S.Objects['field'].width * 0.7;
+
 		field.style.height = `${S.Objects['field'].height}px`;
 		field.style.width = `${S.Objects['field'].width}px`;
 		game.style.height = `${S.Objects['field'].height}px`;

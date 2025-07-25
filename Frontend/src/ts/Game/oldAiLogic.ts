@@ -9,7 +9,11 @@ export const AI: S.AIInfo = {
 	targetDirection : 'ArrowUp'
 };
 
-let errorMarginPercentage = 0.1;
+export function resetAI() {
+	AI.prediction = null;
+	AI.lastReaction = 0;
+	AI.targetDirection = 'ArrowUp';
+}
 
 function predictBall() {
 	const ball = S.Objects['ball'];
@@ -36,17 +40,10 @@ function predictBall() {
 	//predict ball Y on paddle X
 	const distanceX = paddle.x - (ball.x + ballRadius);
 	const timeToReach = distanceX / dx;
-
-	//add error margin
-
-	const errorMargin = Math.random() * field.height * errorMarginPercentage;
-	errorMarginPercentage += 0.1;
-
-	const predictedY = ball.y + (dy * timeToReach) + errorMargin;
+	const predictedY = ball.y + dy * timeToReach;
 
 	//clamp y to stay within field
 	const clampedY = Math.max(0, Math.min(predictedY, field.height));
-
 
 	AI.prediction = {
 		x : paddle.x,

@@ -3,8 +3,8 @@ import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
 import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
-import { aiAlgorithm } from './aiLogic.js';
-import { resetAI } from './aiLogic.js';
+import { aiAlgorithm } from './oldAiLogic.js';
+import { resetAI } from './oldAiLogic.js';
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -59,13 +59,10 @@ export function movePadel(key: string) {
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
-	if (Game.opponentType == S.OT.ONEvsCOM) {
-		aiAlgorithm();
-	}
+	// if (Game.opponentType == S.OT.ONEvsCOM) {
+	// 	aiAlgorithm();
+	// }
 	for (let key in S.Keys) {
-		if (Game.opponentType == S.OT.ONEvsCOM && (key == 'ArrowUp' || key == 'ArrowDown')) {
-			continue;
-		}
 		if (S.Keys[key].pressed === true) {
 			movePadel(key);
 			moved = true;
@@ -140,9 +137,9 @@ function resetBall(){
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}
-	if (Game.opponentType == S.OT.ONEvsCOM) {
-		resetAI();
-	}
+// 	if (Game.opponentType == S.OT.ONEvsCOM) {
+// 		resetAI();
+// 	}
 }
 
 export function updateScoreDisplay(side: string, newScore: number) {
@@ -205,6 +202,8 @@ export function handleGameOver() {
 		document.body.appendChild(gameOver);
 	}
 }
+
+let collectDataTime : number = 0;
 
 export function game() {
 	Game.timeGame = performance.now();

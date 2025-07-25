@@ -41,7 +41,6 @@ export function getGameField() {
 		removeAuthField(2);
 	}
 	removeLogDiv();
-
 	const	body = document.body;
 	body.style.margin = '0';
 	body.style.padding = '0';
@@ -146,7 +145,6 @@ export function getGameField() {
 	game.appendChild(container);
 	body.appendChild(game);
 }
-
 
 export function removeGameField() {
 	const	body = document.getElementById('body');

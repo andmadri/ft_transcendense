@@ -1,3 +1,8 @@
 /node_modules
 .env
 .vscode
+aiTraining/script/.venv
+Server/src
+Server/build.js
+Server/package.json
+Server/tsconfig.json

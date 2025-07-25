@@ -11,7 +11,8 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
-import { trainingSet, collectTrainingData, downloadTrainingData } from './Game/aiTraining.js'
+import { loadModel } from './Game/aiLogic.js'
+import { predictAction } from './Game/aiLogic.js'
 
 createLog();
 
@@ -21,7 +22,7 @@ export const Game: S.gameInfo = {
 	opponentType: S.OT.Empty,
 	matchFormat: S.MF.Empty,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss'),
+	socket: new WebSocket(`wss://${window.location.hostname}:8443/wss`),
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
@@ -87,10 +88,16 @@ function mainLoop() {
 					initGameServer();
 					updateNamesMenu();
 					resetScoreMenu();
+					if (Game.opponentType == S.OT.ONEvsCOM) {
+						(async () => {
+							await loadModel();
+						})();
+					}
 				}
 				game();
-				if (!Game.player1Login || !Game.player2Login)
-					Game.state = S.State.Menu;
+				//if you are playing with the AI and you log out yourself there is a problem
+				// if (Game.opponentType != S.OT.ONEvsCOM && (!Game.player1Login || !Game.player2Login))
+				// 	Game.state = S.State.Menu;
 				break ;
 			}
 		}
