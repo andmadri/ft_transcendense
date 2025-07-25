@@ -3,21 +3,19 @@ import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 import fastifyCors from '@fastify/cors';
-// import { validateLogin, addUser } from './Auth/userAuth.js';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
-import googleAuthRoutes from './routes/googleAuth.js';
-import userAuthRoutes from './routes/userAuth.js';
+import  googleAuthRoutes  from './routes/googleAuth.js';
+import  userAuthRoutes  from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-// import { updateOnlineStatus } from './Database/database.js';
-
+import { getUserByID, updateOnlineStatus } from './Database/user.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
 
-//change how you create database
+// change how you create database
 export const db = await createDatabase();
 
 // Register the cookie plugin
@@ -34,7 +32,6 @@ fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
 await fastify.register(userAuthRoutes);
-
 
 /*
 FROM frontend TO backend				
@@ -115,6 +112,18 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 				connection.socket.send(JSON.stringify(msg));
 				return ;
 		}			
+	});
+
+	connection.on('close', () => {
+		(async () => {
+			try {
+				const user = getUserByID(userId1);
+				if (user && user.email)
+					updateOnlineStatus(user.email, 'offline');
+			} catch (err) {
+				console.error('Player can not logged out', err);
+			}
+		})
 	});
 });
 

@@ -1,166 +1,220 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { Game } from '../script.js'
 import { getSideMenu } from '../SideMenu/SideMenuContent.js';
+import { getFriendsList } from './friends.js';
+import { getOnlineList } from './online.js';
+import { getStatsList } from './stats.js';
+import { getHighscores } from './highscore.js'
+import { getOptionMenu  } from '../OptionMenu/options.js';
+import { submitLogout } from '../Auth/logout.js';
 
-function styleElement(
-	element: HTMLElement,
-	gridColumn?: string,
-	gridRow?: string,
-	backgroundColor?: string,
-	padding?: string
-) {
-	if (gridColumn)
-		element.style.gridColumn = gridColumn;
-	if (gridRow)
-		element.style.gridRow = gridRow;
-	if (backgroundColor)
-		element.style.backgroundColor = backgroundColor;
-	if (padding)
-		element.style.padding = padding;
+export function styleElementMenu(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
+	Object.assign(e.style, styles);
 }
 
-function getFriends(): HTMLDivElement {
-	const friends = document.createElement('div');
-	friends.id = 'friends';
-	styleElement(friends, '2', '2', 'lightgrey', '1rem');
-
-	const title = document.createElement('h2');
-	title.id = 'friendsTitle';
-	title.textContent = 'Friends';
-
-	const list = document.createElement('div');
-	list.id = 'friendsList';
+function getCreditBtn(): HTMLDivElement {
+	const creditsBtn = document.createElement('div');
+	creditsBtn.textContent = 'Credits';
+	styleElementMenu(creditsBtn, {
+		backgroundColor: 'white',
+		border: '2px solid black',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		marginTop: '15px',
+		borderRadius: '10px',
+		textAlign: 'center'
+	});
 	
-	friends.append(title, list);
-	return friends;
-}
-
-function createOnlineList(): HTMLDivElement {
-	const online = document.createElement('div');
-	online.id = 'online';
-	styleElement(online, '1', '1 / span 2', 'lightblue', '1rem');
-	online.style.borderRight = '1px solid #ccc';
-
-	const title = document.createElement('h2');
-	title.className = 'sectionTitle';
-	title.textContent = 'Online123';
-
-	const list = document.createElement('div');
-	list.id = 'listOnlinePlayers';
-
-
-	const html_list = document.createElement('ul');
-	html_list.id = 'htmllistOnlinePlayers';
-	html_list.className = 'online-markers';
-
-	list.appendChild(html_list);
-	online.append(title, list);
-	return (online);
-}
-
-export function getOnlineList(): HTMLDivElement {
-	let online = document.getElementById('online') as HTMLDivElement;
+	creditsBtn.addEventListener('click', () => {
+		const app = document.getElementById('app');
+		if (!app)
+			return ;
 	
-	if (!online)
-		online = createOnlineList();
-	else {
-		const list = document.getElementById('htmllistOnlinePlayers');
-		if (list instanceof HTMLUListElement)
-			list.innerHTML = '';
-	}
+		const creditDiv = document.createElement('div');
+		creditDiv.id = 'creditDiv';
+		styleElementMenu(creditDiv, {
+			position: 'fixed',
+			width: '100vw',
+			height: '100vh',
+			top: '0',
+			left: '0',
+			backgroundColor: 'white',
+			display: 'flex',
+			flexDirection: 'column',
+			justifyContent: 'center',
+			alignItems: 'center',
+			zIndex: '9999'
+		})
+		
 
-	// backend request to the DB for all online players
-	// const online_players = ['Player1', 'Player2', 'Player3']; // This should be replaced with actual data from the backend
-	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
-	Game.socket.send(JSON.stringify(msg));
+		const creditImg = document.createElement('img');
+		creditImg.src = "./../images/Credits.png";
+		styleElementMenu(creditImg, {
+			maxWidth: '90vw',
+			maxHeight: '90vh',
+			objectFit: 'contain',
+			boxShadow: '0 0 20px black'
+		})
 
-	return online;
+		const closeBtn = document.createElement('button');
+		closeBtn.textContent = "CLOSE";
+		closeBtn.style.zIndex = '100000';
+		closeBtn.style.margin = '10px';
+
+		creditDiv.appendChild(creditImg);
+		creditDiv.appendChild(closeBtn);
+		app.appendChild(creditDiv);
+	
+		closeBtn.addEventListener('click', () => {
+			app.removeChild(creditDiv);
+		})
+	})
+	return (creditsBtn);
 }
 
-function getHighscores(): HTMLDivElement {
-	const highscores = document.createElement('div');
-	highscores.id = 'highscores';
-	styleElement(highscores, '3', '1 / span 2', 'lightcyan', '1rem');
-	highscores.style.borderLeft = '1px solid #ccc';
+function getLeftSideMenu() {
+	const menuLeft = document.createElement('div');
+	styleElementMenu(menuLeft, {
+		display: 'flex',
+		flexDirection: 'column',
+		width: '40%',
+		boxSizing: 'border-box',
+		justifyContent: 'space-between',
+		height: '100%',
+		flex: '1',
+	});
 
-	const title = document.createElement('h2');
-	title.className = 'sectionTitle';
-	title.textContent = 'Highscores';
+	const highScoreOnlineDiv = document.createElement('div');
+	styleElementMenu(highScoreOnlineDiv, {
+		display: 'flex',
+		gap: '15px',
+		flexGrow: '1',
+	});
+	highScoreOnlineDiv.append(getHighscores(), getOnlineList());
 
-	const list = document.createElement('div');
-	list.id = 'listHighscores';
-
-	highscores.append(title, list);
-	return highscores;
+	menuLeft.append(highScoreOnlineDiv, getCreditBtn());
+	return (menuLeft);
 }
 
-export function getGameSettings(): HTMLDivElement {
-	const options = document.createElement('div');
-	styleElement(options, '2', '1', 'lightgreen', '1rem');
-	options.style.borderBottom = '1px solid #000';
+function getPlayBtn(): HTMLButtonElement {
+	const playBtn = document.createElement('button');
+	playBtn.textContent = 'Play game';
+	styleElementMenu(playBtn, {
+		backgroundColor: 'white',
+		border: '2px solid black',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px'
+	});
+	playBtn.addEventListener('click', () => {
+		getOptionMenu();
+	});
 
-	const opponentTypesDiv = document.createElement('div');
-	opponentTypesDiv.id = 'opponentTypes';
-	opponentTypesDiv.className = 'opponentTypes';
+	return (playBtn);
+}
 
-	const btn1v1 = document.createElement('button');
-	btn1v1.type = 'button';
-	btn1v1.textContent = '1 VS 1';
-	btn1v1.addEventListener('click', () => changeOpponentType('1 vs 1'));
+function getLogoutBtn(): HTMLButtonElement {
+	const logoutBtn = document.createElement('button');
+	logoutBtn.textContent = 'logout';
+	styleElementMenu(logoutBtn, {
+		padding: '5px 10px',
+		fontSize: '1em',
+		cursor: 'pointer'
+	});
+	logoutBtn.addEventListener('click', (e) => submitLogout(e, 1));
+	return (logoutBtn);
+}
 
-	const btn1vCom = document.createElement('button');
-	btn1vCom.type = 'button';
-	btn1vCom.textContent = '1 VS COM';
-	btn1vCom.addEventListener('click', () => changeOpponentType('1 vs COM'));
+function getRightSideMenu() {
+	const profile = document.createElement('div');
+	profile.id = 'profile';
+	styleElementMenu(profile, {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '10px',
+		border: '2px solid black',
+		padding: '15px',
+		width: '50%',
+		boxSizing: 'border-box',
+		backgroundColor: 'white',
+		flex: '1.5',
+		borderRadius: '10px',
+		alignItems: 'stretch'
+	});
 
-	const btnOnline = document.createElement('button');
-	btnOnline.type = 'button';
-	btnOnline.textContent = 'Online';
-	btnOnline.addEventListener('click', () => changeOpponentType('Online'));
+	const player = document.createElement('div');
+	styleElementMenu(player, {
+		display: 'flex',
+		width: '100%',
+		alignItems: 'center',
+		gap: '10px'
+	})
 
-	opponentTypesDiv.append(btn1v1, btn1vCom, btnOnline);
+	const avatarDiv = document.createElement('div');
+	avatarDiv.textContent = '😎';
+	styleElementMenu(avatarDiv, {
+		flex: '0 0 25%',
+		textAlign: 'center',
+		fontSize: '50px'
+	})
 
-	const matchTypesDiv = document.createElement('div');
-	matchTypesDiv.className = 'opponentTypes';
+	const playernameAndLogout = document.createElement('div');
+	styleElementMenu(playernameAndLogout, {
+		flex: '1',
+		display: 'flex',
+		gap: '5px'
+	});
+	
+	const playername = document.createElement('div');
+	playername.textContent = Game.name;
+	playername.style.fontSize = '1.5em';
 
-	const btnSingleGame = document.createElement('button');
-	btnSingleGame.type = 'button';
-	btnSingleGame.textContent = 'single game';
-	btnSingleGame.addEventListener('click', () => changeMatchFormat('single game'));
+	playernameAndLogout.append(playername, getLogoutBtn());
+	player.append(avatarDiv, playernameAndLogout);
 
-	const btnTournament = document.createElement('button');
-	btnTournament.type = 'button';
-	btnTournament.textContent = 'tournament';
-	btnTournament.addEventListener('click', () => changeMatchFormat('tournament'));
+	const statsFriendsDiv = document.createElement('div');
+	styleElementMenu(statsFriendsDiv, {
+		display: 'flex',
+		gap: '20px',
+		alignItems: 'stretch'
+	});
+	statsFriendsDiv.append(getStatsList(), getFriendsList());
 
-	matchTypesDiv.append(btnSingleGame, btnTournament);
-
-	const startBtn = document.createElement('button');
-	startBtn.id = 'startGame';
-	startBtn.type = 'button';
-	startBtn.textContent = 'PLAY';
-	startBtn.addEventListener('click', () => startGame());
-
-	options.append(opponentTypesDiv, matchTypesDiv, startBtn);
-
-	return options;
+	profile.append(player, statsFriendsDiv, getPlayBtn());
+	return (profile);
 }
 
 export function getMenu() {
+	const menu = document.createElement('div');
+	menu.id = 'menu';
+	styleElementMenu(menu, {
+		display: 'flex',
+		flexDirection: 'column',
+		backgroundColor: '#ffd400',
+		padding: '20px',
+		height: '100%',
+		boxSizing: 'border-box'
+	});
+	const titleMenu = document.createElement('h2');
+	titleMenu.textContent = 'Menu';
+	titleMenu.style.marginTop = '10px';
+
+	const leftRight = document.createElement('div');
+	styleElementMenu(leftRight, {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		gap: '20px',
+		flex: '1'
+	})
+	
+	leftRight.append(getLeftSideMenu(), getRightSideMenu());
+	menu.append(titleMenu, leftRight);
 	const app = document.getElementById('app');
 	if (!app)
 		return ;
-	app.innerHTML = "";
-
-	const menu = document.createElement('div');
-	menu.id = 'menu';
-	menu.style.display = 'flex';
-	menu.style.flexDirection = 'column';
-	menu.style.alignItems = 'center';
-	menu.style.justifyContent = 'center';
-
-	menu.append(getGameSettings(), getFriends(), getHighscores(), getOnlineList());
-	
-	app?.appendChild(menu);
-	getSideMenu()
+	app.innerHTML = '';
+	app.appendChild(menu);
 }

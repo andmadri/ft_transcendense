@@ -2,7 +2,6 @@ import { log } from '../logging.js'
 import { Game  } from '../script.js'
 import * as S from '../structs.js'
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
-import { getOnlineList } from '../Menu/menuContent.js'
 
 export async function submitLogout(e: Event, player: number) {
 	e.preventDefault();
