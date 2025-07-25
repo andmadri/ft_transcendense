@@ -69,7 +69,7 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Menu: {
-				if (!document.getElementById('menu'))
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu')) // change to two different stages
 					getMenu();
 				break ;
 			}
