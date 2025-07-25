@@ -79,11 +79,9 @@ export function initPositions() {
 	if (ball && playerOne && playerTwo && field && game)
 	{
 		// Field
-		// S.Objects['field'].width = window.innerWidth * 0.6;
-		// S.Objects['field'].height = S.Objects['field'].width * 0.6;
+		S.Objects['field'].width = window.innerWidth * 0.7;
+		S.Objects['field'].height = S.Objects['field'].width * 0.7;
 
-		S.Objects['field'].height = window.innerHeight * 0.7;
-		S.Objects['field'].width = (S.Objects['field'].height * 100) / 70;
 		field.style.height = `${S.Objects['field'].height}px`;
 		field.style.width = `${S.Objects['field'].width}px`;
 		game.style.height = `${S.Objects['field'].height}px`;

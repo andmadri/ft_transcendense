@@ -147,7 +147,6 @@ export function getGameField() {
 	
 }
 
-
 export function removeGameField() {
 	const	body = document.getElementById('body');
 	const	game = document.getElementById('game');
