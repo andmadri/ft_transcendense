@@ -7,7 +7,6 @@ function createOnlineList(): HTMLDivElement {
 	online.id = 'online';
 		styleElementMenu(online, {
 		backgroundColor: 'white',
-		border: '2px solid #d9f0ff',
 		padding: '20px',
 		textAlign: 'left',
 		flex: '1',

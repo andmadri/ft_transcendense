@@ -137,11 +137,10 @@ function getRightSideMenu() {
 		display: 'flex',
 		flexDirection: 'column',
 		gap: '10px',
-		border: '2px solid #d9f0ff',
 		padding: '15px',
 		width: '50%',
 		boxSizing: 'border-box',
-		backgroundColor: '#fffbea',
+		backgroundColor: 'white',
 		flex: '1.5',
 		borderRadius: '10px',
 		alignItems: 'stretch'

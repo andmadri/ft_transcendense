@@ -6,7 +6,6 @@ function createHighscores(): HTMLDivElement {
 	highscores.id = 'online';
 		styleElementMenu(highscores, {
 		backgroundColor: 'white',
-		border: '2px solid #d9f0ff',
 		padding: '20px',
 		textAlign: 'center',
 		flex: '1',
