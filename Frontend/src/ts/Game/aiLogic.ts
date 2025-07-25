@@ -5,71 +5,102 @@ import { movePadel } from './gameLogic.js'
 export const AI: S.AIInfo = {
 	prediction : null,
 	reactionTime : 1000, //ms
-	lastReaction : 0,
+	lastView : 0,
 	targetDirection : 'ArrowUp'
 };
 
-let errorMarginPercentage = 0.1;
+export function resetAI() {
+	AI.prediction = null;
+	AI.lastView = 0;
+	AI.targetDirection = 'noAction';
+}
 
-function predictBall() {
+function	followBall(dx : number, dy : number) {
+	const ball = S.Objects['ball'];
+	const paddle = S.Objects['rPlayer'];
+	const field = S.Objects['field'];
+
+	const threshold = field.height * 0.01;
+	
+	console.log("difference: ", Math.abs(ball.y - paddle.y), "Threshold: ", threshold);
+	if (Math.abs(ball.y - paddle.y) < threshold) {
+		return;
+	}
+	AI.prediction = {
+		x : paddle.x,
+		y : ball.y,
+		dx : dx,
+		dy : dy,
+	}
+}
+
+function	predictBall(dx : number, dy : number) {
 	const ball = S.Objects['ball'];
 	const ballRadius = ball.width / 2;
+	const field = S.Objects['field'];
+	const paddle = S.Objects['rPlayer'];
+
+	const ballCopy = {angle: ball.angle, speed: ball.speed, x: ball.x, y: ball.y, width: ball.width, height: ball.height, color: "white"};
+
+	//simulate ball movement to anticipate bounces
+	while (ballCopy.x + ballRadius < paddle.x) {
+		ballCopy.x += dx;
+		ballCopy.y += dy;
+		if (ballCopy.y <= 0 || ballCopy.y >= field.height) {
+			ballCopy.y = Math.max(0, Math.min(ballCopy.y, field.height));
+			dy *= -1;
+		}
+	}
+	
+	//add error margin
+	let errorMargin = 0.01;
+	const errorOffset = Math.random() * field.height * errorMargin;
+	const sign = Math.random() < 0.5 ? -1 : 1;
+	const Offset = errorOffset * sign;
+
+	//clamp y to stay within field
+	const predictedY = ballCopy.y + Offset;
+
+	AI.prediction = {
+		x : paddle.x,
+		y : predictedY,
+		dx : dx,
+		dy : dy,
+	}
+}
+
+function	predictAction() {
+	const ball = S.Objects['ball'];
 
 	//calculate dx and dy
 	const dx = Math.cos(ball.angle) * ball.speed;
 	const dy = Math.sin(ball.angle) * ball.speed;
 
-	//only predict if ball is moving towards AI
 	if (dx <= 0) {
-		AI.prediction = null;
-		return ;
+		followBall(dx, dy);
+		return;
 	}
-
-	//do not repredict if dy is the same as previous prediction
-	if (AI.prediction && Math.sign(dy) === Math.sign(Math.sin(ball.angle) * ball.speed)) {
-		return ;
-	}
-
-	const field = S.Objects['field'];
-	const paddle = S.Objects['rPlayer'];
-
-	//predict ball Y on paddle X
-	const distanceX = paddle.x - (ball.x + ballRadius);
-	const timeToReach = distanceX / dx;
-
-	//add error margin
-
-	const errorMargin = Math.random() * field.height * errorMarginPercentage;
-	errorMarginPercentage += 0.1;
-
-	const predictedY = ball.y + (dy * timeToReach) + errorMargin;
-
-	//clamp y to stay within field
-	const clampedY = Math.max(0, Math.min(predictedY, field.height));
-
-
-	AI.prediction = {
-		x : paddle.x,
-		y : clampedY,
-		dx : dx,
-		dy : dy,
+	else {
+		predictBall(dx, dy);
 	}
 }
 
 export function aiAlgorithm() {
 	const ball = S.Objects['ball'];
 	const paddle = S.Objects['rPlayer'];
+	const field = S.Objects['field'];
 
-	if (Game.timeGame - AI.lastReaction > AI.reactionTime) {
-		AI.lastReaction = Game.timeGame;
-		predictBall()
+	if (Game.timeGame - AI.lastView > AI.reactionTime) {
+		AI.lastView = Game.timeGame;
+		predictAction()
 	}
+	
 	if (AI.prediction) {
-		if (AI.prediction.y > paddle.y) {
+		if (AI.prediction.y > paddle.y + paddle.height) {
 			AI.targetDirection = 'ArrowDown';
 			movePadel(AI.targetDirection);
 		}
-		if (AI.prediction.y < paddle.y) {
+		else if (AI.prediction.y < paddle.y) {
 			AI.targetDirection = 'ArrowUp';
 			movePadel(AI.targetDirection);
 		}

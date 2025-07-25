@@ -11,8 +11,6 @@ import { getGameField, removeGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu, removeMenu } from './Menu/menuContent.js'
 import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
-import { loadModel } from './Game/aiLogic.js'
-import { predictAction } from './Game/aiLogic.js'
 
 createLog();
 
@@ -88,11 +86,6 @@ function mainLoop() {
 					initGameServer();
 					updateNamesMenu();
 					resetScoreMenu();
-					if (Game.opponentType == S.OT.ONEvsCOM) {
-						(async () => {
-							await loadModel();
-						})();
-					}
 				}
 				game();
 				//if you are playing with the AI and you log out yourself there is a problem

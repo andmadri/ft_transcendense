@@ -11,8 +11,5 @@
     "ts-node": "^10.9.2",
     "nodemon": "^3.1.10",
     "esbuild": "^0.25.8"
-  },
-  "dependencies": {
-    "@tensorflow/tfjs":"^4.22.0"
   }
 }
