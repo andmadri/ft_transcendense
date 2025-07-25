@@ -1,12 +1,13 @@
 import { styleElementMenu } from "./menuContent.js";
 import { Game } from '../script.js'
+import { log } from "../logging.js";
 
 function createFriendsList() : HTMLDivElement {
 	const friends = document.createElement('div');
 	friends.id = 'friends';
 	styleElementMenu(friends, {
 		backgroundColor: 'white',
-		border: '2px solid black',
+		border: '2px solid #d9f0ff',
 		padding: '15px',
 		textAlign: 'center',
 		borderRadius: '10px',
@@ -39,7 +40,56 @@ export function getFriendsList(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = {action: 'friends', subaction: 'getFriends', player: Game.id};
+	const msg = { action: 'friends', subaction: 'getFriends', player: Game.id };
 	Game.socket.send(JSON.stringify(msg));
 	return (friends);
+}
+
+
+function insertFriends(friends: any, noFriends: boolean) {
+	const html_list = document.getElementById('htmllistFriends') as HTMLUListElement;
+	if (!html_list) {
+		log("HTML list for friends not found");
+		return;
+	}
+	html_list.className = 'friendsList';
+
+	if (noFriends) {
+		const html_list_element = document.createElement('li');
+		html_list_element.textContent = "No friends";
+		html_list_element.style.textAlign = "left";
+		html_list.appendChild(html_list_element);
+		return ;
+	}
+	for (const friend of friends) {
+		log(`Adding player ${friend.name} to Friends list`);
+		const html_list_element = document.createElement('li');
+		const status = friend.online_status == 0 ? '(offline)' : '(online)';
+		html_list_element.textContent = `${friend.name} ${status}`;
+		html_list.appendChild(html_list_element);
+	}
+}
+
+function processFriends(data: any) {
+	if (data.access && data.access == "yes")
+		insertFriends(data.content, false);
+	else {
+		log("Access to DB: " + data.access + " " + data.content);
+		insertFriends(data, true);
+	}
+}
+
+export function actionFriends(data: any) {
+	if (!data.subaction) {
+		log('no subaction online');
+		return ;
+	}
+	
+	switch(data.subaction) {
+		case "retFriends":
+			processFriends(data);
+			break ;
+		default:
+			log(`(actionOnline) Unknown action: ${data.subaction}`);
+	}
 }

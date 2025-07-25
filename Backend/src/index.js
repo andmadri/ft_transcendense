@@ -5,6 +5,7 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import  googleAuthRoutes  from './routes/googleAuth.js';
@@ -98,7 +99,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			case 'online':
 				return handleOnlinePlayers(msg, connection.socket);
 			case 'friends':
-				break ;
+				return handleFriends(msg, connection.socket);
 			case 'pending':
 				break ;
 			case 'game':

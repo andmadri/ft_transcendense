@@ -16,14 +16,14 @@ function getCreditBtn(): HTMLDivElement {
 	const creditsBtn = document.createElement('div');
 	creditsBtn.textContent = 'Credits';
 	styleElementMenu(creditsBtn, {
-		backgroundColor: 'white',
-		border: '2px solid black',
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
 		padding: '15px',
 		fontSize: '1em',
 		cursor: 'pointer',
 		marginTop: '15px',
 		borderRadius: '10px',
-		textAlign: 'center'
+		textAlign: 'center',
 	});
 	
 	creditsBtn.addEventListener('click', () => {
@@ -54,7 +54,6 @@ function getCreditBtn(): HTMLDivElement {
 			maxWidth: '90vw',
 			maxHeight: '90vh',
 			objectFit: 'contain',
-			boxShadow: '0 0 20px black'
 		})
 
 		const closeBtn = document.createElement('button');
@@ -101,8 +100,8 @@ function getPlayBtn(): HTMLButtonElement {
 	const playBtn = document.createElement('button');
 	playBtn.textContent = 'Play game';
 	styleElementMenu(playBtn, {
-		backgroundColor: 'white',
-		border: '2px solid black',
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
 		padding: '15px',
 		fontSize: '1em',
 		cursor: 'pointer',
@@ -119,9 +118,13 @@ function getLogoutBtn(): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');
 	logoutBtn.textContent = 'logout';
 	styleElementMenu(logoutBtn, {
-		padding: '5px 10px',
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
 		fontSize: '1em',
-		cursor: 'pointer'
+		cursor: 'pointer',
+		borderRadius: '10px',
+		marginLeft: 'auto'
 	});
 	logoutBtn.addEventListener('click', (e) => submitLogout(e, 1));
 	return (logoutBtn);
@@ -134,11 +137,11 @@ function getRightSideMenu() {
 		display: 'flex',
 		flexDirection: 'column',
 		gap: '10px',
-		border: '2px solid black',
+		border: '2px solid #d9f0ff',
 		padding: '15px',
 		width: '50%',
 		boxSizing: 'border-box',
-		backgroundColor: 'white',
+		backgroundColor: '#fffbea',
 		flex: '1.5',
 		borderRadius: '10px',
 		alignItems: 'stretch'
@@ -164,7 +167,7 @@ function getRightSideMenu() {
 	styleElementMenu(playernameAndLogout, {
 		flex: '1',
 		display: 'flex',
-		gap: '5px'
+		gap: '5px',
 	});
 	
 	const playername = document.createElement('div');

@@ -6,7 +6,7 @@ function createStatsList(): HTMLDivElement {
 	stats.id = 'stats';
 	styleElementMenu(stats, {
 		backgroundColor: 'white',
-		border: '2px solid black',
+		border: '2px solid #d9f0ff',
 		padding: '15px',
 		textAlign: 'center',
 		borderRadius: '10px',

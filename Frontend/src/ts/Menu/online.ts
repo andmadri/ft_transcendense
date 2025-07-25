@@ -7,9 +7,9 @@ function createOnlineList(): HTMLDivElement {
 	online.id = 'online';
 		styleElementMenu(online, {
 		backgroundColor: 'white',
-		border: '2px solid black',
+		border: '2px solid #d9f0ff',
 		padding: '20px',
-		textAlign: 'center',
+		textAlign: 'left',
 		flex: '1',
 		borderRadius: '10px'
 	});
@@ -17,10 +17,10 @@ function createOnlineList(): HTMLDivElement {
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';
 	title.textContent = 'Online123';
+	title.style.textAlign = 'center';
 
 	const list = document.createElement('div');
 	list.id = 'listOnlinePlayers';
-
 
 	const html_list = document.createElement('ul');
 	html_list.id = 'htmllistOnlinePlayers';
@@ -56,12 +56,14 @@ function insertOnlinePlayers(online_players: any) {
 		log("HTML list for online players not found");
 		return;
 	}
+	html_list.className = 'playerOfOnlineList';
+
 	// json online_players mapping to array with names
 	const playerNames: string[] = online_players.map((player: { name: string, avatar_url: string }) => player.name);
 	for (const curr_player of playerNames) {
 		log(`Adding player ${curr_player} to online list`);
 		const html_list_element = document.createElement('li');
-		html_list.className = 'playerOfOnlineList';
+		
 		html_list_element.textContent = curr_player;
 		html_list.appendChild(html_list_element);
 	}
