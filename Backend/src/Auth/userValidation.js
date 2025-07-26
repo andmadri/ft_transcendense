@@ -14,7 +14,7 @@ function checkName(name) {
 }
 
 function checkEmail(email) {
-	const emailRegex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+\.[a-zA-Z]{2,}$/;
+	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	if (!email.length)
 		return ('Email can not be empty');
 	else if (email.length < 3)
