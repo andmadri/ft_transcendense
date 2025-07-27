@@ -23,11 +23,11 @@ function receivePlayerData(data: any) {
 		Game.name = data.name || 'unknown';
 		Game.id = data.id || 0;
 		Game.player1Login = data.player1Login || false;
-		Game.score = data.score || 0;
+		Game.scoreLeft = data.score || 0;
 		Game.name2 = data.name2 || 'unknown';
 		Game.id2 = data.id2 || 0;
 		Game.player2Login = data.player2Login || false;
-		Game.score2 = data.score2 || 0;
+		Game.scoreRight = data.score2 || 0;
 	}
 	if (Game.id != 0)
 		Game.state = S.State.Menu;

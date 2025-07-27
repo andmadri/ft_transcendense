@@ -9,6 +9,7 @@ function processMatch(data: any) {
 	Game.id = data.player1ID;
 	Game.id2 = data.player2ID;
 	Game.state = S.State.Game;
+	log("ProcessMatch?");
 }
 
 function processSavingMatch(data: any) {

@@ -150,8 +150,8 @@ export function saveGame() {
 	}
 	Game.socket.send(JSON.stringify(saveGameMsg));
 
-	Game.score = 0;
-	Game.score2 = 0;
+	Game.scoreLeft = 0;
+	Game.scoreRight = 0;
 	Game.matchID = -1;
 	updateNamesMenu();
 	resetScoreMenu();
