@@ -21,11 +21,11 @@ function receivePlayerData(data: any) {
 		return ;
 	} else {
 		Game.name = data.name || 'unknown';
-		Game.id = data.id || 0;
+		Game.id = data.id || -1;
 		Game.player1Login = data.player1Login || false;
 		Game.scoreLeft = data.score || 0;
 		Game.name2 = data.name2 || 'unknown';
-		Game.id2 = data.id2 || 0;
+		Game.id2 = data.id2 || -1;
 		Game.player2Login = data.player2Login || false;
 		Game.scoreRight = data.score2 || 0;
 	}
@@ -35,7 +35,7 @@ function receivePlayerData(data: any) {
 	if (!app) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
-	updateScoreMenu(); 
+	updateScoreMenu();
 	updateNamesMenu();
 }
 

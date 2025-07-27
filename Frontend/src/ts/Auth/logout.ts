@@ -3,8 +3,11 @@ import { Game  } from '../script.js'
 import * as S from '../structs.js'
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 
-export async function submitLogout(e: Event, player: number) {
-	e.preventDefault();
+export async function submitLogout(e: Event | null, player: number) {
+	log(`Submitting logout for player ${player}`);
+	if (e)
+		e.preventDefault();
+
 	const playerNr = player || 1;
 	const payload = { playerNr };
 	log(`Submitting logout for player ${playerNr}`);

@@ -1,4 +1,4 @@
-import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/user.js';
+import { addUserToDB, updateOnlineStatus, getOnlineState, getUserByEmail, userAlreadyExist } from '../Database/user.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
 
@@ -41,7 +41,7 @@ function checkPassword(password) {
 
 export async function addUser(msg) {
 	let errorMsg;
-	
+
 	errorMsg = checkName(msg.name);
 	if (errorMsg)
 		return (errorMsg);
@@ -84,11 +84,11 @@ export async function validateLogin(msg, fastify) {
 		return ({ error: 'Incorrect password' });
 
 	try {
-		const online = await isOnline(msg.email, (online));
-		await updateOnlineStatus(msg.email, !online);
+		// const online = await getOnlineState(user.email);
+		await updateOnlineStatus(msg.email, true);
 	} catch(err) {
 		console.error(err.msg);
-		// failed?
+		return ({ error: 'Database error' });
 	}
 	const jwtToken = signFastifyJWT(user, fastify);
 	console.log('Generated JWT:', jwtToken);

@@ -2,11 +2,12 @@ import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
+import { submitLogout } from '../Auth/logout.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login2;		
+			Game.state = S.State.Login2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
@@ -64,7 +65,7 @@ export function changeMatchFormat(option: string) {
 			break ;
 		default:
 			log(`unknown match format? ${option}`);
-	}	
+	}
 }
 
 // Get start position of ball
@@ -142,17 +143,24 @@ export function initGame() {
 	resetScoreMenu();
 }
 
-export function saveGame() {
-	const saveGameMsg = {
-		action: 'game',
-		subaction: 'save',
-		matchID: Game.matchID
-	}
-	Game.socket.send(JSON.stringify(saveGameMsg));
+// export function saveGame() {
+// 	log("Saving game...");
+// 	log("Saving game: For id:" + Game.id + " and id2: " + Game.id2);
+// 	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0)
+// 	{
+// 		log("Saving game and logout player 2");
+// 		submitLogout(null, 2);
+// 	}
+// 	const saveGameMsg = {
+// 		action: 'game',
+// 		subaction: 'save',
+// 		matchID: Game.matchID
+// 	}
+// 	Game.socket.send(JSON.stringify(saveGameMsg));
 
-	Game.scoreLeft = 0;
-	Game.scoreRight = 0;
-	Game.matchID = -1;
-	updateNamesMenu();
-	resetScoreMenu();
-}
+// 	Game.scoreLeft = 0;
+// 	Game.scoreRight = 0;
+// 	Game.matchID = -1;
+// 	updateNamesMenu();
+// 	resetScoreMenu();
+// }

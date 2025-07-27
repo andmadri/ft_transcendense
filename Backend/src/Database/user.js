@@ -15,7 +15,7 @@ export async function addUserToDB(msg) {
 					resolve();
 			}
 		);
-	})	
+	})
 }
 
 export async function getUserByEmail(email) {
@@ -63,7 +63,7 @@ export async function updateOnlineStatus(email, newStatus) {
 	})
 }
 
-export async function isOnline(email) {
+export async function getOnlineState(email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT online_status FROM Users WHERE email = ?`,
@@ -81,7 +81,7 @@ export async function isOnline(email) {
 export async function getOnlineUsers() {
 	return new Promise((resolve, reject) => {
 		db.all(
-			`SELECT name, avatar_url FROM Users WHERE online_status = 0 OR online_status = 1`,
+			`SELECT name, avatar_url FROM Users WHERE online_status = 1`,
 			[],
 			(err, rows) => {
 				if (err)

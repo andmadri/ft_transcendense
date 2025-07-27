@@ -79,17 +79,23 @@ async function handleGoogleAuth(user) {
 export default async function googleAuthRoutes(fastify, opts) {
 	fastify.get('/api/auth/google', async (request, reply) => {
 		const player = request.query.player || '1';
+		console.log('1backend: Google OAuth for player:', player);
+		if ( player == 'undefined' )
+			player = '1';
+
+
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
 		const loginId = encodeURIComponent(player);
-		console.log('backend: Google OAuth for player:', loginId);
+		console.log('2backend: Google OAuth for player:', loginId);
 
-		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&loginId=${loginId}`;
+		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${loginId}`;
 		reply.redirect(redirectURL);
 	});
 
 	fastify.get('/api/auth/google/callback', async (request, reply) => {
-		const { code, loginId } = request.query;
+		const { code, state } = request.query;
+		const loginId = state || '1';
 		console.log('callback: Google OAuth for player:', loginId);
 
 		try {

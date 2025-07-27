@@ -13,7 +13,7 @@ function getPlayer(nr: number) {
 	playername.textContent = isPlayer1 ? Game.name : Game.name2;
 	playername.id = 'playerName' + nr;
 
-	
+
 	player.style.padding = '5px';
 	player.style.height = '70px';
 	player.style.width = '500px';

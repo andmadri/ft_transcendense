@@ -3,7 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { initGame, saveGame } from './Game/initGame.js'
+import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
@@ -11,6 +11,7 @@ import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
+import { saveGame } from './Game/endGame.js';
 
 getLoadingPage();
 createLog();
@@ -66,11 +67,15 @@ function mainLoop() {
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
 					getLoginFields(1);
+
 				break ;
 			}
 			case S.State.Menu: {
 				if (!document.getElementById('menu') && !document.getElementById('optionMenu')) // change to two different stages
+				{
+					// updatePlayerData(0);
 					getMenu();
+				}
 				break ;
 			}
 			case S.State.Login2: {
@@ -87,12 +92,13 @@ function mainLoop() {
 				log("init game");
 				if (!document.getElementById('game'))
 				{
+					log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 				}
 				break ;
 			case S.State.Game: {
-				// if (Game.matchID >= 0) 
+				// if (Game.matchID >= 0)
 				game();
 				break ;
 			}
@@ -102,7 +108,7 @@ function mainLoop() {
 			default:
 				log("no valid state");
 		}
-		
+
 	}
 	window.requestAnimationFrame(mainLoop);
 }

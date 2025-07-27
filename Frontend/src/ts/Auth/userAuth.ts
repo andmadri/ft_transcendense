@@ -4,6 +4,7 @@ import { log } from '../logging.js'
 import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { getOnlineList } from '../Menu/online.js';
 import { getFriendsList } from '../Menu/friends.js';
+import { startSocketListeners } from '../socketEvents.js'
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
@@ -29,28 +30,28 @@ function updateLoginPlayer(data: any) {
 	}
 }
 
-export function updateMenu() {
-	const playername = document.getElementById('playerNameMenu');
-	if (playername)
-		playername.textContent = Game.name;
-	// update Avatar
+// export function updateMenu() {
+// 	const playername = document.getElementById('playerNameMenu');
+// 	if (playername)
+// 		playername.textContent = Game.name;
+// 	// update Avatar
 
-	getOnlineList();
-	getFriendsList();
-}
+// 	getOnlineList();
+// 	getFriendsList();
+// }
 
-export function processLogin(data: any) {
-	if (data.access && data.access == "yes") {
-		log("Process Login Check => player: " + data.player);
-		// set cookie with WSS
-		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
-		updateLoginPlayer(data);
-		loginSuccessfull(data.player);
-		updateMenu();
-	}
-	else
-		log('Not logged in: ' + data.reason);
-}
+// export function processLogin(data: any) {
+// 	if (data.access && data.access == "yes") {
+// 		log("Process Login Check => player: " + data.player);
+// 		// set cookie with WSS
+// 		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
+// 		updateLoginPlayer(data);
+// 		loginSuccessfull(data.player);
+// 		updateMenu();
+// 	}
+// 	else
+// 		log('Not logged in: ' + data.reason);
+// }
 
 
 export function changeLoginMode(player: number) {
@@ -62,7 +63,7 @@ export function changeLoginMode(player: number) {
 	const submitButton = document.getElementById('submitBtn' + player);
 	const toggleButton = document.getElementById('toggle-mode' + player);
 	const authTitle = document.getElementById('authTitle' + player);
-	
+
 	if (modeLabel)
 		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
 
@@ -119,7 +120,7 @@ export async function submitAuthForm(e: Event, player: number) {
 			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
 
 			if (endpoint == "/api/login")
-				loginSuccessfull(playerNr);
+				loginSuccessfull(playerNr, data.userId, data.name);
 			else
 				changeLoginMode(playerNr);
 
@@ -134,17 +135,31 @@ export async function submitAuthForm(e: Event, player: number) {
 }
 
 
-export function loginSuccessfull(player: number) {
+function renewWebSocketConnection() {
+	if (Game.socket) {
+		Game.socket.close();
+	}
+	Game.socket = new WebSocket('wss://localhost:8443/wss');
+	startSocketListeners(); // re-attach your listeners
+}
+
+export function loginSuccessfull(player: number, userId: number, name: string) {
 	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
+	log("Login Successfull for player " + player + " with id: " + userId + " and name: " + name);
 	if (player == 1) {
 		log("Login Successfull (player one)");
+		Game.id = userId;
+		Game.name = name;
 		Game.player1Login = true;
 		Game.state = S.State.Menu;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two)");
+		Game.id2 = userId;
+		Game.name2 = name;
 		Game.player2Login = true;
 		Game.state = S.State.Init;
+		renewWebSocketConnection();
 	}
 	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }
@@ -153,14 +168,10 @@ export function addGuest(e: Event, player: number) {
 	e.preventDefault();
 
 	if (player == 1) {
-		Game.name = "Guest 1";
-		Game.id = 0;
 		Game.player1Login = true;
 	} else if (player == 2) {
-		Game.name2 = "Guest 2";
-		Game.id2 = 0;
 		Game.player2Login = true;
 	}
-	loginSuccessfull(player);
+	loginSuccessfull(player, 0, 'Guest ' + player);
 	updatePlayerData(0);
 }

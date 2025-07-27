@@ -35,15 +35,15 @@ await fastify.register(googleAuthRoutes);
 await fastify.register(userAuthRoutes);
 
 /*
-FROM frontend TO backend				
-• login => loginUpser / signUpUser / logout				
+FROM frontend TO backend
+• login => loginUpser / signUpUser / logout
 • playerInfo => changeName / addAvatar / delAvatar / getPlayerData
-• chat => outgoing										
-• online => getOnlinePlayers / getOnlinePlayersWaiting	
-• friends => getFriends / addFriend / deleteFriend		
-• pending => addToWaitlist / acceptGame					
-• game => init / ballUpdate / padelUpdate / scoreUpdate	
-• error => crash		
+• chat => outgoing
+• online => getOnlinePlayers / getOnlinePlayersWaiting
+• friends => getFriends / addFriend / deleteFriend
+• pending => addToWaitlist / acceptGame
+• game => init / ballUpdate / padelUpdate / scoreUpdate
+• error => crash
 */
 
 fastify.get('/wss', { websocket: true }, (connection, req) => {
@@ -73,6 +73,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			console.error('JWT2 verification failed:', err);
 		}
 	}
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
 	if (!userId1 && !userId2) {
 		console.error('No valid auth tokens found in cookies');
 		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
@@ -82,6 +83,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 	connection.socket.on('message', (message) => {
 		const msg = JSON.parse(message.toString());
+		console.log('Received from frontend:', JSON.stringify(msg));
 		const action = msg.action;
 		// console.log('Received from frontend: ' + message);
 		if (!action) {
@@ -103,7 +105,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			case 'pending':
 				break ;
 			case 'game':
-				return handleGame(msg, connection.socket);
+				return handleGame(msg, connection.socket, userId1, userId2);
 			case 'error':
 				console.log('Error from frontend..');
 				connection.socket.send(JSON.stringify(msg));
@@ -112,7 +114,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 				console.log('No valid action: ' + action);
 				connection.socket.send(JSON.stringify(msg));
 				return ;
-		}			
+		}
 	});
 
 	connection.on('close', () => {
