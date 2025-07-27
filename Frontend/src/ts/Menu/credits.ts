@@ -9,16 +9,17 @@ export function getCreditBtn(): HTMLDivElement {
 		padding: '15px',
 		fontSize: '1em',
 		cursor: 'pointer',
-		marginTop: '15px',
+		marginRight: '15px',
 		borderRadius: '10px',
 		textAlign: 'center',
+		width: '40%',
 	});
-	
+
 	creditsBtn.addEventListener('click', () => {
 		const app = document.getElementById('app');
 		if (!app)
 			return ;
-	
+
 		const creditDiv = document.createElement('div');
 		creditDiv.id = 'creditDiv';
 		styleElement(creditDiv, {
@@ -34,7 +35,7 @@ export function getCreditBtn(): HTMLDivElement {
 			alignItems: 'center',
 			zIndex: '9999'
 		})
-		
+
 
 		const creditImg = document.createElement('img');
 		creditImg.src = "./../images/Credits.png";
@@ -52,7 +53,7 @@ export function getCreditBtn(): HTMLDivElement {
 		creditDiv.appendChild(creditImg);
 		creditDiv.appendChild(closeBtn);
 		app.appendChild(creditDiv);
-	
+
 		closeBtn.addEventListener('click', () => {
 			app.removeChild(creditDiv);
 		})

@@ -25,11 +25,11 @@ function createFriendsList() : HTMLDivElement {
 	html_list.className = 'online-markers';
 
 	list.appendChild(html_list);
-	friends.append(title, list);	
-	return (friends);	
+	friends.append(title, list);
+	return (friends);
 }
 
-export function getFriendsList(): HTMLDivElement {
+export function getFriendsList(playerNr: number): HTMLDivElement {
 	let friends = document.getElementById('friends') as HTMLDivElement;
 
 	if (!friends)
@@ -40,7 +40,7 @@ export function getFriendsList(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = { action: 'friends', subaction: 'getFriends', player: Game.id };
+	const msg = { action: 'friends', subaction: 'getFriends', player: playerNr };
 	Game.socket.send(JSON.stringify(msg));
 	return (friends);
 }
@@ -84,7 +84,7 @@ export function actionFriends(data: any) {
 		log('no subaction online');
 		return ;
 	}
-	
+
 	switch(data.subaction) {
 		case "retFriends":
 			processFriends(data);

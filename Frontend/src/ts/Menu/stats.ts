@@ -24,11 +24,11 @@ function createStatsList(): HTMLDivElement {
 	html_list.className = 'online-markers';
 
 	list.appendChild(html_list);
-	stats.append(title, list);	
+	stats.append(title, list);
 	return (stats);
 }
 
-export function getStatsList(): HTMLDivElement {
+export function getStatsList(playerNr: number): HTMLDivElement {
 	let stats = document.getElementById('stats') as HTMLDivElement;
 
 	if (!stats)
@@ -39,7 +39,7 @@ export function getStatsList(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = {action: 'stats', subaction: 'getStats', player: Game.id};
+	const msg = {action: 'stats', subaction: 'getStats', player: playerNr};
 	Game.socket.send(JSON.stringify(msg));
 
 	return (stats);

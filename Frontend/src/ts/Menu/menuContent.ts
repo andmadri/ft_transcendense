@@ -8,6 +8,7 @@ import { getHighscores } from './highscore.js'
 import { getOptionMenu  } from '../OptionMenu/options.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
+import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 	Object.assign(e.style, styles);
@@ -33,7 +34,7 @@ function getLeftSideMenu() {
 	});
 	highScoreOnlineDiv.append(getHighscores(), getOnlineList());
 
-	menuLeft.append(highScoreOnlineDiv, getCreditBtn());
+	menuLeft.append(highScoreOnlineDiv); // , getCreditBtn()
 	return (menuLeft);
 }
 
@@ -46,7 +47,8 @@ function getPlayBtn(): HTMLButtonElement {
 		padding: '15px',
 		fontSize: '1em',
 		cursor: 'pointer',
-		borderRadius: '10px'
+		borderRadius: '10px',
+		width: '60%',
 	});
 	playBtn.addEventListener('click', () => {
 		getOptionMenu();
@@ -55,7 +57,7 @@ function getPlayBtn(): HTMLButtonElement {
 	return (playBtn);
 }
 
-function getLogoutBtn(): HTMLButtonElement {
+function getLogoutBtn(playerNr: number): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');
 	logoutBtn.textContent = 'logout';
 	styleElement(logoutBtn, {
@@ -67,11 +69,11 @@ function getLogoutBtn(): HTMLButtonElement {
 		borderRadius: '10px',
 		marginLeft: 'auto'
 	});
-	logoutBtn.addEventListener('click', (e) => submitLogout(e, 1));
+	logoutBtn.addEventListener('click', (e) => submitLogout(e, playerNr));
 	return (logoutBtn);
 }
 
-function getRightSideMenu() {
+export function getRightSideMenu(playerNr: number) {
 	const profile = document.createElement('div');
 	profile.id = 'profile';
 	styleElement(profile, {
@@ -79,7 +81,7 @@ function getRightSideMenu() {
 		flexDirection: 'column',
 		gap: '10px',
 		padding: '15px',
-		width: '50%',
+		width: '100%',
 		boxSizing: 'border-box',
 		backgroundColor: 'white',
 		flex: '1.5',
@@ -109,13 +111,16 @@ function getRightSideMenu() {
 		display: 'flex',
 		gap: '5px',
 	});
-	
+
 	const playername = document.createElement('div');
 	playername.id = "playerNameMenu";
-	playername.textContent = Game.name;
+	if (playerNr == 1)
+		playername.textContent = Game.name;
+	else
+		playername.textContent = Game.name2;
 	playername.style.fontSize = '1.5em';
 
-	playernameAndLogout.append(playername, getLogoutBtn());
+	playernameAndLogout.append(playername, getLogoutBtn(playerNr));
 	player.append(avatarDiv, playernameAndLogout);
 
 	const statsFriendsDiv = document.createElement('div');
@@ -124,9 +129,9 @@ function getRightSideMenu() {
 		gap: '20px',
 		alignItems: 'stretch'
 	});
-	statsFriendsDiv.append(getStatsList(), getFriendsList());
+	statsFriendsDiv.append(getStatsList(playerNr), getFriendsList(playerNr));
 
-	profile.append(player, statsFriendsDiv, getPlayBtn());
+	profile.append(player, statsFriendsDiv); // , getPlayBtn()
 	return (profile);
 }
 
@@ -154,9 +159,22 @@ export function getMenu() {
 		gap: '20px',
 		flex: '1'
 	})
-	
-	leftRight.append(getLeftSideMenu(), getRightSideMenu());
+
+	leftRight.append(getLeftSideMenu(), getRightSideMenuWithTabs());
 	menu.append(titleMenu, leftRight);
+
+	// Add Play button under the right menu, styled like the Credit button
+	const bottomButtonDiv = document.createElement('div');
+	styleElement(bottomButtonDiv, {
+		display: 'flex',
+		justifyContent: 'space-between',
+		width: '100%',
+		marginTop: '10px',
+	});
+	bottomButtonDiv.appendChild(getCreditBtn());
+	bottomButtonDiv.appendChild(getPlayBtn());
+	menu.appendChild(bottomButtonDiv);
+
 	const app = document.getElementById('app');
 	if (!app)
 		return ;
