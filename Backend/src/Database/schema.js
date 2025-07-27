@@ -8,7 +8,7 @@ export function createTables(db)
 	db.exec(`
 	CREATE TABLE IF NOT EXISTS Users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
+		name TEXT NOT NULL UNIQUE,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
 		avatar_url TEXT,
@@ -38,7 +38,7 @@ export function createTables(db)
 	CREATE TABLE IF NOT EXISTS Matches (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		player_1_id INTEGER NOT NULL,
-		player_2_id INTEGER,
+		player_2_id INTEGER NOT NULL,
 		winner_id INTEGER,
 		match_type TEXT NOT NULL CHECK (match_type IN ('1v1', 'vs_ai', 'tournament')),
 		start_time TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -56,7 +56,7 @@ export function createTables(db)
 		match_id INTEGER NOT NULL,
 		user_id INTEGER NOT NULL,
 		timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
-		event_type TEXT NOT NULL,
+		event_type TEXT NOT NULL CHECK (event_type IN ('serve', 'goal', 'hit')),
 		ball_x REAL,
 		ball_y REAL,
 		ball_angle REAL,

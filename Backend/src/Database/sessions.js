@@ -18,7 +18,6 @@ import { getUserByID } from './users.js';
  */
 export async function addUserSessionToDB(db, session) {
 	const user = await getUserByID(db, session.user_id);
-
 	if (!user) {
 		throw new Error(`User ID ${session.user_id} does not exist.`);
 	}
@@ -49,3 +48,32 @@ export async function addUserSessionToDB(db, session) {
 //                           VIEW DATA FROM SQL TABLE                          //
 // *************************************************************************** //
 
+export async function getLastUserSession(db, user_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM UserSessions WHERE user_id = ? ORDER BY timestamp DESC LIMIT 1`;
+		db.get(sql, [user_id], (err, row) => {
+			if (err) {
+				console.error('Error SQL - getLastUserSession:', err.message);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
+
+export async function getLatestSessionByState(db, user_id, state) {
+	const allowedStates = Array.isArray(state) ? state : [state];
+	const placeholders = allowedStates.map(() => '?').join(', ');
+	
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM UserSessions WHERE user_id = ? AND state IN (${placeholders}) ORDER BY timestamp DESC LIMIT 1`;
+		db.get(sql, [user_id, ...allowedStates], (err, row) => {
+			if (err) {
+				return reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}

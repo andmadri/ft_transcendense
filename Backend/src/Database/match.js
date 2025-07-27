@@ -23,18 +23,13 @@ import { getUserByID } from './users.js';
  */
 export async function addMatchToDB(db, match) {
 	const player1 = await getUserByID(db, match.player_1_id);
-	
 	if (!player1) {
 		throw new Error(`Player 1 (ID ${match.player_1_id}) does not exist.`);
 	}
 
-	let player2Name = "AI"; //CHANGE THIS LATER
-	if (match.player_2_id) {
-		const player2 = await getUserByID(db, match.player_2_id);
-		if (!player2) {
-			throw new Error(`Player 2 (ID ${match.player_2_id}) does not exist.`);
-		}
-		player2Name = player2.name;
+	const player2 = await getUserByID(db, match.player_2_id);
+	if (!player2) {
+		throw new Error(`Player 2 (ID ${match.player_2_id}) does not exist.`);
 	}
 
 	return new Promise((resolve, reject) => {
@@ -44,7 +39,7 @@ export async function addMatchToDB(db, match) {
 				console.error('Error SQL - addMatchToDB:', err.message);
 				reject(err);
 			} else {
-				console.log(`Match started: [${this.lastID}]`);
+				console.log(`Match started: [${this.lastID}] ${player1.name} vs ${player2.name}`);
 				resolve(this.lastID);
 			}
 		});
@@ -64,18 +59,21 @@ export async function addMatchEventToDB(db, event) {
 	return new Promise((resolve, reject) => {
 		const sql = `INSERT INTO MatchEvents (
 			match_id, user_id, event_type, ball_x, ball_y, ball_angle,
-			ball_result_x, ball_result_y, paddle_x, paddle_y)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			ball_result_x, ball_result_y, 
+			paddle_x_player_1, paddle_y_player_1,
+			paddle_x_player_2, paddle_y_player_2)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 		const values = [event.match_id, event.user_id, event.event_type,
 			event.ball_x ?? null, event.ball_y ?? null, 
 			event.ball_angle ?? null, event.ball_result_x ?? null, event.ball_result_y ?? null,
-			event.paddle_x ?? null, event.paddle_y ?? null];
+			event.paddle_x_player_1 ?? null, event.paddle_y_player_1 ?? null, 
+			event.paddle_x_player_2 ?? null, event.paddle_y_player_2 ?? null];
 		db.run(sql, values, function (err) {
 			if (err) {
 				console.error('Error SQL - addMatchEventToDB:', err.message);
 				reject(err);
 			} else {
-				console.log(`Match event: [${event.match_id}] ${event.event}`);
+				console.log(`Match event: [${event.match_id}] ${user.name} - ${event.event_type}`);
 				resolve(this.lastID);
 			}
 		});
@@ -143,7 +141,7 @@ export async function updateMatchInDB(db, match) {
 				console.error('Error SQL - updateMatchInDB:', err.message);
 				reject(err);
 			} else {
-				console.log(`Match updated: [${match.match_id}]`);
+				console.log(`Match updated: [${match.match_id}] ${existingMatch.player_1_score} - ${existingMatch.player_2_score}`); // CHANGE THIS LATER: Logger is invalid - should we log inside the wrappers functions?
 				resolve();
 			}
 		});

@@ -12,8 +12,9 @@ import googleAuthRoutes from './routes/googleAuth.js';
 import userAuthRoutes from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToDB } from './Database/users.js'; // DELETE THIS LATER
-import { addUserSessionToDB } from './Database/sessions.js'; // DELETE THIS LATER
-import { addMatchToDB } from './Database/match.js'; // DELETE THIS LATER
+import { handleMatchStart, handleMatchEvent } from './Services/matchService.js'; // DELETE THIS LATER
+import { onUserLogin } from './Services/sessionsService.js'; // DELETE THIS LATER
+
 
 // import { updateOnlineStatus } from './Database/database.js';
 
@@ -26,58 +27,69 @@ export const db = await createDatabase();
 
 // DELETE THIS LATER
 await addUserToDB(db, {
-	name: 'TestUser',
-	email: 'test@example.com',
-	password: 'secret',
+	name: 'Guest',
+	email: 'guest@guest.guest',
+	password: 'secretguest',
 	avatar_url: null
 });
 
 // DELETE THIS LATER
-await addUserSessionToDB(db, {
-	user_id: 1,
-	state: 'login'
-});
+await onUserLogin(db, 1);
 
 // DELETE THIS LATER
 await addUserToDB(db, {
-	name: 'TestUser2',
-	email: 'tes2t@example.com',
-	password: 'secret',
+	name: 'AI',
+	email: 'ai@ai.ai',
+	password: 'secretai',
 	avatar_url: null
 });
 
 // DELETE THIS LATER
-await addUserSessionToDB(db, {
-	user_id: 2,
-	state: 'login'
-});
+await onUserLogin(db, 2);
 
 // DELETE THIS LATER
-await addMatchToDB(db, {
+await handleMatchStart(db, {
 	player_1_id: 1,
-	player_2_id: null,
+	player_2_id: 2,
 	match_type: 'vs_ai',
 });
 
 // DELETE THIS LATER
-await addUserSessionToDB(db, {
-	user_id: 1,
-	state: 'in_game'
-});
-
-// DELETE THIS LATER
-await addMatchToDB(db, {
-	player_1_id: 1,
-	player_2_id: 2,
-	match_type: '1v1',
-});
-
-// DELETE THIS LATER
-await addUserSessionToDB(db, {
+await handleMatchEvent(db, {
+	match_id: 1,
 	user_id: 2,
-	state: 'in_game'
+	event_type: 'serve',
 });
 
+// DELETE THIS LATER
+await handleMatchEvent(db, {
+	match_id: 1,
+	user_id: 2,
+	event_type: 'hit',
+});
+
+// DELETE THIS LATER
+await handleMatchEvent(db, {
+	match_id: 1,
+	user_id: 1,
+	event_type: 'hit',
+});
+
+// DELETE THIS LATER
+await handleMatchEvent(db, {
+	match_id: 1,
+	user_id: 2,
+	event_type: 'hit',
+});
+
+// DELETE THIS LATER
+await handleMatchEvent(db, {
+	match_id: 1,
+	user_id: 1,
+	event_type: 'goal',
+});
+
+// DELETE THIS LATER
 // await addUserSessionToDB({
 // 	user_id: 1,
 // 	state: 'logged_out'
