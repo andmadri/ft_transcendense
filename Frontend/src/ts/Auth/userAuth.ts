@@ -2,6 +2,8 @@ import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
+import { getOnlineList } from '../Menu/online.js';
+import { getFriendsList } from '../Menu/friends.js';
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
@@ -27,6 +29,16 @@ function updateLoginPlayer(data: any) {
 	}
 }
 
+export function updateMenu() {
+	const playername = document.getElementById('playerNameMenu');
+	if (playername)
+		playername.textContent = Game.name;
+	// update Avatar
+
+	getOnlineList();
+	getFriendsList();
+}
+
 export function processLogin(data: any) {
 	if (data.access && data.access == "yes") {
 		log("Process Login Check => player: " + data.player);
@@ -34,6 +46,7 @@ export function processLogin(data: any) {
 		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
 		updateLoginPlayer(data);
 		loginSuccessfull(data.player);
+		updateMenu();
 	}
 	else
 		log('Not logged in: ' + data.reason);

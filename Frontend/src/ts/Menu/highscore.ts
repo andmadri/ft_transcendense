@@ -1,10 +1,10 @@
-import { styleElementMenu } from "./menuContent.js";
+import { styleElement } from "./menuContent.js";
 import { Game } from '../script.js'
 
 function createHighscores(): HTMLDivElement {
 	const highscores = document.createElement('div');
 	highscores.id = 'online';
-		styleElementMenu(highscores, {
+		styleElement(highscores, {
 		backgroundColor: 'white',
 		padding: '20px',
 		textAlign: 'center',

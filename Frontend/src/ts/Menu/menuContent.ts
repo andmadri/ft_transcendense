@@ -7,74 +7,15 @@ import { getStatsList } from './stats.js';
 import { getHighscores } from './highscore.js'
 import { getOptionMenu  } from '../OptionMenu/options.js';
 import { submitLogout } from '../Auth/logout.js';
+import { getCreditBtn } from './credits.js';
 
-export function styleElementMenu(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
+export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 	Object.assign(e.style, styles);
-}
-
-function getCreditBtn(): HTMLDivElement {
-	const creditsBtn = document.createElement('div');
-	creditsBtn.textContent = 'Credits';
-	styleElementMenu(creditsBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		marginTop: '15px',
-		borderRadius: '10px',
-		textAlign: 'center',
-	});
-	
-	creditsBtn.addEventListener('click', () => {
-		const app = document.getElementById('app');
-		if (!app)
-			return ;
-	
-		const creditDiv = document.createElement('div');
-		creditDiv.id = 'creditDiv';
-		styleElementMenu(creditDiv, {
-			position: 'fixed',
-			width: '100vw',
-			height: '100vh',
-			top: '0',
-			left: '0',
-			backgroundColor: 'white',
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'center',
-			alignItems: 'center',
-			zIndex: '9999'
-		})
-		
-
-		const creditImg = document.createElement('img');
-		creditImg.src = "./../images/Credits.png";
-		styleElementMenu(creditImg, {
-			maxWidth: '90vw',
-			maxHeight: '90vh',
-			objectFit: 'contain',
-		})
-
-		const closeBtn = document.createElement('button');
-		closeBtn.textContent = "CLOSE";
-		closeBtn.style.zIndex = '100000';
-		closeBtn.style.margin = '10px';
-
-		creditDiv.appendChild(creditImg);
-		creditDiv.appendChild(closeBtn);
-		app.appendChild(creditDiv);
-	
-		closeBtn.addEventListener('click', () => {
-			app.removeChild(creditDiv);
-		})
-	})
-	return (creditsBtn);
 }
 
 function getLeftSideMenu() {
 	const menuLeft = document.createElement('div');
-	styleElementMenu(menuLeft, {
+	styleElement(menuLeft, {
 		display: 'flex',
 		flexDirection: 'column',
 		width: '40%',
@@ -85,7 +26,7 @@ function getLeftSideMenu() {
 	});
 
 	const highScoreOnlineDiv = document.createElement('div');
-	styleElementMenu(highScoreOnlineDiv, {
+	styleElement(highScoreOnlineDiv, {
 		display: 'flex',
 		gap: '15px',
 		flexGrow: '1',
@@ -99,7 +40,7 @@ function getLeftSideMenu() {
 function getPlayBtn(): HTMLButtonElement {
 	const playBtn = document.createElement('button');
 	playBtn.textContent = 'Play game';
-	styleElementMenu(playBtn, {
+	styleElement(playBtn, {
 		backgroundColor: '#d9f0ff',
 		border: '2px solid #d9f0ff',
 		padding: '15px',
@@ -117,7 +58,7 @@ function getPlayBtn(): HTMLButtonElement {
 function getLogoutBtn(): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');
 	logoutBtn.textContent = 'logout';
-	styleElementMenu(logoutBtn, {
+	styleElement(logoutBtn, {
 		backgroundColor: '#d9f0ff',
 		border: '2px solid #d9f0ff',
 		padding: '15px',
@@ -133,7 +74,7 @@ function getLogoutBtn(): HTMLButtonElement {
 function getRightSideMenu() {
 	const profile = document.createElement('div');
 	profile.id = 'profile';
-	styleElementMenu(profile, {
+	styleElement(profile, {
 		display: 'flex',
 		flexDirection: 'column',
 		gap: '10px',
@@ -147,7 +88,7 @@ function getRightSideMenu() {
 	});
 
 	const player = document.createElement('div');
-	styleElementMenu(player, {
+	styleElement(player, {
 		display: 'flex',
 		width: '100%',
 		alignItems: 'center',
@@ -155,21 +96,22 @@ function getRightSideMenu() {
 	})
 
 	const avatarDiv = document.createElement('div');
-	avatarDiv.textContent = '😎';
-	styleElementMenu(avatarDiv, {
+	avatarDiv.textContent = '😎'; // AVATAR!
+	styleElement(avatarDiv, {
 		flex: '0 0 25%',
 		textAlign: 'center',
 		fontSize: '50px'
 	})
 
 	const playernameAndLogout = document.createElement('div');
-	styleElementMenu(playernameAndLogout, {
+	styleElement(playernameAndLogout, {
 		flex: '1',
 		display: 'flex',
 		gap: '5px',
 	});
 	
 	const playername = document.createElement('div');
+	playername.id = "playerNameMenu";
 	playername.textContent = Game.name;
 	playername.style.fontSize = '1.5em';
 
@@ -177,7 +119,7 @@ function getRightSideMenu() {
 	player.append(avatarDiv, playernameAndLogout);
 
 	const statsFriendsDiv = document.createElement('div');
-	styleElementMenu(statsFriendsDiv, {
+	styleElement(statsFriendsDiv, {
 		display: 'flex',
 		gap: '20px',
 		alignItems: 'stretch'
@@ -191,12 +133,13 @@ function getRightSideMenu() {
 export function getMenu() {
 	const menu = document.createElement('div');
 	menu.id = 'menu';
-	styleElementMenu(menu, {
+	styleElement(menu, {
 		display: 'flex',
 		flexDirection: 'column',
 		backgroundColor: '#ffd400',
 		padding: '20px',
 		height: '100%',
+		width: '100%',
 		boxSizing: 'border-box'
 	});
 	const titleMenu = document.createElement('h2');
@@ -204,7 +147,7 @@ export function getMenu() {
 	titleMenu.style.marginTop = '10px';
 
 	const leftRight = document.createElement('div');
-	styleElementMenu(leftRight, {
+	styleElement(leftRight, {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',

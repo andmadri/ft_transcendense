@@ -1,11 +1,11 @@
-import { styleElementMenu } from "./menuContent.js";
+import { styleElement } from "./menuContent.js";
 import { Game } from '../script.js'
 import { log } from "../logging.js";
 
 function createFriendsList() : HTMLDivElement {
 	const friends = document.createElement('div');
 	friends.id = 'friends';
-	styleElementMenu(friends, {
+	styleElement(friends, {
 		backgroundColor: '#d9f0ff',
 		border: '2px solid #d9f0ff',
 		padding: '15px',

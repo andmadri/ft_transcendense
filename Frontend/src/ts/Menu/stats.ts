@@ -1,10 +1,10 @@
 import { Game } from '../script.js'
-import { styleElementMenu } from './menuContent.js'
+import { styleElement } from './menuContent.js'
 
 function createStatsList(): HTMLDivElement {
 	const stats = document.createElement('div');
 	stats.id = 'stats';
-	styleElementMenu(stats, {
+	styleElement(stats, {
 		backgroundColor: '#d9f0ff',
 		border: '2px solid #d9f0ff',
 		padding: '15px',

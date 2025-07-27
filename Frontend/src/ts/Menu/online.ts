@@ -1,11 +1,11 @@
 import { log } from '../logging.js'
 import { Game } from '../script.js'
-import { styleElementMenu } from './menuContent.js'
+import { styleElement } from './menuContent.js'
 
 function createOnlineList(): HTMLDivElement {
 	const online = document.createElement('div');
 	online.id = 'online';
-		styleElementMenu(online, {
+		styleElement(online, {
 		backgroundColor: 'white',
 		padding: '20px',
 		textAlign: 'left',
