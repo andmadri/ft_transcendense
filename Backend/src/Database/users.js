@@ -1,4 +1,4 @@
-import { db } from './database.js';
+// import { db } from './database.js'; // DELETE THIS LATER
 import bcrypt from 'bcrypt';
 
 // *************************************************************************** //
@@ -12,7 +12,7 @@ import bcrypt from 'bcrypt';
  *
  * @throws {Error} - Rejects if the insert fails (e.g., duplicate email).
  */
-export async function addUserToDB(user) {
+export async function addUserToDB(db, user) {
 	const hashedPassword = await bcrypt.hash(user.password, 10);
 	const avatar_url = user.avatar_url || null;
 
@@ -48,7 +48,7 @@ export async function addUserToDB(user) {
  * @param {number} id - The user ID to look up.
  * @returns {Promise<Object|null>} - Resolves with user data or null if not found.
  */
-export async function getUserByID(id) {
+export async function getUserByID(db, id) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM Users WHERE id = ?`;
 		db.get(sql, [id], (err, row) => {
@@ -62,7 +62,9 @@ export async function getUserByID(id) {
 	});
 }
 
-export async function getUserByEmail(email) {
+
+// DELETE BELOW FUNCTIONS THIS LATER
+export async function getUserByEmail(db, email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT * FROM Users WHERE email = ?`,
@@ -77,7 +79,7 @@ export async function getUserByEmail(email) {
 	});
 }
 
-export async function updateOnlineStatus(email, newStatus) {
+export async function updateOnlineStatus(db, email, newStatus) {
 	return new Promise((resolve, reject) => {
 		db.run(
 			`UPDATE Users SET online_status = ? WHERE email = ?`,
@@ -92,7 +94,7 @@ export async function updateOnlineStatus(email, newStatus) {
 	})
 }
 
-export async function isOnline(email) {
+export async function isOnline(db, email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT online_status FROM Users WHERE email = ?`,
@@ -107,7 +109,7 @@ export async function isOnline(email) {
 	})
 }
 
-export async function getOnlineUsers() {
+export async function getOnlineUsers(db) {
 	return new Promise((resolve, reject) => {
 		db.all(
 			// SECET names and avatar of online users only
@@ -123,7 +125,7 @@ export async function getOnlineUsers() {
 	});
 }
 
-export async function userAlreadyExist(email) {
+export async function userAlreadyExist(db, email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists`,
@@ -139,7 +141,7 @@ export async function userAlreadyExist(email) {
 }
 
 
-export async function getWins(email) {
+export async function getWins(db, email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT wins FROM Users WHERE email = ?`,
@@ -154,7 +156,7 @@ export async function getWins(email) {
 	})
 }
 
-export async function getLosses(email) {
+export async function getLosses(db, email) {
 	return new Promise((resolve, reject) => {
 		db.get(
 			`SELECT losses FROM Users WHERE email = ?`,
@@ -169,11 +171,11 @@ export async function getLosses(email) {
 	})
 }
 
-export async function updateWins(email) {
+export async function updateWins(db, email) {
 	let	wins;
 
 	try {
-		wins = await getWins(email);
+		wins = await getWins(db, email);
 	} catch(err) {
 		return ;
 	}
@@ -191,11 +193,11 @@ export async function updateWins(email) {
 	});
 }
 
-export async function updateLosses(email) {
+export async function updateLosses(db, email) {
 	let	losses;
 
 	try {
-		losses = await getLosses(email);
+		losses = await getLosses(db, email);
 	} catch(err) {
 		return ;
 	}

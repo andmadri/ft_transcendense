@@ -25,7 +25,7 @@ await fastify.register(websocket);
 export const db = await createDatabase();
 
 // DELETE THIS LATER
-await addUserToDB({
+await addUserToDB(db, {
 	name: 'TestUser',
 	email: 'test@example.com',
 	password: 'secret',
@@ -33,13 +33,13 @@ await addUserToDB({
 });
 
 // DELETE THIS LATER
-await addUserSessionToDB({
+await addUserSessionToDB(db, {
 	user_id: 1,
 	state: 'login'
 });
 
 // DELETE THIS LATER
-await addUserToDB({
+await addUserToDB(db, {
 	name: 'TestUser2',
 	email: 'tes2t@example.com',
 	password: 'secret',
@@ -47,23 +47,35 @@ await addUserToDB({
 });
 
 // DELETE THIS LATER
-await addUserSessionToDB({
+await addUserSessionToDB(db, {
 	user_id: 2,
 	state: 'login'
 });
 
 // DELETE THIS LATER
-await addMatchToDB({
+await addMatchToDB(db, {
 	player_1_id: 1,
 	player_2_id: null,
 	match_type: 'vs_ai',
 });
 
 // DELETE THIS LATER
-await addMatchToDB({
+await addUserSessionToDB(db, {
+	user_id: 1,
+	state: 'in_game'
+});
+
+// DELETE THIS LATER
+await addMatchToDB(db, {
 	player_1_id: 1,
 	player_2_id: 2,
 	match_type: '1v1',
+});
+
+// DELETE THIS LATER
+await addUserSessionToDB(db, {
+	user_id: 2,
+	state: 'in_game'
 });
 
 // await addUserSessionToDB({

@@ -1,4 +1,4 @@
-import { db } from './database.js';
+// import { db } from './database.js'; // DELETE THIS LATER
 import { getUserByID } from './users.js';
 
 // *************************************************************************** //
@@ -16,8 +16,8 @@ import { getUserByID } from './users.js';
  *
  * @throws {Error} - If insertion fails.
  */
-export async function addUserSessionToDB(session) {
-	const user = await getUserByID(session.user_id);
+export async function addUserSessionToDB(db, session) {
+	const user = await getUserByID(db, session.user_id);
 
 	if (!user) {
 		throw new Error(`User ID ${session.user_id} does not exist.`);

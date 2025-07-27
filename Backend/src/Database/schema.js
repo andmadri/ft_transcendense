@@ -3,7 +3,7 @@
  *
  * @param {sqlite3.Database} db - The active SQLite database instance.
  */
-function createTables(db)
+export function createTables(db)
 {
 	db.exec(`
 	CREATE TABLE IF NOT EXISTS Users (
@@ -40,7 +40,7 @@ function createTables(db)
 		player_1_id INTEGER NOT NULL,
 		player_2_id INTEGER,
 		winner_id INTEGER,
-		match_type TEXT NOT NULL CHECK (state IN ('1v1', 'vs_ai', 'tournament')),
+		match_type TEXT NOT NULL CHECK (match_type IN ('1v1', 'vs_ai', 'tournament')),
 		start_time TEXT DEFAULT CURRENT_TIMESTAMP,
 		end_time TEXT,
 		player_1_score INTEGER DEFAULT 0,
@@ -54,8 +54,7 @@ function createTables(db)
 	CREATE TABLE IF NOT EXISTS MatchEvents (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		match_id INTEGER NOT NULL,
-		player_1_id INTEGER NOT NULL,
-		player_2_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
 		timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
 		event_type TEXT NOT NULL,
 		ball_x REAL,
@@ -68,8 +67,7 @@ function createTables(db)
 		paddle_x_player_2 REAL,
 		paddle_y_player_2 REAL,
 		FOREIGN KEY(match_id) REFERENCES Matches(id),
-		FOREIGN KEY(player_1_id) REFERENCES Users(id),
-		FOREIGN KEY(player_2_id) REFERENCES Users(id)
+		FOREIGN KEY(user_id) REFERENCES Users(id)
 	);
 	`, (err) => {
 		if (err) return console.error("Error creating tables:", err);
@@ -80,3 +78,12 @@ function createTables(db)
 		});
 	});
 }
+
+/*
+	Rules: 
+	
+	1) AI vs AI, Guest vs Guest or Guest vs AI matches are not allowed!
+	2) AI and Guest will get one account in the DB
+	3) For tournaments only one Guest and one AI are allowed?
+
+*/
