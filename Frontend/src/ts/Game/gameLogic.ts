@@ -60,7 +60,7 @@ export function movePadel(key: string) {
 export function checkPadelMovement(): boolean {
 	let moved = false;
 	if (Game.opponentType == S.OT.ONEvsCOM) {
-		aiAlgorithm();
+		moved = aiAlgorithm();
 	}
 	for (let key in S.Keys) {
 		if (S.Keys[key].pressed === true) {
@@ -134,6 +134,7 @@ function resetBall(){
 	{
 		S.Objects["ball"].x = field.clientWidth / 2;
 		S.Objects["ball"].y = field.clientHeight / 2;
+		S.Objects["ball"].angle = normalizeAngle(Math.PI - S.Objects['ball'].angle);
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}

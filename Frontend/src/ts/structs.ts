@@ -85,7 +85,7 @@ type AIPrediction = {
 };
 
 export type AIInfo = {
-	prediction: AIPrediction | null;
+	prediction: AIPrediction;
 	reactionTime: number; // ms
 	lastView: number; // timestamp of last view of the game
 	targetDirection: 'ArrowUp' | 'ArrowDown' | 'noAction';

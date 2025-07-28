@@ -95,7 +95,7 @@ export function initPositions() {
 		S.Objects['ball'].width = ballSize;
 		S.Objects['ball'].x = field.clientWidth / 2;
 		S.Objects['ball'].y = field.clientHeight / 2;
-		S.Objects['ball'].speed = field.clientWidth * 0.025;
+		S.Objects['ball'].speed = field.clientWidth * 0.015;
 		ball.style.left = `${S.Objects['ball'].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects['ball'].y - ballSize / 2}px`;
 
@@ -108,12 +108,12 @@ export function initPositions() {
 		S.Objects['rPlayer'].width = playerOne.clientWidth;
 		S.Objects['rPlayer'].y = playerOne.offsetTop;
 		S.Objects['rPlayer'].x = playerOne.offsetLeft;
-		S.Objects['rPlayer'].speed = field.clientHeight * 0.02;
+		S.Objects['rPlayer'].speed = field.clientHeight * 0.03;
 		S.Objects['lPlayer'].height = playerTwo.clientHeight;
 		S.Objects['lPlayer'].width = playerTwo.clientWidth;
 		S.Objects['lPlayer'].y = playerTwo.offsetTop;
 		S.Objects['lPlayer'].x = playerTwo.offsetLeft;
-		S.Objects['lPlayer'].speed = field.clientHeight * 0.02;
+		S.Objects['lPlayer'].speed = field.clientHeight * 0.03;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
 	}
