@@ -1,17 +1,24 @@
-// Tells how the code has to compilerOptions
 {
   "compilerOptions": {
-    "target": "ES6",
-    "outDir": "./build/js",
-    "rootDir": "./src",
-    "strict": true,
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
     "skipLibCheck": true,
-    "lib": ["DOM", "ES2015"], // maybe not needed
-    // "typeRoots": ["./node_modules/@types"], not needed I think
-    // "module": "commonjs",
-    // "noImplicitAny": "any",
-    // "strictNullChecks": false,
+    "noEmit": true,
+    "jsx": "react-jsx",
 
+    /* Linting/Strictness */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*"] // everything in src folder
+  "include": ["src", "vite.config.ts"]
 }

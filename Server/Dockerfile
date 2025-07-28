@@ -3,7 +3,7 @@ FROM node:18 AS frontend
 WORKDIR /app
 
 # copies all the frontend files and jsons to the docker
-COPY package.json tsconfig.json ./
+COPY package.json tsconfig.json vite.config.ts index.html ./
 COPY src/ ./src/
 
 ENV NODE_ENV=development
@@ -16,17 +16,17 @@ RUN npm run build
 # WHERE will this be stored?
 
 # folder with all the stuff for the frontend
-RUN mkdir -p build \
-  && cp -r src/html build/ \
-  && cp -r src/css build/ \
-  && cp -r src/images build/
+# RUN mkdir -p build \
+#   && cp -r index.html build/ \
+#   && cp -r src/css build/ \
+#   && cp -r src/images build/
 
 
 # STAGE TWO: NGINX (only contains the compiled version of node, not the env)
 FROM nginx:alpine
 
 # Copies from first stage the whole folder to the nginx docker
-COPY --from=frontend /app/build /usr/share/nginx/html/
+COPY --from=frontend /app/dist /usr/share/nginx/html/
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
