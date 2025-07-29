@@ -2,9 +2,9 @@ import { styleElement } from "./menuContent.js";
 import { Game } from '../script.js'
 import { log } from "../logging.js";
 
-function createFriendsList() : HTMLDivElement {
+function createFriendsList(playerNr: number) : HTMLDivElement {
 	const friends = document.createElement('div');
-	friends.id = 'friends';
+	friends.id = 'friends' + playerNr;
 	styleElement(friends, {
 		backgroundColor: '#d9f0ff',
 		border: '2px solid #d9f0ff',
@@ -18,10 +18,10 @@ function createFriendsList() : HTMLDivElement {
 	title.textContent = 'Friends';
 
 	const list = document.createElement('div');
-	list.id = 'listFriends';
+	list.id = 'listFriends' + playerNr;
 
 	const html_list = document.createElement('ul');
-	html_list.id = 'htmllistFriends';
+	html_list.id = 'htmllistFriends' + playerNr;
 	html_list.className = 'online-markers';
 
 	list.appendChild(html_list);
@@ -33,7 +33,7 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 	let friends = document.getElementById('friends') as HTMLDivElement;
 
 	if (!friends)
-		friends = createFriendsList();
+		friends = createFriendsList(playerNr);
 	else {
 		const list = document.getElementById('htmllistFriends');
 		if (list instanceof HTMLUListElement)
@@ -46,8 +46,8 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 }
 
 
-function insertFriends(friends: any, noFriends: boolean) {
-	const html_list = document.getElementById('htmllistFriends') as HTMLUListElement;
+function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
+	const html_list = document.getElementById('htmllistFriends' + playerNr) as HTMLUListElement;
 	if (!html_list) {
 		log("HTML list for friends not found");
 		return;
@@ -71,11 +71,12 @@ function insertFriends(friends: any, noFriends: boolean) {
 }
 
 function processFriends(data: any) {
+	const playerNr = data.playerNr;
 	if (data.access && data.access == "yes")
-		insertFriends(data.content, false);
+		insertFriends(data.content, playerNr, false);
 	else {
 		log("Access to DB: " + data.access + " " + data.content);
-		insertFriends(data, true);
+		insertFriends(data, playerNr, true);
 	}
 }
 
