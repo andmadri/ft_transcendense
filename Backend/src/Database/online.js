@@ -51,7 +51,7 @@ export function getAllUserStateDurations(db) {
  *                        login_secs:number,menu_secs:number,
  *                        lobby_secs:number,game_secs:number}>>}
  */
-export function updateOnlineStatusgetUserStateDurations(db, user_id) {
+export function getUserStateDurations(db, user_id) {
 	const sql = _baseStatsQuery + ` WHERE u.id = ?`;
 	return new Promise((resolve, reject) => {
 		db.get(sql, [user_id], (err, row) => {

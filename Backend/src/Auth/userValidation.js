@@ -57,14 +57,14 @@ export async function addUser(msg) {
 		return (1); // Should we not return the userId?
 	}
 	catch(err) {
-		// if (err.code === 'SQLITE_CONSTRAINT') {
-		// 	if (err.message.includes('Users.email')) {
-		// 		return ('That email is already registered.');
-		// 	}
-		// 	if (err.message.includes('Users.name')) {
-		// 		return ('That username is already taken.');
-		// 	}
-		// }
+		if (err.code === 'SQLITE_CONSTRAINT') {
+			if (err.message.includes('Users.email')) {
+				return ('That email is already registered.');
+			}
+			if (err.message.includes('Users.name')) {
+				return ('That username is already taken.');
+			}
+		}
 		console.error('addUser:', err);
 		return (0);
 	}

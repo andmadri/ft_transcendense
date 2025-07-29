@@ -17,10 +17,6 @@ import { onUserLogin } from './Services/sessionsService.js'; // DELETE THIS LATE
 import { getAllUserStateDurations, getUserStateDurations } from './Database/online.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 
-
-// import { updateOnlineStatus } from './Database/database.js';
-
-
 const fastify = Fastify();
 await fastify.register(websocket);
 

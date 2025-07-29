@@ -1,6 +1,8 @@
 import { updateOnlineStatus } from '../Database/users.js';
 import { addUser, validateLogin } from '../Auth/userValidation.js';
 import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
+import { addUserSessionToDB } from '../Database/sessions.js';
+import { getUserByID }        from '../Database/users.js';
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -62,11 +64,10 @@ export default async function userAuthRoutes(fastify) {
 		}
 		const authToken = parseAuthTokenFromCookies(cookies);
 		try {
+			// MAYBE CHANGE THIS LATER: Marty edited this, but is not sure if this is correct
 			const decoded = fastify.jwt.verify(authToken['jwtAuthToken' + playerNr]);
-			const email = decoded.email;
-			console.log(`User ${email} is logging out`);
-			await updateOnlineStatus(email, false);
-			console.log(`User Nr: ${playerNr} logged in as: ${email} logged out`);
+			const user = await getUserByID(db, decoded.userId);
+			await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,
 				secure: true,

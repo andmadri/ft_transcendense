@@ -155,6 +155,7 @@ export async function getUserByEmail(db, email) {
 		});
 	});
 }
+
 /**
  * @brief Returns the list of currently online users (id + name).
  */
