@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { State } from '../ts/structs';
-import { Game }from '../ts/script';
-import LoginComponent from './LoginComponent';
+import { Game } from '../ts/script';
+
+import './App.css'
+import LoginSignUp from './Components/LoginSignup/LoginSignup';
 
 export default function App() {
   const [appState, setAppstate] = useState<State>(Game.state);
@@ -17,7 +19,7 @@ export default function App() {
 
   switch(appState) {
     case State.Login:
-      return <LoginComponent />;
+      return <LoginSignUp />;
     // case State.Menu:
     //   return <MenuComponent />;
   }

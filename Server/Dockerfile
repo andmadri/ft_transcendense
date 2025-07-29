@@ -21,7 +21,6 @@ RUN npm run build
 #   && cp -r src/css build/ \
 #   && cp -r src/images build/
 
-
 # STAGE TWO: NGINX (only contains the compiled version of node, not the env)
 FROM nginx:alpine
 
