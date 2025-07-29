@@ -6,7 +6,6 @@ import * as S from '../structs.js'
 export function getAuthField(player: number, mandatoy: Boolean) {
 	const	auth = document.createElement('div');
 	auth.id = 'auth' + player;
-	auth.style.backgroundColor = 'lightblue';
 	auth.style.width = '50%';
 	auth.style.height = '100%';
 	auth.style.position = 'relative';
@@ -14,9 +13,6 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	auth.style.flexDirection = 'column';
 	auth.style.alignItems = 'center';
 	auth.style.zIndex = '999';
-	if (player == 2) {
-		auth.style.backgroundColor = 'lightgreen';
-	}
 
 	const	authTitle = document.createElement('h2');
 	authTitle.id = 'authTitle' + player;

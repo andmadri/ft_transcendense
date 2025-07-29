@@ -29,7 +29,7 @@ function receivePlayerData(data: any) {
 		Game.player2Login = data.player2Login || false;
 		Game.scoreRight = data.score2 || 0;
 	}
-	if (Game.id != 0)
+	if (Game.id != -1)
 		Game.state = S.State.Menu;
 	const app = document.getElementById('app');
 	if (!app) return ;

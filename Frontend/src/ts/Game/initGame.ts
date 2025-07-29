@@ -7,7 +7,10 @@ import { submitLogout } from '../Auth/logout.js';
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login2;
+			if (Game.id2 != -1)
+				Game.state = S.State.Init;
+			else
+				Game.state = S.State.Login2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {

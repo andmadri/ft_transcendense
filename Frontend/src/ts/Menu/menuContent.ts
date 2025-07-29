@@ -12,6 +12,7 @@ import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
+
 	Object.assign(e.style, styles);
 }
 

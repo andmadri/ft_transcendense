@@ -6,15 +6,16 @@ export function getLoadingPage() {
 
 	const page = document.createElement('div');
 	page.id = "loadingpage";
-	page.style.width = '100%';
-	page.style.height = '100%';
+	page.style.width = '100vw';
+	page.style.height = '100vh';
 	page.style.position = 'relative';
 	page.style.backgroundImage = 'url("./../images/Background.jpg")';
 	page.style.backgroundSize = 'cover';
 	page.style.backgroundPosition = 'center';
-	page.style.display = 'flex';
+	// page.style.display = 'flex';
 	page.style.justifyContent = 'center';
 	page.style.alignItems = 'center';
+	page.style.overflow = 'hidden';
 
 	const loading = document.createElement('h1');
 	loading.textContent = 'Loading...';

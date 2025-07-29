@@ -144,17 +144,15 @@ function renewWebSocketConnection() {
 }
 
 export function loginSuccessfull(player: number, userId: number, name: string) {
-	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
-	log("Login Successfull for player " + player + " with id: " + userId + " and name: " + name);
 	if (player == 1) {
-		log("Login Successfull (player one)");
+		log("Login Successfull (player one) with id: " + userId);
 		Game.id = userId;
 		Game.name = name;
 		Game.player1Login = true;
 		Game.state = S.State.Menu;
 	}
 	else if (player == 2) {
-		log("Login Successfull (player two)");
+		log("Login Successfull (player two) with id: " + userId);
 		Game.id2 = userId;
 		Game.name2 = name;
 		Game.player2Login = true;

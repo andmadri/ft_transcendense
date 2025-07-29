@@ -6,9 +6,13 @@ function styleBtn(btn: HTMLButtonElement, inRow: boolean) {
 		padding: '15px',
 		fontSize: '16px',
 		boxSizing: 'border-box',
-		width: inRow ? '100%' : undefined,
-		flex: inRow ? '1' : undefined,
 	});
+	if (inRow) {
+		styleElement(btn, {
+		width: '100%',
+		flex: '1'
+		});
+	}
 }
 
 export function getGameSettings(): HTMLDivElement {
@@ -97,11 +101,10 @@ function getLeftSideOptionMenu() : HTMLDivElement {
 	styleElement(optionLeft, {
 		display: 'flex',
 		flexDirection: 'column',
-		width: '40%',
+		// width: '40%',
 		boxSizing: 'border-box',
 		justifyContent: 'space-between',
 		height: '100%',
-		flex: '1',
 		alignItems: 'stretch'
 
 	});
