@@ -6,7 +6,7 @@ import password_icon from '../Assets/padlock.png';
 
 
 function LoginSignUp() {
-	const [action, setAction] = useState("SignUp");
+	const [action, setAction] = useState("Sign Up");
 	return(
 		// <div className="container">
 		// 	<div className="header">
@@ -35,10 +35,11 @@ function LoginSignUp() {
 	<div className="mainContainer">
 		<div className="loginSignUpContainer">
 			<div className="header">
+				<div className="header1Text">{action}</div>
 			</div>
 		</div>
 		<div className="animationContainer">
-			{Array.from({length: 8}).map((_, index: number) => (
+			{Array.from({length: 10}).map((_, index: number) => (
 				<div className="pongText" key={index}>Pong</div>
 			))}
 		</div>
