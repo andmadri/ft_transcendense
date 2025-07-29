@@ -9,6 +9,7 @@ import { getOptionMenu  } from '../OptionMenu/options.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
+import { changeAvatar } from './avatar.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 	Object.assign(e.style, styles);
@@ -67,10 +68,42 @@ function getLogoutBtn(playerNr: number): HTMLButtonElement {
 		fontSize: '1em',
 		cursor: 'pointer',
 		borderRadius: '10px',
-		marginLeft: 'auto'
+		marginLeft: 'auto',
+		marginBottom: '10px',
+		fontFamily: 'inherit'
 	});
 	logoutBtn.addEventListener('click', (e) => submitLogout(e, playerNr));
 	return (logoutBtn);
+}
+
+function getAvatarBtn(playerNr: number): HTMLLabelElement {
+	const fileInput = document.createElement('input');
+	fileInput.type = 'file';
+	fileInput.accept = 'image/*';
+	fileInput.style.display = 'none';
+	fileInput.addEventListener('change', (e) => {
+		const file = fileInput.files?.[0];
+		if (file)
+			changeAvatar(file, playerNr);
+	});
+
+	const label = document.createElement('label');
+	label.textContent = 'Change Avatar';
+	label.htmlFor = fileInput.id = `avatarUpload${playerNr}`;
+
+	styleElement(label, {
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px',
+		marginLeft: 'auto',
+		display: 'inline-block',
+		fontFamily: 'inherit'
+	});
+	label.appendChild(fileInput);
+	return (label);
 }
 
 export function getRightSideMenu(playerNr: number) {
@@ -98,12 +131,19 @@ export function getRightSideMenu(playerNr: number) {
 	})
 
 	const avatarDiv = document.createElement('div');
-	avatarDiv.textContent = '😎'; // AVATAR!
 	styleElement(avatarDiv, {
 		flex: '0 0 25%',
 		textAlign: 'center',
-		fontSize: '50px'
 	})
+
+	const avatarImg = document.createElement('img');
+		avatarImg.src = "./../images/avatar.png";
+		styleElement(avatarImg, {
+			maxWidth: '90vw',
+			maxHeight: '90vh',
+			objectFit: 'contain',
+	})
+	avatarDiv.appendChild(avatarImg);
 
 	const playernameAndLogout = document.createElement('div');
 	styleElement(playernameAndLogout, {
@@ -120,7 +160,17 @@ export function getRightSideMenu(playerNr: number) {
 		playername.textContent = Game.name2;
 	playername.style.fontSize = '1.5em';
 
-	playernameAndLogout.append(playername, getLogoutBtn(playerNr));
+	const buttons = document.createElement('div');
+	styleElement(buttons, {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'space-between',
+		padding: '15px',
+		marginLeft: 'auto'
+	});
+	buttons.append(getLogoutBtn(playerNr), getAvatarBtn(playerNr));
+
+	playernameAndLogout.append(playername, buttons);
 	player.append(avatarDiv, playernameAndLogout);
 
 	const statsFriendsDiv = document.createElement('div');

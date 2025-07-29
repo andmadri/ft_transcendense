@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
@@ -12,6 +13,7 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
+import uploadAvatarRoute from './routes/avatar.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -33,6 +35,10 @@ fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
 await fastify.register(userAuthRoutes);
+
+// POST /api/upload-avatar
+await fastify.register(fastifyMultipart);
+await fastify.register(uploadAvatarRoute);
 
 /*
 FROM frontend TO backend
