@@ -1,5 +1,7 @@
 import * as userDB from '../Database/users.js';
-import { db } from '../index.js';
+// import { getOnlineUsers } from '../Database/online.js';
+// Delete this later!
+// import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 	const msg = {

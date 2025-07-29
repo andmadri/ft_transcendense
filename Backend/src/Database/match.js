@@ -129,7 +129,7 @@ export async function updateMatchInDB(db, match) {
 		}
 
 		if (updates.length === 0) {
-			console.log("No fields provided to update.");
+			console.log("No valid match fields provided to update.");
 			return resolve();
 		}
 

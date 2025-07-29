@@ -1,6 +1,7 @@
 import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
+import { db } from './database.js' // DELETE THIS LATER
 
 function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9_-]+$/;
@@ -52,26 +53,29 @@ export async function addUser(msg) {
 	if (errorMsg)
 		return (errorMsg);
 	try {
-		const exists = await userAlreadyExist(msg.email);
-		if (exists)
-			return (exists);
-		if (!msg.avatar_url)
-			msg.avatar_url = null;
-		await addUserToDB(msg);
-		// console.log('User: ', msg.name, ' is created'); // DELETE THIS LATER
-		return (1);
+		const userId = await addUserToDB(db, msg);
+		return (1); // Should we not return the userId?
 	}
 	catch(err) {
-		console.error('err' + err.msg);
+		// if (err.code === 'SQLITE_CONSTRAINT') {
+		// 	if (err.message.includes('Users.email')) {
+		// 		return ('That email is already registered.');
+		// 	}
+		// 	if (err.message.includes('Users.name')) {
+		// 		return ('That username is already taken.');
+		// 	}
+		// }
+		console.error('addUser:', err);
 		return (0);
 	}
 }
 
+// EDIT THIS LATER: Need to change the DB functions - we have to send the DB.
 export async function validateLogin(msg, fastify) {
 	let user;
 
 	try {
-		user = await getUserByEmail(msg.email);
+		user = await getUserByEmail(db, msg.email);
 	} catch (err) {
 		console.error('Error with getting user by email');
 		return (err);
@@ -83,8 +87,9 @@ export async function validateLogin(msg, fastify) {
 	if (!isValidPassword)
 		return ({ error: 'Incorrect password' });
 
+	// DELETE/EDIT THIS LATER
 	try {
-		const online = await isOnline(msg.email, (online));
+		const online = await isOnline(db, msg.email, (online));
 		await updateOnlineStatus(msg.email, !online);
 	} catch(err) {
 		console.error(err.msg);

@@ -41,6 +41,8 @@ export async function handleMatchEvent(db, event) {
 		await updateMatchInDB(db, updated);
 
 		// ADD THIS LATER: update user stats
+
+		// What should happen if the game is ended? User back to main menu - or lobby for tournament?
 	}
 	return eventID;
 }

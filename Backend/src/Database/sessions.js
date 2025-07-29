@@ -36,6 +36,10 @@ export async function addUserSessionToDB(db, session) {
 	});
 }
 
+export async function recordSessionTransition(db, user_id, newState) {
+	const last = getLatestSessionByState(db, user_id, )
+}
+
 // *************************************************************************** //
 //                          CHANGE ROW FROM SQL TABLE                          //
 // *************************************************************************** //

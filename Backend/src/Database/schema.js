@@ -12,9 +12,8 @@ export function createTables(db)
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
 		avatar_url TEXT,
-		wins INTEGER DEFAULT 0,
-		losses INTEGER DEFAULT 0,
-		created_at TEXT DEFAULT CURRENT_TIMESTAMP
+		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+		last_edited TEXT DEFAULT CURRENT_TIMESTAMP
 	);
 
 	CREATE TABLE IF NOT EXISTS UserSessions (
@@ -23,6 +22,15 @@ export function createTables(db)
 		state TEXT NOT NULL CHECK (state IN ('login', 'in_menu', 'in_lobby', 'in_game', 'logout')),
 		timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES Users(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS UserActivityStats (
+		user_id INTEGER PRIMARY KEY,
+		login_secs INTEGER DEFAULT 0,
+		menu_secs INTEGER DEFAULT 0,
+		lobby_secs INTEGER DEFAULT 0,
+		game_secs INTEGER DEFAULT 0,
+		last_ts TEXT NOT NULL
 	);
 
 	CREATE TABLE IF NOT EXISTS Friends (
@@ -69,9 +77,48 @@ export function createTables(db)
 		FOREIGN KEY(match_id) REFERENCES Matches(id),
 		FOREIGN KEY(user_id) REFERENCES Users(id)
 	);
+
+
+
+	CREATE VIEW IF NOT EXISTS OnlineUsers AS
+		SELECT u.id, u.name
+		FROM Users AS u
+		JOIN (
+			SELECT user_id, state
+			FROM UserSessions
+			WHERE id IN (SELECT MAX(id) FROM UserSessions GROUP BY user_id)
+		) AS s ON u.id = s.user_id
+		WHERE s.state != 'logout';
+	
+	CREATE VIEW UserStateDurations AS WITH sessions AS (
+			SELECT
+				user_id,
+				state,
+				timestamp AS start_ts,
+				COALESCE(
+					LEAD(timestamp) OVER (PARTITION BY user_id ORDER BY timestamp),
+					CURRENT_TIMESTAMP
+				)
+			AS end_ts FROM UserSessions
+		)
+		SELECT user_id, 
+		ROUND(
+			SUM(CASE WHEN state IN ('in_menu', 'in_lobby', 'in_game') THEN (julianday(end_ts) - julianday(start_ts)) * 86400
+			ELSE 0 END), 0) AS login_secs,
+		ROUND(
+			SUM(CASE WHEN state = 'in_menu'	THEN (julianday(end_ts) - julianday(start_ts)) * 86400
+			ELSE 0 END), 0) AS menu_secs,
+		ROUND(
+			SUM(CASE WHEN state = 'in_lobby' THEN (julianday(end_ts) - julianday(start_ts)) * 86400
+			ELSE 0 END), 0) AS lobby_secs,
+		ROUND(
+			SUM(CASE WHEN state = 'in_game' THEN (julianday(end_ts) - julianday(start_ts)) * 86400
+			ELSE 0 END), 0) AS game_secs
+		FROM sessions GROUP BY user_id;
+
 	`, (err) => {
 		if (err) return console.error("Error creating tables:", err);
-		console.log("Created database tables.");
+		console.log("Created database tables and views.");
 		db.all(`SELECT name FROM sqlite_master WHERE type='table'`, (err, rows) => {
 			if (err) console.error("Failed to list tables:", err);
 			else console.log("Current tables in database:", rows.map(r => r.name));
