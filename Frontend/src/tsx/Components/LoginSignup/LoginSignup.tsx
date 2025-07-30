@@ -72,7 +72,7 @@ function LoginSignUp() {
 			</div>
 		</div>
 		<div className="animationContainer">
-			{Array.from({length: 10}).map((_, index: number) => (
+			{Array.from({length: 8}).map((_, index: number) => (
 				<div className="pongText" key={index}>Pong</div>
 			))}
 			<div className="ball"></div>
