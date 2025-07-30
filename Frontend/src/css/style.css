@@ -1,32 +1,161 @@
-html, body {
-	height: 100%;
-	margin: 0;
+body {
+	height: 100vh;
+	background-color: #ededeb;
+	justify-content: center;
+}
+
+.authContainer {
+	display: flex;
+	background-color: #363430;
+	border-radius: 24px;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+	width: 90%;
+	max-width: 737px;
+	max-height: 524px;
+	/* min-height: 524px; */
+	margin: 200px auto 0;
+}
+
+.loginSignUpContainer {
 	display: flex;
 	flex-direction: column;
-  }
-  
-#app {
-	flex: 9;
-	background-color: #ffd202;
-	width: 100%;
-}
-  
-#log {
-	flex: 1;
-	background-color: white;
-	padding: 10px;
-	font-family: monospace;
-	overflow-y: auto;
+	border-radius: 18px;
+	background-color: #ededeb;
+	width: 45%;
+	max-width: 335px;
+	min-height: 482px;
+	/* margin */
 }
 
-p {
-	color: black;
+.header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
-ul.online-markers li {
-	color: black; /* Text color */
+.header1Text {
+	font-size: 2.5rem;
+	color:#363430;
+	font-family: 'Horizon', sans-serif;
 }
 
-ul.online-markers li::marker {
-	color: green; /* Marker (bullet) color */
+.inputMultiple {
+	font-family: 'RobotoCondensed', sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1.5rem;
+}
+
+.inputSingle {
+	display: flex;
+	flex-direction: inherit;
+	gap: 0.5rem;
+}
+
+@font-face {
+	font-family: 'RobotoCondensed';
+	src: url('./fonts/RobotoCondensed-Regular.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+.inputSingle input {
+	background-color: transparent;
+	border: 1px solid #363430;
+	border-radius: 8px;
+	outline: none;
+	width: 238px;
+	height: 25px;
+}
+
+.inputWithIcon img {
+	width: 20px;
+	height: 21px;;
+}
+
+.submitButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 238px;
+	height: 34px;
+	color: #ededeb;
+	background-color: #363430;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	font-family: 'RobotoCondensed', sans-serif;
+}
+
+.submitButton:hover {
+	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
+	border: none;
+	color: #363430;
+}
+
+.loginSignUpLink {
+	color:#ff6117;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.animationContainer {
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	align-items: center;
+	border-radius: 18px;
+	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
+	width: 45%;
+	max-width: 335px;
+	min-height: 482px;
+	overflow: hidden;
+}
+
+@font-face {
+	font-family: 'Horizon_Outlined';
+	src: url('./fonts/Horizon_Outlined.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Horizon';
+	src: url('./fonts/Horizon.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+.pongText {
+	font-size: 4.063rem;
+	font-family: 'Horizon', sans-serif;
+	-webkit-text-stroke: 0.15rem #363430;
+	letter-spacing: 0.5rem;
+	line-height: 1;
+	color: transparent;
+}
+
+.ball {
+	position: absolute;
+	height: 4rem;
+	width: 4rem;
+	border-radius: 50%;
+	background-color: #ededeb;
+	background-position: center;
+	box-shadow: 0.25rem 0.375rem 0.625rem;
+	animation: goX 1.2s linear 0s infinite alternate, goY 1.5s linear 0s infinite alternate;
+}
+
+@keyframes goX {
+	from {left: 0;} to {left: 100% - 4rem};
+}
+
+@keyframes goY {
+	from {top: 0} to {top: 100% - 4rem};
 }

@@ -10,11 +10,11 @@ import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
-import { getLoadingPage } from './Loading/loadContent.js'
+// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 
-getLoadingPage();
-createLog();
+// getLoadingPage();
+// createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
@@ -48,21 +48,18 @@ window.addEventListener('resize', initAfterResize);
 let lastSpeedIncreaseTime = 0;
 
 //test to increment ball speed every minute for better AI data and more exciting game
-function incrementBallSpeed() {
-  if (!Game.timeGame) return;
+// function incrementBallSpeed() {
+//   if (!Game.timeGame) return;
 
-  // Check if at least 60,000ms (1 minute) passed since last increment
-  if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
-    S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
-    lastSpeedIncreaseTime = Game.timeGame;
-  }
-}
+//   // Check if at least 60,000ms (1 minute) passed since last increment
+//   if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
+//     S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
+//     lastSpeedIncreaseTime = Game.timeGame;
+//   }
+// }
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		// if (!Game.player1Login)
-		// 	Game.state = S.State.Login;
-
 		switch (Game.state) {
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
@@ -85,14 +82,14 @@ function mainLoop() {
 			}
 			case S.State.Pending: {
 				// waiting for opponement
-				log("No online mode yet...pending...");
+				// log("No online mode yet...pending...");
 				break ;
 			}
 			case S.State.Init:
-				log("init game");
+				// log("init game");
 				if (!document.getElementById('game'))
 				{
-					log("On Init:" + JSON.stringify(Game));
+					// log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 				}
@@ -106,7 +103,7 @@ function mainLoop() {
 				saveGame();
 				break ;
 			default:
-				log("no valid state");
+				// log("no valid state");
 		}
 
 	}

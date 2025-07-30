@@ -10,7 +10,7 @@ export function createLog() {
 	logDiv.style.position = 'fixed';
 	logDiv.style.alignItems = 'center';
 	logDiv.style.zIndex = '9999';
-	log?.appendChild(logDiv);
+	// log?.appendChild(logDiv);
 }
 
 // print msg in element on top (zIndex)
@@ -18,6 +18,6 @@ export function log(msg: string) {
 	Game.logDiv.innerHTML = '';
 	const p = document.createElement('p');
 	p.textContent = msg;
-	Game.logDiv.appendChild(p);
-	console.log(msg);
+	// Game.logDiv.appendChild(p);
+	// console.log(msg);
 }
