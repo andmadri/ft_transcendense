@@ -34,8 +34,6 @@ function receivePlayerData(data: any) {
 	if (!app) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
-	// updateScoreMenu();
-	// updateNamesMenu();
 }
 
 export function getPlayerData() {
@@ -46,5 +44,4 @@ export function getPlayerData() {
 export function updatePlayerData(player: number) {
 	if (player != 0) // guest
 		getPlayerData();
-	// updateNamesMenu();
 }

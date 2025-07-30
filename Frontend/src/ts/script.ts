@@ -28,9 +28,9 @@ export const Game: S.gameInfo = {
 	player1Id: -1,
 	player1Name: 'unknown',
 	player1Login: false,
-	player2Id: -1,
-	player2Name: 'unknown',
-	player2Login: false,
+	player2Id: 1,			// default player2Id for guest login
+	player2Name: 'Guest',	// default player2Name for guest login
+	player2Login: false,	// default player2Login for guest login
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
@@ -66,10 +66,8 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Menu: {
-				if (!document.getElementById('menu') && !document.getElementById('optionMenu')) // change to two different stages
-				{
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
 					getMenu();
-				}
 				break ;
 			}
 			case S.State.LoginP2: {

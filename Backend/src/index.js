@@ -3,7 +3,7 @@ import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
-import fastifyCors from '@fastify/cors';
+// import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
@@ -11,9 +11,9 @@ import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
+import  avatarRoutes  from './routes/avatar.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
-import uploadAvatarRoute from './routes/avatar.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -27,18 +27,21 @@ fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
+// Register Multipart for handling file uploads
+await fastify.register(fastifyMultipart, {
+	limits: { fileSize: 5 * 1024 * 1024, } // 5MB file size limit
+});
+
 // Register the auth route plugins for HTTPS API Auth endpoints:
 // POST /api/signup - Sign up a new user
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
+await fastify.register(userAuthRoutes);
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
-await fastify.register(userAuthRoutes);
-
 // POST /api/upload-avatar
-await fastify.register(fastifyMultipart);
-await fastify.register(uploadAvatarRoute);
+await fastify.register(avatarRoutes);
 
 /*
 FROM frontend TO backend
@@ -80,7 +83,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		}
 	}
 	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
-	if (!userId1 && !userId2) {
+	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
 		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
 		return ;

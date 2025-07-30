@@ -30,30 +30,6 @@ function updateLoginPlayer(data: any) {
 	}
 }
 
-// export function updateMenu() {
-// 	const playername = document.getElementById('playerNameMenu');
-// 	if (playername)
-// 		playername.textContent = Game.player1Name;
-// 	// update Avatar
-
-// 	getOnlineList();
-// 	getFriendsList();
-// }
-
-// export function processLogin(data: any) {
-// 	if (data.access && data.access == "yes") {
-// 		log("Process Login Check => player: " + data.player);
-// 		// set cookie with WSS
-// 		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
-// 		updateLoginPlayer(data);
-// 		loginSuccessfull(data.player);
-// 		updateMenu();
-// 	}
-// 	else
-// 		log('Not logged in: ' + data.reason);
-// }
-
-
 export function changeLoginMode(player: number) {
 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
 
@@ -134,15 +110,6 @@ export async function submitAuthForm(e: Event, player: number) {
 	}
 }
 
-
-function renewWebSocketConnection() {
-	if (Game.socket) {
-		Game.socket.close();
-	}
-	Game.socket = new WebSocket('wss://localhost:8443/wss');
-	startSocketListeners(); // re-attach your listeners
-}
-
 export function loginSuccessfull(player: number, userId: number, name: string) {
 	if (player == 1) {
 		log("Login Successfull (player one) with id: " + userId);
@@ -157,7 +124,6 @@ export function loginSuccessfull(player: number, userId: number, name: string) {
 		Game.player2Name = name;
 		Game.player2Login = true;
 		Game.state = S.State.Init;
-		renewWebSocketConnection();
 	}
 	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }

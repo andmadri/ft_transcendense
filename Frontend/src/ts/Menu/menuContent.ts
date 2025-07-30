@@ -137,12 +137,16 @@ export function getRightSideMenu(playerNr: number) {
 	})
 
 	const avatarImg = document.createElement('img');
-		avatarImg.src = "./../images/avatar.png";
-		styleElement(avatarImg, {
-			maxWidth: '90vw',
-			maxHeight: '90vh',
-			objectFit: 'contain',
-	})
+	const userId = playerNr === 1 ? Game.player1Id : Game.player2Id;
+	avatarImg.src = `/api/avatar/${userId}`;
+	styleElement(avatarImg, {
+		maxWidth: '120px',
+		maxHeight: '120px',
+		width: '100%',
+		height: 'auto',
+		objectFit: 'cover',
+		// borderRadius: '50%', // optional: makes the avatar round
+	});
 	avatarDiv.appendChild(avatarImg);
 
 	const playernameAndLogout = document.createElement('div');
