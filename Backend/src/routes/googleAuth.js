@@ -127,7 +127,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 				path: '/',
 				maxAge: 60 * 60      // 1 hour
-			}).redirect('https://localhost:8443');
+			}).redirect(`https://${window.location.hostname}:8443`);
 
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

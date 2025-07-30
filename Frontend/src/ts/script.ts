@@ -23,6 +23,7 @@ export const Game: S.gameInfo = {
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
+	playMode: false,
 	matchID: -1,
 	id: -1,
 	name: 'unknown',
@@ -81,6 +82,8 @@ function mainLoop() {
 			case S.State.Login2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
+				if (Game.id2 != -1)
+					Game.state = S.State.Init;
 				break ;
 			}
 			case S.State.Pending: {
@@ -99,7 +102,8 @@ function mainLoop() {
 				break ;
 			case S.State.Game: {
 				// if (Game.matchID >= 0)
-				game();
+				// if (Game.playMode == true)
+					game();
 				break ;
 			}
 			case S.State.End:
@@ -114,5 +118,6 @@ function mainLoop() {
 }
 
 setTimeout(() => {
+	log(S.host);
 	mainLoop();
 }, 2000);

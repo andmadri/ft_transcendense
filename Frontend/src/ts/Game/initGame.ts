@@ -3,6 +3,7 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 import { submitLogout } from '../Auth/logout.js';
+import { styleElement } from '../Menu/menuContent.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
@@ -139,7 +140,60 @@ export function initGameServer() {
 	}
 }
 
+function readyStart(txt: HTMLDivElement) {
+	log("Start button clicked");
+	if (document.getElementById('startScreen')) {
+		const app = document.getElementById('app');
+		const startScreen = document.getElementById('startScreen')
+		if (app && startScreen)
+			app.removeChild(startScreen);
+		Game.playMode = true ;
+	}
+}
+
+// WHO VS WHO
+function getStartScreenBeforeGame() {
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
+	const startScreen = document.createElement('div');
+		startScreen.id = 'startScreen';
+	styleElement(startScreen, {
+		
+	})
+	const player1 = document.createElement('div');
+	const player2 = document.createElement('div');
+	const name1 = document.createElement('div');
+	const name2 = document.createElement('div');
+	const avatar1 = document.createElement('img');
+	const avatar2 = document.createElement('img');
+	const txt = document.createElement('div');
+	const startBtn = document.createElement('button');
+
+	name1.textContent = Game.name;
+	name2.textContent = Game.name2;
+	avatar1.src = "./../images/avatar.png";
+	styleElement(avatar1, {
+		objectFit: 'contain',
+	})
+	avatar2.src = "./../images/avatar.png";
+	styleElement(avatar2, {
+		objectFit: 'contain',
+	})	
+	player1.append(name1, avatar1);
+	player2.append(name2, avatar2);
+	txt.textContent = "Ready...?";
+	startBtn.textContent = "START";
+	startBtn.addEventListener('click', (e) => readyStart(txt));
+	startScreen.append(player1, player2, txt, startBtn);
+	app.append(startScreen);
+}
+
 export function initGame() {
+	// if (document.getElementById('startScreen'))
+	// 	return ;
+	// getStartScreenBeforeGame();
 	initPositions();
 	initGameServer();
 	updateNamesMenu();

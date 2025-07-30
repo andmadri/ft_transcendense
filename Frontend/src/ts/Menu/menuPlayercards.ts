@@ -1,6 +1,7 @@
 import { styleElement } from "./menuContent.js";
 import { getRightSideMenu } from "./menuContent.js";
-
+import { Game } from "../script.js";
+import { getAuthField } from "../Auth/authContent.js";
 
 function getPlayerCard(playerNum: number): HTMLDivElement {
 	const card = document.createElement('div');
@@ -13,7 +14,18 @@ function getPlayerCard(playerNum: number): HTMLDivElement {
 		backgroundColor: 'white',
 		borderRadius: '10px',
 		boxSizing: 'border-box',
+		alignItems: 'center',
+		height: '100%'
 	});
+
+	// if there is no player 2 => show nothing? Or loginscreen?
+	if (playerNum == 2 && Game.id2 == -1)
+		return card;
+	// if (playerNum == 2 && Game.id2 == -1) {
+	// 	card.appendChild(getAuthField(playerNum, false));
+	// 	return card;
+	// }
+
 	// card.textContent = `Player ${playerNum} Card`; // Replace with your playercard content
 	card.append(getRightSideMenu(playerNum));
 	return card;

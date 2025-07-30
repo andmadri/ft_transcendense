@@ -72,5 +72,8 @@ export function saveGame() {
 	// LOGOUT PLAYER 2 after game ONE vs ONE
 	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0) {
 		submitLogout(null, 2);
+	} else {
+		Game.id2 = -1;
+		Game.name2 = 'unknown';
 	}
 }

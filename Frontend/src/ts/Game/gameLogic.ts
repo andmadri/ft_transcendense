@@ -244,6 +244,7 @@ export function game() {
 
 	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
 			Game.state = S.State.End;
+			Game.playMode = false;
 			return ;
 		}
 

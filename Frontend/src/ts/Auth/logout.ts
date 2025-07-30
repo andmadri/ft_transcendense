@@ -13,7 +13,7 @@ export async function submitLogout(e: Event | null, player: number) {
 	log(`Submitting logout for player ${playerNr}`);
 	try {
 		// const response = await fetch('/api/logout', { method: 'POST', body: JSON.stringify(payload), credentials: 'include' });
-		const response = await fetch(`https://localhost:8443/api/logout`, {
+		const response = await fetch(`https://${S.host}:8443/api/logout`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),
@@ -31,7 +31,8 @@ export async function submitLogout(e: Event | null, player: number) {
 				Game.player2Login = false;
 				Game.id2 = -1;
 				Game.name2 = "";
-				Game.state = S.State.Menu;
+				if (Game.state == S.State.Game)
+					Game.state = S.State.End;
 				updateNamesMenu();
 				resetScoreMenu();
 			}
