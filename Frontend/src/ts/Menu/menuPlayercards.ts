@@ -19,9 +19,9 @@ function getPlayerCard(playerNum: number): HTMLDivElement {
 	});
 
 	// if there is no player 2 => show nothing? Or loginscreen?
-	if (playerNum == 2 && Game.id2 == -1)
+	if (playerNum == 2 && Game.player2Id == -1)
 		return card;
-	// if (playerNum == 2 && Game.id2 == -1) {
+	// if (playerNum == 2 && Game.player2Id == -1) {
 	// 	card.appendChild(getAuthField(playerNum, false));
 	// 	return card;
 	// }

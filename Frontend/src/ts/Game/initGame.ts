@@ -8,7 +8,7 @@ import { styleElement } from '../Menu/menuContent.js';
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			if (Game.id2 != -1)
+			if (Game.player2Id != -1)
 				Game.state = S.State.Init;
 			else
 				Game.state = S.State.Login2;
@@ -160,7 +160,7 @@ function getStartScreenBeforeGame() {
 	const startScreen = document.createElement('div');
 		startScreen.id = 'startScreen';
 	styleElement(startScreen, {
-		
+
 	})
 	const player1 = document.createElement('div');
 	const player2 = document.createElement('div');
@@ -180,7 +180,7 @@ function getStartScreenBeforeGame() {
 	avatar2.src = "./../images/avatar.png";
 	styleElement(avatar2, {
 		objectFit: 'contain',
-	})	
+	})
 	player1.append(name1, avatar1);
 	player2.append(name2, avatar2);
 	txt.textContent = "Ready...?";
@@ -202,8 +202,8 @@ export function initGame() {
 
 // export function saveGame() {
 // 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.id + " and id2: " + Game.id2);
-// 	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0)
+// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.id2);
+// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
 // 	{
 // 		log("Saving game and logout player 2");
 // 		submitLogout(null, 2);

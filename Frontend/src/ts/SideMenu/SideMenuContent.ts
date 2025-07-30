@@ -10,7 +10,7 @@ function getPlayer(nr: number) {
 
 	const	isPlayer1 = nr === 1;
 
-	playername.textContent = isPlayer1 ? Game.name : Game.name2;
+	playername.textContent = isPlayer1 ? Game.player1Name : Game.name2;
 	playername.id = 'playerName' + nr;
 
 

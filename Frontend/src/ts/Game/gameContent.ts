@@ -64,18 +64,18 @@ export function getGameField() {
 	container.style.gap = '20px'; // spacing between title and field
 	container.style.flexShrink = '0';
 	container.appendChild(getQuitBtn());
-	
+
 	const	game = document.createElement('div');
 	game.style.display = 'flex';
 	game.style.flexDirection = 'column';
-	game.id = 'game';
+	Game.player1Id = 'game';
 	styleElement(game, '100%', '100%', 'relative', '', '', '', 'gold');
 	game.style.alignItems = 'center';
 	game.style.padding = '10px';
 	game.style.boxSizing = 'border-box';
 	game.style.gap = '20px';
 	game.style.textAlign = 'center';
-	
+
 
 	const title = document.createElement('div');
 	title.id = 'gameTitle';
@@ -90,7 +90,7 @@ export function getGameField() {
 	2px  2px 0 black	`;
 	title.style.zIndex = '5';
 	title.style.pointerEvents = 'none';
-	
+
 	const	field = document.createElement('div');
 	field.id = 'field';
 	styleElement(field, '800px', '600px', 'relative', '', '', '', 'black');
@@ -98,21 +98,21 @@ export function getGameField() {
 	field.style.borderRadius = '30px';
 	//field.style.padding = '30px';
 	field.style.position = 'relative';
-	
+
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
 	styleElement(ball, '25px', '25px', 'absolute', '50%', '', '50%', 'white');
 	ball.style.borderRadius = '50%';
 	ball.style.transform = 'translate(-50%, -50%)';
-	
+
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';
 	styleElement(lPlayer, '10px', '100px', 'absolute', '35%', '', '10px', 'white');
-	
+
 	const	rPlayer = document.createElement('div');
 	rPlayer.id = 'rPlayer';
 	styleElement(rPlayer, '10px', '100px', 'absolute', '35%', '10px', '', 'white');
-	
+
 	const centerLine = document.createElement('div');
 	centerLine.id = 'centerLine';
 	styleElement(centerLine, '0', '100%', 'absolute', '0', '', '50%');

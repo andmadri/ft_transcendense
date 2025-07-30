@@ -70,10 +70,10 @@ export function saveGame() {
 	Game.matchID = -1;
 
 	// LOGOUT PLAYER 2 after game ONE vs ONE
-	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0) {
+	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0) {
 		submitLogout(null, 2);
 	} else {
-		Game.id2 = -1;
-		Game.name2 = 'unknown';
+		Game.player2Id = -1;
+		Game.player2Name = 'unknown';
 	}
 }

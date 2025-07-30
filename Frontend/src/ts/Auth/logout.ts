@@ -24,13 +24,13 @@ export async function submitLogout(e: Event | null, player: number) {
 			log(`Logout successful for player ${playerNr}: ${data.message || ''}`);
 			if (playerNr == 1) {
 				Game.player1Login = false;
-				Game.id = -1;
-				Game.name = "";
+				Game.player1Id = -1;
+				Game.player1Name = "";
 				Game.state = S.State.Login;
 			} else {
 				Game.player2Login = false;
-				Game.id2 = -1;
-				Game.name2 = "";
+				Game.player2Id = -1;
+				Game.player2Name = "";
 				if (Game.state == S.State.Game)
 					Game.state = S.State.End;
 				updateNamesMenu();

@@ -32,17 +32,17 @@ export type gameInfo = {
 
 	matchID: number;
 
-	// Player that is logged in
-	id: number;
-	name: string;
+	// Information for playercard one
+	player1Id: number;
+	player1Name: string;
 	player1Login: Boolean;
-	score: number;
+	player1Score: number;
 
-	// if there is another player on the same computer (1 vs 1 mode)
-	id2: number;
-	name2: string;
+	// Information for playercard two
+	player2Id: number;
+	player2Name: string;
 	player2Login: Boolean;
-	score2: number;
+	player2Score: number;
 
 	playerLogin: number; // if online => player one or two (so left or right field)
 	timeGame: number;

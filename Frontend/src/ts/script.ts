@@ -25,14 +25,14 @@ export const Game: S.gameInfo = {
 	socket: new WebSocket('wss://localhost:8443/wss'),
 	playMode: false,
 	matchID: -1,
-	id: -1,
-	name: 'unknown',
-	player1Login: false, // should be Cookie
-	score: 0,
-	id2: -1,
-	name2: 'unknown',
-	player2Login: false, // should be Cookie
-	score2: 0,
+	player1Id: -1,
+	player1Name: 'unknown',
+	player1Login: false,
+	player1Score: 0,
+	player2Id: -1,
+	player2Name: 'unknown',
+	player2Login: false,
+	player2Score: 0,
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
@@ -82,7 +82,7 @@ function mainLoop() {
 			case S.State.Login2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
-				if (Game.id2 != -1)
+				if (Game.player2Id != -1)
 					Game.state = S.State.Init;
 				break ;
 			}
