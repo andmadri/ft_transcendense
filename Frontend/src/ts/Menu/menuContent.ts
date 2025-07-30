@@ -156,9 +156,9 @@ export function getRightSideMenu(playerNr: number) {
 	const playername = document.createElement('div');
 	playername.id = "playerNameMenu";
 	if (playerNr == 1)
-		playername.textContent = Game.name;
+		playername.textContent = Game.player1Name;
 	else
-		playername.textContent = Game.name2;
+		playername.textContent = Game.player2Name;
 	playername.style.fontSize = '1.5em';
 
 	const buttons = document.createElement('div');

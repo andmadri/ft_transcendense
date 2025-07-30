@@ -182,7 +182,7 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('leftScore', ++Game.scoreLeft);
-			updateScoreServer(Game.id);
+			updateScoreServer(Game.player1Id);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -194,7 +194,7 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('rightScore', ++Game.scoreRight);
-			updateScoreServer(Game.id2);
+			updateScoreServer(Game.player2Id);
 		}
 	}
 }

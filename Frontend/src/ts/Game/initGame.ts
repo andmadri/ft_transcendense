@@ -128,11 +128,11 @@ export function initGameServer() {
 		const initGame = {
 			action: 'game',
 			subaction: 'init',
-			playerId: Game.id,
-			playerName: Game.name,
+			playerId: Game.player1Id,
+			playerName: Game.player1Name,
 			opponentMode: Game.opponentType,
-			playerId2: Game.id2,
-			playerName2: Game.name2
+			playerId2: Game.player2Id,
+			playerName2: Game.player2Name
 		}
 		if (Game.opponentType == S.OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
@@ -171,8 +171,8 @@ function getStartScreenBeforeGame() {
 	const txt = document.createElement('div');
 	const startBtn = document.createElement('button');
 
-	name1.textContent = Game.name;
-	name2.textContent = Game.name2;
+	name1.textContent = Game.player1Name;
+	name2.textContent = Game.player2Name;
 	avatar1.src = "./../images/avatar.png";
 	styleElement(avatar1, {
 		objectFit: 'contain',
@@ -202,7 +202,7 @@ export function initGame() {
 
 // export function saveGame() {
 // 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.id2);
+// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
 // 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
 // 	{
 // 		log("Saving game and logout player 2");

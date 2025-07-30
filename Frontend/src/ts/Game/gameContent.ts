@@ -41,8 +41,8 @@ function getQuitBtn() {
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.matchID,
-			player: Game.id,
-			name: Game.name
+			player: Game.player1Id,
+			name: Game.player1Name
 		}));
 		Game.state = S.State.End;
 	})
@@ -68,7 +68,7 @@ export function getGameField() {
 	const	game = document.createElement('div');
 	game.style.display = 'flex';
 	game.style.flexDirection = 'column';
-	Game.player1Id = 'game';
+	game.id = 'game';
 	styleElement(game, '100%', '100%', 'relative', '', '', '', 'gold');
 	game.style.alignItems = 'center';
 	game.style.padding = '10px';

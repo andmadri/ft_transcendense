@@ -33,7 +33,7 @@ function updateLoginPlayer(data: any) {
 // export function updateMenu() {
 // 	const playername = document.getElementById('playerNameMenu');
 // 	if (playername)
-// 		playername.textContent = Game.name;
+// 		playername.textContent = Game.player1Name;
 // 	// update Avatar
 
 // 	getOnlineList();
