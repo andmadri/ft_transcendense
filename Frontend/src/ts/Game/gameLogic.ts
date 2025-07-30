@@ -2,7 +2,6 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
-import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { aiAlgorithm, resetAI } from './aiLogic.js';
 import { trainingSet, downloadTrainingData, collectTrainingData } from './aiTraining.js'
 

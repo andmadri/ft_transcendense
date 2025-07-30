@@ -1,6 +1,5 @@
 import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { Game } from '../script.js'
-import { getSideMenu } from '../SideMenu/SideMenuContent.js';
 import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
 import { getStatsList } from './stats.js';

@@ -1,7 +1,6 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 
@@ -11,7 +10,7 @@ export function startGame() {
 			if (Game.player2Id != -1)
 				Game.state = S.State.Init;
 			else
-				Game.state = S.State.Login2;
+				Game.state = S.State.LoginP2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
@@ -196,8 +195,8 @@ export function initGame() {
 	// getStartScreenBeforeGame();
 	initPositions();
 	initGameServer();
-	updateNamesMenu();
-	resetScoreMenu();
+	// updateNamesMenu();
+	// resetScoreMenu();
 }
 
 // export function saveGame() {

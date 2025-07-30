@@ -1,7 +1,6 @@
 import { log } from '../logging.js'
 import { Game  } from '../script.js'
 import * as S from '../structs.js'
-import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 
 export async function submitLogout(e: Event | null, player: number) {
 	log(`Submitting logout for player ${player}`);
@@ -26,15 +25,13 @@ export async function submitLogout(e: Event | null, player: number) {
 				Game.player1Login = false;
 				Game.player1Id = -1;
 				Game.player1Name = "";
-				Game.state = S.State.Login;
+				Game.state = S.State.LoginP1;
 			} else {
 				Game.player2Login = false;
 				Game.player2Id = -1;
 				Game.player2Name = "";
 				if (Game.state == S.State.Game)
 					Game.state = S.State.End;
-				updateNamesMenu();
-				resetScoreMenu();
 			}
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);

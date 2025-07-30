@@ -18,7 +18,7 @@ createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Login,
+	state: S.State.LoginP1,
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
@@ -28,11 +28,9 @@ export const Game: S.gameInfo = {
 	player1Id: -1,
 	player1Name: 'unknown',
 	player1Login: false,
-	// player1Score: 0,
 	player2Id: -1,
 	player2Name: 'unknown',
 	player2Login: false,
-	// player2Score: 0,
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
@@ -61,25 +59,20 @@ function incrementBallSpeed() {
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		// if (!Game.player1Login)
-		// 	Game.state = S.State.Login;
-
 		switch (Game.state) {
-			case S.State.Login: {
+			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
 					getLoginFields(1);
-
 				break ;
 			}
 			case S.State.Menu: {
 				if (!document.getElementById('menu') && !document.getElementById('optionMenu')) // change to two different stages
 				{
-					// updatePlayerData(0);
 					getMenu();
 				}
 				break ;
 			}
-			case S.State.Login2: {
+			case S.State.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
 				if (Game.player2Id != -1)
