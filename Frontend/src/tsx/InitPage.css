@@ -1,0 +1,63 @@
+.mainContainerInitPage {
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* .overlayContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
+
+@font-face {
+	font-family: 'Horizon';
+	src: url('../fonts/Horizon.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+.pongTextInitPage {
+    position: relative;
+    display: flex;
+    font-size: 15vw;
+    font-family: 'Horizon', sans-serif;
+    color: #363430;
+    text-align: center;
+    line-height: 1;
+    letter-spacing: -1.4;
+}
+
+.ballInitPage {
+    position: absolute;
+    height: 1.1em;
+	width: 1.1em;
+    left: 24%;
+    top: -20%;
+    border-radius: 50%;
+	background: radial-gradient(circle at 50% 50%, #ededeb, #9a9b9b);
+    /* animation: initPageAnimation 2s ease-in infinite; */
+    /* animation-delay: 1s; */
+}
+
+@keyframes initPageAnimation {
+    0% {
+        transform: translate(0, 0) scale(1);
+        top: -20%;
+        left: 24%;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(40);
+        top: 50%;
+        left: 50%;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        top: -20%;
+        left: 24%;
+    }
+}

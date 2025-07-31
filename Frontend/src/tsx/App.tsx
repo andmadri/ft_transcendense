@@ -4,6 +4,7 @@ import { Game } from '../ts/script';
 
 import './App.css'
 import LoginSignUp from './Components/LoginSignup/LoginSignup';
+import InitPage from './InitPage';
 
 export default function App() {
   const [appState, setAppstate] = useState<State>(Game.state);
@@ -17,10 +18,11 @@ export default function App() {
     return () => clearInterval(interval);
   }, [appState]);
 
-  switch(appState) {
-    case State.Login:
-      return <LoginSignUp />;
+  // switch(appState) {
+  //   case State.Login:
+  //     return <LoginSignUp />;
     // case State.Menu:
     //   return <MenuComponent />;
-  }
+  // }
+ return <InitPage />;
 }
