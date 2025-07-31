@@ -47,24 +47,12 @@ window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
 
-//test to increment ball speed every minute for better AI data and more exciting game
-// function incrementBallSpeed() {
-//   if (!Game.timeGame) return;
-
-//   // Check if at least 60,000ms (1 minute) passed since last increment
-//   if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
-//     S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
-//     lastSpeedIncreaseTime = Game.timeGame;
-//   }
-// }
-
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		switch (Game.state) {
 			case S.State.Login: {
 				if (!document.getElementById('auth1'))
 					getLoginFields(1);
-
 				break ;
 			}
 			case S.State.Menu: {
