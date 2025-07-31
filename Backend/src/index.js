@@ -9,6 +9,7 @@ import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
+import  avatarRoutes  from './routes/avatar.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
 import uploadAvatarRoute from './routes/avatar.js';
@@ -85,8 +86,8 @@ io.on('connection', (socket) => {
 			console.error('JWT2 verification failed:', err);
 		}
 	}
-
-	if (!userId1 && !userId2) {
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
 		socket.emit('error', { reason: 'Unauthorized: No valid tokens' });
 		socket.disconnect();

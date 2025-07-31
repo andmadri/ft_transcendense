@@ -1,17 +1,16 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			if (Game.id2 != -1)
+			if (Game.player2Id != -1)
 				Game.state = S.State.Init;
 			else
-				Game.state = S.State.Login2;
+				Game.state = S.State.LoginP2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
@@ -128,11 +127,11 @@ export function initGameServer() {
 		const initGame = {
 			action: 'game',
 			subaction: 'init',
-			playerId: Game.id,
-			playerName: Game.name,
+			playerId: Game.player1Id,
+			playerName: Game.player1Name,
 			opponentMode: Game.opponentType,
-			playerId2: Game.id2,
-			playerName2: Game.name2
+			playerId2: Game.player2Id,
+			playerName2: Game.player2Name
 		}
 		if (Game.opponentType == S.OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
@@ -160,7 +159,7 @@ function getStartScreenBeforeGame() {
 	const startScreen = document.createElement('div');
 		startScreen.id = 'startScreen';
 	styleElement(startScreen, {
-		
+
 	})
 	const player1 = document.createElement('div');
 	const player2 = document.createElement('div');
@@ -171,8 +170,8 @@ function getStartScreenBeforeGame() {
 	const txt = document.createElement('div');
 	const startBtn = document.createElement('button');
 
-	name1.textContent = Game.name;
-	name2.textContent = Game.name2;
+	name1.textContent = Game.player1Name;
+	name2.textContent = Game.player2Name;
 	avatar1.src = "./../images/avatar.png";
 	styleElement(avatar1, {
 		objectFit: 'contain',
@@ -180,7 +179,7 @@ function getStartScreenBeforeGame() {
 	avatar2.src = "./../images/avatar.png";
 	styleElement(avatar2, {
 		objectFit: 'contain',
-	})	
+	})
 	player1.append(name1, avatar1);
 	player2.append(name2, avatar2);
 	txt.textContent = "Ready...?";
@@ -196,14 +195,14 @@ export function initGame() {
 	// getStartScreenBeforeGame();
 	initPositions();
 	initGameServer();
-	updateNamesMenu();
-	resetScoreMenu();
+	// updateNamesMenu();
+	// resetScoreMenu();
 }
 
 // export function saveGame() {
 // 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.id + " and id2: " + Game.id2);
-// 	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0)
+// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
+// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
 // 	{
 // 		log("Saving game and logout player 2");
 // 		submitLogout(null, 2);

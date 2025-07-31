@@ -19,21 +19,19 @@ type Socket = any;
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Login,
+	state: S.State.LoginP1,
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: null,
 	playMode: false,
 	matchID: -1,
-	id: -1,
-	name: 'unknown',
-	player1Login: false, // should be Cookie
-	score: 0,
-	id2: -1,
-	name2: 'unknown',
-	player2Login: false, // should be Cookie
-	score2: 0,
+	player1Id: -1,
+	player1Name: 'unknown',
+	player1Login: false,
+	player2Id: 1,			// default player2Id for guest login
+	player2Name: 'Guest',	// default player2Name for guest login
+	player2Login: false,	// default player2Login for guest login
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
@@ -74,24 +72,20 @@ function mainLoop() {
 		// 	Game.state = S.State.Login;
 
 		switch (Game.state) {
-			case S.State.Login: {
+			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
 					getLoginFields(1);
-
 				break ;
 			}
 			case S.State.Menu: {
-				if (!document.getElementById('menu') && !document.getElementById('optionMenu')) // change to two different stages
-				{
-					// updatePlayerData(0);
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
 					getMenu();
-				}
 				break ;
 			}
-			case S.State.Login2: {
+			case S.State.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
-				if (Game.id2 != -1)
+				if (Game.player2Id != -1)
 					Game.state = S.State.Init;
 				break ;
 			}

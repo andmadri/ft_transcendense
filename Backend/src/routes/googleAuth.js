@@ -122,11 +122,12 @@ export default async function googleAuthRoutes(fastify, opts) {
 			const jwtToken = signFastifyJWT(dbUserObj, fastify);
 			console.log('Generated JWT:', jwtToken);
 			reply.setCookie('jwtAuthToken' + loginId, jwtToken, {
-				httpOnly: true,      // Prevents JS access
-				secure: true,        // Only sent over HTTPS
-				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+				httpOnly: true,		// Prevents JS access
+				secure: true,		// Only sent over HTTPS
+				sameSite: 'Lax',	// CSRF protection ('Strict' is even more secure)
+				signed: true,		// signed cookies
 				path: '/',
-				maxAge: 60 * 60      // 1 hour
+				maxAge: 60 * 60		// 1 hour
 			}).redirect(`https://${window.location.hostname}:8443`);
 
 		} catch (err) {

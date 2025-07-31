@@ -10,7 +10,7 @@ function getPlayer(nr: number) {
 
 	const	isPlayer1 = nr === 1;
 
-	playername.textContent = isPlayer1 ? Game.name : Game.name2;
+	playername.textContent = isPlayer1 ? Game.player1Name : Game.player2Name;
 	playername.id = 'playerName' + nr;
 
 
@@ -54,8 +54,8 @@ function updateTextbyId(id: string, value: string) {
 }
 
 export function updateNamesMenu() {
-	updateTextbyId('playerName1', Game.name);
-	updateTextbyId('playerName2', Game.name2);
+	updateTextbyId('playerName1', Game.player1Name);
+	updateTextbyId('playerName2', Game.player2Name);
 }
 
 export function updateScoreMenu() {

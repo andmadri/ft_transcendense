@@ -70,6 +70,7 @@ export default async function userAuthRoutes(fastify) {
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,
 				secure: true,
+				signed: true,
 				sameSite: 'Strict',
 				path: '/',
 			}).send({ message: 'Logged out', ok: true });

@@ -13,47 +13,23 @@ const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
 function updateLoginPlayer(data: any) {
 	if (data.player == 1) {
 		if (data.userId)
-			Game.id = data.userId;
+			Game.player1Id = data.userId;
 		if (data.userName)
-			Game.name = data.userName;
+			Game.player1Name = data.userName;
 		Game.playerLogin = 1;
 		Game.player1Login = true;
 		updatePlayerData(1);
 
 	} else {
 		if (data.UserId)
-			Game.id2 = data.UserId;
+			Game.player2Id = data.UserId;
 		if (data.userName)
-			Game.name2 = data.userName;
+			Game.player2Name = data.userName;
 		Game.player2Login = true;
 		Game.playerLogin = 2;
 		updatePlayerData(2);
 	}
 }
-
-// export function updateMenu() {
-// 	const playername = document.getElementById('playerNameMenu');
-// 	if (playername)
-// 		playername.textContent = Game.name;
-// 	// update Avatar
-
-// 	getOnlineList();
-// 	getFriendsList();
-// }
-
-// export function processLogin(data: any) {
-// 	if (data.access && data.access == "yes") {
-// 		log("Process Login Check => player: " + data.player);
-// 		// set cookie with WSS
-// 		document.cookie = `jwtAuthToken=${data.reason}; path=/; max-age=${60 * 60}; secure; samesite=Lax`;
-// 		updateLoginPlayer(data);
-// 		loginSuccessfull(data.player);
-// 		updateMenu();
-// 	}
-// 	else
-// 		log('Not logged in: ' + data.reason);
-// }
-
 
 export function changeLoginMode(player: number) {
 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
@@ -157,18 +133,17 @@ function renewWebSocketConnection() {
 export function loginSuccessfull(player: number, userId: number, name: string) {
 	if (player == 1) {
 		log("Login Successfull (player one) with id: " + userId);
-		Game.id = userId;
-		Game.name = name;
+		Game.player1Id = userId;
+		Game.player1Name = name;
 		Game.player1Login = true;
 		Game.state = S.State.Menu;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two) with id: " + userId);
-		Game.id2 = userId;
-		Game.name2 = name;
+		Game.player2Id = userId;
+		Game.player2Name = name;
 		Game.player2Login = true;
 		Game.state = S.State.Init;
-		renewWebSocketConnection();
 	}
 	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }

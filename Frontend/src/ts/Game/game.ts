@@ -8,8 +8,8 @@ function processMatch(data: any) {
 	log("inited game with id: " + data.id);
 	log("players: " + data.player1ID + " " + data.player2ID);
 	Game.matchID = data.id;
-	Game.id = data.player1ID;
-	Game.id2 = data.player2ID;
+	Game.player1Id = data.player1ID;
+	Game.player2Id = data.player2ID;
 	Game.state = S.State.Game;
 	log("ProcessMatch?");
 }
