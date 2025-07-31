@@ -1,9 +1,7 @@
 import Fastify from 'fastify';
-import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
-import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
@@ -14,48 +12,56 @@ import  userAuthRoutes  from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
 import uploadAvatarRoute from './routes/avatar.js';
+import { Server as SocketIOServer } from 'socket.io';
+import { handlePending } from './Game/gameMatch.js';
+import fs from 'fs';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 const fastify = Fastify();
-await fastify.register(websocket);
+const httpServer = createServer(fastify.server);
 
 // change how you create database
 export const db = await createDatabase();
 
-// Register the cookie plugin
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-
-// Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
-// Register the auth route plugins for HTTPS API Auth endpoints:
-// POST /api/signup - Sign up a new user
-// POST /api/login - Log in an existing user
-// POST /api/logout - Log out a user
-// GET /api/auth/google - Redirect to Google OAuth
-// GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
 await fastify.register(userAuthRoutes);
-
-// POST /api/upload-avatar
 await fastify.register(fastifyMultipart);
 await fastify.register(uploadAvatarRoute);
 
-/*
-FROM frontend TO backend
-• login => loginUpser / signUpUser / logout
-• playerInfo => changeName / addAvatar / delAvatar / getPlayerData
-• chat => outgoing
-• online => getOnlinePlayers / getOnlinePlayersWaiting
-• friends => getFriends / addFriend / deleteFriend
-• pending => addToWaitlist / acceptGame
-• game => init / ballUpdate / padelUpdate / scoreUpdate
-• error => crash
-*/
+fastify.setNotFoundHandler(function (request, reply) {
+  reply.status(404).send({ error: 'Not Found' });
+});
 
-fastify.get('/wss', { websocket: true }, (connection, req) => {
+const start = async () => {
+  try {
+    await fastify.ready();
+    httpServer.listen(3000, () => {
+      console.log('Server listening on port 3000');
+    });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
 
+start();
+
+const io = new Server(httpServer, {
+  path: '/socket.io/',
+  cors: {
+    origin: '*',
+  },
+});
+
+io.on('connection', (socket) => {
+	console.log('🔌 A user connected:', socket.id);
 	// Check if the request has a valid JWT token in cookies
-	const cookies = req.headers.cookie;
+	// const cookies = req.headers.cookie;
+	const cookies = socket.handshake.headers.cookie || '';
 	const authTokens = parseAuthTokenFromCookies(cookies);
 
 	let decoded;
@@ -79,66 +85,58 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			console.error('JWT2 verification failed:', err);
 		}
 	}
-	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+
 	if (!userId1 && !userId2) {
 		console.error('No valid auth tokens found in cookies');
-		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
+		socket.emit('error', { reason: 'Unauthorized: No valid tokens' });
+		socket.disconnect();
 		return ;
 	}
+	console.log('✅ Authenticated user(s):', userId1, userId2);
 
-
-	connection.socket.on('message', (message) => {
-		const msg = JSON.parse(message.toString());
-		console.log('Received from frontend:', JSON.stringify(msg));
+	socket.on('message', (messageStr) => {
+		let msg;
+		try {
+			msg = typeof messageStr === 'string' ? JSON.parse(messageStr) : messageStr;
+		} catch (err) {
+			return socket.emit('error', { action: 'error', reason: 'Invalid JSON' });
+		}
 		const action = msg.action;
-		// console.log('Received from frontend: ' + message);
 		if (!action) {
-			const returnMsg = { action: "Error" }
-			connection.socket.send(JSON.stringify(returnMsg));
+			socket.emit('error', { action: 'error', reason: 'No action specified' });
 			return ;
 		}
 
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 		switch (action) {
-			// case 'login':
-			// 	return handleUserAuth(msg, connection.socket, fastify);
 			case 'playerInfo':
-				return handlePlayerInfo(msg, connection.socket, userId1, userId2);
+				return handlePlayerInfo(msg, socket, userId1, userId2);
 			case 'online':
-				return handleOnlinePlayers(msg, connection.socket);
+				return handleOnlinePlayers(msg, socket);
 			case 'friends':
-				return handleFriends(msg, connection.socket);
+				return handleFriends(msg, socket);
 			case 'pending':
+				handlePending(msg, socket)
 				break ;
 			case 'game':
-				return handleGame(msg, connection.socket, userId1, userId2);
+				return handleGame(msg, socket, userId1, userId2);
 			case 'error':
 				console.log('Error from frontend..');
-				connection.socket.send(JSON.stringify(msg));
+				return socket.emit('error', msg);
 				break ;
 			default:
-				console.log('No valid action: ' + action);
-				connection.socket.send(JSON.stringify(msg));
+				return socket.emit('error', { reason: 'Unknown action' + action });
 				return ;
 		}
 	});
 
-	connection.on('close', () => {
-		(async () => {
-			try {
-				const user = getUserByID(userId1);
-				if (user && user.email)
-					updateOnlineStatus(user.email, 'offline');
-			} catch (err) {
-				console.error('Player can not logged out', err);
-			}
-		})
+	socket.on('disconnect', () => {
+		console.log(`User disconnected: ${socket.id}`);
+		try {
+			const user = getUserByID(userId1);
+			if (user?.email) updateOnlineStatus(user.email, 'offline');
+		} catch (err) {
+			console.error('Failed logout cleanup', err);
+		}
 	});
 });
-
-fastify.setNotFoundHandler(function (request, reply) {
-  reply.status(404).send({ error: 'Not Found' });
-});
-
-fastify.listen({ port: 3000, host: '0.0.0.0' });
-

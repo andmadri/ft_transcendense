@@ -10,7 +10,7 @@
   "dependencies": {
     "fastify": "^4.22.0",
     "ws": "^8.13.0",
-    "@fastify/websocket": "^8.0.0",
+	"socket.io": "^4.7.2",
 	"@fastify/multipart": "^7.6.1",
     "@fastify/static": "^6.8.0",
     "@fastify/cookie": "^7.x.x",

@@ -8,8 +8,33 @@ export function handleGame(msg, socket, userId1, userId2) {
 		return ;
 	}
 
-	if (msg.subaction == 'init')
+	if (msg.subaction == 'init' && msg.opponentMode != 2)
 		return createMatch(msg, socket, userId1, userId2);
+	else if (msg.subaction == 'init') {
+		// create a match for online
+		// how to stay searching? mainloop
+		const msg = {
+			action: 'game',
+			subaction: 'init',
+			stage: '',
+			
+		}
+	
+		const [roomID, match] = findOpenMatch();
+		if (match) {
+			match.roomID = roomID;
+			match.player2.id = userId1;
+			match.stage = Stage.playing;
+			msg.stage = 'play';
+			// send back opponent found to both... play
+		} else {
+			const MatchID = createMatch(msg, socket, userId1, 0); 
+			// send back pending...
+			msg.stage = 'pending';
+			waitlist.set(MatchID, { match: match });
+		}
+		return ;
+	}
 
 	if (!msg.matchID) {
 		console.log("No matchID found in msg from frontend");
@@ -22,12 +47,8 @@ export function handleGame(msg, socket, userId1, userId2) {
 	}
 
 	switch (msg.subaction) {
-		case 'ballUpdate':
-			return updateBall(match, msg, socket);
-		case 'padelUpdate':
-			return updatePadel(match, msg, socket );
-		case 'scoreUpdate':
-			return updateScore(match, msg, socket);
+		case 'update':
+			return processInputClient(match, msg);
 		case 'save':
 			return saveMatch(match, msg, socket);
 		case 'quit':

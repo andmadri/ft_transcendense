@@ -3,21 +3,24 @@ import { getUserByID } from '../Database/user.js';
 
 let				matchnr = 0;
 export const 	matches = new Map();
+export const	waitlist = [];
 
 export const Stage = {
 	Start: 0,
-	Playing: 1,
-	Finish: 2,
-	Interrupt: 3
+	Pending: 1,
+	Playing: 2,
+	Finish: 3,
+	Interrupt: 4
 }
 
 // creates a new match, init and returns id nr
-export function newMatch(id, name, id2, name2) {
+export function newMatch(socket1, id, name, socket2, id2, name2) {
 	matchnr++;
 	matches.set(matchnr, {
 		saveInDB: false,
 		dbID: -1,
 		stage: Stage.Start,
+		roomID: '0',
 		player1: {
 			id: id,
 			name: name,
@@ -32,7 +35,7 @@ export function newMatch(id, name, id2, name2) {
 			score: 0,
 			paddle: 0,
 			pressUp: false,
-			pressDown: false
+			pressDown: false,
 		},
 		ball: {
 			angle: 0,
@@ -43,7 +46,6 @@ export function newMatch(id, name, id2, name2) {
 	})
 	return (matchnr);
 }
-
 
 /*
 	-> if player wants to play a game (1vs1, 1vsCOM, Online)
@@ -59,7 +61,7 @@ export function createMatch(msg, socket, userId1, userId2) {
 	const	player1ID = userId1 ? userId1 : 0;
 	const	player2ID = userId2 ? userId2 : 0;
 
-	const id = newMatch(player1ID, msg.name, player2ID, msg.name2);
+	const id = newMatch(socket, player1ID, msg.name, socket, player2ID, msg.name2);
 	if (opponentMode == 1 && player1ID != 0 && player2ID != 0) // both not guest or comp
 		matches.get(id).saveInDB = true;
 	else if (opponentMode == 2) // online
@@ -72,7 +74,7 @@ export function createMatch(msg, socket, userId1, userId2) {
 		player1ID,
 		player2ID
 	}));
-	matches.get(id).stage = Stage.Playing;
+	matches.get(id).stage = Stage.Playing; // Only if not online
 }
 
 export async function quitMatch(match, msg, socket) {
@@ -100,4 +102,22 @@ export function saveMatch(match, msg, socket) {
 		matchID: match.matchID,
 		success: true
 	}));
+}
+
+export function findOpenMatch() {
+if (waitlist.size() == 0)
+		return (null);
+	const firstWaitingID = waitlist.shift();
+	return (firstWaitingID);	
+}
+
+export function handlePending(msg, socket) {
+	const matchID = findOpenMatch();
+	if (!matchID) { // no one is waiting, create match + room
+		matchID = createMatch();
+		socket.join(matchID);
+	} else {
+		socket.join(matchID);
+		matches.get(matchID).stage = 'Game';
+	}
 }
