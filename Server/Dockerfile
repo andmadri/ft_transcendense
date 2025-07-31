@@ -18,7 +18,8 @@ RUN npm run build
 # folder with all the stuff for the frontend
 RUN mkdir -p build \
   && cp -r src/html build/ \
-  && cp -r src/css build/
+  && cp -r src/css build/ \
+  && cp -r src/images build/
 
 
 # STAGE TWO: NGINX (only contains the compiled version of node, not the env)

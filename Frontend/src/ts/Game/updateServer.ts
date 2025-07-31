@@ -6,7 +6,7 @@ function updateServer() {
 		action: 'game',
 		subaction: 'update',
 		match: Game.matchID,
-		id: Game.id,
+		// id: Game.id,
 		steps: Game.colletedSteps
 	}
 	Game.socket.send(JSON.stringify(updates));
@@ -32,7 +32,8 @@ export function collectDataForServer() {
 }
 
 export function receiveUpdateFromServer(data: any) {
-	const opponent = Game.id == data.p1[0] ? data.p1 : data.p2;
+	// const opponent = Game.id == data.p1[0] ? data.p1 : data.p2;
+	const opponent = data.p1;
 
 	S.Objects['rPlayer'].height = opponent[1];
 	S.Objects['ball'].x = data.b[0];

@@ -85,7 +85,8 @@ export async function submitAuthForm(e: Event, player: number) {
 
 	log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
 	try {
-		const response = await fetch(`https://${S.host}:8443${endpoint}`, {
+		log("send to: " + `http://${window.location.hostname}:3000${endpoint}`);
+		const response = await fetch(`http://${window.location.hostname}:3000${endpoint}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),
@@ -98,11 +99,6 @@ export async function submitAuthForm(e: Event, player: number) {
 
 			if (endpoint == "/api/login") {
 				loginSuccessfull(playerNr, data.userId, data.name);
-				Game.socket = io(`wss://10.11.1.13:8443`, {
-					path: '/socket.io/', 
-					transports: ['websocket'],
-					secure: true,
-				});
 			}
 			else
 				changeLoginMode(playerNr);
@@ -123,10 +119,10 @@ function renewWebSocketConnection() {
 		Game.socket.close();
 	}
 	Game.socket = io(`https://10.11.1.13:8443`, {
-			path: '/socket.io/', 
-			transports: ['websocket'],
-			secure: true,
-		}),
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
 	startSocketListeners(); // re-attach your listeners
 }
 

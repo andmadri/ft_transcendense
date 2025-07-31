@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
 	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
 		socket.emit('error', { reason: 'Unauthorized: No valid tokens' });
-		socket.disconnect();
+		// socket.disconnect();
 		return ;
 	}
 	console.log('✅ Authenticated user(s):', userId1, userId2);

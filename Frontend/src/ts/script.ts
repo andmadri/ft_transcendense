@@ -13,7 +13,6 @@ import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 
-// export const host = window.location.host;
 declare const io: any;
 type Socket = any;
 
@@ -23,7 +22,11 @@ export const Game: S.gameInfo = {
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: null,
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
 	playMode: false,
 	matchID: -1,
 	player1Id: -1,
