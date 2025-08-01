@@ -14,7 +14,6 @@ import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
  */
 export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/signup', async (request, reply) => {
-		console.log("sign up route???");
 		const { playerNr, username, email, password } = request.body;
 		const msg = {
 			name: username,

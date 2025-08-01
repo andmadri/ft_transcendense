@@ -103,3 +103,5 @@ export type AIInfo = {
 	lastReaction: number; // timestamp of last reaction
 	targetDirection: string; // 'ArrowUp' or 'ArrowDown'
 };
+
+export const host = window.location.host;

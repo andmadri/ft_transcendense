@@ -44,6 +44,8 @@ export const Game: S.gameInfo = {
 
 getLoadingPage();
 createLog();
+log("host: " + window.location.host);
+log("hostname: " + window.location.hostname);
 
 startSocketListeners();
 
@@ -66,14 +68,7 @@ function incrementBallSpeed() {
 }
 
 function mainLoop() {
-	if (!Game.socket || !Game.socket.connected) {
-		if (!document.getElementById('auth1'))
-			getLoginFields(1);
-	}
-	else if (Game.socket.connected) {
-		// if (!Game.player1Login)
-		// 	Game.state = S.State.Login;
-
+	if (Game.socket.connected) {
 		switch (Game.state) {
 			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
@@ -101,7 +96,6 @@ function mainLoop() {
 				log("init game");
 				if (!document.getElementById('game'))
 				{
-					log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 				}

@@ -2,34 +2,9 @@ import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
-import { getOnlineList } from '../Menu/online.js';
-import { getFriendsList } from '../Menu/friends.js';
-import { startSocketListeners } from '../socketEvents.js'
 
-declare const io: any;
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
-
-function updateLoginPlayer(data: any) {
-	if (data.player == 1) {
-		if (data.userId)
-			Game.player1Id = data.userId;
-		if (data.userName)
-			Game.player1Name = data.userName;
-		Game.playerLogin = 1;
-		Game.player1Login = true;
-		updatePlayerData(1);
-
-	} else {
-		if (data.UserId)
-			Game.player2Id = data.UserId;
-		if (data.userName)
-			Game.player2Name = data.userName;
-		Game.player2Login = true;
-		Game.playerLogin = 2;
-		updatePlayerData(2);
-	}
-}
 
 export function changeLoginMode(player: number) {
 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
@@ -85,8 +60,7 @@ export async function submitAuthForm(e: Event, player: number) {
 
 	log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
 	try {
-		log("send to: " + `http://${window.location.hostname}:3000${endpoint}`);
-		const response = await fetch(`http://${window.location.hostname}:3000${endpoint}`, {
+			const response = await fetch(`https://${S.host}${endpoint}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),
@@ -97,9 +71,8 @@ export async function submitAuthForm(e: Event, player: number) {
 			const data = await response.json();
 			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
 
-			if (endpoint == "/api/login") {
+			if (endpoint == "/api/login")
 				loginSuccessfull(playerNr, data.userId, data.name);
-			}
 			else
 				changeLoginMode(playerNr);
 
@@ -111,19 +84,6 @@ export async function submitAuthForm(e: Event, player: number) {
 	} catch (err) {
 		alert("Network error during authentication");
 	}
-}
-
-
-function renewWebSocketConnection() {
-	if (Game.socket) {
-		Game.socket.close();
-	}
-	Game.socket = io(`https://10.11.1.13:8443`, {
-		path: '/socket.io/', 
-		transports: ['websocket'],
-		secure: true,
-	}),
-	startSocketListeners(); // re-attach your listeners
 }
 
 export function loginSuccessfull(player: number, userId: number, name: string) {

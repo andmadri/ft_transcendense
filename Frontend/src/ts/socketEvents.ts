@@ -13,7 +13,9 @@ export function startSocketListeners() {
 		getPlayerData();
 	});
 
-	socket.on('message', receiveFromWS);  
+	socket.on('message', (msg: any)=> {
+		receiveFromWS(msg)
+	}); 
 
 	socket.on('disconnect', (reason: any) => {
 		log('Disconnected: '+ reason);
@@ -35,8 +37,8 @@ FROM backend TO frontend
 • game => ballUpdate / padelUpdate / scoreUpdate
 • error => checkError / errorPage?
 */
-export function receiveFromWS(e: MessageEvent) {
-	const data = JSON.parse(e.data);
+export function receiveFromWS(msg: any) {
+	const data = JSON.parse(msg);
 	
 	const action = data.action;
 	if (!action)

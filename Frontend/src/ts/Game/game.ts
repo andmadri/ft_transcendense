@@ -2,7 +2,7 @@ import { processBallUpdate, processPadelUpdate } from "./gameLogic.js";
 import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
-import { receiveUpdateFromServer } from "./updateServer.js";
+// import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
 	log("inited game with id: " + data.id);
@@ -37,8 +37,12 @@ export function actionGame(data: any) {
 		case 'init':
 			processMatch(data);
 			break ;
-		case 'update':
- 			receiveUpdateFromServer(data);
+		case 'ballUpdate':
+ 			processBallUpdate(data);
+			break ;
+		case 'padelUpdate':
+			processPadelUpdate(data);
+			break ;
 		case 'save':
 			processSavingMatch(data);
 			break ;

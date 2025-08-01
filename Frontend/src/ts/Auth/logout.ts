@@ -15,7 +15,7 @@ export async function submitLogout(e: Event | null, player: number) {
 	}
 	log(`Submitting logout for player ${playerNr}`);
 	try {
-		const response = await fetch(`http://${window.location.hostname}:3000/api/logout`, {
+		const response = await fetch(`https://${S.host}/api/logout`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),

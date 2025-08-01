@@ -123,7 +123,7 @@ export function getLoginFields(player: number) {
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
 	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
-		window.location.href = `https://${window.location.hostname}:3000/api/auth/google?player=` + player;
+		window.location.href = `https://${S.host}/api/auth/google?player=` + player;
 	});
 
 	document.getElementById('toggle-mode' + player)?.addEventListener('click', (e) => changeLoginMode(player));
