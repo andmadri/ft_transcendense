@@ -81,11 +81,7 @@ function mainLoop() {
 			}
 			case S.State.Game: {
 				if (!document.getElementById('game')) {
-					getGameField();
-					initPositions();
-					initGameServer();
-					updateNamesMenu();
-					resetScoreMenu();
+					initGame();
 				}
 				game();
 				//if you are playing with the AI and you log out yourself there is a problem

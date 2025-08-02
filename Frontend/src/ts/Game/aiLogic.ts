@@ -4,7 +4,7 @@ import { movePadel } from './gameLogic.js'
 
 export const AI: S.AIInfo = {
 	prediction : { 
-		x :S.Objects['rPlayer'].x, 
+		x : S.Objects['rPlayer'].x, 
 		y : S.Objects['rPlayer'].y, 
 		dx : 0, 
 		dy : 0 },
@@ -36,15 +36,15 @@ function	followBall(dx : number, dy : number) {
 }
 
 function	predictBall(dx : number, dy : number) {
-	const ball = S.Objects['ball'];
-	const ballRadius = ball.width / 2;
-	const field = S.Objects['field'];
-	const paddle = S.Objects['rPlayer'];
+	//const ball = S.Objects['ball'];
 
-	const ballCopy = {angle: ball.angle, speed: ball.speed, x: ball.x + ballRadius, y: ball.y, width: ball.width, height: ball.height, color: "white"};
+	const { field: fieldSize , ball: ballSize, paddle: paddleSize} = S.gameScreenPixels;
+	const { ball, lPlayer, rPlayer, score } = S.gamePos;
+
+	const ballCopy = { x: ball.x, y: ball.y, vx: dx };
 
 	//simulate ball movement to anticipate bounces
-	while (ballCopy.x + ballRadius < paddle.x) {
+	while (ballCopy.x + ballSize.radius < rPlayer.x - paddle.width / 2) {
 		ballCopy.x += dx;
 		ballCopy.y += dy;
 		if (ballCopy.y <= 0 || ballCopy.y >= field.height) {
@@ -90,18 +90,18 @@ function	predictAction() {
 }
 
 export function aiAlgorithm() : boolean {
-	const ball = S.Objects['ball'];
-	const paddle = S.Objects['rPlayer'];
-	const field = S.Objects['field'];
 
-	const paddleCenter = paddle.y + paddle.height / 2;
+	const { ball, lPlayer, rPlayer, score} = S.gamePos;
+	const paddle = S.gameScreenPixels.paddle;
+
+	const paddleCenter = rPlayer.y + paddle.height / 2;
 
 	if (Game.timeGame - AI.lastView > AI.reactionTime) {
 		AI.lastView = Game.timeGame;
 		predictAction()
 	}
 
-	console.log(`Prediction value-y: ${AI.prediction.y} -- Padle Y: ${paddle.y}`);
+	console.log(`Prediction value-y: ${AI.prediction.y} -- Padle Y: ${lPlayer.y}`);
 	if (AI.prediction.y > paddleCenter + paddle.height * 0.1) {
 		movePadel('ArrowDown');
 		return true;

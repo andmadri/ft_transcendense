@@ -69,11 +69,59 @@ type Object = {
 	color: string;
 }
 
-export const Objects: {[key: string]: Object} = {
-	"ball":	{angle: -0.33, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "white"},
-	"rPlayer": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "green"},
-	"lPlayer": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "yellow"},
-	"field": {angle: 0, speed: 0, x: 0, y: 0, width: 0, height: 0, color: "black"}
+// type GameState = {
+// 	ball : { x : number, y : number, vx : number, vy : number },
+// 	lPlayer : { x : number, y : number, vy : number },
+// 	rPlayer : { x : number, y : number, vy : number },
+// 	score : { left : number, right : number }
+// }
+
+// export const unitGamePos : GameState = {
+// 	ball : { x : 0.5, y : 0.5, vx : 0, vy : 0 },
+// 	lPlayer : { x : 0.02, y : 0.5, vy : 0 },
+// 	rPlayer : { x: 0.98, y : 0.5, vy : 0 },
+// 	score : { left : 0, right : 0 }
+// }
+
+// export const gamePos : GameState = {
+// 	ball : { x : 0.5, y : 0.5, vx : 0, vy : 0 },
+// 	lPlayer : { x : 0, y : 0.5, vy : 0 },
+// 	rPlayer : { x: 0, y : 0.5, vy : 0 },
+// 	score : { left : 0, right : 0 }
+// }
+
+// type gameSizes = {
+// 	field : { width : number, height : number }
+// 	ball : { radius : number, speed : number}
+// 	paddle : { height : number, width : number, speed: number}
+// }
+
+// export const unitGameSizes : gameSizes = {
+// 	field : { width : 1, height : 0.7 },
+// 	ball : { radius : 0.025, speed: 0.015 },
+// 	paddle : { height : 0.3, width : 0.02, speed: 0.03 }
+// }
+
+// export const gameScreenPixels : gameSizes = {
+// 	field : { width : 1, height : 0.7 },
+// 	ball : { radius : 0.05, speed: 0.015 },
+// 	paddle : { height : 0.3, width : 0.02, speed: 0.03 }
+// }
+
+enum Entity {
+  ball = 0,
+  LPlayer,
+  RPlayer,
+  field,
+  paddle
+}
+
+type Components = {
+	pos : { x : number, y : number },
+	velocity : { vx : number, vy : number },
+	size : { width : number, height : number },
+	movement : { speed : number, angle : number },
+	radius : { r : number }
 }
 
 // AI
