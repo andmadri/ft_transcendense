@@ -56,7 +56,7 @@ export const Keys: {[key: string]: Key} = {
 	"ArrowDown": 	{pressed: false, dir: 1},
 	"w": 			{pressed: false, dir: -1},
 	"s": 			{pressed: false, dir: 1}
-};
+}
 
 // OBJECTS
 type Object = {
@@ -108,21 +108,69 @@ type Object = {
 // 	paddle : { height : 0.3, width : 0.02, speed: 0.03 }
 // }
 
-enum Entity {
-  ball = 0,
-  LPlayer,
-  RPlayer,
-  field,
-  paddle
+export enum E {
+  ball = 'ball',
+  lPlayer = 'lPlayer',
+  rPlayer = 'rPlayer',
+  field = 'field',
 }
 
-type Components = {
-	pos : { x : number, y : number },
-	velocity : { vx : number, vy : number },
-	size : { width : number, height : number },
-	movement : { speed : number, angle : number },
-	radius : { r : number }
+
+export type Pos = { x : number, y : number };
+export type Velocity = { vx : number, vy : number };
+export type Movement = { speed : number, angle : number };
+export type Size = { width : number, height : number};
+
+
+export const pos : Record<E, Pos> = {
+	[E.field] : { x : 0, y : 0},
+	[E.ball] : { x : 0.5, y : 0.5},
+	[E.lPlayer] : { x : 0.02, y : 0.5},
+	[E.rPlayer] : { x : 0.98, y : 0.5}
 }
+
+export const unitPos : Record<E, Pos> = {
+	[E.field] : { x : 0, y : 0},
+	[E.ball] : { x : 0.5, y : 0.5},
+	[E.lPlayer] : { x : 0.02, y : 0.5},
+	[E.rPlayer] : { x : 0.98, y : 0.5}
+}
+
+export const velocity : Record<E, Velocity> = {
+	[E.field] : { vx : 0, vy : 0},
+	[E.ball] : { vx : 0, vy : 0},
+	[E.lPlayer] : { vx : 0, vy : 0},
+	[E.rPlayer] : { vx : 0, vy : 0}
+}
+
+export const movement : Record<E, Movement> = {
+	[E.field] : { speed : 0, angle : 0},
+	[E.ball] : { speed : 0.02, angle : 0.33},
+	[E.lPlayer] : { speed : 0.03, angle : 0},
+	[E.rPlayer] : { speed : 0.03, angle : 0}
+}
+
+export const unitMovement : Record<E, Movement> = {
+	[E.field] : { speed : 0, angle : 0},
+	[E.ball] : { speed : 0.02, angle : 0.33},
+	[E.lPlayer] : { speed : 0.03, angle : 0},
+	[E.rPlayer] : { speed : 0.03, angle : 0},
+}
+
+export const size : Record<E, Size> = {
+	[E.field] : { width : 1, height : 0.7},
+	[E.ball] : { width : 0.05, height : 0.05 },
+	[E.lPlayer] : { width : 0.02, height : 0.3 },
+	[E.rPlayer] : { width : 0.02, height : 0.3 }
+}
+
+export const unitSize : Record<E, Size> = {
+	[E.field] : { width : 1, height : 0.7},
+	[E.ball] : { width : 0.05, height : 0.05 },
+	[E.lPlayer] : { width : 0.02, height : 0.3 },
+	[E.rPlayer] : { width : 0.02, height : 0.3 }
+};
+
 
 // AI
 type AIPrediction = {

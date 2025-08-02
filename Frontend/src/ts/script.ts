@@ -3,7 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { changeMatchFormat, changeOpponentType, initPositions, startGame, initGameServer } from './Game/initGame.js'
+import { changeMatchFormat, changeOpponentType, initGame, startGame} from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields, removeAuthField } from './Auth/authContent.js'
@@ -43,19 +43,6 @@ window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
 
 getSideMenu();
-
-let lastSpeedIncreaseTime = 0;
-
-//test to increment ball speed every minute for better AI data and more exciting game
-function incrementBallSpeed() {
-  if (!Game.timeGame) return;
-
-  // Check if at least 60,000ms (1 minute) passed since last increment
-  if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
-    S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
-    lastSpeedIncreaseTime = Game.timeGame;
-  }
-}
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {

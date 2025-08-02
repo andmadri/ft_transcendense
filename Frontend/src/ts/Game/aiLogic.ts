@@ -1,11 +1,15 @@
 import * as S from '../structs.js'
+import { E } from '../structs.js'
 import { Game } from '../script.js'
 import { movePadel } from './gameLogic.js'
 
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
+
 export const AI: S.AIInfo = {
 	prediction : { 
-		x : S.Objects['rPlayer'].x, 
-		y : S.Objects['rPlayer'].y, 
+		x : rPlayerPos.x, 
+		y : rPlayerPos.y, 
 		dx : 0, 
 		dy : 0 },
 	reactionTime : 1000, //ms
@@ -18,41 +22,32 @@ export function resetAI() {
 }
 
 function	followBall(dx : number, dy : number) {
-	const ball = S.Objects['ball'];
-	const paddle = S.Objects['rPlayer'];
-	const field = S.Objects['field'];
 
-	//const threshold = field.height * 0.5;
+	//const threshold = fieldSize.height * 0.5;
 	
-	// if (Math.abs(ball.y - paddle.y) < threshold) {
+	// if (Math.abs(ballPos.y - rPlayerPos.y) < threshold) {
 	// 	return;
 	// }
 	AI.prediction = {
-		x : paddle.x,
-		y : ball.y,
+		x : rPlayerPos.x,
+		y : ballPos.y,
 		dx : dx,
 		dy : dy,
 	}
 }
 
 function	predictBall(dx : number, dy : number) {
-	//const ball = S.Objects['ball'];
 
-	const { field: fieldSize , ball: ballSize, paddle: paddleSize} = S.gameScreenPixels;
-	const { ball, lPlayer, rPlayer, score } = S.gamePos;
-
-	const ballCopy = { x: ball.x, y: ball.y, vx: dx };
+	const ballPosCopy = { x: ballPos.x, y: ballPos.y};
+	const ballRadius = ballSize.width / 2;
 
 	//simulate ball movement to anticipate bounces
-	while (ballCopy.x + ballSize.radius < rPlayer.x - paddle.width / 2) {
-		ballCopy.x += dx;
-		ballCopy.y += dy;
-		if (ballCopy.y <= 0 || ballCopy.y >= field.height) {
-			ballCopy.y = Math.max(0, Math.min(ballCopy.y, field.height));
+	while (ballPosCopy.x + ballRadius < rPlayerPos.x - rPlayerSize.width / 2) {
+		ballPosCopy.x += dx;
+		ballPosCopy.y += dy;
+		if (ballPosCopy.y <= 0 || ballPosCopy.y >= fieldSize.height) {
+			ballPosCopy.y = Math.max(0, Math.min(ballPosCopy.y, fieldSize.height));
 			dy *= -1;
-		}
-		if (ballCopy.x <= 0) {
-			
 		}
 	}
 	
@@ -63,10 +58,10 @@ function	predictBall(dx : number, dy : number) {
 	// const Offset = errorOffset * sign;
 
 	//clamp y to stay within field
-	const predictedY = ballCopy.y; //+ Offset;
+	const predictedY = ballPosCopy.y; //+ Offset;
 
 	AI.prediction = {
-		x : paddle.x,
+		x : rPlayerPos.x,
 		y : predictedY,
 		dx : dx,
 		dy : dy,
@@ -74,7 +69,7 @@ function	predictBall(dx : number, dy : number) {
 }
 
 function	predictAction() {
-	const ball = S.Objects['ball'];
+	const ball = S.movement[E.ball];
 
 	//calculate dx and dy
 	const dx = Math.cos(ball.angle) * ball.speed;
@@ -91,22 +86,19 @@ function	predictAction() {
 
 export function aiAlgorithm() : boolean {
 
-	const { ball, lPlayer, rPlayer, score} = S.gamePos;
-	const paddle = S.gameScreenPixels.paddle;
-
-	const paddleCenter = rPlayer.y + paddle.height / 2;
+	const paddleCenter = rPlayerPos.y + rPlayerSize.height / 2;
 
 	if (Game.timeGame - AI.lastView > AI.reactionTime) {
 		AI.lastView = Game.timeGame;
 		predictAction()
 	}
 
-	console.log(`Prediction value-y: ${AI.prediction.y} -- Padle Y: ${lPlayer.y}`);
-	if (AI.prediction.y > paddleCenter + paddle.height * 0.1) {
+	console.log(`Prediction value-y: ${AI.prediction.y} -- Padle Y: ${rPlayerPos.y}`);
+	if (AI.prediction.y > paddleCenter + rPlayerSize.height * 0.1) {
 		movePadel('ArrowDown');
 		return true;
 	}
-	else if (AI.prediction.y < paddleCenter - paddle.height * 0.1) {
+	else if (AI.prediction.y < paddleCenter - rPlayerSize.height * 0.1) {
 		movePadel('ArrowUp');
 		return true;
 	}
