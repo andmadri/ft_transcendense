@@ -4,6 +4,7 @@ import { log } from './logging.js'
 import { Game } from './script.js'
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
+import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -55,6 +56,9 @@ export function receiveFromWS(msg: any) {
 			actionFriends(data);
 			break ;
 		case 'pending':
+			break ;
+		case 'matchmaking':
+			actionMatchmaking(msg);
 			break ;
 		case 'game':
 			actionGame(data);

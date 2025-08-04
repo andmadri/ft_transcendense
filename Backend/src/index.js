@@ -11,14 +11,21 @@ import { handleGame } from './Game/game.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
 import { handlePending } from './Game/gameMatch.js';
-import { Server } from 'socket.io';
+import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 
 // FASTIFY => API SERVER
-const fastify = Fastify();
-fastify.register(fastifyIO);
+const fastify = Fastify({ logger: true });
+
+// fastify-socket.io enables the use of Socket.io in a Fastify application.
+fastify.register(fastifyIO, {
+	preClose: (done) => {
+		fastify.io.local.disconnectSockets(true);
+		done();
+	}
+});
 
 // change how you create database
 export const db = await createDatabase();
@@ -88,6 +95,9 @@ fastify.ready().then(() => {
 		}
 		console.log('✅ Authenticated user(s):', userId1, userId2);
 
+		// add user to main room
+		addUserToRoom(socket, 'main');
+
 		socket.on('message', (messageStr) => {
 			let msg;
 			try {
@@ -112,8 +122,12 @@ fastify.ready().then(() => {
 				case 'pending':
 					handlePending(msg, socket)
 					break ;
+				case 'matchmaking':
+					handleMatchmaking(msg, socket);
+					break ;
 				case 'game':
-					return handleGame(msg, socket, userId1, userId2);
+					handleGame(msg, socket, userId1, userId2);
+					break ;
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);

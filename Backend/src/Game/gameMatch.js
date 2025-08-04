@@ -112,12 +112,14 @@ if (waitlist.size() == 0)
 }
 
 export function handlePending(msg, socket) {
-	const matchID = findOpenMatch();
+	// const matchID = findOpenMatch();
+	const matchID = "";
 	if (!matchID) { // no one is waiting, create match + room
 		matchID = createMatch();
 		socket.join(matchID);
 	} else {
 		socket.join(matchID);
 		matches.get(matchID).stage = 'Game';
+		// START GAME MSG...
 	}
 }

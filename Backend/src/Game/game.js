@@ -1,6 +1,7 @@
 import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
+import { findOpenMatch } from "./gameMatch.js";
 
 export function handleGame(msg, socket, userId1, userId2) {
 	if (!msg.subaction) {
@@ -8,7 +9,7 @@ export function handleGame(msg, socket, userId1, userId2) {
 		return ;
 	}
 
-	if (msg.subaction == 'init' && msg.opponentMode != 2)
+	if (msg.subaction == 'init' && msg.opponentMode != 3)
 		return createMatch(msg, socket, userId1, userId2);
 	else if (msg.subaction == 'init') {
 		// create a match for online
@@ -47,8 +48,13 @@ export function handleGame(msg, socket, userId1, userId2) {
 	}
 
 	switch (msg.subaction) {
-		case 'update':
-			return processInputClient(match, msg);
+		case 'ballUpdate':
+			updateBall(match, msg, socket);
+		case 'scoreUpdate':
+			updateScore(match, msg, socket);
+			break ;
+		case 'padelUpdate':
+			updatePadel(match, msg, socket);
 		case 'save':
 			return saveMatch(match, msg, socket);
 		case 'quit':
