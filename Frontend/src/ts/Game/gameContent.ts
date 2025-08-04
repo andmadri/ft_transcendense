@@ -1,6 +1,7 @@
 import { removeAuthField } from '../Auth/authContent.js';
 import { removeMenu } from '../Menu/menuContent.js'
 import { log } from '../logging.js'
+import { Game } from '../script.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -152,4 +153,27 @@ export function removeGameField() {
 
 	if (body && game)
 		body.removeChild(game);
+}
+
+export function handleGameOver() {
+	log("Game Over!");
+	if (document.getElementById('gameOver')) {
+		const gameOver = document.createElement('div');
+		gameOver.id = 'gameOver';
+		gameOver.style.position = 'absolute';
+		gameOver.style.top = '50%';
+		gameOver.style.left = '50%';
+		gameOver.style.padding = '20px';
+		gameOver.style.backgroundColor = 'black';
+		gameOver.style.color = 'white';
+		gameOver.style.fontSize = '2rem';
+		gameOver.style.textAlign = 'center';
+		gameOver.style.borderRadius = '10px';
+		gameOver.innerHTML = `
+		<p>Game Over!</p>
+		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
+		`;
+		removeGameField();
+		document.body.appendChild(gameOver);
+	}
 }

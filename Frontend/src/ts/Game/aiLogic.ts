@@ -92,8 +92,6 @@ export function aiAlgorithm() : boolean {
 		AI.lastView = Game.timeGame;
 		predictAction()
 	}
-
-	console.log(`Prediction value-y: ${AI.prediction.y} -- Padle Y: ${rPlayerPos.y}`);
 	if (AI.prediction.y > paddleCenter + rPlayerSize.height * 0.1) {
 		movePadel('ArrowDown');
 		return true;

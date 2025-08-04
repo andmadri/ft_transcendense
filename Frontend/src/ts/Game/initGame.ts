@@ -89,6 +89,7 @@ function initSpeed() {
 function scaleGameSizes() {
 	const fieldSize = S.size[E.field];
 	const fieldUnit = S.unitSize[E.field];
+	const ballSize = S.size[E.ball];
 
 	fieldSize.width = window.innerWidth * 0.7;
 	fieldSize.height = fieldSize.width * fieldUnit.height;
@@ -96,6 +97,10 @@ function scaleGameSizes() {
 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
 		if (S.size[e] && S.unitSize[e]) {
 			S.size[e].width = scaleToField(fieldSize.width, S.unitSize[e].width);
+			if (e === E.ball) {
+				S.size[e].height = S.size[e].width;
+				continue ;
+			}
 			S.size[e].height = scaleToField(fieldSize.height, S.unitSize[e].height);
 		}
 	}
@@ -107,7 +112,7 @@ function scaleGamePos() {
 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
 		if (S.pos[e] && S.unitPos[e]) {
 			S.pos[e].x = scaleToField(fieldSize.width, S.unitPos[e].x);
-			S.pos[e].y = scaleToField(fieldSize.width, S.unitPos[e].y);
+			S.pos[e].y = scaleToField(fieldSize.height, S.unitPos[e].y);
 		}
 	}
 }
@@ -130,8 +135,8 @@ export function initDOMSizes() {
 		gameEl.style.height = `${fieldSize.height}px`;
 		gameEl.style.width = `${fieldSize.width}px`;
 
-		ballEl.style.height = `${ballSize.height * 2}px`;
-		ballEl.style.width = `${ballSize.width * 2}px`;
+		ballEl.style.height = `${ballSize.height}px`;
+		ballEl.style.width = `${ballSize.width}px`;
 
 		lPlayerEl.style.height = `${lPlayerSize.height}px`;
 		lPlayerEl.style.width = `${lPlayerSize.width}px`;
@@ -145,7 +150,7 @@ export function initDOMSizes() {
 		lPlayerPos.y = lPlayerEl.offsetTop;
 		rPlayerPos.x = lPlayerEl.offsetLeft;
 		lPlayerPos.y = rPlayerEl.offsetTop;
-		rPlayerPos.x = rPlayerEl.offsetLeft;
+		rPlayerPos.x = fieldSize.width - rPlayerEl.offsetLeft;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
 	}
@@ -200,6 +205,7 @@ export function initGame() {
 	getGameField();
 	scaleGameSizes();
 	scaleGamePos();
+	initSpeed();
 	initDOMSizes();
 	initGameServer();
 	updateNamesMenu();
