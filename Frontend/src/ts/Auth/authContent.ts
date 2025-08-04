@@ -1,4 +1,4 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js'
+import { submitAuthForm, loginSuccessfull, changeLoginMode } from './userAuth.js'
 import { log } from '../logging.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
@@ -127,5 +127,4 @@ export function getLoginFields(player: number) {
 	});
 
 	document.getElementById('toggle-mode' + player)?.addEventListener('click', (e) => changeLoginMode(player));
-	document.getElementById('guestBtn' + player)?.addEventListener('click', (e) => addGuest(e, player));
 }

@@ -116,26 +116,25 @@ export function loginSuccessfull(player: number, userId: number, name: string) {
 		Game.player1Id = userId;
 		Game.player1Name = name;
 		Game.player1Login = true;
-		Game.state = S.State.Menu;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two) with id: " + userId);
 		Game.player2Id = userId;
 		Game.player2Name = name;
 		Game.player2Login = true;
-		Game.state = S.State.Init;
 	}
+	Game.state = S.State.Menu;
 	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }
 
-export function addGuest(e: Event, player: number) {
-	e.preventDefault();
+// export function addGuest(e: Event, player: number) {
+// 	e.preventDefault();
 
-	if (player == 1) {
-		Game.player1Login = true;
-	} else if (player == 2) {
-		Game.player2Login = true;
-	}
-	loginSuccessfull(player, 0, 'Guest ' + player);
-	updatePlayerData(0);
-}
+// 	if (player == 1) {
+// 		Game.player1Login = true;
+// 	} else if (player == 2) {
+// 		Game.player2Login = true;
+// 	}
+// 	loginSuccessfull(player, 0, 'Guest ' + player);
+// 	updatePlayerData(0);
+// }

@@ -65,16 +65,14 @@ function mainLoop() {
 					getLoginFields(1);
 				break ;
 			}
-			case S.State.Menu: {
-				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
-					getMenu();
-				break ;
-			}
 			case S.State.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
-				if (Game.player2Id != -1)
-					Game.state = S.State.Init;
+				break ;
+			}
+			case S.State.Menu: {
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
+					getMenu();
 				break ;
 			}
 			case S.State.Pending: {

@@ -9,6 +9,8 @@ import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
+import { log } from '../logging.js';
+import * as S from '../structs.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 
@@ -56,6 +58,30 @@ function getPlayBtn(): HTMLButtonElement {
 	});
 
 	return (playBtn);
+}
+
+function getLoginBtn(playerNr: number): HTMLButtonElement {
+	const loginBtn = document.createElement('button');
+	loginBtn.textContent = 'login';
+	styleElement(loginBtn, {
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px',
+		marginLeft: 'auto',
+		marginBottom: '10px',
+		fontFamily: 'inherit'
+	});
+	loginBtn.addEventListener('click', () => {
+		log('Login button clicked for player ' + playerNr);
+		if (playerNr == 2)
+			Game.state = S.State.LoginP2;
+		else 
+			Game.state = S.State.LoginP1;
+	});
+	return (loginBtn);
 }
 
 function getLogoutBtn(playerNr: number): HTMLButtonElement {
@@ -149,8 +175,8 @@ export function getRightSideMenu(playerNr: number) {
 	});
 	avatarDiv.appendChild(avatarImg);
 
-	const playernameAndLogout = document.createElement('div');
-	styleElement(playernameAndLogout, {
+	const playernameAndButtons = document.createElement('div');
+	styleElement(playernameAndButtons, {
 		flex: '1',
 		display: 'flex',
 		gap: '5px',
@@ -172,10 +198,10 @@ export function getRightSideMenu(playerNr: number) {
 		padding: '15px',
 		marginLeft: 'auto'
 	});
-	buttons.append(getLogoutBtn(playerNr), getAvatarBtn(playerNr));
+	buttons.append(getLoginBtn(playerNr), getLogoutBtn(playerNr), getAvatarBtn(playerNr));
 
-	playernameAndLogout.append(playername, buttons);
-	player.append(avatarDiv, playernameAndLogout);
+	playernameAndButtons.append(playername, buttons);
+	player.append(avatarDiv, playernameAndButtons);
 
 	const statsFriendsDiv = document.createElement('div');
 	styleElement(statsFriendsDiv, {
