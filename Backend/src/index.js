@@ -10,7 +10,6 @@ import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { getUserByID, updateOnlineStatus } from './Database/user.js';
-import { handlePending } from './Game/gameMatch.js';
 import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
@@ -119,11 +118,8 @@ fastify.ready().then(() => {
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
 					return handleFriends(msg, socket);
-				case 'pending':
-					handlePending(msg, socket)
-					break ;
 				case 'matchmaking':
-					handleMatchmaking(msg, socket);
+					handleMatchmaking(msg, socket, userId1, fastify.io);
 					break ;
 				case 'game':
 					handleGame(msg, socket, userId1, userId2);

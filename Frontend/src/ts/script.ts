@@ -12,6 +12,7 @@ import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+import { searchMatch } from './Matchmaking/onlineMatch.js'
 
 declare const io: any;
 type Socket = any;
@@ -28,6 +29,7 @@ export const Game: S.gameInfo = {
 		secure: true,
 	}),
 	playMode: false,
+	searchMatch: false,
 	matchID: -1,
 	player1Id: -1,
 	player1Name: 'unknown',
@@ -89,7 +91,7 @@ function mainLoop() {
 			}
 			case S.State.Pending: {
 				// waiting for opponement
-				log("No online mode yet...pending...");
+				log("...pending...");
 				break ;
 			}
 			case S.State.Init:

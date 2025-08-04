@@ -34,7 +34,7 @@ FROM backend TO frontend
 • friends => retFriends
 • online => retOnlinePlayers / retOnlinePlayersWaiting
 • friends => retFriends
-• pending => getWaitlist / createGame / startGame
+• matchMaking => getWaitlist / createGame / startGame
 • game => ballUpdate / padelUpdate / scoreUpdate
 • error => checkError / errorPage?
 */
@@ -54,8 +54,6 @@ export function receiveFromWS(msg: any) {
 			break ;
 		case 'friends':
 			actionFriends(data);
-			break ;
-		case 'pending':
 			break ;
 		case 'matchmaking':
 			actionMatchmaking(msg);

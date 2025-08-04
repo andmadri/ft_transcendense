@@ -37,6 +37,7 @@ export type gameInfo = {
 	logDiv: HTMLDivElement;
 	socket: Socket;
 	playMode: boolean;
+	searchMatch: boolean;
 
 	matchID: number;
 

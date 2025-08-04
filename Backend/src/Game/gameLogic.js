@@ -1,4 +1,4 @@
-import { matches, Stage } from './gameMatch.js';
+import { Stage } from './gameMatch.js';
 
 export function updateBall(match, msg, socket) {
 	if (match.stage != Stage.Playing)

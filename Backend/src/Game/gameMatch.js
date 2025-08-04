@@ -1,9 +1,8 @@
 import { saveMatchDB } from '../Database/match.js'
-import { getUserByID } from '../Database/user.js';
 
 let				matchnr = 0;
 export const 	matches = new Map();
-export const	waitlist = [];
+export const	waitlist = new Map();
 
 export const Stage = {
 	Start: 0,
@@ -14,7 +13,7 @@ export const Stage = {
 }
 
 // creates a new match, init and returns id nr
-export function newMatch(socket1, id, name, socket2, id2, name2) {
+export function newMatch(id, name, id2, name2) {
 	matchnr++;
 	matches.set(matchnr, {
 		saveInDB: false,
@@ -102,24 +101,4 @@ export function saveMatch(match, msg, socket) {
 		matchID: match.matchID,
 		success: true
 	}));
-}
-
-export function findOpenMatch() {
-if (waitlist.size() == 0)
-		return (null);
-	const firstWaitingID = waitlist.shift();
-	return (firstWaitingID);	
-}
-
-export function handlePending(msg, socket) {
-	// const matchID = findOpenMatch();
-	const matchID = "";
-	if (!matchID) { // no one is waiting, create match + room
-		matchID = createMatch();
-		socket.join(matchID);
-	} else {
-		socket.join(matchID);
-		matches.get(matchID).stage = 'Game';
-		// START GAME MSG...
-	}
 }

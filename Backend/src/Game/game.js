@@ -1,7 +1,6 @@
 import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
-import { findOpenMatch } from "./gameMatch.js";
 
 export function handleGame(msg, socket, userId1, userId2) {
 	if (!msg.subaction) {
@@ -11,31 +10,6 @@ export function handleGame(msg, socket, userId1, userId2) {
 
 	if (msg.subaction == 'init' && msg.opponentMode != 3)
 		return createMatch(msg, socket, userId1, userId2);
-	else if (msg.subaction == 'init') {
-		// create a match for online
-		// how to stay searching? mainloop
-		const msg = {
-			action: 'game',
-			subaction: 'init',
-			stage: '',
-			
-		}
-	
-		const [roomID, match] = findOpenMatch();
-		if (match) {
-			match.roomID = roomID;
-			match.player2.id = userId1;
-			match.stage = Stage.playing;
-			msg.stage = 'play';
-			// send back opponent found to both... play
-		} else {
-			const MatchID = createMatch(msg, socket, userId1, 0); 
-			// send back pending...
-			msg.stage = 'pending';
-			waitlist.set(MatchID, { match: match });
-		}
-		return ;
-	}
 
 	if (!msg.matchID) {
 		console.log("No matchID found in msg from frontend");

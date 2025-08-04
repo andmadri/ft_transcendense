@@ -4,6 +4,8 @@ import { log } from '../logging.js'
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 
+
+
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
@@ -19,6 +21,11 @@ export function startGame() {
 		}
 		case S.OT.Online: {
 			Game.state = S.State.Pending;
+			const msg = {
+				action: 'matchmaking',
+				subaction: 'createOnlineMatch',
+			}
+			Game.socket.send(JSON.stringify(msg));
 			break ;
 		}
 		default: {

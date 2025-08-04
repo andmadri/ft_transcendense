@@ -1,4 +1,4 @@
-
+import { handleOnlineMatch } from "./onlinematch.js";
 
 export function addUserToRoom(socket, roomname) {
 	console.log(`Added User to ${roomname}`);
@@ -38,7 +38,7 @@ function receiveResponseChallenge(socket, msg) {
 	}
 }
 
-export function handleMatchmaking(msg, socket) {
+export function handleMatchmaking(msg, socket, userID, io) {
 	if (!msg.subaction)
 		return ;
 
@@ -48,6 +48,9 @@ export function handleMatchmaking(msg, socket) {
 			break ;
 		case 'challengeFriendAnswer':
 			receiveResponseChallenge(socket, msg);
+			break ;
+		case 'createOnlineMatch':
+			handleOnlineMatch(socket, userID, io);
 			break ;
 		default:
 			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);
