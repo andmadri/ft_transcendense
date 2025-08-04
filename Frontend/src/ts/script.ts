@@ -43,7 +43,7 @@ startSocketListeners();
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-window.addEventListener('resize', initAfterResize);
+// window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
 
@@ -74,7 +74,6 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Init:
-				// log("init game");
 				if (!document.getElementById('game'))
 				{
 					// log("On Init:" + JSON.stringify(Game));

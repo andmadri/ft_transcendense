@@ -55,8 +55,8 @@ export function saveGame() {
 	if (Game.matchID == -1)
 		return ;
 
-	if (!document.getElementById('gameOver'))
-		handleGameOver();
+	// if (!document.getElementById('gameOver'))
+	// 	handleGameOver();
 
 	const saveGameMsg = {
 		action: 'game',

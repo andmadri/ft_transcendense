@@ -74,17 +74,17 @@ export function initPositions() {
 	const playerOne = document.getElementById('rPlayer');
 	const playerTwo = document.getElementById('lPlayer');
 	const field = document.getElementById('field');
-	const game = document.getElementById('game');
+	// const game = document.getElementById('game');
 
-	if (ball && playerOne && playerTwo && field && game)
+	if (ball && playerOne && playerTwo && field) //&& game)
 	{
 		// Field
 		S.Objects['field'].width = window.innerWidth * 0.7;
 		S.Objects['field'].height = S.Objects['field'].width * (7 / 10);
 		field.style.height = `${S.Objects['field'].height}px`;
 		field.style.width = `${S.Objects['field'].width}px`;
-		game.style.height = `${S.Objects['field'].height}px`;
-		game.style.width = `${S.Objects['field'].width}px`;
+		// game.style.height = `${S.Objects['field'].height}px`;
+		// game.style.width = `${S.Objects['field'].width}px`;
 
 		// Ball
 		const ballSize = S.Objects['field'].width * 0.05;
@@ -139,8 +139,8 @@ export function initGameServer() {
 export function initGame() {
 	initPositions();
 	initGameServer();
-	updateNamesMenu();
-	resetScoreMenu();
+	// updateNamesMenu();
+	// resetScoreMenu();
 }
 
 // export function saveGame() {
