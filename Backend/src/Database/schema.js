@@ -48,7 +48,7 @@ export function createTables(db)
 		player_1_id INTEGER NOT NULL,
 		player_2_id INTEGER NOT NULL,
 		winner_id INTEGER,
-		match_type TEXT NOT NULL CHECK (match_type IN ('1v1', 'vs_ai', 'tournament')),
+		match_type TEXT NOT NULL CHECK (match_type IN ('1v1', 'vs_ai', 'vs_guest', 'tournament')),
 		start_time TEXT DEFAULT CURRENT_TIMESTAMP,
 		end_time TEXT,
 		player_1_score INTEGER DEFAULT 0,
@@ -116,6 +116,18 @@ export function createTables(db)
 			ELSE 0 END), 0) AS game_secs
 		FROM sessions GROUP BY user_id;
 
+	CREATE VIEW IF NOT EXISTS UserMatchStats AS
+		SELECT	u.id AS user_id,
+				u.name AS name,
+				COUNT(m.id) AS total_matched,
+				SUM(CASE WHEN m.winner_id = u.id THEN 1 ELSE 0 END) AS wins,
+				SUM(CASE WHEN m.winner_id != u.id AND m.winner_id IS NOT NULL THEN 1 ELSE 0 END) AS losses,
+				ROUND(
+					CASE WHEN COUNT(m.id) > 0 THEN 100.0 * SUM(CASE WHEN m.winner_id = u.id THEN 1 ELSE 0 END) / COUNT(m.id)
+					ELSE 0 END, 1) AS win_rate
+		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
+	
+	
 	`, (err) => {
 		if (err) return console.error("Error creating tables:", err);
 		console.log("Created database tables and views.");

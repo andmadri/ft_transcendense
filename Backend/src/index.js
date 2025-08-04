@@ -11,11 +11,7 @@ import { handleGame } from './Game/game.js'
 import googleAuthRoutes from './routes/googleAuth.js';
 import userAuthRoutes from './routes/userAuth.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { addUserToDB, updateUserInDB, getOnlineUsers } from './Database/users.js'; // DELETE THIS LATER
-import { handleMatchStart, handleMatchEvent } from './Services/matchService.js'; // DELETE THIS LATER
-import { onUserLogin } from './Services/sessionsService.js'; // DELETE THIS LATER
-import { getAllUserStateDurations, getUserStateDurations } from './Database/online.js';
-import { addUserSessionToDB } from './Database/sessions.js';
+import { testDB }   from './testDB.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -23,123 +19,8 @@ await fastify.register(websocket);
 //change how you create database
 export const db = await createDatabase();
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// DELETE THIS LATER
-await addUserToDB(db, {
-	name: 'Guest',
-	email: 'guest@guest.guest',
-	password: 'secretguest',
-	avatar_url: null
-});
-
-// DELETE THIS LATER
-await onUserLogin(db, 1);
-
-// DELETE THIS LATER
-await addUserToDB(db, {
-	name: 'AI',
-	email: 'ai@ai.ai',
-	password: 'secretai',
-	avatar_url: null
-});
-
-// DELETE THIS LATER
-await onUserLogin(db, 2);
-
-// wait 5 seconds
-await sleep(5000);
-
-// DELETE THIS LATER
-await handleMatchStart(db, {
-	player_1_id: 1,
-	player_2_id: 2,
-	match_type: 'vs_ai',
-});
-
-// DELETE THIS LATER
-await handleMatchEvent(db, {
-	match_id: 1,
-	user_id: 2,
-	event_type: 'serve',
-});
-
-// wait 1 second
-await sleep(1000);
-
-// DELETE THIS LATER
-await handleMatchEvent(db, {
-	match_id: 1,
-	user_id: 2,
-	event_type: 'hit',
-});
-
-// wait 1 second
-await sleep(1000);
-
-// DELETE THIS LATER
-await handleMatchEvent(db, {
-	match_id: 1,
-	user_id: 1,
-	event_type: 'hit',
-});
-
-// wait 1 second
-await sleep(1000);
-
-// DELETE THIS LATER
-await handleMatchEvent(db, {
-	match_id: 1,
-	user_id: 2,
-	event_type: 'hit',
-});
-
-// wait 1 second
-await sleep(1000);
-
-// DELETE THIS LATER
-await handleMatchEvent(db, {
-	match_id: 1,
-	user_id: 1,
-	event_type: 'goal',
-});
-
-// DELETE THIS LATER
-console.log('--- Online users ---');
-console.table(await getOnlineUsers(db));
-
-await addUserSessionToDB(db, {
-	user_id: 1,
-	state: 'in_menu'
-});
-
-console.log('--- All user durations ---');
-console.table(await getAllUserStateDurations(db));
-
-console.log(`--- Durations for user 1 ---`);
-console.log(await getUserStateDurations(db, 1));
-
-// wait 5 seconds
-await sleep(5000);
-
-// DELETE THIS LATER
-await addUserSessionToDB(db, {
-	user_id: 2,
-	state: 'logout'
-});
-
-console.log(`--- Durations for user 2 ---`);
-console.log(await getUserStateDurations(db, 2));
-
-await updateUserInDB(db, {
-	user_id: 1,
-	name: 'Guest new name!',
-});
-
-console.log('--- Online users ---');
-console.table(await getOnlineUsers(db));
+// RUN THE TEST DATABASE FUNCTION (testDB.js)
+await testDB(db);
 
 // Register the cookie plugin
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });

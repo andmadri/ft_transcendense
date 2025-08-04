@@ -1,7 +1,7 @@
 import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
-import { db } from './database.js' // DELETE THIS LATER
+import { db } from '../index.js' // DELETE THIS LATER
 
 function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9_-]+$/;

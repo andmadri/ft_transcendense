@@ -63,3 +63,16 @@ export function getUserStateDurations(db, user_id) {
 		});
 	});
 }
+
+export function getUserMatchStats(db, user_id) {
+	const sql = `SELECT * FROM UserMatchStats WHERE user_id = ?`;
+	return new Promise((resolve, reject) => {
+		db.get(sql, [user_id], (err, row) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
