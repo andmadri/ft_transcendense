@@ -65,6 +65,7 @@ export function randomizeBallAngle() {
 	ballVelocity.vy = Math.random() < 0.5 ? vy : vy * -1;
 }
 
+
 function normalizeAngle(angle: number) {
     const twoPi = 2 * Math.PI;
     return (angle % twoPi + twoPi) % twoPi;
