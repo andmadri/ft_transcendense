@@ -1,5 +1,5 @@
 import { actionLogin } from './Auth/userAuth.js';
-import { actionGame } from './Game/gameLogic.js'
+import { actionGame } from './Game/gameStateSync.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'

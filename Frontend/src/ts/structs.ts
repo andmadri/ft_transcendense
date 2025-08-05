@@ -69,45 +69,6 @@ type Object = {
 	color: string;
 }
 
-// type GameState = {
-// 	ball : { x : number, y : number, vx : number, vy : number },
-// 	lPlayer : { x : number, y : number, vy : number },
-// 	rPlayer : { x : number, y : number, vy : number },
-// 	score : { left : number, right : number }
-// }
-
-// export const unitGamePos : GameState = {
-// 	ball : { x : 0.5, y : 0.5, vx : 0, vy : 0 },
-// 	lPlayer : { x : 0.02, y : 0.5, vy : 0 },
-// 	rPlayer : { x: 0.98, y : 0.5, vy : 0 },
-// 	score : { left : 0, right : 0 }
-// }
-
-// export const gamePos : GameState = {
-// 	ball : { x : 0.5, y : 0.5, vx : 0, vy : 0 },
-// 	lPlayer : { x : 0, y : 0.5, vy : 0 },
-// 	rPlayer : { x: 0, y : 0.5, vy : 0 },
-// 	score : { left : 0, right : 0 }
-// }
-
-// type gameSizes = {
-// 	field : { width : number, height : number }
-// 	ball : { radius : number, speed : number}
-// 	paddle : { height : number, width : number, speed: number}
-// }
-
-// export const unitGameSizes : gameSizes = {
-// 	field : { width : 1, height : 0.7 },
-// 	ball : { radius : 0.025, speed: 0.015 },
-// 	paddle : { height : 0.3, width : 0.02, speed: 0.03 }
-// }
-
-// export const gameScreenPixels : gameSizes = {
-// 	field : { width : 1, height : 0.7 },
-// 	ball : { radius : 0.05, speed: 0.015 },
-// 	paddle : { height : 0.3, width : 0.02, speed: 0.03 }
-// }
-
 export enum E {
   ball = 'ball',
   lPlayer = 'lPlayer',
@@ -120,6 +81,7 @@ export type Pos = { x : number, y : number };
 export type Velocity = { vx : number, vy : number };
 export type Movement = { speed : number, angle : number };
 export type Size = { width : number, height : number};
+export type Score = { left : number, right : number};
 
 
 export const pos : Record<E, Pos> = {
@@ -128,6 +90,35 @@ export const pos : Record<E, Pos> = {
 	[E.lPlayer] : { x : 0.02, y : 0.5},
 	[E.rPlayer] : { x : 0.98, y : 0.5}
 }
+
+export const movement : Record<E, Movement> = {
+	[E.field] : { speed : 0, angle : 0},
+	[E.ball] : { speed : 0.02, angle : 0.33},
+	[E.lPlayer] : { speed : 0.03, angle : 0},
+	[E.rPlayer] : { speed : 0.03, angle : 0}
+}
+
+export const size : Record<E, Size> = {
+	[E.field] : { width : 1, height : 0.7},
+	[E.ball] : { width : 0.05, height : 0.05 },
+	[E.lPlayer] : { width : 0.02, height : 0.3 },
+	[E.rPlayer] : { width : 0.02, height : 0.3 }
+}
+
+//this will move to the backend
+export const unitMovement : Record<E, Movement> = {
+	[E.field] : { speed : 0, angle : 0},
+	[E.ball] : { speed : 0.02, angle : 0.33},
+	[E.lPlayer] : { speed : 0.03, angle : 0},
+	[E.rPlayer] : { speed : 0.03, angle : 0},
+}
+
+export const unitSize : Record<E, Size> = {
+	[E.field] : { width : 1, height : 0.7},
+	[E.ball] : { width : 0.05, height : 0.05 },
+	[E.lPlayer] : { width : 0.02, height : 0.3 },
+	[E.rPlayer] : { width : 0.02, height : 0.3 }
+};
 
 export const unitPos : Record<E, Pos> = {
 	[E.field] : { x : 0, y : 0},
@@ -143,35 +134,6 @@ export const velocity : Record<E, Velocity> = {
 	[E.rPlayer] : { vx : 0, vy : 0}
 }
 
-export const movement : Record<E, Movement> = {
-	[E.field] : { speed : 0, angle : 0},
-	[E.ball] : { speed : 0.02, angle : 0.33},
-	[E.lPlayer] : { speed : 0.03, angle : 0},
-	[E.rPlayer] : { speed : 0.03, angle : 0}
-}
-
-export const unitMovement : Record<E, Movement> = {
-	[E.field] : { speed : 0, angle : 0},
-	[E.ball] : { speed : 0.02, angle : 0.33},
-	[E.lPlayer] : { speed : 0.03, angle : 0},
-	[E.rPlayer] : { speed : 0.03, angle : 0},
-}
-
-export const size : Record<E, Size> = {
-	[E.field] : { width : 1, height : 0.7},
-	[E.ball] : { width : 0.05, height : 0.05 },
-	[E.lPlayer] : { width : 0.02, height : 0.3 },
-	[E.rPlayer] : { width : 0.02, height : 0.3 }
-}
-
-export const unitSize : Record<E, Size> = {
-	[E.field] : { width : 1, height : 0.7},
-	[E.ball] : { width : 0.05, height : 0.05 },
-	[E.lPlayer] : { width : 0.02, height : 0.3 },
-	[E.rPlayer] : { width : 0.02, height : 0.3 }
-};
-
-
 // AI
 type AIPrediction = {
 	x: number;
@@ -186,3 +148,33 @@ export type AIInfo = {
 	lastView: number; // timestamp of last view of the game
 	targetDirection: 'ArrowUp' | 'ArrowDown' | 'noAction';
 };
+
+
+// type gameState = {
+// 	field : {
+// 		size : Size
+// 	}
+// 	lPlayer : {
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// 	rPlayer : {
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// 	paddle : {
+// 		size : Size
+// 	}
+// 	ball : {
+// 		size : Size,
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// score : {
+//		left : number,
+//		right : number
+//	}
+// }

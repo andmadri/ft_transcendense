@@ -1,6 +1,10 @@
 import * as S from './structs.js'
 import { Game} from './script.js'
 
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
+const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
+
 export function releaseButton(e: KeyboardEvent) {
 	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		return ;
@@ -15,6 +19,7 @@ export function pressButton(e: KeyboardEvent) {
 		return ;
 	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
+		console.log(`Key pressed ${e.key}`);
 		S.Keys[e.key].pressed = true;
 	}
 }
@@ -27,8 +32,8 @@ export function initAfterResize() {
 	const game = document.getElementById('game');
 
 	if (ball && rPlayer && lPlayer && field && game) {
-		const oldWidth = S.Objects['field'].width;
-		const oldHeight = S.Objects['field'].height;
+		const oldWidth = fieldSize.width;
+		const oldHeight = fieldSize.height;
 
 		const newWidth = window.innerWidth * 0.7;
 		const newHeight = newWidth * (7 / 10);
@@ -40,38 +45,38 @@ export function initAfterResize() {
 
 		const scaleFactor = Math.min(newWidth / oldWidth, newHeight / oldHeight);
 
-		S.Objects['ball'].x *= scaleFactor;
-		S.Objects['ball'].y *= scaleFactor;
-		S.Objects['ball'].width *= scaleFactor;
-		S.Objects['ball'].height *= scaleFactor;
-		S.Objects['ball'].speed *= scaleFactor;
+		ballPos.x *= scaleFactor;
+		ballPos.y *= scaleFactor;
+		ballSize.width *= scaleFactor;
+		ballSize.height *= scaleFactor;
+		ballMove.speed *= scaleFactor;
 
-		ball.style.left = `${S.Objects['ball'].x}px`;
-		ball.style.top = `${S.Objects['ball'].y}px`;
-		ball.style.width = `${S.Objects['ball'].width}px`;
-		ball.style.height = `${S.Objects['ball'].height}px`;
+		ball.style.left = `${ballPos.x}px`;
+		ball.style.top = `${ballPos.y}px`;
+		ball.style.width = `${ballSize.width}px`;
+		ball.style.height = `${ballSize.height}px`;
 		
-		S.Objects['rPlayer'].x *= scaleFactor;
-		S.Objects['rPlayer'].y *= scaleFactor;
-		S.Objects['rPlayer'].width *= scaleFactor;
-		S.Objects['rPlayer'].height *= scaleFactor;
-		S.Objects['rPlayer'].speed *= scaleFactor;
+		rPlayerPos.x *= scaleFactor;
+		rPlayerPos.y *= scaleFactor;
+		rPlayerSize.width *= scaleFactor;
+		rPlayerSize.height *= scaleFactor;
+		rPlayerMove.speed *= scaleFactor;
 
-		rPlayer.style.left = `${S.Objects['rPlayer'].x}px`;
-		rPlayer.style.top = `${S.Objects['rPlayer'].y}px`;
-		rPlayer.style.width = `${S.Objects['rPlayer'].width}px`;
-		rPlayer.style.height = `${S.Objects['rPlayer'].height}px`;
+		rPlayer.style.left = `${rPlayerPos.x}px`;
+		rPlayer.style.top = `${rPlayerPos.y}px`;
+		rPlayer.style.width = `${rPlayerSize.width}px`;
+		rPlayer.style.height = `${rPlayerSize.height}px`;
 
-		S.Objects['lPlayer'].x *= scaleFactor;
-		S.Objects['lPlayer'].y *= scaleFactor;
-		S.Objects['lPlayer'].width *= scaleFactor;
-		S.Objects['lPlayer'].height *= scaleFactor;
-		S.Objects['lPlayer'].speed *= scaleFactor;
+		lPlayerPos.x *= scaleFactor;
+		lPlayerPos.y *= scaleFactor;
+		lPlayerSize.width *= scaleFactor;
+		lPlayerSize.height *= scaleFactor;
+		lPlayerMove.speed *= scaleFactor;
 
-		lPlayer.style.left = `${S.Objects['lPlayer'].x}px`;
-		lPlayer.style.top = `${S.Objects['lPlayer'].y}px`;
-		lPlayer.style.width = `${S.Objects['lPlayer'].width}px`;
-		lPlayer.style.height = `${S.Objects['lPlayer'].height}px`;
+		lPlayer.style.left = `${lPlayerPos.x}px`;
+		lPlayer.style.top = `${lPlayerPos.y}px`;
+		lPlayer.style.width = `${lPlayerSize.width}px`;
+		lPlayer.style.height = `${lPlayerSize.height}px`;
 
 		game.style.width = `${newWidth}px`;
 		game.style.height = `${newHeight}px`;
@@ -79,8 +84,8 @@ export function initAfterResize() {
 		field.style.width = `${newWidth}px`;
 		field.style.height = `${newHeight}px`;
 
-		S.Objects['field'].width = newWidth;
-		S.Objects['field'].height = newHeight;
+		fieldSize.width = newWidth;
+		fieldSize.height = newHeight;
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
 	}

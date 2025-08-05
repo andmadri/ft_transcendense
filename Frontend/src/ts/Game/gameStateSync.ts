@@ -58,7 +58,7 @@ export function sendBallUpdate() {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: ballPos.y,
-		ballX: ballPos.x};
+		ballX: ballPos.x };
 	Game.socket.send(JSON.stringify(msg));
 }
 
