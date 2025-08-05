@@ -25,19 +25,31 @@ RUN mkdir -p build \
 # STAGE TWO: NGINX (only contains the compiled version of node, not the env)
 FROM nginx:alpine
 
+# Install curl + download ngrok manually
+RUN apk add --no-cache curl tar \
+  && curl -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o ngrok.tgz \
+  && tar -xvzf ngrok.tgz -C /usr/local/bin \
+  && chmod +x /usr/local/bin/ngrok \
+  && rm ngrok.tgz
+
+
 # Copies from first stage the whole folder to the nginx docker
 COPY --from=frontend /app/build /usr/share/nginx/html/
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
 COPY tools /etc/nginx/ssl
- 
+
 RUN chmod +x /etc/nginx/nginx.conf && \
 	chmod 600 /etc/nginx/ssl
 
 EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+# CMD ["nginx", "-g", "daemon off;"]
 
 
 # FILES now in:

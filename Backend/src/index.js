@@ -15,6 +15,44 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 
+
+import fetch from 'node-fetch';
+import https from 'https';
+
+export let publicUrl = '';
+
+export async function getNgrokUrl() {
+	try {
+		const agent = new https.Agent({ rejectUnauthorized: false }); // Allow self-signed cert
+
+		const res = await fetch('https://server/ngrok/api/tunnels', {
+			agent,
+			headers: {
+				Accept: 'application/json'
+			}
+		});
+
+		if (!res.ok) {
+			throw new Error(`HTTP error ${res.status}`);
+		} else {
+			console.log('✅ Successfully fetched Ngrok URL');
+		}
+		const data = await res.json();
+		publicUrl = data.tunnels.find(t => t.proto === 'https')?.public_url;
+
+		if (publicUrl) {
+			console.log('🟢 Ngrok URL:', publicUrl);
+		} else {
+			console.warn('⚠️ No HTTPS tunnel found in Ngrok response.');
+		}
+	} catch (err) {
+		console.error('❌ Could not fetch Ngrok URL:', err.message);
+	}
+}
+
+
+
+
 // FASTIFY => API SERVER
 const fastify = Fastify({ logger: true });
 

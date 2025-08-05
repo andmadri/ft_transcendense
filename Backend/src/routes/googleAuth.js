@@ -2,6 +2,7 @@ import axios from 'axios';
 import { signFastifyJWT } from "../utils/jwt.js";
 import * as userDB from '../Database/user.js';
 import bcrypt from 'bcrypt';
+import { publicUrl } from '../index.js';
 
 
 /**
@@ -83,13 +84,14 @@ export default async function googleAuthRoutes(fastify, opts) {
 		if ( player == 'undefined' )
 			player = '1';
 
+		console.log('Public URL:', publicUrl);
 
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
 		const loginId = encodeURIComponent(player);
 		console.log('2backend: Google OAuth for player:', loginId);
 
-		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${loginId}`;
+		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${publicUrl + '/api/auth/google/callback'}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${loginId}`;
 		reply.redirect(redirectURL);
 	});
 
@@ -103,7 +105,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 			code,
 			client_id: process.env.GOOGLE_CLIENT_ID,
 			client_secret: process.env.GOOGLE_CLIENT_SECRET,
-			redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+			redirect_uri: `${publicUrl + '/api/auth/google/callback'}`,
 			grant_type: 'authorization_code'
 			});
 
@@ -128,7 +130,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				signed: true,		// signed cookies
 				path: '/',
 				maxAge: 60 * 60		// 1 hour
-			}).redirect(`https://${process.env.HOST_IP}:8443`);
+			}).redirect(`${publicUrl}:8443`);
 
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);
