@@ -54,7 +54,5 @@ export function handleMatchmaking(msg, socket, userID, io) {
 			break ;
 		default:
 			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);
-		
 	}
-
 }

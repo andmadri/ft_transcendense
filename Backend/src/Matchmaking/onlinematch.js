@@ -3,23 +3,24 @@ import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";
 
+// add username for creating match, add user to waitinglist and add socket to room
 async function createMatchOnline(socket, userID) {
 	try {
 		const user = await getUserByID(userID);
 		if (!user || !user.name) {
-			console.log("No username found in createMatchOnline");
+			console.log(`No username found in createMatchOnline`);
 			return ;
 		}
-		const id = newMatch(userID, user.name, '', '');
+		const id = newMatch(userID, user.name, '1', 'player2');
 		matches.get(id).saveInDB = true;
 		waitlist.set(id, { match: matches.get(id) });
 		socket.join(id);
 	} catch(err) {
 		console.error(err);
-		return ;
 	}
 }
 
+// get (and delete) the first item in/from the waitinglist and returns the matchID and match
 export function findOpenMatch() {
 	if (waitlist.size === 0)
 		return ([null, null]);
@@ -38,12 +39,14 @@ export function findOpenMatch() {
 export async function handleOnlineMatch(socket, userID, io) {
 	const [roomID, match] = findOpenMatch();
 
-	// if match is found, both are add to the room and get the msg to init the game + start
-	if (match) {
+	if (!match) {
+		createMatchOnline(socket, userID);
+	} else {
 		socket.join(roomID);
 		match.roomID = roomID;
 		match.player2.id = userID;
-		match.stage = Stage.Playing;
+		match.stage = Stage.Playing; // we are not doing something with this yet...
+
 		const msg = {
 			action: 'game',
 			subaction: 'init',
@@ -51,16 +54,6 @@ export async function handleOnlineMatch(socket, userID, io) {
 			player1ID: match.player1.id,
 			player2ID: match.player2.id
 		}
-		const sockets = await io.in(roomID).allSockets();
-		console.log(`Aantal clients in room: ${sockets.size}`);
-		console.log(`roomid: ${roomID}`);
-
-		console.log(`send onlineMatch back to both sockets...${roomID}`);
 		io.to(roomID).emit('message', JSON.stringify(msg));
-		// send back opponent found to both... play
-
-	} else {
-		const MatchID = createMatchOnline(socket, userID); 
-		console.log(`New match made with ${MatchID}`);
 	}
 }

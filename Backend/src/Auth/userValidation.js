@@ -41,7 +41,6 @@ function checkPassword(password) {
 
 export async function addUser(msg) {
 	let errorMsg;
-
 	errorMsg = checkName(msg.name);
 	if (errorMsg)
 		return (errorMsg);
@@ -54,16 +53,16 @@ export async function addUser(msg) {
 	try {
 		const exists = await userAlreadyExist(msg.email);
 		if (exists)
-			return (exists);
+			return (`User ${msg.email} already exist, please login`);
 		if (!msg.avatar_url)
 			msg.avatar_url = null;
 		await addUserToDB(msg);
 		console.log('User: ', msg.name, ' is created');
-		return (1);
+		return ('');
 	}
 	catch(err) {
 		console.error('err' + err.msg);
-		return (0);
+		return ('Error database');
 	}
 }
 

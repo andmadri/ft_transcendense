@@ -90,7 +90,7 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Pending: {
-				// waiting for opponement
+				// waiting for opponement / page
 				log("...pending...");
 				break ;
 			}
@@ -103,9 +103,7 @@ function mainLoop() {
 				}
 				break ;
 			case S.State.Game: {
-				// if (Game.matchID >= 0)
-				// if (Game.playMode == true)
-					game();
+				game();
 				break ;
 			}
 			case S.State.End:

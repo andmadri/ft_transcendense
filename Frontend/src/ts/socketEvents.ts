@@ -25,10 +25,6 @@ export function startSocketListeners() {
 	socket.on('connect_error', (err: any) => {
 		log('Error: ' + err);
 	});
-
-	socket.on('error', (err: any) => {
-		log('Error: ' + err.reason);
-	});
 }
 
 /*
@@ -66,11 +62,10 @@ export function receiveFromWS(msg: any) {
 			actionGame(data);
 			break ;
 		case 'error':
-			if (data.reason)
-				log('error' + `${data.reason}`);
+			if (data.reason)	
+				log(`Error: ${data.reason}`);
 			else
-				log('data received from ws' + data);
-			break ;
+				log(`Error frontend main loop..`);
 		default:
 			log(`(receiveFromWS) Unknown action: ${action}`);
 	}

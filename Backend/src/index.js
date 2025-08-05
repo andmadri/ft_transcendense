@@ -102,14 +102,14 @@ fastify.ready().then(() => {
 			try {
 				msg = typeof messageStr === 'string' ? JSON.parse(messageStr) : messageStr;
 			} catch (err) {
-				return socket.emit('error', { action: 'error', reason: 'Invalid JSON' });
+				console.log('Invalid JSON in mainloop');
+				return ;
 			}
 			const action = msg.action;
 			if (!action) {
-				socket.emit('error', { action: 'error', reason: 'No action specified' });
+				console.log('No action specified in main loop');
 				return ;
 			}
-			console.log("userID is now:", userId1, "typeof:", typeof userId1);
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 			switch (action) {
 				case 'playerInfo':
@@ -126,7 +126,7 @@ fastify.ready().then(() => {
 					break ;
 				case 'error':
 					console.log('Error from frontend..');
-					return socket.emit('error', msg);
+					break ;
 				default:
 					return socket.emit('error', { reason: 'Unknown action' + action });
 			}

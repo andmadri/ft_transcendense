@@ -21,9 +21,10 @@ export default async function userAuthRoutes(fastify) {
 			password: password,
 			player: playerNr
 		};
+
 		const answer = await addUser(msg);
-		if (answer.error) {
-			reply.status(400).send({ success: false, message: answer.error });
+		if (answer) {
+			reply.status(400).send({ success: false, message: answer });
 			return;
 		}
 		reply.send({ success: true, ok: true, message: 'User created successfully' });
