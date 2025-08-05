@@ -5,6 +5,7 @@ import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { getOnlineList } from '../Menu/online.js';
 import { getFriendsList } from '../Menu/friends.js';
 import { startSocketListeners } from '../socketEvents.js'
+import { authenticationMode, changeAuthMode } from './authContent.js'
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
@@ -30,36 +31,36 @@ function updateLoginPlayer(data: any) {
 	}
 }
 
-export function changeLoginMode(player: number) {
-	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
+// export function changeLoginMode(player: number) {
+// 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
 
-	const modeLabel = document.getElementById('modelabel' + player);
-	const nameField = document.getElementById('nameField' + player);
-	const nameInput = document.getElementById('name' + player) as HTMLInputElement | null;
-	const submitButton = document.getElementById('submitBtn' + player);
-	const toggleButton = document.getElementById('toggle-mode' + player);
-	const authTitle = document.getElementById('authTitle' + player);
+// 	const modeLabel = document.getElementById('modelabel' + player);
+// 	const nameField = document.getElementById('nameField' + player);
+// 	const nameInput = document.getElementById('name' + player) as HTMLInputElement | null;
+// 	const submitButton = document.getElementById('submitBtn' + player);
+// 	const toggleButton = document.getElementById('toggle-mode' + player);
+// 	const authTitle = document.getElementById('authTitle' + player);
 
-	if (modeLabel)
-		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
+// 	if (modeLabel)
+// 		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
 
-	if (nameField && nameInput) {
-		if (modes[player] === 'login') {
-			nameField.style.display = 'none';
-			nameInput.required = false;
-		} else {
-			nameField.style.display = 'block';
-			nameInput.required = true;
-		}
-	}
+// 	if (nameField && nameInput) {
+// 		if (modes[player] === 'login') {
+// 			nameField.style.display = 'none';
+// 			nameInput.required = false;
+// 		} else {
+// 			nameField.style.display = 'block';
+// 			nameInput.required = true;
+// 		}
+// 	}
 
-	if (submitButton)
-		submitButton.textContent = modes[player] === 'login' ? 'Login' : 'Sign up';
-	if (toggleButton)
-		toggleButton.textContent = modes[player] === 'login' ? 'Switch to Sign Up' : 'Switch to Login';
-	if (authTitle)
-		authTitle.textContent = modes[player] === 'login' ? 'Login' : 'Sign up';
-}
+// 	if (submitButton)
+// 		submitButton.textContent = modes[player] === 'login' ? 'Login' : 'Sign up';
+// 	if (toggleButton)
+// 		toggleButton.textContent = modes[player] === 'login' ? 'Switch to Sign Up' : 'Switch to Login';
+// 	if (authTitle)
+// 		authTitle.textContent = modes[player] === 'login' ? 'Login' : 'Sign up';
+// }
 
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
@@ -70,7 +71,8 @@ export async function submitAuthForm(e: Event, player: number) {
 	const password = (form.querySelector<HTMLInputElement>(`#password${player}`)?.value ?? '').trim();
 
 	// Determine mode from label or your own state
-	const isSignup = document.getElementById(`modelabel${player}`)?.textContent?.toLowerCase().includes('sign up');
+	// const isSignup = document.getElementById(`modelabel${player}`)?.textContent?.toLowerCase().includes('sign up');
+	const isSignup = authenticationMode === 'Sign Up';
 	const endpoint = isSignup ? '/api/signup' : '/api/login';
 
 	if (!email || !password || (isSignup && !username)) {
@@ -98,7 +100,7 @@ export async function submitAuthForm(e: Event, player: number) {
 			if (endpoint == "/api/login")
 				loginSuccessfull(playerNr, data.userId, data.name);
 			else
-				changeLoginMode(playerNr);
+				changeAuthMode(playerNr);
 
 		} else {
 			log(`Authentication failed for player ${playerNr}: ${response.statusText}`);

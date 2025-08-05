@@ -50,6 +50,22 @@ function getQuitBtn() {
 	return (quiting);
 }
 
+// export function getGameField() {
+// 	const	body = document.getElementById('body');
+// 	if (!body)
+// 		return ;
+// 	body.style.height = "100vh";
+// 	body.style.backgroundColor = "linear-gradient(90deg, #ff6117, #ffc433, #ffc433)";
+// 	body.style.justifyContent = "center"
+
+// 	const gameContainer = document.createElement('div');
+// 	gameContainer.className = 'gameContainer';
+// 	gameContainer.innerHTML = `
+// 	<
+// 	`;
+
+// }
+
 export function getGameField() {
 	const	app = document.getElementById("app");
 	if (!app)

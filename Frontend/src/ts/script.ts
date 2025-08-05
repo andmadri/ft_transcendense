@@ -13,7 +13,7 @@ import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 
-getLoadingPage();
+// getLoadingPage();
 createLog();
 
 // Prepare Div for error and create a new socket
