@@ -1,19 +1,3 @@
-// /**
-//  * @brief Returns the list of currently online users (id + name).
-//  */
-// export function getOnlineUsers(db) {
-// 	const sql = `SELECT * FROM OnlineUsers ORDER BY name`;
-// 	return new Promise((resolve, reject) => {
-// 		db.all(sql, [], (err, rows) => {
-// 			if (err) {
-// 				reject(err);
-// 			} else {
-// 				resolve(rows)
-// 			}
-// 		});
-// 	});
-// }
-
 const _baseStatsQuery = `SELECT u.id AS user_id, u.name,
 							COALESCE(s.login_secs, 0) AS login_secs,
 							COALESCE(s.menu_secs, 0) AS menu_secs,

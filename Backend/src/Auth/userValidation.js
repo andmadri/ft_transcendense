@@ -1,7 +1,9 @@
 import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { signFastifyJWT } from "../utils/jwt.js";
+import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
+import { onUserLogin } from '../Services/sessionsService.js';
 
 function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9_-]+$/;
@@ -70,7 +72,6 @@ export async function addUser(msg) {
 	}
 }
 
-// EDIT THIS LATER: Need to change the DB functions - we have to send the DB.
 export async function validateLogin(msg, fastify) {
 	let user;
 
@@ -87,16 +88,13 @@ export async function validateLogin(msg, fastify) {
 	if (!isValidPassword)
 		return ({ error: 'Incorrect password' });
 
-	// DELETE/EDIT THIS LATER
 	try {
-		const online = await isOnline(db, msg.email, (online));
-		await updateOnlineStatus(msg.email, !online);
+		await onUserLogin(db, user.id);
 	} catch(err) {
 		console.error(err.msg);
 		return ({ error: 'Database error' });
 	}
 	const jwtToken = signFastifyJWT(user, fastify);
-	console.log('Generated JWT:', jwtToken);
 	return { token: jwtToken, user: user, player: msg.player };
 }
 

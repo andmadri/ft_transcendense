@@ -1,7 +1,5 @@
 import * as userDB from '../Database/users.js';
-// import { getOnlineUsers } from '../Database/online.js';
-// Delete this later!
-// import { db } from '../index.js';
+import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 	const msg = {
@@ -15,8 +13,8 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 
 async function getOnlinePlayers(msg, socket) {
 	try {
-		const onlineUsers = await userDB.getOnlineUsers();
-		// console.log("Recieved DB content: ", onlineUsers);
+		const onlineUsers = await userDB.getOnlineUsers(db);
+		console.log("Recieved DB content: ", onlineUsers);
 		if (!onlineUsers || onlineUsers.length === 0 || onlineUsers == "[]" || onlineUsers == "undefined") {
 			console.log("No online players found");
 			return sendContentToFrontend('online', 'retOnlinePlayers', socket, "no", "No online players found");
@@ -28,8 +26,6 @@ async function getOnlinePlayers(msg, socket) {
 		return sendContentToFrontend('error', '', socket, "no", "Error while requesting online players");
 	}
 }
-
-
 
 export async function handleOnlinePlayers(msg, socket) {
 	console.log("handleOnlinePlayers function...", msg.action);

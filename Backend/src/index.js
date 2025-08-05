@@ -13,7 +13,9 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { testDB }   from './testDB.js';
+// import { testDB }   from './testDB.js';
+import { addUserToDB } from './Database/users.js';
+import { onUserLogin } from './Services/sessionsService.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
@@ -21,8 +23,26 @@ await fastify.register(websocket);
 // change how you create database
 export const db = await createDatabase();
 
+
+// creating a guest and AI user for testing purposes -> create a function for that later
+const guest_id = await addUserToDB(db, {
+	name: 'Guest',
+	email: 'guest@guest.guest',
+	password: 'secretguest',
+	avatar_url: null
+});
+await onUserLogin(db, guest_id);
+
+const ai_id = await addUserToDB(db, {
+	name: 'AI',
+	email: 'ai@ai.ai',
+	password: 'secretai',
+	avatar_url: null
+});
+await onUserLogin(db, ai_id);
+
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
-await testDB(db);
+// await testDB(db);
 
 // Register the cookie plugin
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });

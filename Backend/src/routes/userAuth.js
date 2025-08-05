@@ -39,7 +39,6 @@ export default async function userAuthRoutes(fastify) {
 			player: playerNr
 		};
 		const answer = await validateLogin(msg, fastify);
-		console.log('User logged in:', answer);
 		if (answer.error) {
 			reply.status(401).send({ success: false, message: answer.error });
 			return;

@@ -26,6 +26,6 @@ export async function createDatabase() {
 			console.log('Database already exists. Skipping table creation.');
 		}
 	});
-	
+
 	return newdDB;
 }
