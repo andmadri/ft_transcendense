@@ -10,7 +10,7 @@ async function createMatchOnline(socket, userID) {
 			console.log("No username found in createMatchOnline");
 			return ;
 		}
-		const id = newMatch(socket, userID, user.name, '', '', '');
+		const id = newMatch(userID, user.name, '', '');
 		matches.get(id).saveInDB = true;
 		waitlist.set(id, { match: matches.get(id) });
 		socket.join(id);
@@ -32,6 +32,9 @@ export function findOpenMatch() {
 	return ([firstWaitingID, matchObj.match]);
 }
 
+// checks if there is already someone waiting
+// if no -> make new match
+// if so -> add second player to match and room and send msg back
 export async function handleOnlineMatch(socket, userID, io) {
 	const [roomID, match] = findOpenMatch();
 
@@ -48,8 +51,12 @@ export async function handleOnlineMatch(socket, userID, io) {
 			player1ID: match.player1.id,
 			player2ID: match.player2.id
 		}
+		const sockets = await io.in(roomID).allSockets();
+		console.log(`Aantal clients in room: ${sockets.size}`);
+		console.log(`roomid: ${roomID}`);
+
 		console.log(`send onlineMatch back to both sockets...${roomID}`);
-		io.to(roomID).emit('onlineMatch', msg);
+		io.to(roomID).emit('message', JSON.stringify(msg));
 		// send back opponent found to both... play
 
 	} else {

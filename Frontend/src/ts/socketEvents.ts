@@ -25,6 +25,10 @@ export function startSocketListeners() {
 	socket.on('connect_error', (err: any) => {
 		log('Error: ' + err);
 	});
+
+	socket.on('error', (err: any) => {
+		log('Error: ' + err.reason);
+	});
 }
 
 /*

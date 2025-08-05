@@ -60,7 +60,7 @@ export function createMatch(msg, socket, userId1, userId2) {
 	const	player1ID = userId1 ? userId1 : 0;
 	const	player2ID = userId2 ? userId2 : 0;
 
-	const id = newMatch(socket, player1ID, msg.name, socket, player2ID, msg.name2);
+	const id = newMatch(player1ID, msg.name, player2ID, msg.name2);
 	if (opponentMode == 1 && player1ID != 0 && player2ID != 0) // both not guest or comp
 		matches.get(id).saveInDB = true;
 	else if (opponentMode == 2) // online

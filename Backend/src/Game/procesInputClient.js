@@ -29,5 +29,5 @@
 // 		score: [match.player1.score, match.player2.score]				
 // 	}
 
-// 	io.to(match.roomID).emit('game-upade', data);
+// 	io.to(match.roomID).emit('message', data);
 // }
