@@ -4,10 +4,10 @@ import { Game } from '../script.js'
 import * as S from '../structs.js'
 import { movePadel } from '../Game/gameLogic.js';
 
-let mode = 'Sign Up';
+export let authenticationMode = 'Sign Up';
 
-function changeAuthMode(player: number) {
-	mode = (mode === 'Sign Up') ? 'Login' : 'Sign Up';
+export function changeAuthMode(player: number) {
+	authenticationMode = (authenticationMode === 'Sign Up') ? 'Login' : 'Sign Up';
 	const authContainer = document.getElementById('auth' + player);
 	if (authContainer) {
 		const newAuth = getAuthField(player, true);
@@ -26,12 +26,12 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 	authContainer.id = 'auth' + player;
 
 	// const action = mandatory ? 'Sign Up' : 'Login';
-	const action = mode;
+	const action = authenticationMode;
 	const usernameField = action === 'Login' ? '' : `
 		<div class="inputSingle">
-			<label for="username">Username</label>
+			<label for="name">Username</label>
 			<div class="inputWithIcon">
-				<input type="text" id="username" placeholder=""/>
+				<input type="text" id="name${player}" name="name"/>
 			</div>
 		</div>`;
 
@@ -40,7 +40,7 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 	).join('');
 
 	authContainer.innerHTML = `
-		<form class="loginSignUpContainer">
+		<form class="loginSignUpContainer" id="authForm${player}">
 			<div class="header">
 				<div class="header1Text">${action}</div>
 			</div>
@@ -49,18 +49,18 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 			<div class="inputSingle">
 				<label for="email">Email</label>
 				<div class="inputWithIcon">
-					<input type="email" id="email" placeholder="" />
+					<input type="email" id="email${player}" name="email" />
 				</div>
 			</div>
 			<div class="inputSingle">
 				<label for="password">Password</label>
 				<div class="inputWithIcon">
-					<input type="password" id="password" placeholder="" />
+					<input type="password" id="password${player}" name="password" />
 				</div>
 			</div>
 			</div>
 			<div class="inputButtons">
-				<button type="submit" class="submitButton">${action}</button>
+				<button type="submit" class="submitButton" >${action}</button>
 				<span> or via social network</span>
 				<img src="css/icons/icons8-google.svg" id="google-login-btn${player}" class="googleLoginButton">
 				<p class="loginSignUpPrompt">
@@ -83,7 +83,7 @@ export function getLoginFields(player: number) {
 	body.style.height = "100vh";
 	body.style.backgroundColor = "#ededeb";
 	body.style.justifyContent = "center";
-	body.appendChild(getAuthField(1, true));
+	body.appendChild(getAuthField(player, true));
 
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
