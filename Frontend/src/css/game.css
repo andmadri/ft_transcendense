@@ -7,7 +7,8 @@
 	margin: 10px auto 0;
 	height: 100%;
 	width: 100%;
-	box-sizing: border-box;
+	/* box-sizing: border-box; */
+	padding: 10px;
 	gap: 20px;
 }
 
@@ -28,14 +29,16 @@
 }
 
 .gameField {
+	box-sizing: border-box;
 	width: 800px;
 	height: 600px;
 	position: relative;
 	background-color: #000;
 	border-radius: 24px;
-	border: 24px solid blue;
+	/* border: 24px solid blue; */
 	/* padding: 30px; */
 	/* white-space: nowrap; */
+	
 }
 
 

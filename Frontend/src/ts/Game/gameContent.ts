@@ -50,6 +50,43 @@ function getQuitBtn() {
 	return (quiting);
 }
 
+// export function getGameField() {
+// 	const optionMenu = document.getElementById('optionMenu');
+// 	if (optionMenu) {
+// 		const	app = document.getElementById("app");
+// 		if (!app)
+// 			return ;
+// 		app.removeChild(optionMenu);
+// 	}
+// 	const body = document.getElementById('body');
+// 	if (!body)
+// 		return ;
+// 	body.style.height = "100%";
+// 	body.style.width = "100%";
+// 	body.style.padding = "10px";
+// 	body.style.boxSizing = 'border-box';
+// 	body.style.background = "linear-gradient(90deg, #ff6117, #ffc433, #ffc433)";
+// 	body.style.justifyContent = "center";
+// 	body.innerHTML = `
+// 	<div class="scrollContainer">
+// 		<div class="gameTitle" id="gameTitle">PongPongPongPongPongPongPongPongPong</div>
+// 	</div>`;
+
+// 	const gameContainer = document.createElement('div');
+// 	gameContainer.id = 'game';
+// 	gameContainer.className = 'gameContainer';
+// 	gameContainer.innerHTML = `
+// 	<div class="gameField" id="field">
+// 		<div id="ball"></div>
+// 		<div id="lPlayer"></div>
+// 		<div id="rPlayer"></div>
+// 	</div>
+// 	`;
+// 	body.appendChild(gameContainer);
+
+// }
+
+
 export function getGameField() {
 	const optionMenu = document.getElementById('optionMenu');
 	if (optionMenu) {
@@ -61,30 +98,70 @@ export function getGameField() {
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
-	body.style.height = "100%";
-	body.style.width = "100%";
-	body.style.padding = "10px";
-	body.style.boxSizing = 'border-box';
-	body.style.background = "linear-gradient(90deg, #ff6117, #ffc433, #ffc433)";
-	body.style.justifyContent = "center";
-	body.innerHTML = `
-	<div class="scrollContainer">
-		<div class="gameTitle" id="gameTitle">PongPongPongPongPongPongPongPongPong</div>
-	</div>`;
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
 
-	const gameContainer = document.createElement('div');
-	gameContainer.id = 'game';
-	gameContainer.className = 'gameContainer';
-	gameContainer.innerHTML = `
-	<div class="gameField" id="field">
-		<div id="ball"></div>
-		<div id="lPlayer"></div>
-		<div id="rPlayer"></div>
-	</div>
-	`;
-	body.appendChild(gameContainer);
+	const game = document.createElement('div');
+	game.style.display = 'flex';
+	game.style.flexDirection = 'column';
+	game.id = 'game';
+	game.style.width = '100%';
+	game.style.height = '100%';
+	game.style.position = 'relative';
+	// game.style.backgroundColor = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	game.style.alignItems = 'center';
+	game.style.textAlign = 'center';
+	game.style.padding = '10px';
+	game.style.boxSizing = 'border-box';
+	game.style.gap = '20px';
+	game.style.flexShrink = '0';
 
+	const title = document.createElement('div');
+	title.id = 'gameTitle';
+	title.textContent = 'PONG';
+	title.style.position = 'relative';
+	title.style.fontFamily = '"Courier New", monospace';
+	title.style.fontSize = '3rem';
+	title.style.color = 'gold';
+	title.style.textShadow = `	-2px -2px 0 black,
+	2px -2px 0 black,
+	-2px  2px 0 black,
+	2px  2px 0 black	`;
+	title.style.zIndex = '5';
+	title.style.pointerEvents = 'none';
+
+	const	field = document.createElement('div');
+	field.id = 'field';
+	field.style.aspectRatio = '4/3';
+	field.style.width = '80vw';  // 80% of viewport width
+	field.style.maxWidth = '1000px';
+	field.style.maxHeight = '80vh';
+	field.style.backgroundColor = 'black';
+	// styleElement(field, '800px', '600px', 'relative', '', '', '', 'black');
+	field.style.borderRadius = '30px';
+	field.style.position = 'relative';
+
+	const	ball = document.createElement('div');
+	ball.id = 'ball';
+	styleElement(ball, '3%', '3%', 'absolute', '50%', '', '50%', '#ededeb');
+	ball.style.borderRadius = '50%';
+	ball.style.transform = 'translate(-50%, -50%)'; //why?
+
+	const	lPlayer = document.createElement('div');
+	lPlayer.id = 'lPlayer';
+	styleElement(lPlayer, '1%', '20%', 'absolute', '35%', '', '10px', '#ededeb');
+	
+	const	rPlayer = document.createElement('div');
+	rPlayer.id = 'rPlayer';
+	styleElement(rPlayer, '1%', '20%', 'absolute', '35%', '10px', '', '#ededeb');
+
+	field.appendChild(ball);
+	field.appendChild(lPlayer);
+	field.appendChild(rPlayer);
+	game.append(title);
+	game.append(field);
+	body.append(game);
 }
+
 
 // export function getGameField() {
 // 	const	app = document.getElementById("app");
@@ -93,39 +170,39 @@ export function getGameField() {
 // 	app.innerHTML = "";
 
 // 	//wrapper for title and field
-// 	const container = document.createElement('div');
-// 	container.style.display = 'flex';
-// 	container.style.flexDirection = 'column';
-// 	container.style.alignItems = 'center'; // center horizontally
-// 	container.style.gap = '20px'; // spacing between title and field
-// 	container.style.flexShrink = '0';
-// 	container.appendChild(getQuitBtn());
-	
-// 	const	game = document.createElement('div');
-// 	game.style.display = 'flex';
-// 	game.style.flexDirection = 'column';
-// 	game.id = 'game';
-// 	styleElement(game, '100%', '100%', 'relative', '', '', '', 'gold');
-// 	game.style.alignItems = 'center';
-// 	game.style.padding = '10px';
-// 	game.style.boxSizing = 'border-box';
-// 	game.style.gap = '20px';
-// 	game.style.textAlign = 'center';
-	
+// 	// const	game = document.createElement('div');
+// 	// game.style.display = 'flex';
+// 	// game.style.flexDirection = 'column';
+// 	// game.id = 'game';
+// 	// styleElement(game, '100%', '100%', 'relative', '', '', '', 'gold');
+// 	// game.style.alignItems = 'center';
+// 	// game.style.padding = '10px';
+// 	// game.style.boxSizing = 'border-box';
+// 	// game.style.gap = '20px';
+// 	// game.style.textAlign = 'center';
 
-// 	const title = document.createElement('div');
-// 	title.id = 'gameTitle';
-// 	title.textContent = 'PONG';
-// 	title.style.position = 'relative';
-// 	title.style.fontFamily = '"Courier New", monospace';
-// 	title.style.fontSize = '3rem';
-// 	title.style.color = 'gold';
-// 	title.style.textShadow = `	-2px -2px 0 black,
-// 	2px -2px 0 black,
-// 	-2px  2px 0 black,
-// 	2px  2px 0 black	`;
-// 	title.style.zIndex = '5';
-// 	title.style.pointerEvents = 'none';
+// 	// const container = document.createElement('div');
+// 	// container.style.display = 'flex';
+// 	// container.style.flexDirection = 'column';
+// 	// container.style.alignItems = 'center'; // center horizontally
+// 	// container.style.gap = '20px'; // spacing between title and field
+// 	// container.style.flexShrink = '0';
+// 	// container.appendChild(getQuitBtn());
+	
+	
+// 	// const title = document.createElement('div');
+// 	// title.id = 'gameTitle';
+// 	// title.textContent = 'PONG';
+// 	// title.style.position = 'relative';
+// 	// title.style.fontFamily = '"Courier New", monospace';
+// 	// title.style.fontSize = '3rem';
+// 	// title.style.color = 'gold';
+// 	// title.style.textShadow = `	-2px -2px 0 black,
+// 	// 2px -2px 0 black,
+// 	// -2px  2px 0 black,
+// 	// 2px  2px 0 black	`;
+// 	// title.style.zIndex = '5';
+// 	// title.style.pointerEvents = 'none';
 	
 // 	const	field = document.createElement('div');
 // 	field.id = 'field';
