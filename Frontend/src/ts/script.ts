@@ -43,7 +43,7 @@ startSocketListeners();
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-// window.addEventListener('resize', initAfterResize);
+window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
 

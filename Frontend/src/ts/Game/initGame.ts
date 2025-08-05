@@ -92,10 +92,10 @@ export function initPositions() {
 	// game.style.width = `${S.Objects['field'].width}px`;
 
 	// Ball
-	const ballSize = ball.clientWidth;
+	// const ballSize = ball.clientWidth;
 	// ball.style.height = `${ballSize}px`;
 	// ball.style.width = `${ballSize}px`;
-	S.Objects['ball'].width = ballSize;
+	S.Objects['ball'].width =  ball.clientWidth;
 	S.Objects['ball'].height = ball.clientHeight;
 
 	S.Objects['ball'].x = fieldWidth / 2;
