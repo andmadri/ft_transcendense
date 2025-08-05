@@ -90,7 +90,8 @@ export function createTables(db)
 		) AS s ON u.id = s.user_id
 		WHERE s.state != 'logout';
 	
-	CREATE VIEW UserStateDurations AS WITH sessions AS (
+	CREATE VIEW UserStateDurations AS 
+		WITH sessions AS (
 			SELECT
 				user_id,
 				state,
@@ -119,12 +120,20 @@ export function createTables(db)
 	CREATE VIEW IF NOT EXISTS UserMatchStats AS
 		SELECT	u.id AS user_id,
 				u.name AS name,
-				COUNT(m.id) AS total_matched,
+				COUNT(m.id) AS total_matches,
 				SUM(CASE WHEN m.winner_id = u.id THEN 1 ELSE 0 END) AS wins,
 				SUM(CASE WHEN m.winner_id != u.id AND m.winner_id IS NOT NULL THEN 1 ELSE 0 END) AS losses,
 				ROUND(
 					CASE WHEN COUNT(m.id) > 0 THEN 100.0 * SUM(CASE WHEN m.winner_id = u.id THEN 1 ELSE 0 END) / COUNT(m.id)
-					ELSE 0 END, 1) AS win_rate
+					ELSE 0 END, 1) AS win_rate,
+				ROUND(
+					AVG(CASE WHEN u.id = m.player_1_id THEN m.player_1_score
+					ELSE m.player_2_score END), 1) AS avg_score,
+				ROUND(
+					AVG(CASE WHEN u.id = m.player_1_id THEN m.player_2_score
+					ELSE m.player_1_score END), 1) AS avg_opp_score,
+				ROUND(
+					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 1) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
 	
 	
