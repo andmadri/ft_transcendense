@@ -71,6 +71,8 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Menu: {
+				// document.getElementById('auth1')?.remove();
+				// document.getElementById('auth2')?.remove();
 				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
 					getMenu();
 				break ;
@@ -90,6 +92,8 @@ function mainLoop() {
 				}
 				break ;
 			case S.State.Game: {
+				// document.getElementById('auth1')?.remove();
+				// document.getElementById('auth2')?.remove();
 				// if (Game.matchID >= 0)
 				// if (Game.playMode == true)
 					game();

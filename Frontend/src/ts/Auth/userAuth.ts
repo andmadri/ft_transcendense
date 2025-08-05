@@ -113,6 +113,8 @@ export async function submitAuthForm(e: Event, player: number) {
 }
 
 export function loginSuccessfull(player: number, userId: number, name: string) {
+	document.getElementById('auth1')?.remove();
+	document.getElementById('auth2')?.remove();
 	if (player == 1) {
 		log("Login Successfull (player one) with id: " + userId);
 		Game.player1Id = userId;

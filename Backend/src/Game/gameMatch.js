@@ -1,4 +1,4 @@
-import { saveMatchDB } from '../Database/match.js'
+// import { saveMatchDB } from '../Database/match.js'
 import { getUserByID } from '../Database/users.js';
 
 let				matchnr = 0;
@@ -91,8 +91,8 @@ export function saveMatch(match, msg, socket) {
 	const player1 = match.player1;
 	const player2 = match.player2;
 	console.log("Save match" + player1.score + " " + player2.score);
-	if (match.saveInDB)
-		saveMatchDB(player1.id, player2.id, player1.score, player2.score);
+	// if (match.saveInDB)
+	// 	saveMatchDB(player1.id, player2.id, player1.score, player2.score);
 	matches.delete(match.matchID);
 	socket.send(JSON.stringify({
 		action: 'game',

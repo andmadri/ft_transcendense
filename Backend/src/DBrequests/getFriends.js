@@ -14,7 +14,7 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content, nr)
 
 async function getFriends(playerNr, socket) {
 	try {
-		const friends = await friendsDB.getFriendsDB();
+		// const friends = await friendsDB.getFriendsDB();
 		if (!friends || friends.length === 0 || friends == "[]" || friends == "undefined") {
 			console.log("No friends found");
 			return sendContentToFrontend('friends', 'retFriends', socket, "no", "No friends found", playerNr);

@@ -59,14 +59,14 @@ export async function addMatchEventToDB(db, event) {
 	return new Promise((resolve, reject) => {
 		const sql = `INSERT INTO MatchEvents (
 			match_id, user_id, event_type, ball_x, ball_y, ball_angle,
-			ball_result_x, ball_result_y, 
+			ball_result_x, ball_result_y,
 			paddle_x_player_1, paddle_y_player_1,
 			paddle_x_player_2, paddle_y_player_2)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 		const values = [event.match_id, event.user_id, event.event_type,
-			event.ball_x ?? null, event.ball_y ?? null, 
+			event.ball_x ?? null, event.ball_y ?? null,
 			event.ball_angle ?? null, event.ball_result_x ?? null, event.ball_result_y ?? null,
-			event.paddle_x_player_1 ?? null, event.paddle_y_player_1 ?? null, 
+			event.paddle_x_player_1 ?? null, event.paddle_y_player_1 ?? null,
 			event.paddle_x_player_2 ?? null, event.paddle_y_player_2 ?? null];
 		db.run(sql, values, function (err) {
 			if (err) {
@@ -106,7 +106,7 @@ export async function updateMatchInDB(db, match) {
 	if (!existingMatch) {
 		throw new Error(`Match ID ${match.match_id} does not exist.`);
 	}
-	
+
 	return new Promise ((resolve, reject) => {
 		const updates = [];
 		const values = [];
@@ -178,7 +178,7 @@ export async function getMatchByID(db, match_id) {
 
 // export async function addMatchToDB(match) {
 // 	const player1 = await getUserByID(match.player_1_id);
-	
+
 // 	if (!player1) {
 // 		throw new Error(`Player 1 (ID ${match.player_1_id}) does not exist.`);
 // 	}
@@ -209,23 +209,23 @@ export async function getMatchByID(db, match_id) {
 
 
 // returns ID nr of match to save
-export async function saveMatchDB(playerID1, playerID2, score1, score2) {
-	const date = new Date();
-	const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+// export async function saveMatchDB(playerID1, playerID2, score1, score2) {
+// 	const date = new Date();
+// 	const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
-	return new Promise((resolve, reject) => {
-		db.run(
-			`INSERT INTO Matches (player_1_id, player_2_id, player_1_score, player_2_score, date) VALUES (?, ?, ?, ?, ?)`,
-			[playerID1, playerID2, score1, score2, dateString],
-			function (err) {
-				if (err)
-					reject(err);
-				else
-					resolve(this.lastID);
-			}
-		);
-	});	
-}
+// 	return new Promise((resolve, reject) => {
+// 		db.run(
+// 			`INSERT INTO Matches (player_1_id, player_2_id, player_1_score, player_2_score, date) VALUES (?, ?, ?, ?, ?)`,
+// 			[playerID1, playerID2, score1, score2, dateString],
+// 			function (err) {
+// 				if (err)
+// 					reject(err);
+// 				else
+// 					resolve(this.lastID);
+// 			}
+// 		);
+// 	});
+// }
 
 // get score in match in map (score1, score2)
 export async function getScore(id) {
