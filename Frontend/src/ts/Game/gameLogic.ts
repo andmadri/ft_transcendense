@@ -65,7 +65,6 @@ export function randomizeBallAngle() {
 	ballVelocity.vy = Math.random() < 0.5 ? vy : vy * -1;
 }
 
-
 function normalizeAngle(angle: number) {
     const twoPi = 2 * Math.PI;
     return (angle % twoPi + twoPi) % twoPi;
@@ -92,7 +91,7 @@ function changeVelocityOnPaddleBounce(PlayerPos : S.Pos, playerSize : S.Size) {
 	const relativeHitPoint = (ballPos.y - PlayerPos.y) - playerSize.height / 2;
 	const normalizedHitPoint = relativeHitPoint / (playerSize.height / 2);
 
-	const maxBounceAngle = (Math.PI / 4) //60 degrees max
+	const maxBounceAngle = (Math.PI / 4) //45 degrees max
 	const angle = normalizedHitPoint * maxBounceAngle;
 
 	const direction = ballVelocity.vx > 0 ? -1 : 1;
