@@ -1,24 +1,18 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js' //imports two functions from login.js
+import { submitAuthForm, loginSuccessfull, changeLoginMode } from './userAuth.js'
 import { log } from '../logging.js'
-import { removeMenu } from '../Menu/menuContent.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
 
 export function getAuthField(player: number, mandatoy: Boolean) {
 	const	auth = document.createElement('div');
 	auth.id = 'auth' + player;
-	auth.style.backgroundColor = 'lightblue';
 	auth.style.width = '50%';
 	auth.style.height = '100%';
-	auth.style.position = 'fixed';
+	auth.style.position = 'relative';
 	auth.style.display = 'flex';
 	auth.style.flexDirection = 'column';
 	auth.style.alignItems = 'center';
 	auth.style.zIndex = '999';
-	if (player == 2) {
-		auth.style.left = '50%';
-		auth.style.backgroundColor = 'lightgreen';
-	}
 
 	const	authTitle = document.createElement('h2');
 	authTitle.id = 'authTitle' + player;
@@ -100,43 +94,37 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	toggleBtn.id = 'toggle-mode' + player;
 	toggleBtn.textContent = 'Switch to Login';
 
-	auth.append(authTitle, authForm, modeLabel, toggleBtn);
+	const googleAuth = document.createElement('button');
+	googleAuth.type = 'button';
+	googleAuth.id = 'google-login-btn' + player;
+	googleAuth.textContent = 'Login with Google';
+
+	auth.append(authTitle, authForm, modeLabel, toggleBtn, googleAuth);
 	return (auth);
 }
 
-export function getLoginFields() {
-	if (document.getElementById('menu'))
-		removeMenu();
-
-	const	body = document.getElementById('body');
-	if (!body)
+export function getLoginFields(player: number) {
+	const	app = document.getElementById('app');
+	if (!app)
 		return ;
+	app.innerHTML = "";
+	app.style.display = 'flex';
+	app.style.flexDirection = 'row';
+	app.style.justifyContent = 'center';
+	app.style.alignItems = 'flex-start';
+	app.style.gap = '20px';
 
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
-		const auth = getAuthField(1, true); 
-		body.appendChild(auth);
+	if (player == 1) { // one login mandatory
+		app.appendChild(getAuthField(player, true));
 	} else {
-		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-		body.append(getAuthField(1, false), getAuthField(2, false));
-		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			body.appendChild(getAuthField(1, false));
-		}
+		app.append(getAuthField(player, false));
 	}
 
 	// addEventListeners for Login form
-	document.getElementById('authForm1')?.addEventListener('submit', (e) => submitAuthForm(e, 1));
-	document.getElementById('authForm2')?.addEventListener('submit', (e) => submitAuthForm(e, 2));
-	document.getElementById('toggle-mode1')?.addEventListener('click', (e) => changeLoginMode(1));
-	document.getElementById('toggle-mode2')?.addEventListener('click', (e) => changeLoginMode(2));
-	document.getElementById('guestBtn1')?.addEventListener('click', (e) => addGuest(e, 1));
-	document.getElementById('guestBtn2')?.addEventListener('click', (e) => addGuest(e, 2));
-}
+	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
+	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
+		window.location.href = `https://${S.host}:8443/api/auth/google?player=` + player;
+	});
 
-export function removeAuthField(player: number) {
-	const	body = document.getElementById('body');
-	const	auth = document.getElementById('auth' + player);
-	
-	if (body && auth)
-		body.removeChild(auth);
-
+	document.getElementById('toggle-mode' + player)?.addEventListener('click', (e) => changeLoginMode(player));
 }

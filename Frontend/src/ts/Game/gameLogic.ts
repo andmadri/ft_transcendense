@@ -2,7 +2,8 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
-import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
+import { aiAlgorithm, resetAI } from './aiLogic.js';
+import { trainingSet, downloadTrainingData, collectTrainingData } from './aiTraining.js'
 
 export function processBallUpdate(data: any) {
 	if ('ballX' in data) {
@@ -22,7 +23,7 @@ export function processPadelUpdate(data: any) {
 		if (rPlayer && typeof data.playerOneY === 'number')
 			rPlayer.style.top = `${data.playerOneY}px`;
 		S.Objects['rPlayer'].y = data.playerOneY;
-		
+
 	}
 	if ('lPlayerX' in data) {
 		const lPlayer = document.getElementById('lPlayer');
@@ -35,20 +36,19 @@ export function processPadelUpdate(data: any) {
 }
 
 function checkAndMovePadel(padel: string, movement: number) {
+	const fieldH = S.Objects['field'].height;
 	const currentPadel = document.getElementById(padel);
-	let top = parseInt(currentPadel?.style.top || '0');
-	let newPosition = top + movement;
-	if (currentPadel) {
-		if (newPosition < 0)
-			newPosition = 0;
-		else if (newPosition > S.Objects['field'].height - currentPadel.clientHeight) 
-			newPosition = S.Objects['field'].height - currentPadel.clientHeight;
-		currentPadel.style.top = `${newPosition}px`;
-		S.Objects[padel].y = newPosition;
-	}
+	if (!currentPadel)
+		return ;
+	let top = currentPadel.offsetTop;
+	const paddleH = currentPadel.clientHeight;
+	const nextPos = top + (movement * S.Objects[padel].speed);
+	const newPosition = Math.max(0, Math.min(nextPos, fieldH - paddleH));
+	currentPadel.style.top = `${newPosition}px`;
+	S.Objects[padel].y = newPosition;
 }
 
-function movePadel(key: string) {
+export function movePadel(key: string) {
 	if (key === 'w' || key === 's') {
 		checkAndMovePadel('lPlayer', S.Keys[key].dir);
 	} else if (key === 'ArrowUp' || key === 'ArrowDown') {
@@ -58,7 +58,13 @@ function movePadel(key: string) {
 
 export function checkPadelMovement(): boolean {
 	let moved = false;
+	if (Game.opponentType == S.OT.ONEvsCOM) {
+		aiAlgorithm();
+	}
 	for (let key in S.Keys) {
+		if (Game.opponentType == S.OT.ONEvsCOM && (key == 'ArrowUp' || key == 'ArrowDown')) {
+			continue;
+		}
 		if (S.Keys[key].pressed === true) {
 			movePadel(key);
 			moved = true;
@@ -73,11 +79,12 @@ export function updatePadelPosition() {
 	if (Game.socket.readyState != WebSocket.OPEN)
 		return ;
 	if (leftPadel && rightPadel) {
-		const msg = { 
+		const msg = {
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
-			rHeight: rightPadel.offsetTop };
+			rHeight: rightPadel.offsetTop,
+			matchID: Game.matchID };
 		Game.socket.send(JSON.stringify(msg));
 	} else {
 		console.log('No lP ot rP');
@@ -90,6 +97,7 @@ export function calculateBallDir() {
 	S.Objects['ball'].x += Math.cos(S.Objects['ball'].angle) * S.Objects['ball'].speed;
 	if (S.Objects['ball'].y - ballSize < 0)
 		S.Objects['ball'].y = ballSize;
+	//this line keeps the ball from going past the bottom
 	else if (S.Objects['ball'].y + ballSize > S.Objects['field'].height)
 		S.Objects['ball'].y = S.Objects['field'].height - ballSize;
 	if (S.Objects['ball'].x - ballSize < 0)
@@ -99,11 +107,13 @@ export function calculateBallDir() {
 }
 
 export function updateBallPosition() {
-	const msg = { 
+	const msg = {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
-		ballX: S.Objects['ball'].x};
+		ballX: S.Objects['ball'].x,
+		matchID: Game.matchID
+	};
 	Game.socket.send(JSON.stringify(msg));
 }
 
@@ -116,11 +126,10 @@ export function checkWallCollision() {
 	const radius = S.Objects['ball'].height / 2;
 	if (S.Objects['ball'].y <= radius || S.Objects['ball'].y + radius >= S.Objects['field'].height)
 		S.Objects['ball'].angle = normalizeAngle(-S.Objects['ball'].angle);
-	
+
 }
 
-function resetBall()
-{
+function resetBall(){
 	const field = document.getElementById("field");
 	const ball = document.getElementById("ball");
 	const ballSize = S.Objects["field"].width * 0.05;
@@ -132,6 +141,29 @@ function resetBall()
 		ball.style.left = `${S.Objects["ball"].x - ballSize / 2}px`;
 		ball.style.top = `${S.Objects["ball"].y - ballSize / 2}px`;
 	}
+	if (Game.opponentType == S.OT.ONEvsCOM) {
+		resetAI();
+	}
+}
+
+export function updateScoreDisplay(side: string, newScore: number) {
+	const scoreSide = document.getElementById(side);
+	if (scoreSide) {
+		scoreSide.textContent = newScore.toString();
+	}
+	resetBall();
+}
+
+function updateScoreServer(id: number) {
+	const msg = {
+		action: 'game',
+		subaction: 'scoreUpdate',
+		player: 0,
+		matchID: Game.matchID
+	};
+
+	msg.player = id;
+	Game.socket.send(JSON.stringify(msg));
 }
 
 export function checkPaddelCollision() {
@@ -142,59 +174,96 @@ export function checkPaddelCollision() {
 
 	if (ball.x + radius >= rightPadel.x)
 	{
-		if (ball.y + radius >= rightPadel.y && ball.y - radius <= rightPadel.y + rightPadel.height)
+		if ((ball.y - radius < rightPadel.y + rightPadel.height) && (ball.y + radius > rightPadel.y))
 		{
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
 		}
-		else
-		{
-			// MISS
-			Game.score++;			
-			updateScoreMenu();
-			resetBall();
+		else {
+			updateScoreDisplay('leftScore', ++Game.scoreLeft);
+			updateScoreServer(Game.player1Id);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
 	{
-		if (ball.y - radius >= leftPadel.y && ball.y + radius <= leftPadel.y + leftPadel.height)
+		if ((ball.y - radius < leftPadel.y + leftPadel.height) && (ball.y + radius > leftPadel.y))
 		{
 			ball.angle = normalizeAngle(Math.PI - ball.angle);
 			return ;
 		}
-		else
-		{
-			// MISS
-			Game.score2++;
-			updateScoreMenu();
-			resetBall();
+		else {
+			updateScoreDisplay('rightScore', ++Game.scoreRight);
+			updateScoreServer(Game.player2Id);
 		}
 	}
 }
 
+export function handleGameOver() {
+	log("Game Over!");
+
+	const gameOver = document.createElement('div');
+	gameOver.id = 'gameOver';
+	gameOver.style.position = 'absolute';
+	gameOver.style.top = '30%';
+	// gameOver.style.left = '50%';
+	gameOver.style.padding = '20px';
+	gameOver.style.backgroundColor = 'black';
+	gameOver.style.color = 'white';
+	gameOver.style.fontSize = '2rem';
+	gameOver.style.textAlign = 'center';
+	gameOver.style.borderRadius = '10px';
+	gameOver.innerHTML = `
+	<p>Game Over!</p>
+	<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
+	`;
+
+	const	backToMenu = document.createElement('button');
+	backToMenu.id = 'menuBtn';
+	backToMenu.textContent = 'Back to menu';
+
+	backToMenu.addEventListener('click', () => {
+		log("pushed back to menu button");
+		Game.state = S.State.Menu;
+		return ;
+	})
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
+	app.append(gameOver, backToMenu);
+	Game.state = S.State.End;
+
+}
+
 export function game() {
+	const AI = Game.opponentType == S.OT.ONEvsCOM ? true : false;
+
+	if (AI)
+		Game.timeGame = performance.now();
+
+	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+			Game.state = S.State.End;
+			Game.playMode = false;
+			return ;
+		}
+
+	// if (AI) {
+	// 	downloadTrainingData();
+	// 	trainingSet.length = 0;
+	// 	return ;
+	// }
+
 	checkWallCollision();
 	checkPaddelCollision();
 	calculateBallDir();
 	updateBallPosition();
 	if (checkPadelMovement())
-		updatePadelPosition();	
-}
+		updatePadelPosition();
 
-export function actionGame(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'ballUpdate':
- 			processBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			processPadelUpdate(data);
-			break ;
-		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
-	}
+	// if (AI) {
+	// 	const data = collectTrainingData();
+	// 	if (data != null) {
+	// 		trainingSet.push(data);
+	// 	}
+	// }
 }

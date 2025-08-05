@@ -36,8 +36,8 @@ networks:
 
 volumes:
   database_volume:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./Database
-      o: bind
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: ./Database
+    #   o: bind

@@ -1,11 +1,13 @@
-import { actionLogin } from './Auth/userAuth.js';
-import { actionGame } from './Game/gameLogic.js'
+import { actionGame } from './Game/game.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
+import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
+import { actionFriends, getFriendsList } from './Menu/friends.js'
 
 export function startSocketListeners() {
 	Game.socket.addEventListener('open', openSocket);
+	Game.socket.addEventListener('open', () => { getPlayerData(); });
 	Game.socket.addEventListener('error', errorSocket);
 	Game.socket.addEventListener('message', receiveFromWS);
 	Game.socket.addEventListener('close', closeSocket);
@@ -16,20 +18,18 @@ export function closeSocket(e: CloseEvent) {
 }
 
 export function openSocket(e: Event) {
-	// log('✅ WebSocket is open');
+	log('✅ WebSocket is open');
 }
 
 export function errorSocket(err: Event) {
 	log('⚠️ WebSocket error: ' + err);
 }
 
-
-
 /*
 FROM backend TO frontend
-• login => loginCheck / signUpCheck / logout
-• playerInfo => getName / getAvatar
+• playerInfo => getName / getAvatar / revicePlayerData
 • chat => incomming
+• friends => retFriends
 • online => retOnlinePlayers / retOnlinePlayersWaiting
 • friends => retFriends
 • pending => getWaitlist / createGame / startGame
@@ -44,15 +44,14 @@ export function receiveFromWS(e: MessageEvent) {
 		log('no action');
 
 	switch(action) {
-		case 'login':
-			actionLogin(data);
-			break ;
 		case 'playerInfo':
+			actionPlayerInfo(data);
 			break ;
 		case 'online':
 			actionOnline(data);
 			break ;
 		case 'friends':
+			actionFriends(data);
 			break ;
 		case 'pending':
 			break ;

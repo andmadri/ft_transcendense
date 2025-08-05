@@ -1,48 +1,34 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
+import { getOnlineList } from '../Menu/online.js';
+import { getFriendsList } from '../Menu/friends.js';
+import { startSocketListeners } from '../socketEvents.js'
 
 type	Mode = 'login' | 'sign up';
 const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
 
-// PROCESS INFORMATION FROM SERVER
-function processSignUp(data: any) {
-	if (data.access && data.access == "yes") {
-		log("User is created");
-		changeLoginMode(data.player);
-	}
-	else
-		log('Not sign up:' + data.reason);
-}
-
 function updateLoginPlayer(data: any) {
 	if (data.player == 1) {
 		if (data.userId)
-			Game.id = data.userId;
+			Game.player1Id = data.userId;
 		if (data.userName)
-			Game.name = data.userName;
+			Game.player1Name = data.userName;
 		Game.playerLogin = 1;
 		Game.player1Login = true;
+		updatePlayerData(1);
+
 	} else {
 		if (data.UserId)
-			Game.id2 = data.UserId;
+			Game.player2Id = data.UserId;
 		if (data.userName)
-			Game.name2 = data.userName;
+			Game.player2Name = data.userName;
 		Game.player2Login = true;
 		Game.playerLogin = 2;
+		updatePlayerData(2);
 	}
 }
-
-export function processLogin(data: any) {
-	if (data.access && data.access == "yes") {
-		log("Process Login Check => player: " + data.player);
-		updateLoginPlayer(data);
-		loginSuccessfull(data.player);
-	}
-	else
-		log('Not logged in: ' + data.reason);
-}
-
 
 export function changeLoginMode(player: number) {
 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
@@ -53,7 +39,7 @@ export function changeLoginMode(player: number) {
 	const submitButton = document.getElementById('submitBtn' + player);
 	const toggleButton = document.getElementById('toggle-mode' + player);
 	const authTitle = document.getElementById('authTitle' + player);
-	
+
 	if (modeLabel)
 		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
 
@@ -75,78 +61,80 @@ export function changeLoginMode(player: number) {
 		authTitle.textContent = modes[player] === 'login' ? 'Login' : 'Sign up';
 }
 
-export function submitAuthForm(e: Event, player: number) {
+export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
-	const name = (document.querySelector<HTMLInputElement>('#name' + player)?.value ?? '').trim();
-	const email = (document.querySelector<HTMLInputElement>('#email' + player)?.value ?? '').trim();
-	const password = (document.querySelector<HTMLInputElement>('#password' + player)?.value ?? '').trim();
-	
-	if (!email || !password || (modes[player] == 'sign up' && !name)) {
-		alert("Please fill in all required fileds");
+	const form = e.target as HTMLFormElement;
+	const playerNr = player || 1;
+	const username = (form.querySelector<HTMLInputElement>(`#name${player}`)?.value ?? '').trim();
+	const email = (form.querySelector<HTMLInputElement>(`#email${player}`)?.value ?? '').trim();
+	const password = (form.querySelector<HTMLInputElement>(`#password${player}`)?.value ?? '').trim();
+
+	// Determine mode from label or your own state
+	const isSignup = document.getElementById(`modelabel${player}`)?.textContent?.toLowerCase().includes('sign up');
+	const endpoint = isSignup ? '/api/signup' : '/api/login';
+
+	if (!email || !password || (isSignup && !username)) {
+		alert("Please fill in all required fields");
 		return;
 	}
-	const msg = modes[player] == 'sign up'
-		? {action: 'login', subaction: 'signupUser', name, email, password, player: player}
-		: {action: 'login', subaction: 'loginUser', email, password, player: player};
-	Game.socket.send(JSON.stringify(msg));
+
+	const payload = isSignup
+		? { playerNr, username, email, password }
+		: { playerNr, email, password };
+
+	log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
+	try {
+		const response = await fetch(`https://${S.host}:8443${endpoint}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload),
+			credentials: 'include'
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
+
+			if (endpoint == "/api/login")
+				loginSuccessfull(playerNr, data.userId, data.name);
+			else
+				changeLoginMode(playerNr);
+
+		} else {
+			log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
+			const error = await response.json();
+			alert(error.message || "Authentication failed");
+		}
+	} catch (err) {
+		alert("Network error during authentication");
+	}
 }
 
-export function loginSuccessfull(player: number) {
+export function loginSuccessfull(player: number, userId: number, name: string) {
 	if (player == 1) {
-		log("Login Successfull (player one)");
-		if (Game.opponentType != S.OT.ONEvsONE)
-			Game.state = S.State.Game;
-		else {
-			if (Game.player2Login)
-				Game.state = S.State.Game;
-		}
+		log("Login Successfull (player one) with id: " + userId);
+		Game.player1Id = userId;
+		Game.player1Name = name;
+		Game.player1Login = true;
 	}
 	else if (player == 2) {
-		log("Login Successfull (player two)");
-		if (Game.player1Login)
-			Game.state = S.State.Game;
-	}
-}
-
-export function addGuest(e: Event, player: number) {
-	e.preventDefault();
-
-	if (player == 1) {
-		Game.name = "Guest 1";
-		Game.id = 0;
-		Game.player1Login = true;
-	} else if (player == 2) {
-		Game.name2 = "Guest 2";
-		Game.id2 = 0;
+		log("Login Successfull (player two) with id: " + userId);
+		Game.player2Id = userId;
+		Game.player2Name = name;
 		Game.player2Login = true;
 	}
-	loginSuccessfull(player);
+	Game.state = S.State.Menu;
+	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
 }
 
-function logoutPlayer(data: any) {
-	log('logoutPlayer:' + `${data.reason}`);
-	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
-	Game.socket.send(JSON.stringify(msg));
-}
+// export function addGuest(e: Event, player: number) {
+// 	e.preventDefault();
 
-
-export function actionLogin(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'login':
-			processLogin(data);
-			break ;
-		case 'signup':
-			processSignUp(data);
-			break ;
-		case 'logout':
-			logoutPlayer(data);
-			break ;
-		default:
-			log(`(actionLogin) Unknown action: ${data.subaction}`);
-	}
-}
+// 	if (player == 1) {
+// 		Game.player1Login = true;
+// 	} else if (player == 2) {
+// 		Game.player2Login = true;
+// 	}
+// 	loginSuccessfull(player, 0, 'Guest ' + player);
+// 	updatePlayerData(0);
+// }
