@@ -7,6 +7,7 @@ import { handleGameOver } from './gameContent.js'
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
 const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
+const { field : fieldVelocity, ball: ballVelocity, lPlayer: lPlayerVelocity, rPlayer: rPlayerVelocity } = S.velocity;
 
 function handlePaddleMovement(player: S.E, element : string, dir: number) {
 	const nextPos = S.pos[player].y + (dir * S.movement[player].speed);
@@ -22,7 +23,7 @@ export function movePadel(key: string) {
 	}
 }
 
-export function checkPaddleMovement(): boolean {
+function checkPaddleMovement(): boolean {
 	let moved = false;
 	if (Game.opponentType == S.OT.ONEvsCOM) {
 		moved = aiAlgorithm();
@@ -38,8 +39,8 @@ export function checkPaddleMovement(): boolean {
 
 export function updateBallPos() {
 	const ballRadius = ballSize.height / 2;
-	ballPos.y += Math.sin(ballMove.angle) * ballMove.speed;
-	ballPos.x += Math.cos(ballMove.angle) * ballMove.speed;
+	ballPos.x += ballVelocity.vx * ballMove.speed;
+	ballPos.y += ballVelocity.vy * ballMove.speed;
 	if (ballPos.y - ballRadius < 0)
 		ballPos.y = ballRadius;
 	//this line keeps the ball from going past the bottom
@@ -51,37 +52,63 @@ export function updateBallPos() {
 		ballPos.x = fieldSize.width - ballRadius;
 }
 
+export function randomizeBallAngle() {
+	const minDeg = 0;
+	const maxDeg = 45;
+	const randomAngle = Math.random() * (maxDeg - minDeg) + minDeg;
+	const radians = randomAngle * (Math.PI / 180);
+
+	const vx = Math.cos(radians);
+	const vy = Math.sin(radians);
+
+	ballVelocity.vx = Math.random() < 0.5 ? vx : vx * -1;
+	ballVelocity.vy = Math.random() < 0.5 ? vy : vy * -1;
+}
+
 
 function normalizeAngle(angle: number) {
     const twoPi = 2 * Math.PI;
     return (angle % twoPi + twoPi) % twoPi;
 }
 
-export function handleWallBounce() {
+function handleWallBounce() {
 	const radius = ballSize.height / 2;
 	if (ballPos.y <= radius || ballPos.y + radius >= fieldSize.height)
-		ballMove.angle = normalizeAngle(-ballMove.angle);
+		ballVelocity.vy *= -1;
 }
 
 //change direction of the ball on each reset
 function resetBall(){
-	ballPos.x = fieldSize.width / 2;
-	ballPos.y = fieldSize.height / 2;
-	ballMove.angle = normalizeAngle(Math.PI - ballMove.angle);
+	const ballRadius = ballSize.width / 2;
+	ballPos.x = fieldSize.width / 2 + ballRadius;
+	ballPos.y = fieldSize.height / 2 + ballRadius;
+	randomizeBallAngle();
 	if (Game.opponentType == S.OT.ONEvsCOM) {
 		resetAI();
 	}
 }
 
-export function handlePaddleBounce() {
+function changeVelocityOnPaddleBounce(PlayerPos : S.Pos, playerSize : S.Size) {
+	const relativeHitPoint = (ballPos.y - PlayerPos.y) - playerSize.height / 2;
+	const normalizedHitPoint = relativeHitPoint / (playerSize.height / 2);
+
+	const maxBounceAngle = (Math.PI / 4) //60 degrees max
+	const angle = normalizedHitPoint * maxBounceAngle;
+
+	const direction = ballVelocity.vx > 0 ? -1 : 1;
+
+	ballVelocity.vx = Math.cos(angle) * direction;
+	ballVelocity.vy = Math.sin(angle);
+}
+
+function handlePaddleBounce() {
 	const radius = ballSize.width / 2;
 
 	if (ballPos.x + radius >= rPlayerPos.x)
 	{
 		if ((ballPos.y - radius < rPlayerPos.y + rPlayerSize.height) && (ballPos.y + radius > rPlayerPos.y))
 		{
-			ballMove.angle = normalizeAngle(Math.PI - ballMove.angle);
-			return ;
+			changeVelocityOnPaddleBounce(rPlayerPos, rPlayerSize);
 		}
 		else {
 			Game.scoreLeft++;
@@ -92,8 +119,7 @@ export function handlePaddleBounce() {
 	{
 		if ((ballPos.y - radius < lPlayerPos.y + lPlayerSize.height) && (ballPos.y + radius > lPlayerPos.y))
 		{
-			ballMove.angle = normalizeAngle(Math.PI - ballMove.angle);
-			return ;
+			changeVelocityOnPaddleBounce(lPlayerPos, lPlayerSize);
 		}
 		else {
 			Game.scoreRight++;

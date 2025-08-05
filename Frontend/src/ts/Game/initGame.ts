@@ -4,6 +4,7 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { getGameField } from './gameContent.js';
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js';
+import { randomizeBallAngle } from './gameLogic.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
@@ -75,9 +76,11 @@ function scaleToField(fieldDim: number, unit : number) : number {
 	return (fieldDim * unit);
 }
 
-function initSpeed() {
+function initMovement() {
 	const fieldSize = S.size[E.field];
 	const fieldUnit = S.unitSize[E.field];
+
+	randomizeBallAngle();
 
 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
 		if (S.movement[e] && S.unitSize[e]) {
@@ -205,7 +208,7 @@ export function initGame() {
 	getGameField();
 	scaleGameSizes();
 	scaleGamePos();
-	initSpeed();
+	initMovement();
 	initDOMSizes();
 	initGameServer();
 	updateNamesMenu();

@@ -5,6 +5,7 @@ import { movePadel } from './gameLogic.js'
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
+const { field : fieldVelocity, ball: ballVelocity, lPlayer: lPlayerVelocity, rPlayer: rPlayerVelocity} = S.velocity;
 
 export const AI: S.AIInfo = {
 	prediction : { 
@@ -23,11 +24,11 @@ export function resetAI() {
 
 function	followBall(dx : number, dy : number) {
 
-	//const threshold = fieldSize.height * 0.5;
+	const threshold = fieldSize.height * 0.5;
 	
-	// if (Math.abs(ballPos.y - rPlayerPos.y) < threshold) {
-	// 	return;
-	// }
+	if (Math.abs(ballPos.y - rPlayerPos.y) < threshold) {
+		return;
+	}
 	AI.prediction = {
 		x : rPlayerPos.x,
 		y : ballPos.y,
@@ -52,13 +53,11 @@ function	predictBall(dx : number, dy : number) {
 	}
 	
 	//add error margin
-	// let errorMargin = 0;
-	// const errorOffset = Math.random() * field.height * errorMargin;
-	// const sign = Math.random() < 0.5 ? -1 : 1;
-	// const Offset = errorOffset * sign;
-
-	//clamp y to stay within field
-	const predictedY = ballPosCopy.y; //+ Offset;
+	let errorMargin = 0.001;
+	const errorOffset = Math.random() * fieldSize.height * errorMargin;
+	const sign = Math.random() < 0.5 ? -1 : 1;
+	const Offset = errorOffset * sign;
+	const predictedY = ballPosCopy.y; + Offset;
 
 	AI.prediction = {
 		x : rPlayerPos.x,
@@ -72,8 +71,8 @@ function	predictAction() {
 	const ball = S.movement[E.ball];
 
 	//calculate dx and dy
-	const dx = Math.cos(ball.angle) * ball.speed;
-	const dy = Math.sin(ball.angle) * ball.speed;
+	const dx = ballVelocity.vx * ball.speed;
+	const dy = ballVelocity.vy * ball.speed;
 
 	if (dx <= 0) {
 		followBall(dx, dy);
