@@ -79,21 +79,26 @@ async function handleGoogleAuth(user) {
 export default async function googleAuthRoutes(fastify, opts) {
 	fastify.get('/api/auth/google', async (request, reply) => {
 		const player = request.query.player || '1';
+		console.log('1backend: Google OAuth for player:', player);
+		if ( player == 'undefined' )
+			player = '1';
+
+
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
-		const state = encodeURIComponent(player);
-		console.log('backend: Google OAuth for player:', state);
+		const loginId = encodeURIComponent(player);
+		console.log('2backend: Google OAuth for player:', loginId);
 
-		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${state}`;
+		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${loginId}`;
 		reply.redirect(redirectURL);
 	});
 
 	fastify.get('/api/auth/google/callback', async (request, reply) => {
 		const { code, state } = request.query;
-		console.log('callback: Google OAuth for player:', state);
+		const loginId = state || '1';
+		console.log('callback: Google OAuth for player:', loginId);
 
 		try {
-			// 
 			const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
 			code,
 			client_id: process.env.GOOGLE_CLIENT_ID,
@@ -116,13 +121,14 @@ export default async function googleAuthRoutes(fastify, opts) {
 
 			const jwtToken = signFastifyJWT(dbUserObj, fastify);
 			console.log('Generated JWT:', jwtToken);
-			reply.setCookie('jwtAuthToken' + state, jwtToken, {
-				httpOnly: true,      // Prevents JS access
-				secure: true,        // Only sent over HTTPS
-				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+			reply.setCookie('jwtAuthToken' + loginId, jwtToken, {
+				httpOnly: true,		// Prevents JS access
+				secure: true,		// Only sent over HTTPS
+				sameSite: 'Lax',	// CSRF protection ('Strict' is even more secure)
+				signed: true,		// signed cookies
 				path: '/',
-				maxAge: 60 * 60      // 1 hour
-			}).redirect('https://localhost:8443');
+				maxAge: 60 * 60		// 1 hour
+			}).redirect(`https://${window.location.hostname}:8443`);
 
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

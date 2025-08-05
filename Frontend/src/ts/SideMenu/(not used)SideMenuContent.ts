@@ -10,10 +10,10 @@ function getPlayer(nr: number) {
 
 	const	isPlayer1 = nr === 1;
 
-	playername.textContent = isPlayer1 ? Game.name : Game.name2;
+	playername.textContent = isPlayer1 ? Game.player1Name : Game.player2Name;
 	playername.id = 'playerName' + nr;
 
-	
+
 	player.style.padding = '5px';
 	player.style.height = '70px';
 	player.style.width = '500px';
@@ -54,19 +54,19 @@ function updateTextbyId(id: string, value: string) {
 }
 
 export function updateNamesMenu() {
-	updateTextbyId('playerName1', Game.name);
-	updateTextbyId('playerName2', Game.name2);
+	updateTextbyId('playerName1', Game.player1Name);
+	updateTextbyId('playerName2', Game.player2Name);
 }
 
 export function updateScoreMenu() {
-	updateTextbyId('playerScore1', Game.score.toString());
-	updateTextbyId('playerScore2', Game.score2.toString());
+	updateTextbyId('playerScore1', Game.scoreLeft.toString());
+	updateTextbyId('playerScore2', Game.scoreRight.toString());
 }
 
 export function resetScoreMenu() {
 	updateTextbyId('playerScore1', '0');
 	updateTextbyId('playerScore2', '0');
 
-	Game.score = 0;
-	Game.score2 = 0;
+	Game.scoreRight = 0;
+	Game.scoreLeft = 0;
 }

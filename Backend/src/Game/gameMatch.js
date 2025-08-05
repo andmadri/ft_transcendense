@@ -52,19 +52,20 @@ export function newMatch(id, name, id2, name2) {
 	1vsCOM	=> if logged in or guest => new match not in db
 	Online	=> new match + save match db
 */
-export function createMatch(msg, socket) {
+export function createMatch(msg, socket, userId1, userId2) {
 	console.log("create new match");
+	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = msg.opponentMode;
-	const	player1ID = msg.player1ID ? msg.player1ID : 0;
-	const	player2ID = msg.player2ID ? msg.player2ID : 0;
-	
-	const id = newMatch(msg.player1ID, msg.name, msg.player2ID, msg.name2);
+	const	player1ID = userId1 ? userId1 : 0;
+	const	player2ID = userId2 ? userId2 : 0;
+
+	const id = newMatch(player1ID, msg.name, player2ID, msg.name2);
 	if (opponentMode == 1 && player1ID != 0 && player2ID != 0) // both not guest or comp
 		matches.get(id).saveInDB = true;
 	else if (opponentMode == 2) // online
 		matches.get(id).saveInDB = true;
-	
-	socket.send(JSON.stringify({ 
+
+	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'init',
 		id,
@@ -89,14 +90,14 @@ export async function quitMatch(match, msg, socket) {
 export function saveMatch(match, msg, socket) {
 	const player1 = match.player1;
 	const player2 = match.player2;
-	if (match.saveInDB && match.stage == Stage.Finish) {
+	console.log("Save match" + player1.score + " " + player2.score);
+	if (match.saveInDB)
 		saveMatchDB(player1.id, player2.id, player1.score, player2.score);
-		matches.delete(match.matchID);
-		socket.send(JSON.stringify({
-			action: 'game',
-			subaction: 'save',
-			matchID: match.matchID,
-			success: true
-		}));
-	}
+	matches.delete(match.matchID);
+	socket.send(JSON.stringify({
+		action: 'game',
+		subaction: 'save',
+		matchID: match.matchID,
+		success: true
+	}));
 }

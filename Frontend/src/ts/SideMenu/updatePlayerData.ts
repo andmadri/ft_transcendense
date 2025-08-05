@@ -1,6 +1,6 @@
 import { log } from '../logging.js';
 import { Game } from '../script.js';
-import { updateScoreMenu, updateNamesMenu } from './SideMenuContent.js';
+import * as S from '../structs.js'
 
 
 export function actionPlayerInfo(data: any) {
@@ -19,21 +19,21 @@ function receivePlayerData(data: any) {
 		console.error('Error receiving player data:', data.msg);
 		return ;
 	} else {
-		Game.name = data.name || 'unknown';
-		Game.id = data.id || 0;
+		Game.player1Name = data.name || 'unknown';
+		Game.player1Id = data.id || -1;
 		Game.player1Login = data.player1Login || false;
-		Game.score = data.score || 0;
-		Game.name2 = data.name2 || 'unknown';
-		Game.id2 = data.id2 || 0;
+		Game.scoreLeft = data.score || 0;
+		Game.player2Name = data.name2 || 'unknown';
+		Game.player2Id = data.id2 || -1;
 		Game.player2Login = data.player2Login || false;
-		Game.score2 = data.score2 || 0;
+		Game.scoreRight = data.score2 || 0;
 	}
+	if (Game.player1Id != -1)
+		Game.state = S.State.Menu;
 	const app = document.getElementById('app');
 	if (!app) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
-	updateScoreMenu(); 
-	updateNamesMenu();
 }
 
 export function getPlayerData() {
@@ -44,5 +44,4 @@ export function getPlayerData() {
 export function updatePlayerData(player: number) {
 	if (player != 0) // guest
 		getPlayerData();
-	updateNamesMenu();
 }

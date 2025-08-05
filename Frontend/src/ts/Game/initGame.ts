@@ -1,12 +1,16 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
+import { submitLogout } from '../Auth/logout.js';
+import { styleElement } from '../Menu/menuContent.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login2;		
+			if (Game.player2Id != -1)
+				Game.state = S.State.Init;
+			else
+				Game.state = S.State.LoginP2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
@@ -64,7 +68,7 @@ export function changeMatchFormat(option: string) {
 			break ;
 		default:
 			log(`unknown match format? ${option}`);
-	}	
+	}
 }
 
 // Get start position of ball
@@ -123,11 +127,11 @@ export function initGameServer() {
 		const initGame = {
 			action: 'game',
 			subaction: 'init',
-			playerId: Game.id,
-			playerName: Game.name,
+			playerId: Game.player1Id,
+			playerName: Game.player1Name,
 			opponentMode: Game.opponentType,
-			playerId2: Game.id2,
-			playerName2: Game.name2
+			playerId2: Game.player2Id,
+			playerName2: Game.player2Name
 		}
 		if (Game.opponentType == S.OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
@@ -135,24 +139,84 @@ export function initGameServer() {
 	}
 }
 
+function readyStart(txt: HTMLDivElement) {
+	log("Start button clicked");
+	if (document.getElementById('startScreen')) {
+		const app = document.getElementById('app');
+		const startScreen = document.getElementById('startScreen')
+		if (app && startScreen)
+			app.removeChild(startScreen);
+		Game.playMode = true ;
+	}
+}
+
+// WHO VS WHO
+function getStartScreenBeforeGame() {
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
+	const startScreen = document.createElement('div');
+		startScreen.id = 'startScreen';
+	styleElement(startScreen, {
+
+	})
+	const player1 = document.createElement('div');
+	const player2 = document.createElement('div');
+	const name1 = document.createElement('div');
+	const name2 = document.createElement('div');
+	const avatar1 = document.createElement('img');
+	const avatar2 = document.createElement('img');
+	const txt = document.createElement('div');
+	const startBtn = document.createElement('button');
+
+	name1.textContent = Game.player1Name;
+	name2.textContent = Game.player2Name;
+	avatar1.src = "./../images/avatar.png";
+	styleElement(avatar1, {
+		objectFit: 'contain',
+	})
+	avatar2.src = "./../images/avatar.png";
+	styleElement(avatar2, {
+		objectFit: 'contain',
+	})
+	player1.append(name1, avatar1);
+	player2.append(name2, avatar2);
+	txt.textContent = "Ready...?";
+	startBtn.textContent = "START";
+	startBtn.addEventListener('click', (e) => readyStart(txt));
+	startScreen.append(player1, player2, txt, startBtn);
+	app.append(startScreen);
+}
+
 export function initGame() {
+	// if (document.getElementById('startScreen'))
+	// 	return ;
+	// getStartScreenBeforeGame();
 	initPositions();
 	initGameServer();
-	updateNamesMenu();
-	resetScoreMenu();
+	// updateNamesMenu();
+	// resetScoreMenu();
 }
 
-export function saveGame() {
-	const saveGameMsg = {
-		action: 'game',
-		subaction: 'save',
-		matchID: Game.matchID
-	}
-	Game.socket.send(JSON.stringify(saveGameMsg));
+// export function saveGame() {
+// 	log("Saving game...");
+// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
+// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
+// 	{
+// 		log("Saving game and logout player 2");
+// 		submitLogout(null, 2);
+// 	}
+// 	const saveGameMsg = {
+// 		action: 'game',
+// 		subaction: 'save',
+// 		matchID: Game.matchID
+// 	}
+// 	Game.socket.send(JSON.stringify(saveGameMsg));
 
-	Game.score = 0;
-	Game.score2 = 0;
-	Game.matchID = -1;
-	updateNamesMenu();
-	resetScoreMenu();
-}
+// 	Game.scoreLeft = 0;
+// 	Game.scoreRight = 0;
+// 	Game.matchID = -1;
+// 	updateNamesMenu();
+// 	resetScoreMenu();
+// }

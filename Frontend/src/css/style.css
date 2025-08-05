@@ -8,6 +8,7 @@ html, body {
 #app {
 	flex: 9;
 	background-color: #ffd202;
+	width: 100%;
 }
   
 #log {

@@ -2,14 +2,14 @@ import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
 
-export function handleGame(msg, socket) {
+export function handleGame(msg, socket, userId1, userId2) {
 	if (!msg.subaction) {
 		console.log('no subaction');
 		return ;
 	}
 
 	if (msg.subaction == 'init')
-		return createMatch(msg, socket);
+		return createMatch(msg, socket, userId1, userId2);
 
 	if (!msg.matchID) {
 		console.log("No matchID found in msg from frontend");
@@ -18,7 +18,6 @@ export function handleGame(msg, socket) {
 
 	const match = matches.get(msg.matchID);
 	if (!match) {
-		console.log(`No match with handle Game ${msg.matchID}`);
 		return ;
 	}
 

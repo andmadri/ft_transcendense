@@ -3,7 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { initGame, saveGame } from './Game/initGame.js'
+import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
@@ -11,26 +11,26 @@ import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
+import { saveGame } from './Game/endGame.js';
 
 getLoadingPage();
 createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Login,
+	state: S.State.LoginP1,
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: new WebSocket('wss://localhost:8443/wss'),
+	playMode: false,
 	matchID: -1,
-	id: -1,
-	name: 'unknown',
-	player1Login: false, // should be Cookie
-	score: 0,
-	id2: -1,
-	name2: 'unknown',
-	player2Login: false, // should be Cookie
-	score2: 0,
+	player1Id: -1,
+	player1Name: 'unknown',
+	player1Login: false,
+	player2Id: 1,			// default player2Id for guest login
+	player2Name: 'Guest',	// default player2Name for guest login
+	player2Login: false,	// default player2Login for guest login
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
@@ -59,23 +59,20 @@ function incrementBallSpeed() {
 
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		// if (!Game.player1Login)
-		// 	Game.state = S.State.Login;
-
 		switch (Game.state) {
-			case S.State.Login: {
+			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
 					getLoginFields(1);
 				break ;
 			}
-			case S.State.Menu: {
-				if (!document.getElementById('menu'))
-					getMenu();
-				break ;
-			}
-			case S.State.Login2: {
+			case S.State.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
+				break ;
+			}
+			case S.State.Menu: {
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
+					getMenu();
 				break ;
 			}
 			case S.State.Pending: {
@@ -87,13 +84,15 @@ function mainLoop() {
 				log("init game");
 				if (!document.getElementById('game'))
 				{
+					log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 				}
 				break ;
 			case S.State.Game: {
-				// if (Game.matchID >= 0) 
-				game();
+				// if (Game.matchID >= 0)
+				// if (Game.playMode == true)
+					game();
 				break ;
 			}
 			case S.State.End:
@@ -102,11 +101,12 @@ function mainLoop() {
 			default:
 				log("no valid state");
 		}
-		
+
 	}
 	window.requestAnimationFrame(mainLoop);
 }
 
 setTimeout(() => {
+	log(S.host);
 	mainLoop();
 }, 2000);

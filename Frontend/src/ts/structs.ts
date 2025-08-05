@@ -1,7 +1,7 @@
 export enum State {
-	Login,
+	LoginP1,
 	Menu,
-	Login2,
+	LoginP2,
 	Pending,
 	Init,
 	Game,
@@ -28,20 +28,19 @@ export type gameInfo = {
 	matchFormat: MF;
 	logDiv: HTMLDivElement;
 	socket: WebSocket;
+	playMode: boolean;
 
 	matchID: number;
 
-	// Player that is logged in
-	id: number;
-	name: string;
+	// Information for playercard one
+	player1Id: number;
+	player1Name: string;
 	player1Login: Boolean;
-	score: number;
 
-	// if there is another player on the same computer (1 vs 1 mode)
-	id2: number;
-	name2: string;
+	// Information for playercard two
+	player2Id: number;
+	player2Name: string;
 	player2Login: Boolean;
-	score2: number;
 
 	playerLogin: number; // if online => player one or two (so left or right field)
 	timeGame: number;
@@ -94,3 +93,5 @@ export type AIInfo = {
 	lastReaction: number; // timestamp of last reaction
 	targetDirection: string; // 'ArrowUp' or 'ArrowDown'
 };
+
+export const host = window.location.hostname;

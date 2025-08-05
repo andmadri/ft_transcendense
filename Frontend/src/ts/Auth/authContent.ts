@@ -1,4 +1,4 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js'
+import { submitAuthForm, loginSuccessfull, changeLoginMode } from './userAuth.js'
 import { log } from '../logging.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
@@ -6,7 +6,6 @@ import * as S from '../structs.js'
 export function getAuthField(player: number, mandatoy: Boolean) {
 	const	auth = document.createElement('div');
 	auth.id = 'auth' + player;
-	auth.style.backgroundColor = 'lightblue';
 	auth.style.width = '50%';
 	auth.style.height = '100%';
 	auth.style.position = 'relative';
@@ -14,9 +13,6 @@ export function getAuthField(player: number, mandatoy: Boolean) {
 	auth.style.flexDirection = 'column';
 	auth.style.alignItems = 'center';
 	auth.style.zIndex = '999';
-	if (player == 2) {
-		auth.style.backgroundColor = 'lightgreen';
-	}
 
 	const	authTitle = document.createElement('h2');
 	authTitle.id = 'authTitle' + player;
@@ -118,7 +114,7 @@ export function getLoginFields(player: number) {
 	app.style.alignItems = 'flex-start';
 	app.style.gap = '20px';
 
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
+	if (player == 1) { // one login mandatory
 		app.appendChild(getAuthField(player, true));
 	} else {
 		app.append(getAuthField(player, false));
@@ -126,11 +122,9 @@ export function getLoginFields(player: number) {
 
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
-	document.getElementById('google-login-btn1')?.addEventListener('click', (e) => {
-		window.location.href = 'https://localhost:8443/api/auth/google?player=' + player;
-		
+	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
+		window.location.href = `https://${S.host}:8443/api/auth/google?player=` + player;
 	});
 
 	document.getElementById('toggle-mode' + player)?.addEventListener('click', (e) => changeLoginMode(player));
-	document.getElementById('guestBtn' + player)?.addEventListener('click', (e) => addGuest(e, player));
 }

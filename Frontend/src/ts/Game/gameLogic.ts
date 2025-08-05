@@ -2,7 +2,6 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { initPositions } from './initGame.js';
-import { updateScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { aiAlgorithm, resetAI } from './aiLogic.js';
 import { trainingSet, downloadTrainingData, collectTrainingData } from './aiTraining.js'
 
@@ -24,7 +23,7 @@ export function processPadelUpdate(data: any) {
 		if (rPlayer && typeof data.playerOneY === 'number')
 			rPlayer.style.top = `${data.playerOneY}px`;
 		S.Objects['rPlayer'].y = data.playerOneY;
-		
+
 	}
 	if ('lPlayerX' in data) {
 		const lPlayer = document.getElementById('lPlayer');
@@ -80,7 +79,7 @@ export function updatePadelPosition() {
 	if (Game.socket.readyState != WebSocket.OPEN)
 		return ;
 	if (leftPadel && rightPadel) {
-		const msg = { 
+		const msg = {
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
@@ -108,7 +107,7 @@ export function calculateBallDir() {
 }
 
 export function updateBallPosition() {
-	const msg = { 
+	const msg = {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: S.Objects['ball'].y,
@@ -127,7 +126,7 @@ export function checkWallCollision() {
 	const radius = S.Objects['ball'].height / 2;
 	if (S.Objects['ball'].y <= radius || S.Objects['ball'].y + radius >= S.Objects['field'].height)
 		S.Objects['ball'].angle = normalizeAngle(-S.Objects['ball'].angle);
-	
+
 }
 
 function resetBall(){
@@ -156,7 +155,7 @@ export function updateScoreDisplay(side: string, newScore: number) {
 }
 
 function updateScoreServer(id: number) {
-	const msg = { 
+	const msg = {
 		action: 'game',
 		subaction: 'scoreUpdate',
 		player: 0,
@@ -164,7 +163,7 @@ function updateScoreServer(id: number) {
 	};
 
 	msg.player = id;
-	Game.socket.send(JSON.stringify(msg));	
+	Game.socket.send(JSON.stringify(msg));
 }
 
 export function checkPaddelCollision() {
@@ -182,7 +181,7 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('leftScore', ++Game.scoreLeft);
-			updateScoreServer(Game.id);
+			updateScoreServer(Game.player1Id);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -194,7 +193,7 @@ export function checkPaddelCollision() {
 		}
 		else {
 			updateScoreDisplay('rightScore', ++Game.scoreRight);
-			updateScoreServer(Game.id2);
+			updateScoreServer(Game.player2Id);
 		}
 	}
 }
@@ -241,10 +240,13 @@ export function game() {
 
 	if (AI)
 		Game.timeGame = performance.now();
-	
-	if (Game.scoreRight == 5 || Game.scoreLeft == 5)
-		handleGameOver();
-	
+
+	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+			Game.state = S.State.End;
+			Game.playMode = false;
+			return ;
+		}
+
 	// if (AI) {
 	// 	downloadTrainingData();
 	// 	trainingSet.length = 0;

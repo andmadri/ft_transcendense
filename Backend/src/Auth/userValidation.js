@@ -15,7 +15,7 @@ function checkName(name) {
 }
 
 function checkEmail(email) {
-	const emailRegex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+\.[a-zA-Z]{2,}$/;
+	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	if (!email.length)
 		return ('Email can not be empty');
 	else if (email.length < 3)
@@ -42,7 +42,7 @@ function checkPassword(password) {
 
 export async function addUser(msg) {
 	let errorMsg;
-	
+
 	errorMsg = checkName(msg.name);
 	if (errorMsg)
 		return (errorMsg);
@@ -93,7 +93,7 @@ export async function validateLogin(msg, fastify) {
 		await updateOnlineStatus(msg.email, !online);
 	} catch(err) {
 		console.error(err.msg);
-		// failed?
+		return ({ error: 'Database error' });
 	}
 	const jwtToken = signFastifyJWT(user, fastify);
 	console.log('Generated JWT:', jwtToken);

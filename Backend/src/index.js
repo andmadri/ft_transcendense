@@ -2,21 +2,23 @@ import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
-import fastifyCors from '@fastify/cors';
-// import { validateLogin, addUser } from './Auth/userAuth.js';
+import fastifyMultipart from '@fastify/multipart';
+// import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
-import googleAuthRoutes from './routes/googleAuth.js';
-import userAuthRoutes from './routes/userAuth.js';
+import  googleAuthRoutes  from './routes/googleAuth.js';
+import  userAuthRoutes  from './routes/userAuth.js';
+import  avatarRoutes  from './routes/avatar.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { testDB }   from './testDB.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
 
-//change how you create database
+// change how you create database
 export const db = await createDatabase();
 
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
@@ -28,26 +30,32 @@ fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
+// Register Multipart for handling file uploads
+await fastify.register(fastifyMultipart, {
+	limits: { fileSize: 5 * 1024 * 1024, } // 5MB file size limit
+});
+
 // Register the auth route plugins for HTTPS API Auth endpoints:
 // POST /api/signup - Sign up a new user
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
+await fastify.register(userAuthRoutes);
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
-await fastify.register(userAuthRoutes);
-
+// POST /api/upload-avatar
+await fastify.register(avatarRoutes);
 
 /*
-FROM frontend TO backend				
-• login => loginUpser / signUpUser / logout				
+FROM frontend TO backend
+• login => loginUpser / signUpUser / logout
 • playerInfo => changeName / addAvatar / delAvatar / getPlayerData
-• chat => outgoing										
-• online => getOnlinePlayers / getOnlinePlayersWaiting	
-• friends => getFriends / addFriend / deleteFriend		
-• pending => addToWaitlist / acceptGame					
-• game => init / ballUpdate / padelUpdate / scoreUpdate	
-• error => crash		
+• chat => outgoing
+• online => getOnlinePlayers / getOnlinePlayersWaiting
+• friends => getFriends / addFriend / deleteFriend
+• pending => addToWaitlist / acceptGame
+• game => init / ballUpdate / padelUpdate / scoreUpdate
+• error => crash
 */
 
 fastify.get('/wss', { websocket: true }, (connection, req) => {
@@ -77,7 +85,8 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			console.error('JWT2 verification failed:', err);
 		}
 	}
-	if (!userId1 && !userId2) {
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
 		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
 		return ;
@@ -86,6 +95,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 	connection.socket.on('message', (message) => {
 		const msg = JSON.parse(message.toString());
+		console.log('Received from frontend:', JSON.stringify(msg));
 		const action = msg.action;
 		// console.log('Received from frontend: ' + message);
 		if (!action) {
@@ -103,11 +113,11 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 			case 'online':
 				return handleOnlinePlayers(msg, connection.socket);
 			case 'friends':
-				break ;
+				return handleFriends(msg, connection.socket);
 			case 'pending':
 				break ;
 			case 'game':
-				return handleGame(msg, connection.socket);
+				return handleGame(msg, connection.socket, userId1, userId2);
 			case 'error':
 				console.log('Error from frontend..');
 				connection.socket.send(JSON.stringify(msg));
@@ -116,7 +126,19 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 				console.log('No valid action: ' + action);
 				connection.socket.send(JSON.stringify(msg));
 				return ;
-		}			
+		}
+	});
+
+	connection.on('close', () => {
+		(async () => {
+			try {
+				const user = getUserByID(userId1);
+				if (user && user.email)
+					updateOnlineStatus(user.email, 'offline');
+			} catch (err) {
+				console.error('Player can not logged out', err);
+			}
+		})
 	});
 });
 

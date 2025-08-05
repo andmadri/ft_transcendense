@@ -50,7 +50,7 @@ export default async function userAuthRoutes(fastify) {
 			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 			path: '/',
 			maxAge: 60 * 60      // 1 hour
-		}).send({ success: true, ok: true, message: 'User logged in successfully', player: answer.player, user: answer.user });
+		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name });
 	});
 
 	fastify.post('/api/logout', async (request, reply) => {
@@ -71,6 +71,7 @@ export default async function userAuthRoutes(fastify) {
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,
 				secure: true,
+				signed: true,
 				sameSite: 'Strict',
 				path: '/',
 			}).send({ message: 'Logged out', ok: true });
