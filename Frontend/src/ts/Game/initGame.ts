@@ -14,6 +14,8 @@ export function startGame() {
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
+			Game.player2Id = 2; // Is not getting used - only for visability
+			Game.player2Name = "AI"; // Is not getting used - only for visability
 			Game.state = S.State.Init;
 			break ;
 		}

@@ -34,6 +34,7 @@ export function actionGame(data: any) {
 
 	switch(data.subaction) {
 		case 'init':
+			log(`MatchID frontend: ${data.id}`)
 			processMatch(data);
 			break ;
 		case 'ballUpdate':

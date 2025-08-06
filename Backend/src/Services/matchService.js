@@ -6,6 +6,8 @@ import { updatePlayersSession } from './sessionsService.js';
 export async function handleMatchStart(db, match) {
 	// QUESTION THIS LATER: Should we check if the players is already in the game / logged in? - Or check before so it doesn't get complexed for the AI and guest?
 	
+	// If one of the players is AI or guest, automaticly assign match_type (vs_ai, vs_guest ect.)
+
 	// Step 1: Log the match
 	const matchID = await addMatchToDB(db, match);
 

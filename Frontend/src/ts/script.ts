@@ -26,10 +26,10 @@ export const Game: S.gameInfo = {
 	playMode: false,
 	matchID: -1,
 	player1Id: -1,
-	player1Name: 'unknown',
+	player1Name: 'unknown',	// Add later: getUserID from DB
 	player1Login: false,
 	player2Id: 1,			// default player2Id for guest login
-	player2Name: 'Guest',	// default player2Name for guest login
+	player2Name: 'Guest',		// Add later: getUserID from DB // default player2Name for guest login
 	player2Login: false,	// default player2Login for guest login
 	playerLogin: 1,
 	timeGame: 0,
