@@ -56,7 +56,7 @@ export function createTables(db)
 		FOREIGN KEY(player_1_id) REFERENCES Users(id),
 		FOREIGN KEY(player_2_id) REFERENCES Users(id),
 		FOREIGN KEY(winner_id) REFERENCES Users(id),
-		UNIQUE(player_1_id, player_2_id)
+		CHECK(player_1_id <> player_2_id)
 	);
 
 	CREATE TABLE IF NOT EXISTS MatchEvents (
@@ -133,7 +133,7 @@ export function createTables(db)
 					AVG(CASE WHEN u.id = m.player_1_id THEN m.player_2_score
 					ELSE m.player_1_score END), 1) AS avg_opp_score,
 				ROUND(
-					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 1) AS avg_duration
+					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
 	
 	

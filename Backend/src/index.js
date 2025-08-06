@@ -112,7 +112,7 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		return ;
 	}
 
-
+	// MARTY HERE!!! - Can we change the data of the message?
 	connection.socket.on('message', (message) => {
 		const msg = JSON.parse(message.toString());
 		console.log('Received from frontend:', JSON.stringify(msg));

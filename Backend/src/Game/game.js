@@ -25,11 +25,10 @@ export function handleGame(msg, socket, userId1, userId2) {
 		case 'ballUpdate':
 			return updateBall(match, msg, socket);
 		case 'padelUpdate':
-			return updatePadel(match, msg, socket );
+			return updatePadel(match, msg, socket);
 		case 'scoreUpdate':
 			return updateScore(match, msg, socket);
 		case 'save':
-			// console.log(`save: matchid=${msg.matchID} - ${match.matchID}`);
 			return saveMatch(match, msg, socket);
 		case 'quit':
 			return quitMatch(match, msg, socket);

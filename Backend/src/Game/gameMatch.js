@@ -2,9 +2,11 @@ import { saveMatchDB } from '../Database/match.js'
 import { getUserByID } from '../Database/users.js';
 import { handleMatchStart } from '../Services/matchService.js';
 import { updateMatchInDB } from '../Database/match.js'
+import { getUserMatchStats, getAllUserStateDurations } from '../Database/online.js';
+import { addUserSessionToDB } from '../Database/sessions.js';
+import { getMatchByID } from '../Database/match.js';
 import { db } from '../index.js';
 
-let				matchnr = 0;
 export const 	matches = new Map();
 
 export const Stage = {
@@ -60,10 +62,6 @@ export async function createMatch(msg, socket, userId1, userId2) {
 	if (opponentMode === 2) {
 		userId2 = 2;
 	}
-	// The if statement for the users should be deleted - we should know both users (also for AI and Guest)
-	// const	player1ID = userId1 ? userId1 : 2;
-	// msg.opponentMode
-	// const	player2ID = userId2 ? userId2 : 2;
 
 	const match_id_db = await handleMatchStart(db, {
 		player_1_id: userId1,
@@ -95,22 +93,30 @@ export async function quitMatch(match, msg, socket) {
 }
 
 
-export function saveMatch(match, msg, socket) {
-	// const player1 = match.player1;
-	// const player2 = match.player2;
-	// console.log(`matchid: ${match.matchID}`);
-	updateMatchInDB(db, {
+export async function saveMatch(match, msg, socket) {
+	await updateMatchInDB(db, {
 		match_id: msg.matchID, //match.key()
-		player_1_score: match.player1.score,
-		player_2_score: match.player2.score,
+		// player_1_score: match.player1.score,
+		// player_2_score: match.player2.score,
 		winner_id: match.player1.score >= match.player2.score ? match.player1.id : match.player2.id, // DELETE THIS LINE LATER
 		end_time: new Date().toISOString() // DELETE THIS LINE LATER
 	})
-	// console.log("Save match" + player1.score + " " + player2.score);
-	// if (match.saveInDB)
-	// {
-	// 	saveMatchDB(player1.id, player2.id, player1.score, player2.score);
-	// }
+
+	// DELETE LATER
+	await addUserSessionToDB(db, {
+		user_id: match.player1.id,
+		state: 'in_menu'
+	});
+	await addUserSessionToDB(db, {
+		user_id: match.player2.id,
+		state: 'in_menu'
+	});
+	console.table(await getMatchByID(db, msg.matchID));
+	console.log(await getUserMatchStats(db, match.player1.id));
+	console.log(await getUserMatchStats(db, match.player2.id));
+	console.log(await getUserMatchStats(db, 1));
+	console.table(await getAllUserStateDurations(db));
+
 	matches.delete(match.matchID);
 	socket.send(JSON.stringify({
 		action: 'game',

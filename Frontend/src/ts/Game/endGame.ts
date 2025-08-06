@@ -58,6 +58,7 @@ export function saveGame() {
 	if (!document.getElementById('gameOver'))
 		handleGameOver();
 
+	// MARTY HERE!!! - Is this the place where we can change the data of the message?
 	const saveGameMsg = {
 		action: 'game',
 		subaction: 'save',

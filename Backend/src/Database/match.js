@@ -73,7 +73,7 @@ export async function addMatchEventToDB(db, event) {
 				console.error('Error SQL - addMatchEventToDB:', err.message);
 				reject(err);
 			} else {
-				console.log(`Match event: [${event.match_id}] ${user.name} - ${event.event_type}`);
+				console.log(`Match [${event.match_id}] event: [${this.lastID}] ${user.name} - ${event.event_type}`);
 				resolve(this.lastID);
 			}
 		});
