@@ -3,36 +3,38 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { changeMatchFormat, changeOpponentType, initGame, startGame} from './Game/initGame.js'
+import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
-import { getLoginFields, removeAuthField } from './Auth/authContent.js'
-import { getGameField, removeGameField } from './Game/gameContent.js'
+import { getLoginFields } from './Auth/authContent.js'
+import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
-import { getMenu, removeMenu } from './Menu/menuContent.js'
-import { getSideMenu, updateNamesMenu, updateScoreMenu, resetScoreMenu } from './SideMenu/SideMenuContent.js'
+import { getMenu } from './Menu/menuContent.js'
+import { getLoadingPage } from './Loading/loadContent.js'
+import { saveGame } from './Game/endGame.js';
 
+// getLoadingPage();
 createLog();
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
-	state: S.State.Menu,
-	opponentType: S.OT.Empty,
-	matchFormat: S.MF.Empty,
+	state: S.State.LoginP1,
+	opponentType: S.OT.ONEvsONE,
+	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket(`wss://${window.location.hostname}:8443/wss`),
+	socket: new WebSocket('wss://localhost:8443/wss'),
+	playMode: false,
+	matchID: -1,
+	player1Id: -1,
+	player1Name: 'unknown',
+	player1Login: false,
+	player2Id: 1,			// default player2Id for guest login
+	player2Name: 'Guest',	// default player2Name for guest login
+	player2Login: false,	// default player2Login for guest login
+	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
-	id: 0,
-	name: 'unknown',
-	player1Login: false,
-	score: 0,
-	id2: 0,
-	name2: 'unknown',
-	player2Login: false,
-	score2: 0,
-	playerLogin: 1
 }
 
 startSocketListeners();
@@ -42,44 +44,60 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
 
-getSideMenu();
-
 function mainLoop() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
 		switch (Game.state) {
-			case S.State.Menu: {
-				if (!document.getElementById('menu'))
-					getMenu();
-				break ;
-			}
-			case S.State.Login: {
+			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
-					getLoginFields();
+					getLoginFields(1);
 				break ;
 			}
-			case S.State.Login2: {
+			case S.State.LoginP2: {
 				if (!document.getElementById('auth2'))
-					getLoginFields();
+					getLoginFields(2);
+				break ;
+			}
+			case S.State.Menu: {
+				// document.getElementById('auth1')?.remove();
+				// document.getElementById('auth2')?.remove();
+				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
+					getMenu();
 				break ;
 			}
 			case S.State.Pending: {
 				// waiting for opponement
+				log("No online mode yet...pending...");
 				break ;
 			}
-			case S.State.Game: {
-				if (!document.getElementById('game')) {
+			case S.State.Init:
+				log("init game");
+				if (!document.getElementById('game'))
+				{
+					log("On Init:" + JSON.stringify(Game));
+					getGameField();
 					initGame();
 				}
-				game();
-				//if you are playing with the AI and you log out yourself there is a problem
-				// if (Game.opponentType != S.OT.ONEvsCOM && (!Game.player1Login || !Game.player2Login))
-				// 	Game.state = S.State.Menu;
+				break ;
+			case S.State.Game: {
+				// document.getElementById('auth1')?.remove();
+				// document.getElementById('auth2')?.remove();
+				// if (Game.matchID >= 0)
+				// if (Game.playMode == true)
+					game();
 				break ;
 			}
+			case S.State.End:
+				saveGame();
+				break ;
+			default:
+				log("no valid state");
 		}
-		
+
 	}
 	window.requestAnimationFrame(mainLoop);
 }
 
-mainLoop();
+setTimeout(() => {
+	log(S.host);
+	mainLoop();
+}, 2000);

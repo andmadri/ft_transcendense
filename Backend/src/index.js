@@ -1,32 +1,121 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
-import { handleUserAuth } from './Auth/userAuth.js';
+import fastifyCookie from '@fastify/cookie';
+import fastifyJwt from '@fastify/jwt';
+import fastifyMultipart from '@fastify/multipart';
+// import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
-import { initGame, gameUpdate } from './Game/gameLogic.js';
+import { handleGame } from './Game/game.js'
+import  googleAuthRoutes  from './routes/googleAuth.js';
+import  userAuthRoutes  from './routes/userAuth.js';
+import  avatarRoutes  from './routes/avatar.js';
+import { parseAuthTokenFromCookies } from './Auth/authToken.js';
+// import { testDB }   from './testDB.js';
+import { addUserToDB } from './Database/users.js';
+import { onUserLogin } from './Services/sessionsService.js';
 
 const fastify = Fastify();
 await fastify.register(websocket);
-//change how you create database
+
+// change how you create database
 export const db = await createDatabase();
 
 
+// creating a guest and AI user for testing purposes -> create a function for that later
+const guest_id = await addUserToDB(db, {
+	name: 'Guest',
+	email: 'guest@guest.guest',
+	password: 'secretguest',
+	avatar_url: null
+});
+await onUserLogin(db, guest_id);
+
+const ai_id = await addUserToDB(db, {
+	name: 'AI',
+	email: 'ai@ai.ai',
+	password: 'secretai',
+	avatar_url: null
+});
+await onUserLogin(db, ai_id);
+
+// RUN THE TEST DATABASE FUNCTION (testDB.js)
+// await testDB(db);
+
+// Register the cookie plugin
+fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
+
+// Register the JWT plugin
+fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
+
+// Register Multipart for handling file uploads
+await fastify.register(fastifyMultipart, {
+	limits: { fileSize: 5 * 1024 * 1024, } // 5MB file size limit
+});
+
+// Register the auth route plugins for HTTPS API Auth endpoints:
+// POST /api/signup - Sign up a new user
+// POST /api/login - Log in an existing user
+// POST /api/logout - Log out a user
+await fastify.register(userAuthRoutes);
+// GET /api/auth/google - Redirect to Google OAuth
+// GET /api/auth/google/callback - Handle Google OAuth callback
+await fastify.register(googleAuthRoutes);
+// POST /api/upload-avatar
+await fastify.register(avatarRoutes);
+
 /*
-FROM frontend TO backend				
-• login => loginUpser / signUpUser / logout				
-• playerInfo => changeName / addAvatar / delAvatar		
-• chat => outgoing										
-• online => getOnlinePlayers / getOnlinePlayersWaiting	
-• friends => getFriends / addFriend / deleteFriend		
-• pending => addToWaitlist / acceptGame					
-• game => init / ballUpdate / padelUpdate / scoreUpdate	
-• error => crash		
+FROM frontend TO backend
+• login => loginUpser / signUpUser / logout
+• playerInfo => changeName / addAvatar / delAvatar / getPlayerData
+• chat => outgoing
+• online => getOnlinePlayers / getOnlinePlayersWaiting
+• friends => getFriends / addFriend / deleteFriend
+• pending => addToWaitlist / acceptGame
+• game => init / ballUpdate / padelUpdate / scoreUpdate
+• error => crash
 */
 
 fastify.get('/wss', { websocket: true }, (connection, req) => {
 
+	// Check if the request has a valid JWT token in cookies
+	const cookies = req.headers.cookie;
+	const authTokens = parseAuthTokenFromCookies(cookies);
+
+	let decoded;
+	let userId1 = null;
+	let userId2 = null;
+	if (authTokens && authTokens.jwtAuthToken1) {
+		try {
+			decoded = fastify.jwt.verify(authTokens.jwtAuthToken1);
+			userId1 = decoded.userId;
+			// Use userId or decoded as needed for player 1
+		} catch (err) {
+			console.error('JWT1 verification failed:', err);
+		}
+	}
+	if (authTokens && authTokens.jwtAuthToken2) {
+		try {
+			decoded = fastify.jwt.verify(authTokens.jwtAuthToken2);
+			userId2 = decoded.userId;
+			// Use userId or decoded as needed for player 2
+		} catch (err) {
+			console.error('JWT2 verification failed:', err);
+		}
+	}
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	if (!userId1) {
+		console.error('No valid auth tokens found in cookies');
+		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
+		return ;
+	}
+
+
 	connection.socket.on('message', (message) => {
 		const msg = JSON.parse(message.toString());
+		console.log('Received from frontend:', JSON.stringify(msg));
 		const action = msg.action;
 		// console.log('Received from frontend: ' + message);
 		if (!action) {
@@ -37,21 +126,18 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 
 		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 		switch (action) {
-			case 'login':
-				return handleUserAuth(msg, connection.socket);
+			// case 'login':
+			// 	return handleUserAuth(msg, connection.socket, fastify);
 			case 'playerInfo':
-				break ;
+				return handlePlayerInfo(msg, connection.socket, userId1, userId2);
 			case 'online':
 				return handleOnlinePlayers(msg, connection.socket);
 			case 'friends':
-				break ;
+				return handleFriends(msg, connection.socket);
 			case 'pending':
 				break ;
 			case 'game':
-				if (msg.subaction == 'init')
-					return initGame(msg, connection.socket);
-				else
-					return gameUpdate(msg, connection.socket);
+				return handleGame(msg, connection.socket, userId1, userId2);
 			case 'error':
 				console.log('Error from frontend..');
 				connection.socket.send(JSON.stringify(msg));
@@ -60,7 +146,19 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 				console.log('No valid action: ' + action);
 				connection.socket.send(JSON.stringify(msg));
 				return ;
-		}			
+		}
+	});
+
+	connection.on('close', () => {
+		(async () => {
+			try {
+				const user = getUserByID(userId1);
+				if (user && user.email)
+					updateOnlineStatus(user.email, 'offline');
+			} catch (err) {
+				console.error('Player can not logged out', err);
+			}
+		})
 	});
 });
 

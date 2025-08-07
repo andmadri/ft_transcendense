@@ -1,7 +1,6 @@
-import { removeAuthField } from '../Auth/authContent.js';
-import { removeMenu } from '../Menu/menuContent.js'
 import { log } from '../logging.js'
 import { Game } from '../script.js'
+import * as S from '../structs.js'
 
 function styleElement(
 	element: HTMLElement,
@@ -29,25 +28,49 @@ function styleElement(
 		element.style.backgroundColor = backgroundColor;
 }
 
-function removeLogDiv() {
-	const logDiv = document.getElementById('log');
-	logDiv?.remove();
+function getQuitBtn() {
+	const	quiting = document.createElement('div');
+	quiting.style.display = 'flex';
+	const	quit = document.createElement('button');
+	quit.id = 'quitBtn';
+	quit.textContent = 'Exit';
+
+	quit.addEventListener('click', () => {
+		log("pushed quit button");
+		Game.socket.send(JSON.stringify( {
+			action: 'game',
+			subaction: 'quit',
+			matchID: Game.matchID,
+			player: Game.player1Id,
+			name: Game.player1Name
+		}));
+		Game.state = S.State.End;
+	})
+	quiting.appendChild(quit);
+	return (quiting);
 }
 
+// export function getGameField() {
+// 	const	body = document.getElementById('body');
+// 	if (!body)
+// 		return ;
+// 	body.style.height = "100vh";
+// 	body.style.backgroundColor = "linear-gradient(90deg, #ff6117, #ffc433, #ffc433)";
+// 	body.style.justifyContent = "center"
+
+// 	const gameContainer = document.createElement('div');
+// 	gameContainer.className = 'gameContainer';
+// 	gameContainer.innerHTML = `
+// 	<
+// 	`;
+
+// }
+
 export function getGameField() {
-	if (document.getElementById('auth1')) {
-		removeAuthField(1);
-	}
-	if (document.getElementById('auth2')) {
-		removeAuthField(2);
-	}
-	removeLogDiv();
-	const	body = document.body;
-	body.style.margin = '0';
-	body.style.padding = '0';
-	body.style.backgroundColor = 'gold';
-	body.style.display = 'grid';
-	body.style.placeItems = 'center';
+	const	app = document.getElementById("app");
+	if (!app)
+		return ;
+	app.innerHTML = "";
 
 	//wrapper for title and field
 	const container = document.createElement('div');
@@ -56,19 +79,19 @@ export function getGameField() {
 	container.style.alignItems = 'center'; // center horizontally
 	container.style.gap = '20px'; // spacing between title and field
 	container.style.flexShrink = '0';
-	
+	container.appendChild(getQuitBtn());
 
 	const	game = document.createElement('div');
 	game.style.display = 'flex';
 	game.style.flexDirection = 'column';
 	game.id = 'game';
-	styleElement(game, '100vw', '100vh', 'relative', '', '', '', 'gold');
+	styleElement(game, '100%', '100%', 'relative', '', '', '', 'gold');
 	game.style.alignItems = 'center';
 	game.style.padding = '10px';
 	game.style.boxSizing = 'border-box';
 	game.style.gap = '20px';
 	game.style.textAlign = 'center';
-	
+
 
 	const title = document.createElement('div');
 	title.id = 'gameTitle';
@@ -83,7 +106,7 @@ export function getGameField() {
 	2px  2px 0 black	`;
 	title.style.zIndex = '5';
 	title.style.pointerEvents = 'none';
-	
+
 	const	field = document.createElement('div');
 	field.id = 'field';
 	styleElement(field, '800px', '600px', 'relative', '', '', '', 'black');
@@ -91,21 +114,21 @@ export function getGameField() {
 	field.style.borderRadius = '30px';
 	//field.style.padding = '30px';
 	field.style.position = 'relative';
-	
+
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
 	styleElement(ball, '25px', '25px', 'absolute', '50%', '', '50%', 'white');
 	ball.style.borderRadius = '50%';
 	ball.style.transform = 'translate(-50%, -50%)';
-	
+
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';
 	styleElement(lPlayer, '10px', '100px', 'absolute', '35%', '', '10px', 'white');
-	
+
 	const	rPlayer = document.createElement('div');
 	rPlayer.id = 'rPlayer';
 	styleElement(rPlayer, '10px', '100px', 'absolute', '35%', '10px', '', 'white');
-	
+
 	const centerLine = document.createElement('div');
 	centerLine.id = 'centerLine';
 	styleElement(centerLine, '0', '100%', 'absolute', '0', '', '50%');
@@ -144,15 +167,7 @@ export function getGameField() {
 	container.appendChild(title);
 	container.appendChild(field);
 	game.appendChild(container);
-	body.appendChild(game);
-}
-
-export function removeGameField() {
-	const	body = document.getElementById('body');
-	const	game = document.getElementById('game');
-
-	if (body && game)
-		body.removeChild(game);
+	app.appendChild(game);
 }
 
 export function handleGameOver() {

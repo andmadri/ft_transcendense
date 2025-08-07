@@ -5,15 +5,20 @@ import { log } from '../logging.js'
 import { getGameField } from './gameContent.js';
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
+import { submitLogout } from '../Auth/logout.js';
+import { styleElement } from '../Menu/menuContent.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
-			Game.state = S.State.Login;		
+			if (Game.player2Id != -1)
+				Game.state = S.State.Init;
+			else
+				Game.state = S.State.LoginP2;
 			break ;
 		}
 		case S.OT.ONEvsCOM: {
-			Game.state = S.State.Game;
+			Game.state = S.State.Init;
 			break ;
 		}
 		case S.OT.Online: {
@@ -27,8 +32,7 @@ export function startGame() {
 	}
 
 	switch (Game.matchFormat) {
-		case S.MF.Tournament: {
-			// create tournament once?
+		case S.MF.SingleGame: {
 			break ;
 		}
 		case S.MF.Tournament: {
@@ -40,7 +44,6 @@ export function startGame() {
 			return ;
 		}
 	}
-	log('Game state after startGame: ' + Game.state);
 }
 
 export function changeOpponentType(option: string) {
@@ -51,7 +54,7 @@ export function changeOpponentType(option: string) {
 		case '1 vs COM':
 			Game.opponentType = S.OT.ONEvsCOM;
 			break ;
-		case 'online':
+		case 'Online':
 			Game.opponentType = S.OT.Online;
 			break ;
 		default:
@@ -69,7 +72,7 @@ export function changeMatchFormat(option: string) {
 			break ;
 		default:
 			log(`unknown match format? ${option}`);
-	}	
+	}
 }
 
 function scaleToField(fieldDim: number, unit : number) : number {
@@ -161,48 +164,103 @@ export function initDOMSizes() {
 
 export function initGameServer() {
 	if (Game.socket.readyState == WebSocket.OPEN) {
-		if (Game.opponentType != S.OT.Online) {
-			const initGame1 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one',
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame1));
+		log("server init")
+		const initGame = {
+			action: 'game',
+			subaction: 'init',
+			playerId: Game.player1Id,
+			playerName: Game.player1Name,
+			opponentMode: Game.opponentType,
+			playerId2: Game.player2Id,
+			playerName2: Game.player2Name
 		}
-		if (Game.opponentType == S.OT.ONEvsONE) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: Game.id2,
-				playerName: Game.name2,
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else if (Game.opponentType == S.OT.ONEvsCOM) {
-			const initGame2 = {
-				action: 'game',
-				subaction: 'init',
-				player: 'two',
-				playerId: -1,
-				playerName: 'Computer',
-			}
-			Game.socket.send(JSON.stringify(initGame2));
-		}
-		else {
-			const initGame = {
-				action: 'game',
-				subaction: 'init',
-				player: 'one', // or two...decide by server?
-				playerId: Game.id,
-				playerName: Game.name,
-			}
-			Game.socket.send(JSON.stringify(initGame));
-		}
+		if (Game.opponentType == S.OT.ONEvsCOM)
+			initGame.playerName2 = "Computer";
+		Game.socket.send(JSON.stringify(initGame));
 	}
 }
+
+function readyStart(txt: HTMLDivElement) {
+	log("Start button clicked");
+	if (document.getElementById('startScreen')) {
+		const app = document.getElementById('app');
+		const startScreen = document.getElementById('startScreen')
+		if (app && startScreen)
+			app.removeChild(startScreen);
+		Game.playMode = true ;
+	}
+}
+
+// WHO VS WHO
+function getStartScreenBeforeGame() {
+	const app = document.getElementById('app');
+	if (!app)
+		return ;
+	app.innerHTML = "";
+	const startScreen = document.createElement('div');
+		startScreen.id = 'startScreen';
+	styleElement(startScreen, {
+
+	})
+	const player1 = document.createElement('div');
+	const player2 = document.createElement('div');
+	const name1 = document.createElement('div');
+	const name2 = document.createElement('div');
+	const avatar1 = document.createElement('img');
+	const avatar2 = document.createElement('img');
+	const txt = document.createElement('div');
+	const startBtn = document.createElement('button');
+
+	name1.textContent = Game.player1Name;
+	name2.textContent = Game.player2Name;
+	avatar1.src = "./../images/avatar.png";
+	styleElement(avatar1, {
+		objectFit: 'contain',
+	})
+	avatar2.src = "./../images/avatar.png";
+	styleElement(avatar2, {
+		objectFit: 'contain',
+	})
+	player1.append(name1, avatar1);
+	player2.append(name2, avatar2);
+	txt.textContent = "Ready...?";
+	startBtn.textContent = "START";
+	startBtn.addEventListener('click', (e) => readyStart(txt));
+	startScreen.append(player1, player2, txt, startBtn);
+	app.append(startScreen);
+}
+
+export function initGame() {
+	// if (document.getElementById('startScreen'))
+	// 	return ;
+	// getStartScreenBeforeGame();
+	initPositions();
+	initGameServer();
+	// updateNamesMenu();
+	// resetScoreMenu();
+}
+
+// export function saveGame() {
+// 	log("Saving game...");
+// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
+// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
+// 	{
+// 		log("Saving game and logout player 2");
+// 		submitLogout(null, 2);
+// 	}
+// 	const saveGameMsg = {
+// 		action: 'game',
+// 		subaction: 'save',
+// 		matchID: Game.matchID
+// 	}
+// 	Game.socket.send(JSON.stringify(saveGameMsg));
+
+// 	Game.scoreLeft = 0;
+// 	Game.scoreRight = 0;
+// 	Game.matchID = -1;
+// 	updateNamesMenu();
+// 	resetScoreMenu();
+// }
 
 export function initGame() {
 	getGameField();

@@ -1,142 +1,95 @@
-import { submitAuthForm, loginSuccessfull, changeLoginMode, addGuest } from './userAuth.js' //imports two functions from login.js
+import { submitAuthForm } from './userAuth.js'
 import { log } from '../logging.js'
-import { removeMenu } from '../Menu/menuContent.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
+import { movePadel } from '../Game/gameLogic.js';
 
-export function getAuthField(player: number, mandatoy: Boolean) {
-	const	auth = document.createElement('div');
-	auth.id = 'auth' + player;
-	auth.style.backgroundColor = 'lightblue';
-	auth.style.width = '50%';
-	auth.style.height = '100%';
-	auth.style.position = 'fixed';
-	auth.style.display = 'flex';
-	auth.style.flexDirection = 'column';
-	auth.style.alignItems = 'center';
-	auth.style.zIndex = '999';
-	if (player == 2) {
-		auth.style.left = '50%';
-		auth.style.backgroundColor = 'lightgreen';
+export let authenticationMode = 'Sign Up';
+
+export function changeAuthMode(player: number) {
+	authenticationMode = (authenticationMode === 'Sign Up') ? 'Login' : 'Sign Up';
+	const authContainer = document.getElementById('auth' + player);
+	if (authContainer) {
+		const newAuth = getAuthField(player, true);
+		authContainer.replaceWith(newAuth);
+	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
+	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
+		window.location.href = 'https://localhost:8443/api/auth/google?player=' + player;
+	});
+	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
 	}
-
-	const	authTitle = document.createElement('h2');
-	authTitle.id = 'authTitle' + player;
-	authTitle.textContent = 'Sign Up Player' + player;
-
-	const authForm = document.createElement('form');
-	authForm.id = 'authForm' + player;
-
-	const nameField = document.createElement('div');
-	nameField.id = 'nameField' + player;
-	nameField.classList.add('formInput');
-
-	const nameLabel = document.createElement('label');
-	nameLabel.htmlFor = 'name';
-	nameLabel.textContent = 'Username: ';
-
-	const nameInput = document.createElement('input');
-	nameInput.type = 'text';
-	nameInput.id = 'name' + player;
-	nameInput.name = 'name';
-	// nameInput.required = true;
-
-	nameField.append(nameLabel, nameInput);
-
-	const emailField = document.createElement('div');
-	emailField.classList.add('formInput');
-
-	const emailLabel = document.createElement('label');
-	emailLabel.htmlFor = 'email';
-	emailLabel.textContent = 'Email: ';
-
-	const emailInput = document.createElement('input');
-	emailInput.type = 'email';
-	emailInput.id = 'email' + player;
-	emailInput.name = 'email';
-	// emailInput.required = true;
-
-	emailField.append(emailLabel, emailInput);
-
-	const passwordField = document.createElement('div');
-	passwordField.classList.add('formInput');
-
-	const passwordLabel = document.createElement('label');
-	passwordLabel.htmlFor = 'password';
-	passwordLabel.textContent = 'Password: ';
-
-	const passwordInput = document.createElement('input');
-	passwordInput.type = 'password';
-	passwordInput.id = 'password'  + player;
-	passwordInput.name = 'password';
-	// passwordInput.required = true;
-
-	passwordField.append(passwordLabel, passwordInput);
-
-	const submitBtnDiv = document.createElement('div');
-	submitBtnDiv.id = 'submitBtnDiv' + player;
-
-	const submitBtn = document.createElement('button');
-	submitBtn.id = 'submitBtn' + player;
-	submitBtn.type = 'submit';
-	submitBtn.textContent = 'Sign Up Player ' + player;
-	submitBtnDiv.appendChild(submitBtn);
-
-	if (!mandatoy) {
-		const guestBtn = document.createElement('button');
-		guestBtn.id = 'guestBtn' + player;
-		guestBtn.textContent = 'Guest';
-		submitBtnDiv.appendChild(guestBtn);
-	}
-
-	authForm.append(nameField, emailField, passwordField, submitBtnDiv);
-
-	const modeLabel = document.createElement('p');
-	modeLabel.id = 'modelabel' + player;
-	modeLabel.textContent = 'Sign Up mode';
-
-	const toggleBtn = document.createElement('button');
-	toggleBtn.type = 'button';
-	toggleBtn.id = 'toggle-mode' + player;
-	toggleBtn.textContent = 'Switch to Login';
-
-	auth.append(authTitle, authForm, modeLabel, toggleBtn);
-	return (auth);
 }
 
-export function getLoginFields() {
-	if (document.getElementById('menu'))
-		removeMenu();
+export function getAuthField(player: number, mandatory: boolean): HTMLElement {
+	const authContainer = document.createElement('div');
+	authContainer.className = 'authContainer';
+	authContainer.id = 'auth' + player;
 
+	// const action = mandatory ? 'Sign Up' : 'Login';
+	const action = authenticationMode;
+	const usernameField = action === 'Login' ? '' : `
+		<div class="inputSingle">
+			<label for="name">Username</label>
+			<div class="inputWithIcon">
+				<input type="text" id="name${player}" name="name"/>
+			</div>
+		</div>`;
+
+	const pongTextDivs = Array.from({length: 8}, () =>
+		`<div class="pongText">Pong</div>`
+	).join('');
+
+	authContainer.innerHTML = `
+		<form class="loginSignUpContainer" id="authForm${player}">
+			<div class="header">
+				<div class="header1Text">${action}</div>
+			</div>
+			<div class="inputMultiple">
+				${usernameField}
+			<div class="inputSingle">
+				<label for="email">Email</label>
+				<div class="inputWithIcon">
+					<input type="email" id="email${player}" name="email" />
+				</div>
+			</div>
+			<div class="inputSingle">
+				<label for="password">Password</label>
+				<div class="inputWithIcon">
+					<input type="password" id="password${player}" name="password" />
+				</div>
+			</div>
+			</div>
+			<div class="inputButtons">
+				<button type="submit" class="submitButton" >${action}</button>
+				<span> or via social network</span>
+				<img src="css/icons/icons8-google.svg" id="google-login-btn${player}" class="googleLoginButton">
+				<p class="loginSignUpPrompt">
+					${action === "Login" ? "Don't have an account?" : "Have an account?"}
+					<span class="loginSignUpLink">${action === 'Login' ? 'Sign Up' : 'Login'}</span>
+				</p>
+			</div>
+		</form>
+		<div class="animationContainer">
+			${pongTextDivs}
+			<div class="ball"></div>
+		</div>`;
+		return authContainer;
+}
+
+export function getLoginFields(player: number) {
 	const	body = document.getElementById('body');
 	if (!body)
 		return ;
-
-	if (Game.opponentType == S.OT.Online) { // one login mandatory
-		const auth = getAuthField(1, true); 
-		body.appendChild(auth);
-	} else {
-		if (Game.opponentType == S.OT.ONEvsONE) { // two login not mandatory
-		body.append(getAuthField(1, false), getAuthField(2, false));
-		} else if (Game.opponentType == S.OT.ONEvsCOM) { // one login not mandatory
-			body.appendChild(getAuthField(1, false));
-		}
-	}
+	body.style.height = "100vh";
+	body.style.backgroundColor = "#ededeb";
+	body.style.justifyContent = "center";
+	body.appendChild(getAuthField(player, true));
 
 	// addEventListeners for Login form
-	document.getElementById('authForm1')?.addEventListener('submit', (e) => submitAuthForm(e, 1));
-	document.getElementById('authForm2')?.addEventListener('submit', (e) => submitAuthForm(e, 2));
-	document.getElementById('toggle-mode1')?.addEventListener('click', (e) => changeLoginMode(1));
-	document.getElementById('toggle-mode2')?.addEventListener('click', (e) => changeLoginMode(2));
-	document.getElementById('guestBtn1')?.addEventListener('click', (e) => addGuest(e, 1));
-	document.getElementById('guestBtn2')?.addEventListener('click', (e) => addGuest(e, 2));
-}
+	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
+	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
+		window.location.href = `https://${S.host}:8443/api/auth/google?player=` + player;
+	});
 
-export function removeAuthField(player: number) {
-	const	body = document.getElementById('body');
-	const	auth = document.getElementById('auth' + player);
-	
-	if (body && auth)
-		body.removeChild(auth);
-
+	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
 }
