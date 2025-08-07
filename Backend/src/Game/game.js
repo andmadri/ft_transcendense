@@ -8,7 +8,7 @@ export function handleGame(msg, socket, userId1, userId2) {
 		return ;
 	}
 
-	if (msg.subaction == 'init')
+	if (msg.subaction == 'init' && msg.opponentMode != 3)
 		return createMatch(msg, socket, userId1, userId2);
 
 	if (!msg.matchID) {
@@ -23,11 +23,12 @@ export function handleGame(msg, socket, userId1, userId2) {
 
 	switch (msg.subaction) {
 		case 'ballUpdate':
-			return updateBall(match, msg, socket);
-		case 'padelUpdate':
-			return updatePadel(match, msg, socket );
+			updateBall(match, msg, socket);
 		case 'scoreUpdate':
-			return updateScore(match, msg, socket);
+			updateScore(match, msg, socket);
+			break ;
+		case 'padelUpdate':
+			updatePadel(match, msg, socket);
 		case 'save':
 			return saveMatch(match, msg, socket);
 		case 'quit':

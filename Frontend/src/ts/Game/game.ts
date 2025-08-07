@@ -2,6 +2,7 @@ import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js";
 import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
+// import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
 	log("inited game with id: " + data.id);

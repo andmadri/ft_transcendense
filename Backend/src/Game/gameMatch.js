@@ -1,14 +1,17 @@
 // import { saveMatchDB } from '../Database/match.js'
 import { getUserByID } from '../Database/users.js';
+import { saveMatchDB } from '../Database/match.js'
 
 let				matchnr = 0;
 export const 	matches = new Map();
+export const	waitlist = new Map();
 
 export const Stage = {
 	Start: 0,
-	Playing: 1,
-	Finish: 2,
-	Interrupt: 3
+	Pending: 1,
+	Playing: 2,
+	Finish: 3,
+	Interrupt: 4
 }
 
 // creates a new match, init and returns id nr
@@ -18,6 +21,7 @@ export function newMatch(id, name, id2, name2) {
 		saveInDB: false,
 		dbID: -1,
 		stage: Stage.Start,
+		roomID: '0',
 		player1: {
 			id: id,
 			name: name,
@@ -32,7 +36,7 @@ export function newMatch(id, name, id2, name2) {
 			score: 0,
 			paddle: 0,
 			pressUp: false,
-			pressDown: false
+			pressDown: false,
 		},
 		ball: {
 			angle: 0,
@@ -43,7 +47,6 @@ export function newMatch(id, name, id2, name2) {
 	})
 	return (matchnr);
 }
-
 
 /*
 	-> if player wants to play a game (1vs1, 1vsCOM, Online)
@@ -72,7 +75,7 @@ export function createMatch(msg, socket, userId1, userId2) {
 		player1ID,
 		player2ID
 	}));
-	matches.get(id).stage = Stage.Playing;
+	matches.get(id).stage = Stage.Playing; // Only if not online
 }
 
 export async function quitMatch(match, msg, socket) {

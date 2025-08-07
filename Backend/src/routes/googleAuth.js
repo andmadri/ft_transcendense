@@ -128,7 +128,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				signed: true,		// signed cookies
 				path: '/',
 				maxAge: 60 * 60		// 1 hour
-			}).redirect(`https://${window.location.hostname}:8443`);
+			}).redirect(`https://${window.location.host}`);
 
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

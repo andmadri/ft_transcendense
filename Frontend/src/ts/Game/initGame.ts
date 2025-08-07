@@ -7,6 +7,8 @@ import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 
+
+
 export function startGame() {
 	switch (Game.opponentType) {
 		case S.OT.ONEvsONE: {
@@ -22,6 +24,11 @@ export function startGame() {
 		}
 		case S.OT.Online: {
 			Game.state = S.State.Pending;
+			const msg = {
+				action: 'matchmaking',
+				subaction: 'createOnlineMatch',
+			}
+			Game.socket.send(JSON.stringify(msg));
 			break ;
 		}
 		default: {
@@ -162,7 +169,7 @@ export function initDOMSizes() {
 }
 
 export function initGameServer() {
-	if (Game.socket.readyState == WebSocket.OPEN) {
+	if (Game.socket.connected) {
 		log("server init")
 		const initGame = {
 			action: 'game',

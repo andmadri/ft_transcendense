@@ -3,26 +3,32 @@ import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
-import { actionFriends, getFriendsList } from './Menu/friends.js'
+import { actionFriends } from './Menu/friends.js'
+import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 
 export function startSocketListeners() {
-	Game.socket.addEventListener('open', openSocket);
-	Game.socket.addEventListener('open', () => { getPlayerData(); });
-	Game.socket.addEventListener('error', errorSocket);
-	Game.socket.addEventListener('message', receiveFromWS);
-	Game.socket.addEventListener('close', closeSocket);
-}
+	const socket = Game.socket;
 
-export function closeSocket(e: CloseEvent) {
-	log('WebSocket closes:' + e.code + e.reason);
-}
+	socket.on('connect', () => {
+		console.log('Connected with id:', socket.id);
+		getPlayerData();
+	});
 
-export function openSocket(e: Event) {
-	log('✅ WebSocket is open');
-}
+	socket.on('message', (msg: any)=> {
+		receiveFromWS(msg)
+	}); 
 
-export function errorSocket(err: Event) {
-	log('⚠️ WebSocket error: ' + err);
+	socket.on('disconnect', (reason: any) => {
+		log('Disconnected: '+ reason);
+	});
+
+	socket.on('connect_error', (err: any) => {
+		log('Error: ' + err);
+	});
+
+	socket.on('error', (err: any) => {
+		log('Error: ' + err.reason);
+	});
 }
 
 /*
@@ -32,12 +38,12 @@ FROM backend TO frontend
 • friends => retFriends
 • online => retOnlinePlayers / retOnlinePlayersWaiting
 • friends => retFriends
-• pending => getWaitlist / createGame / startGame
+• matchMaking => getWaitlist / createGame / startGame
 • game => ballUpdate / padelUpdate / scoreUpdate
 • error => checkError / errorPage?
 */
-export function receiveFromWS(e: MessageEvent) {
-	const data = JSON.parse(e.data);
+export function receiveFromWS(msg: any) {
+	const data = JSON.parse(msg);
 	
 	const action = data.action;
 	if (!action)
@@ -53,7 +59,8 @@ export function receiveFromWS(e: MessageEvent) {
 		case 'friends':
 			actionFriends(data);
 			break ;
-		case 'pending':
+		case 'matchmaking':
+			actionMatchmaking(msg);
 			break ;
 		case 'game':
 			actionGame(data);

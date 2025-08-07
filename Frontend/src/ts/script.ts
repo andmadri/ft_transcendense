@@ -12,9 +12,12 @@ import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+import { searchMatch } from './Matchmaking/onlineMatch.js'
 
 // getLoadingPage();
 createLog();
+declare const io: any;
+type Socket = any;
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
@@ -22,8 +25,13 @@ export const Game: S.gameInfo = {
 	opponentType: S.OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss'),
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
 	playMode: false,
+	searchMatch: false,
 	matchID: -1,
 	player1Id: -1,
 	player1Name: 'unknown',
@@ -35,7 +43,11 @@ export const Game: S.gameInfo = {
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
+	colletedSteps: []
 }
+
+log("host: " + window.location.host);
+log("hostname: " + window.location.hostname);
 
 startSocketListeners();
 
@@ -45,7 +57,7 @@ window.addEventListener('keyup', releaseButton);
 window.addEventListener('resize', initAfterResize);
 
 function mainLoop() {
-	if (Game.socket.readyState == WebSocket.OPEN) {
+	if (Game.socket.connected) {
 		switch (Game.state) {
 			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
@@ -66,14 +78,13 @@ function mainLoop() {
 			}
 			case S.State.Pending: {
 				// waiting for opponement
-				log("No online mode yet...pending...");
+				log("...pending...");
 				break ;
 			}
 			case S.State.Init:
 				log("init game");
 				if (!document.getElementById('game'))
 				{
-					log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 				}
@@ -98,6 +109,5 @@ function mainLoop() {
 }
 
 setTimeout(() => {
-	log(S.host);
 	mainLoop();
 }, 2000);

@@ -1,3 +1,5 @@
+type Socket = any;
+
 export enum State {
 	LoginP1,
 	Menu,
@@ -21,14 +23,21 @@ export enum MF {
 	Tournament
 }
 
+export type update = {
+	time: number;
+	player: [number, boolean, boolean];
+	ball: [number, number, number, number];
+}
+
 // GAME
 export type gameInfo = {
 	state: State,
 	opponentType: OT;
 	matchFormat: MF;
 	logDiv: HTMLDivElement;
-	socket: WebSocket;
+	socket: Socket;
 	playMode: boolean;
+	searchMatch: boolean;
 
 	matchID: number;
 
@@ -46,6 +55,8 @@ export type gameInfo = {
 	timeGame: number;
 	scoreLeft: number;
 	scoreRight: number;
+
+	colletedSteps: update[]
 }
 
 // KEYS
@@ -182,4 +193,5 @@ export type AIInfo = {
 //	}
 // }
 
-export const host = window.location.hostname;
+//export const host = window.location.hostname;
+export const host = window.location.host;

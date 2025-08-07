@@ -9,7 +9,8 @@ COPY ./src ./src
 
 # CHANGE THIS LATER: added: sqlite sqlite-libs sqlite-dev
 RUN apk add --no-cache sqlite sqlite-libs sqlite-dev sqlite sqlite-libs sqlite-dev python3 make g++ && \
-    npm install && \
+    npm install fastify-socket.io && \
+	npm install && \
     apk del python3 make g++
 
 EXPOSE 8080 3000
