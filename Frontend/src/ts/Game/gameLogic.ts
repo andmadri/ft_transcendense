@@ -148,17 +148,22 @@ function updateDOMElements() {
 }
 
 export function game() {
-	Game.timeGame = performance.now();
-	if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-		Game.state = S.State.Menu;
-		handleGameOver();
-		return ;
+	if (Game.opponentType == S.OT.Online) {
+		
 	}
-	handleWallBounce();
-	handlePaddleBounce();
-	updateBallPos();
-	sendBallUpdate();
-	if (checkPaddleMovement())
-		sendPaddleUpdate();
+	else {
+		Game.timeGame = performance.now();
+		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
+			Game.state = S.State.Menu;
+			handleGameOver();
+			return ;
+		}
+		handleWallBounce();
+		handlePaddleBounce();
+		updateBallPos();
+		sendBallUpdate();
+		if (checkPaddleMovement())
+			sendPaddleUpdate();
+	}
 	updateDOMElements();
 }
