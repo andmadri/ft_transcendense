@@ -1,6 +1,6 @@
 import { addUserSessionToDB } from '../Database/sessions.js'
 
-export async function updatePlayersSession(db, user_ids, state) {
+export async function updatePlayersSessionDB(db, user_ids, state) {
 	await Promise.all(
 		user_ids.map(user_id => addUserSessionToDB(db, { user_id, state }))
 	);

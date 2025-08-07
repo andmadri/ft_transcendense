@@ -1,5 +1,5 @@
 import { matches, Stage } from './gameMatch.js';
-import { handleMatchEvent } from '../Services/matchService.js';
+import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
 
@@ -31,7 +31,7 @@ export async function updateScore(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 
-	const eventID = await handleMatchEvent(db, {
+	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think
 		event_type: 'goal'

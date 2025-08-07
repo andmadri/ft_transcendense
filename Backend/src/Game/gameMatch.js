@@ -1,10 +1,5 @@
-import { saveMatchDB } from '../Database/match.js'
-import { getUserByID } from '../Database/users.js';
-import { handleMatchStart } from '../Services/matchService.js';
-import { updateMatchInDB } from '../Database/match.js'
+import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStats, getAllUserStateDurations } from '../Database/online.js';
-import { addUserSessionToDB } from '../Database/sessions.js';
-import { getMatchByID } from '../Database/match.js';
 import { db } from '../index.js';
 
 export const 	matches = new Map();
@@ -63,22 +58,21 @@ export async function createMatch(msg, socket, userId1, userId2) {
 		userId2 = 2;
 	}
 
-	const match_id_db = await handleMatchStart(db, {
-		player_1_id: userId1,
-		player_2_id: userId2,
-		match_type: 'vs_ai' // DELETE THIS LINE LATER
+	const matchID = await handleMatchStartDB(db, { 
+		player_1_id: userId1, 
+		player_2_id: userId2
 	});
-	newMatch(match_id_db, userId1, msg.name, userId2, msg.name2);
+	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
 
-	console.log(`matchid: ${match_id_db}`);
+	// console.log(`matchid: ${matchID}`);
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'init',
-		id: match_id_db,
+		id: matchID,
 		player1ID: userId1,
 		player2ID: userId2
 	}));
-	matches.get(match_id_db).stage = Stage.Playing;
+	matches.get(matchID).stage = Stage.Playing;
 }
 
 export async function quitMatch(match, msg, socket) {
@@ -94,30 +88,19 @@ export async function quitMatch(match, msg, socket) {
 
 
 export async function saveMatch(match, msg, socket) {
-	await updateMatchInDB(db, {
-		match_id: msg.matchID, //match.key()
-		// player_1_score: match.player1.score,
-		// player_2_score: match.player2.score,
-		winner_id: match.player1.score >= match.player2.score ? match.player1.id : match.player2.id, // DELETE THIS LINE LATER
-		end_time: new Date().toISOString() // DELETE THIS LINE LATER
-	})
-
-	// DELETE LATER
-	await addUserSessionToDB(db, {
-		user_id: match.player1.id,
-		state: 'in_menu'
-	});
-	await addUserSessionToDB(db, {
-		user_id: match.player2.id,
-		state: 'in_menu'
-	});
-	console.table(await getMatchByID(db, msg.matchID));
-	console.log(await getUserMatchStats(db, match.player1.id));
-	console.log(await getUserMatchStats(db, match.player2.id));
-	console.log(await getUserMatchStats(db, 1));
+	// Update the match in the database
+	const matchID = await handleMatchEndedDB(db, msg.matchID);
+	
+	// Show some stats in the terminal
+	console.table(matchID);
+	console.log(await getUserMatchStats(db, matchID.player_1_id));
+	console.log(await getUserMatchStats(db, matchID.player_2_id));
 	console.table(await getAllUserStateDurations(db));
 
+	// Delete the data in the backend
 	matches.delete(match.matchID);
+
+	// Send a message to the frontend
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'save',
