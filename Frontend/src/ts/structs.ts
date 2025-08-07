@@ -96,9 +96,9 @@ export const pos : Record<E, Pos> = {
 
 export const movement : Record<E, Movement> = {
 	[E.field] : { speed : 0, angle : 0},
-	[E.ball] : { speed : 0.025, angle : 0},
-	[E.lPlayer] : { speed : 0.035, angle : 0},
-	[E.rPlayer] : { speed : 0.035, angle : 0}
+	[E.ball] : { speed : 0.015, angle : 0},
+	[E.lPlayer] : { speed : 0.025, angle : 0},
+	[E.rPlayer] : { speed : 0.025, angle : 0}
 }
 
 export const size : Record<E, Size> = {
@@ -111,9 +111,9 @@ export const size : Record<E, Size> = {
 //this will move to the backend
 export const unitMovement : Record<E, Movement> = {
 	[E.field] : { speed : 0, angle : 0},
-	[E.ball] : { speed : 0.025, angle : 0},
-	[E.lPlayer] : { speed : 0.035, angle : 0},
-	[E.rPlayer] : { speed : 0.035, angle : 0},
+	[E.ball] : { speed : 0.015, angle : 0},
+	[E.lPlayer] : { speed : 0.025, angle : 0},
+	[E.rPlayer] : { speed : 0.025, angle : 0},
 }
 
 export const unitSize : Record<E, Size> = {

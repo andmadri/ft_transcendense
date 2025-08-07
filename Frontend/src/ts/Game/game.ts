@@ -1,4 +1,4 @@
-import { processBallUpdate, processPadelUpdate } from "./gameLogic.js";
+import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js";
 import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
@@ -37,10 +37,10 @@ export function actionGame(data: any) {
 			processMatch(data);
 			break ;
 		case 'ballUpdate':
- 			processBallUpdate(data);
+ 			applyBallUpdate(data);
 			break ;
 		case 'padelUpdate':
-			processPadelUpdate(data);
+			applyPaddleUpdate(data);
 			break ;
 		case 'save':
 			processSavingMatch(data);

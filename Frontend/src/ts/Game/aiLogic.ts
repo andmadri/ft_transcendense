@@ -53,7 +53,7 @@ function	predictBall(dx : number, dy : number) {
 	}
 	
 	//add error margin
-	let errorMargin = 0.001;
+	let errorMargin = 0.01;
 	const errorOffset = Math.random() * fieldSize.height * errorMargin;
 	const sign = Math.random() < 0.5 ? -1 : 1;
 	const Offset = errorOffset * sign;

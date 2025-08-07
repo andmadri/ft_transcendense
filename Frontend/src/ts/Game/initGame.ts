@@ -3,7 +3,6 @@ import { E } from '../structs'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { getGameField } from './gameContent.js';
-import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
@@ -153,9 +152,9 @@ export function initDOMSizes() {
 		ballEl.style.left = `${ballPos.x - ballSize.width / 2}px`;
 		ballEl.style.top = `${ballPos.y - ballSize.width / 2}px`;
 
-		lPlayerPos.y = lPlayerEl.offsetTop;
+		//lPlayerPos.y = lPlayerEl.offsetTop;
 		rPlayerPos.x = lPlayerEl.offsetLeft;
-		lPlayerPos.y = rPlayerEl.offsetTop;
+		//lPlayerPos.y = rPlayerEl.offsetTop;
 		rPlayerPos.x = fieldSize.width - rPlayerEl.offsetLeft;
 	} else {
 		console.log('Something went wrong (initGame), close game?');
@@ -234,7 +233,11 @@ export function initGame() {
 	// if (document.getElementById('startScreen'))
 	// 	return ;
 	// getStartScreenBeforeGame();
-	initPositions();
+	//getGameField();
+	scaleGameSizes();
+	scaleGamePos();
+	initMovement();
+	initDOMSizes();
 	initGameServer();
 	// updateNamesMenu();
 	// resetScoreMenu();
@@ -261,14 +264,3 @@ export function initGame() {
 // 	updateNamesMenu();
 // 	resetScoreMenu();
 // }
-
-export function initGame() {
-	getGameField();
-	scaleGameSizes();
-	scaleGamePos();
-	initMovement();
-	initDOMSizes();
-	initGameServer();
-	updateNamesMenu();
-	resetScoreMenu();
-}

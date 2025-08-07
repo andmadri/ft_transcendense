@@ -188,7 +188,6 @@ export function handleGameOver() {
 		<p>Game Over!</p>
 		<p>${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}</p>
 		`;
-		removeGameField();
 		document.body.appendChild(gameOver);
 	}
 }
