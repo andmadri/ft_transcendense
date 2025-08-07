@@ -20,7 +20,6 @@ export async function createDatabase() {
 		console.log('Connected to the database.');
 		newdDB.run("PRAGMA foreign_keys = ON");
 		if (!existDb) {
-			// console.log('Created database tables.');
 			createTables(newdDB);
 		} else {
 			console.log('Database already exists. Skipping table creation.');

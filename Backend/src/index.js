@@ -148,18 +148,6 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 				return ;
 		}
 	});
-
-	connection.on('close', () => {
-		(async () => {
-			try {
-				const user = getUserByID(userId1);
-				if (user && user.email)
-					updateOnlineStatus(user.email, 'offline');
-			} catch (err) {
-				console.error('Player can not logged out', err);
-			}
-		})
-	});
 });
 
 fastify.setNotFoundHandler(function (request, reply) {

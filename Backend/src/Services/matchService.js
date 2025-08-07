@@ -114,10 +114,9 @@ export async function handleMatchEndedDB(db, match_id) {
 		winner_id = match.player_2_id;
 	}
 
-	console.log(`match_id=${match_id} | match.match_id=${match.match_id}`)
 	// Update the match row, so we have a winner and an end_time
 	await updateMatchInDB(db, {
-		match_id: match_id,
+		match_id: match.id,
 		winner_id: winner_id,
 		end_time: new Date().toISOString()
 	})

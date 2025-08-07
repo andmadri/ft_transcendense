@@ -1,5 +1,5 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
-import { getUserMatchStats, getAllUserStateDurations } from '../Database/online.js';
+import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
 
 export const 	matches = new Map();
@@ -93,9 +93,9 @@ export async function saveMatch(match, msg, socket) {
 	
 	// Show some stats in the terminal
 	console.table(matchID);
-	console.log(await getUserMatchStats(db, matchID.player_1_id));
-	console.log(await getUserMatchStats(db, matchID.player_2_id));
-	console.table(await getAllUserStateDurations(db));
+	console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
+	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
+	console.table(await getAllUserStateDurationsDB(db));
 
 	// Delete the data in the backend
 	matches.delete(match.matchID);

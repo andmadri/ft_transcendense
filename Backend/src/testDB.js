@@ -2,7 +2,7 @@ import { updateMatchInDB } from './Database/match.js'
 import { addUserToDB, updateUserInDB, getOnlineUsers } from './Database/users.js';
 import { handleMatchStartDB, handleMatchEventDB } from './Services/matchService.js';
 import { onUserLogin } from './Services/sessionsService.js';
-import { getAllUserStateDurations, getUserStateDurations, getUserMatchStats } from './Database/online.js';
+import { getAllUserStateDurationsDB, getUserStateDurationsDB, getUserMatchStatsDB } from './Database/sessions.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 
 function sleep(ms) {
@@ -103,10 +103,10 @@ export async function testDB(db) {
 	// await sleep(1000);
 
 	// console.log('--- All user durations ---');
-	// console.table(await getAllUserStateDurations(db));
+	// console.table(await getAllUserStateDurationsDB(db));
 
 	// console.log(`--- Durations for user 1 ---`);
-	// console.log(await getUserStateDurations(db, 1));
+	// console.log(await getUserStateDurationsDB(db, 1));
 
 	// // wait 5 seconds
 	// await sleep(5000);
@@ -118,7 +118,7 @@ export async function testDB(db) {
 	// });
 
 	// console.log(`--- Durations for user 2 ---`);
-	// console.log(await getUserStateDurations(db, 2));
+	// console.log(await getUserStateDurationsDB(db, 2));
 
 	// await updateUserInDB(db, {
 	// 	user_id: guest_id,
@@ -129,7 +129,7 @@ export async function testDB(db) {
 	// console.table(await getOnlineUsers(db));
 
 	// console.log('--- Guest MATCH STATS ---');
-	// console.log(await getUserMatchStats(db, 1));
+	// console.log(await getUserMatchStatsDB(db, 1));
 
 
 	// // ───── Additional users for dashboard testing ─────
@@ -189,14 +189,14 @@ export async function testDB(db) {
 
 	// // ───── Check new stats ─────
 	// console.log('--- Guest MATCH STATS ---');
-	// console.log(await getUserMatchStats(db, guest_id));
+	// console.log(await getUserMatchStatsDB(db, guest_id));
 
 	// console.log('--- AI MATCH STATS ---');
-	// console.log(await getUserMatchStats(db, ai_id));
+	// console.log(await getUserMatchStatsDB(db, ai_id));
 
 	// console.log('--- Alice MATCH STATS ---');
-	// console.log(await getUserMatchStats(db, alice_id));
+	// console.log(await getUserMatchStatsDB(db, alice_id));
 
 	// console.log('--- Bob MATCH STATS ---');
-	// console.log(await getUserMatchStats(db, bob_id));
+	// console.log(await getUserMatchStatsDB(db, bob_id));
 }
