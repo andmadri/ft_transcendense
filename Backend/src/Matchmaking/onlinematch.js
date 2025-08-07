@@ -1,4 +1,4 @@
-import { getUserByID } from "../Database/user.js";
+import { getUserByID } from "../Database/users.js";
 import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";

@@ -9,12 +9,11 @@ import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { getUserByID, updateOnlineStatus } from './Database/user.js';
+import { getUserByID, updateOnlineStatus } from './Database/users.js';
 import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
-import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 // import { testDB }   from './testDB.js';
 import { addUserToDB } from './Database/users.js';
 import { onUserLogin } from './Services/sessionsService.js';

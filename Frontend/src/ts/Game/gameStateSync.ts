@@ -39,14 +39,15 @@ export function applyPaddleUpdate(data: any) {
 export function sendPaddleUpdate() {
 	const leftPadel = document.getElementById('lPlayer');
 	const rightPadel = document.getElementById('rPlayer');
-	if (Game.socket.readyState != WebSocket.OPEN)
+	if (Game.socket.connected)
 		return ;
 	if (leftPadel && rightPadel) {
-		const msg = { 
+		const msg = {
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
-			rHeight: rightPadel.offsetTop };
+			rHeight: rightPadel.offsetTop,
+			matchID: Game.matchID };
 		Game.socket.send(JSON.stringify(msg));
 	} else {
 		console.log('No lP ot rP');
@@ -59,6 +60,18 @@ export function sendBallUpdate() {
 		subaction: 'ballUpdate',
 		ballY: ballPos.y,
 		ballX: ballPos.x };
+	Game.socket.send(JSON.stringify(msg));
+}
+
+function updateScoreServer(id: number) {
+	const msg = {
+		action: 'game',
+		subaction: 'scoreUpdate',
+		player: 0,
+		matchID: Game.matchID
+	};
+
+	msg.player = id;
 	Game.socket.send(JSON.stringify(msg));
 }
 

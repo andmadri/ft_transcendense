@@ -2,7 +2,6 @@ import { Game } from '../script.js'
 import * as S from '../structs.js'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate } from './gameStateSync.js'
-import { handleGameOver } from './gameContent.js'
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
@@ -154,8 +153,7 @@ export function game() {
 	else {
 		Game.timeGame = performance.now();
 		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-			Game.state = S.State.Menu;
-			handleGameOver();
+			Game.state = S.State.End;
 			return ;
 		}
 		handleWallBounce();
