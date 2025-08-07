@@ -3,6 +3,7 @@ import { Game } from '../script.js'
 import { log } from '../logging.js'
 import { updateNamesMenu, resetScoreMenu } from '../SideMenu/SideMenuContent.js'
 import { submitLogout } from '../Auth/logout.js';
+import { initAfterResize } from '../windowEvents.js';
 
 export function startGame() {
 	switch (Game.opponentType) {
@@ -68,47 +69,28 @@ export function changeMatchFormat(option: string) {
 	}
 }
 
-// Get start position of ball
 export function initPositions() {
 	const field = document.getElementById('field');
 	const ball = document.getElementById('ball');
 	const rPlayer = document.getElementById('rPlayer');
 	const lPlayer = document.getElementById('lPlayer');
-	// const game = document.getElementById('game');
 	if (!ball || !rPlayer || !lPlayer || !field) {
 		console.log('Something went wrong (initGame), close game?');
 		return;
 	}
-		// Field
 	const fieldWidth = field.clientWidth;
 	const fieldHeight = field.clientHeight;
 
 	S.Objects['field'].width = fieldWidth;
 	S.Objects['field'].height = fieldHeight;
 
-	// field.style.height = `${S.Objects['field'].height}px`;
-	// field.style.width = `${S.Objects['field'].width}px`;
-	// game.style.height = `${S.Objects['field'].height}px`;
-	// game.style.width = `${S.Objects['field'].width}px`;
-
-	// Ball
-	// const ballSize = ball.clientWidth;
-	// ball.style.height = `${ballSize}px`;
-	// ball.style.width = `${ballSize}px`;
 	S.Objects['ball'].width =  ball.clientWidth;
 	S.Objects['ball'].height = ball.clientHeight;
 
 	S.Objects['ball'].x = fieldWidth / 2;
 	S.Objects['ball'].y = fieldHeight / 2;
 	S.Objects['ball'].speed = fieldWidth * 0.01;
-	// ball.style.left = `${S.Objects['ball'].x - ballSize / 2}px`;
-	// ball.style.top = `${S.Objects['ball'].y - ballSize / 2}px`;
 
-	// Players
-	// rPlayer.style.height = `${S.Objects['field'].height * 0.30}px`;
-	// lPlayer.style.height = `${S.Objects['field'].height * 0.30}px`;
-	// rPlayer.style.width = `${S.Objects['field'].width * 0.02}px`;
-	// lPlayer.style.width = `${S.Objects['field'].width * 0.02}px`;
 	S.Objects['rPlayer'].height = rPlayer.clientHeight;
 	S.Objects['rPlayer'].width = rPlayer.clientWidth;
 	S.Objects['rPlayer'].y = rPlayer.offsetTop;
@@ -141,30 +123,15 @@ export function initGameServer() {
 }
 
 export function initGame() {
+	//even if I move the screen to the right or left, because the ball is positioned absolute, then it can also be outside of the field, I do not understand
 	initPositions();
 	initGameServer();
-	// updateNamesMenu();
-	// resetScoreMenu();
+	const field = document.getElementById('field');
+	if (field) {
+		const resizeObserver = new ResizeObserver(() => {
+			initAfterResize();
+		})
+		resizeObserver.observe(field);
+	}
 }
 
-// export function saveGame() {
-// 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.id + " and id2: " + Game.id2);
-// 	if (Game.opponentType == S.OT.ONEvsONE && Game.id2 != 0)
-// 	{
-// 		log("Saving game and logout player 2");
-// 		submitLogout(null, 2);
-// 	}
-// 	const saveGameMsg = {
-// 		action: 'game',
-// 		subaction: 'save',
-// 		matchID: Game.matchID
-// 	}
-// 	Game.socket.send(JSON.stringify(saveGameMsg));
-
-// 	Game.scoreLeft = 0;
-// 	Game.scoreRight = 0;
-// 	Game.matchID = -1;
-// 	updateNamesMenu();
-// 	resetScoreMenu();
-// }

@@ -122,12 +122,12 @@ export function getGameField() {
 
 	const title1 = document.createElement('div');
 	title1.id = 'gameTitle';
-	title1.textContent = ' PONG PONG PONG PONG PONG PONG ';
+	title1.textContent = 'PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG ';
 	title1.style.position = 'relative';
 	title1.style.fontFamily = '"Horizon", monospace';
-	title1.style.fontSize = '4rem';
+	title1.style.fontSize = 'clamp(4rem, 8vh, 10rem)';
 	title1.style.color = 'transparent';
-	// title1.style.marginBottom = '2rem';
+	title1.style.marginBottom = '2rem';
 	title1.style.whiteSpace = 'nowrap';
 	title1.style.webkitTextStroke = '0.2rem #000';
 	title1.style.pointerEvents = 'none';
@@ -137,12 +137,12 @@ export function getGameField() {
 	const	field = document.createElement('div');
 	field.id = 'field';
 	field.style.aspectRatio = '4 / 3'
-	field.style.width = 'min(100vw, 100vh)';
+	field.style.width = 'calc(min(100vw, 100vh) - 2vw)';
 	field.style.maxHeight = '80vh';
 	field.style.backgroundColor = 'black';
 	field.style.borderRadius = '16px';
 	field.style.position = 'relative';
-	field.style.border = '3px solid';
+	field.style.border = '8px solid';
 	field.style.boxSizing = 'border-box';
 
 	const	ball = document.createElement('div');
@@ -189,17 +189,19 @@ export function getGameField() {
 	rightScore.id = 'rightScore';
 	rightScore.textContent = '0';
 	rightScore.style.fontFamily = '"Horizon", monospace';
-	rightScore.style.fontSize = '10rem';
-	rightScore.style.color = '#rgb(255, 196, 51)';
+	rightScore.style.fontSize = '35vh';
+	rightScore.style.color = '#FFC433';
 	rightScore.style.opacity = '0.2';
+	rightScore.style.alignContent = 'center';
 
 	const leftScore = document.createElement('div');
 	leftScore.id = 'leftScore';
 	leftScore.textContent = '0';
 	leftScore.style.fontFamily = '"Horizon", monospace';
-	leftScore.style.fontSize = '10rem';
-	leftScore.style.color = '#rgb(255, 97, 23)';
+	leftScore.style.fontSize = '35vh';
+	leftScore.style.color = '#FF6117';
 	leftScore.style.opacity = '0.2';
+	leftScore.style.alignContent = 'center';
 
 	scoreContainer.appendChild(leftScore);
 	scoreContainer.appendChild(rightScore);

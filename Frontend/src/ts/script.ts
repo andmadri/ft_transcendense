@@ -36,6 +36,7 @@ export const Game: S.gameInfo = {
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
+	ballPaused: false,
 }
 
 startSocketListeners();
@@ -43,7 +44,7 @@ startSocketListeners();
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-window.addEventListener('resize', initAfterResize);
+// window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
 
@@ -79,6 +80,7 @@ function mainLoop() {
 					// log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
+					
 				}
 				break ;
 			case S.State.Game: {

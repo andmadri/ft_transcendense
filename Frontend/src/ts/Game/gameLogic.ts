@@ -130,6 +130,10 @@ export function checkWallCollision() {
 
 }
 
+export function stopBall() {
+
+}
+
 function resetBall(){
 	const field = document.getElementById("field");
 	const ball = document.getElementById("ball");
@@ -183,6 +187,7 @@ export function checkPaddelCollision() {
 		else {
 			updateScoreDisplay('leftScore', ++Game.scoreLeft);
 			updateScoreServer(Game.id);
+			pauseBallTemporarily(3000);
 		}
 	}
 	else if (ball.x - radius <= leftPadel.x + leftPadel.width)
@@ -195,6 +200,7 @@ export function checkPaddelCollision() {
 		else {
 			updateScoreDisplay('rightScore', ++Game.scoreRight);
 			updateScoreServer(Game.id2);
+			pauseBallTemporarily(3000);
 		}
 	}
 }
@@ -236,6 +242,18 @@ export function handleGameOver() {
 
 }
 
+export function pauseBallTemporarily(duration: number) {
+	const ball = document.getElementById('ball');
+	if (!ball)
+		return;
+	Game.ballPaused = true;
+	ball.style.animation = 'twinkle 1s ease-in-out infinite';
+	setTimeout(() => {
+		Game.ballPaused = false;
+		ball.style.animation = 'none';
+	}, duration);
+}
+
 export function game() {
 	const AI = Game.opponentType == S.OT.ONEvsCOM ? true : false;
 
@@ -255,8 +273,10 @@ export function game() {
 
 	checkWallCollision();
 	checkPaddelCollision();
-	calculateBallDir();
-	updateBallPosition();
+	if (!Game.ballPaused) {
+		calculateBallDir();
+		updateBallPosition();
+	}
 	if (checkPadelMovement())
 		updatePadelPosition();
 

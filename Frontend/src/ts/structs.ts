@@ -47,6 +47,7 @@ export type gameInfo = {
 	timeGame: number;
 	scoreLeft: number;
 	scoreRight: number;
+	ballPaused: boolean;
 }
 
 // KEYS
