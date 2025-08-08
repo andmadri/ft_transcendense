@@ -245,7 +245,18 @@ export function initGame() {
 	scaleGamePos();
 	initMovement();
 	initDOMSizes();
-	initGameServer();
+	if (Game.opponentType != S.OT.Online)
+		initGameServer();
+	else {
+		// Send server msg that player is ready with init game
+		const readyToPlay = {
+			action: 'game',
+			subaction: 'start',
+			matchID: Game.matchID,
+			userID: Game.player1Id
+		}
+		Game.socket.send(JSON.stringify(readyToPlay));
+	}
 	// updateNamesMenu();
 	// resetScoreMenu();
 }

@@ -10,7 +10,10 @@ function processMatch(data: any) {
 	Game.matchID = data.id;
 	Game.player1Id = data.player1ID;
 	Game.player2Id = data.player2ID;
-	Game.state = S.State.Game;
+
+	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
+	// the game field as well
+	Game.state = S.State.Init;
 	log("ProcessMatch?");
 }
 
@@ -36,6 +39,9 @@ export function actionGame(data: any) {
 	switch(data.subaction) {
 		case 'init':
 			processMatch(data);
+			break ;
+		case 'start':
+			Game.state = S.State.Game;
 			break ;
 		case 'ballUpdate':
  			applyBallUpdate(data);

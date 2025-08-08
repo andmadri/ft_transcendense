@@ -159,7 +159,7 @@ fastify.ready().then(() => {
 		socket.on('disconnect', () => {
 			console.log(`User disconnected: ${socket.id}`);
 			try {
-				const user = getUserByID(userId1);
+				const user = getUserByID(db, userId1);
 				if (user?.email) updateOnlineStatus(user.email, 'offline');
 			} catch (err) {
 				console.error('Failed logout cleanup', err);

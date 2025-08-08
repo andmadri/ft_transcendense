@@ -28,6 +28,7 @@ export function newMatch(id, name, id2, name2) {
 			paddle: 0,
 			pressUp: false,
 			pressDown: false,
+			ready: false,
 		},
 		player2: {
 			id: id2,
@@ -36,6 +37,7 @@ export function newMatch(id, name, id2, name2) {
 			paddle: 0,
 			pressUp: false,
 			pressDown: false,
+			ready: false,
 		},
 		ball: {
 			angle: 0,

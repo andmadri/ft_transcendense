@@ -2,10 +2,11 @@ import { getUserByID } from "../Database/users.js";
 import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";
+import { db } from "../index.js"
 
 async function createMatchOnline(socket, userID) {
 	try {
-		const user = await getUserByID(userID);
+		const user = await getUserByID(db, userID);
 		if (!user || !user.name) {
 			console.log("No username found in createMatchOnline");
 			return ;
@@ -60,7 +61,6 @@ export async function handleOnlineMatch(socket, userID, io) {
 		// send back opponent found to both... play
 
 	} else {
-		const MatchID = createMatchOnline(socket, userID); 
-		console.log(`New match made with ${MatchID}`);
+		createMatchOnline(socket, userID); 
 	}
 }

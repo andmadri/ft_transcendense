@@ -2,7 +2,7 @@ import axios from 'axios';
 import { signFastifyJWT } from "../utils/jwt.js";
 import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
-
+import { db } from '../index.js'
 
 /**
  * Handles the Google authentication process.
@@ -24,7 +24,7 @@ async function handleGoogleAuth(user) {
 			return null;
 		}
 
-		const exists = await userDB.getUserByEmail(user.email);
+		const exists = await userDB.getUserByEmail(db, user.email);
 		if (exists) {
 			const isValidPassword = await bcrypt.compare(user.id, exists.password);
 			if (!isValidPassword) {
