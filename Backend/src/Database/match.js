@@ -1,4 +1,5 @@
 import { getUserByID } from './users.js';
+import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -20,28 +21,20 @@ import { getUserByID } from './users.js';
  * @throws {Error} - If required players do not exist or SQL insert fails.
  */
 export async function addMatchToDB(db, match) {
-	const player1 = await getUserByID(db, match.player_1_id);
-	if (!player1) {
-		throw new Error(`Player 1 (ID ${match.player_1_id}) does not exist.`);
-	}
-
-	const player2 = await getUserByID(db, match.player_2_id);
-	if (!player2) {
-		throw new Error(`Player 2 (ID ${match.player_2_id}) does not exist.`);
-	}
-
-	return new Promise((resolve, reject) => {
+	const matchID = await new Promise((resolve, reject) => {
 		const sql = `INSERT INTO Matches (player_1_id, player_2_id, match_type) VALUES (?, ?, ?)`;
 		db.run(sql, [match.player_1_id, match.player_2_id, match.match_type], function (err) {
 			if (err) {
-				console.error('Error SQL - addMatchToDB:', err.message);
+				sql_error(err, `addMatchToDB | player_1_id=${match.player_1_id} player_2_id=${match.player_2_id}`);
 				reject(err);
 			} else {
-				console.log(`Match started: [${this.lastID}] ${player1.name} vs ${player2.name}`);
 				resolve(this.lastID);
 			}
 		});
 	});
+	await loggerUpdateMatchInDB(db, matchID);
+
+	return matchID;
 }
 
 /**
@@ -68,10 +61,6 @@ export async function addMatchEventToDB(db, event) {
 	if (!match) {
 		throw new Error(`Match ID ${event.match_id} does not exist.`);
 	}
-	const user = await getUserByID(db, event.user_id);
-	if (!user) {
-		throw new Error(`User ID ${event.user_id} does not exist.`);
-	}
 
 	return new Promise((resolve, reject) => {
 		const sql = `INSERT INTO MatchEvents (
@@ -87,10 +76,9 @@ export async function addMatchEventToDB(db, event) {
 			event.paddle_x_player_2 ?? null, event.paddle_y_player_2 ?? null];
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - addMatchEventToDB:', err.message);
+				sql_error(err, `addMatchEventToDB id=${event.match_id}`);
 				reject(err);
 			} else {
-				console.log(`Match [${event.match_id}] event: [${this.lastID}] ${user.name} - ${event.event_type}`);
 				resolve(this.lastID);
 			}
 		});
@@ -112,7 +100,7 @@ export async function addMatchEventToDB(db, event) {
  * @param {number} [match.player_1_score] - (Final) score of player 1.
  * @param {number} [match.player_2_score] - (Final) score of player 2.
  * @param {number|null} [match.winner_id] - Winner's user ID - only set when the match is ended.
- * @param {string|null} [match.end_time] - Match end timestamp (ISO 8601 or null) - only set when the match is ended.
+ * @param {bool} [match.end_time] - If true set the match end timestamp - only set when the match is ended.
  *
  * @returns {Promise<void>}
  *
@@ -123,8 +111,8 @@ export async function updateMatchInDB(db, match) {
 	if (!existingMatch) {
 		throw new Error(`Match ID ${match.match_id} does not exist.`);
 	}
-	
-	return new Promise ((resolve, reject) => {
+
+	const changes = await new Promise ((resolve, reject) => {
 		const updates = [];
 		const values = [];
 
@@ -140,9 +128,8 @@ export async function updateMatchInDB(db, match) {
 			updates.push("winner_id = ?");
 			values.push(match.winner_id);
 		}
-		if (match.end_time !== undefined) {
-			updates.push("end_time = ?");
-			values.push(match.end_time);
+		if (match.end_time === true) {
+			updates.push("end_time = CURRENT_TIMESTAMP");
 		}
 
 		if (updates.length === 0) {
@@ -155,15 +142,16 @@ export async function updateMatchInDB(db, match) {
 
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - updateMatchInDB:', err.message);
+				sql_error(err, `updateMatchInDB id=${match.match_id}`);
 				reject(err);
 			} else {
-				loggerUpdateMatchInDB(db, match.match_id); // ADD LATER: await loggerUpdateMatchInDB(db, match.match_id);
-				// console.log(`Match updated: [${match.match_id}] ${this.changes}`); // CHANGE THIS LATER: Logger is invalid - should we log inside the wrappers functions?
 				resolve(this.changes);
 			}
 		});
 	});
+	await loggerUpdateMatchInDB(db, match.match_id);
+
+	return changes;
 }
 
 // *************************************************************************** //
@@ -181,7 +169,7 @@ export async function getMatchByID(db, match_id) {
 		const sql = `SELECT * FROM Matches WHERE id = ?`;
 		db.get(sql, [match_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getMatchByID:', err.message);
+				sql_error(err, `getMatchByID id=${match_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -201,7 +189,7 @@ export async function getMatchEventByID(db, event_id) {
 		const sql = `SELECT * FROM MatchEvents WHERE id = ?`;
 		db.get(sql, [event_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getMatchEventByID:', err.message);
+				sql_error(err, `getMatchEventByID id=${event_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -210,17 +198,16 @@ export async function getMatchEventByID(db, event_id) {
 	});
 }
 
-
 // *************************************************************************** //
 //                           SHOW DATA IN THE LOGGER                           //
 // *************************************************************************** //
 
-function sql_log(msg) {
-	// if (process.env.LOGSQL) {
-	const ts = new Date().toISOString();
-	console.log(`[${ts}] ${msg}`);
-	// }
-}
+// export async function sql_log(msg) {
+// 	// if (process.env.LOGSQL) {
+// 	const ts = new Date().toISOString().slice(0,19).replace('T',' ');
+// 	console.log(`[${ts}] ${msg}`);
+// 	// }
+// }
 
 export async function loggerUpdateMatchInDB(db, match_id) {
 	const match = await getMatchByID(db, match_id);
@@ -234,7 +221,9 @@ export async function loggerUpdateMatchInDB(db, match_id) {
 		throw new Error(`UserID ${match.player_1_id} and/or ${match.player_2_id} does not exist.`);
 	}
 
-	if (!match.end_time) {
+	if (match.player_1_score === 0 && match.player_2_score === 0 && !match.end_time) {
+		sql_log(`Match started: [${match_id}] ${player_1.name} vs ${player_2.name}`)
+	} else if (!match.end_time) {
 		sql_log(`Match updated: [${match_id}] ${player_1.name} ${match.player_1_score} - ${match.player_2_score} ${player_2.name}`)
 	} else {
 		sql_log(`Match ended: [${match_id}] ${player_1.name} ${match.player_1_score} - ${match.player_2_score} ${player_2.name}`)

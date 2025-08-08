@@ -1,4 +1,5 @@
 import { getUserByID } from './users.js';
+import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -25,10 +26,10 @@ export async function addUserSessionToDB(db, session) {
 		const sql = `INSERT INTO UserSessions (user_id, state) VALUES (?, ?)`;
 		db.run(sql, [session.user_id, session.state], function (err) {
 			if (err) {
-				console.error('Error SQL - addUserSessionToDB:', err.message);
+				sql_error(err, `addUserSessionToDB | user_id=${user.id} state=${session.state}`);
 				reject(err);
 			} else {
-				console.log(`Session created: [${this.lastID}] ${user.name} -> ${session.state}`);
+				sql_log(`Session created: [${this.lastID}] ${user.name} -> ${session.state}`);
 				resolve(this.lastID);
 			}
 		});
@@ -44,7 +45,7 @@ export async function getLastUserSession(db, user_id) {
 		const sql = `SELECT * FROM UserSessions WHERE user_id = ? ORDER BY timestamp DESC LIMIT 1`;
 		db.get(sql, [user_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getLastUserSession:', err.message);
+				sql_error(err, `getLastUserSession | user_id=${user_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -61,7 +62,8 @@ export async function getLatestSessionByState(db, user_id, state) {
 		const sql = `SELECT * FROM UserSessions WHERE user_id = ? AND state IN (${placeholders}) ORDER BY timestamp DESC LIMIT 1`;
 		db.get(sql, [user_id, ...allowedStates], (err, row) => {
 			if (err) {
-				return reject(err);
+				sql_error(err, `getLatestSessionByState | user_id=${user_id} state=${state}`);
+				reject(err);
 			} else {
 				resolve(row || null);
 			}
@@ -94,6 +96,7 @@ export function getAllUserStateDurationsDB(db) {
 	return new Promise((resolve, reject) => {
 		db.all(sql, [], (err, rows) => {
 			if (err) {
+				sql_error(err, `getAllUserStateDurationsDB`);
 				reject(err);
 			} else {
 				resolve(rows);
@@ -115,6 +118,7 @@ export function getUserStateDurationsDB(db, user_id) {
 	return new Promise((resolve, reject) => {
 		db.get(sql, [user_id], (err, row) => {
 			if (err) {
+				sql_error(err, `getUserStateDurationsDB | user_id=${user_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -128,6 +132,7 @@ export function getUserMatchStatsDB(db, user_id) {
 	return new Promise((resolve, reject) => {
 		db.get(sql, [user_id], (err, row) => {
 			if (err) {
+				sql_error(err, `getUserMatchStatsDB | user_id=${user_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { addUserSessionToDB } from './sessions.js';
+import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -20,10 +21,10 @@ export async function addUserToDB(db, user) {
 		const sql = `INSERT INTO Users (name, email, password, avatar_url) VALUES (?, ?, ?, ?)`;
 		db.run(sql, [user.name, user.email, hashedPassword, avatar_url], function (err) {
 			if (err) {
-				console.error('Error SQL - addUserToDB:', err.message);
+				sql_error(err, `addUserToDB | name=${user.name} email=${user.email}`);
 				reject(err);
 			} else {
-				console.log(`User created: [${this.lastID}] ${user.name} (${user.email})`);
+				sql_log(`User created: [${this.lastID}] ${user.name} (${user.email})`);
 				resolve(this.lastID);
 			}
 		});
@@ -98,10 +99,10 @@ export async function updateUserInDB(db, user) {
 
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - updateUserInDB:', err.message);
+				sql_error(err, `updateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				console.log(`User updated: [${user.user_id}] ${user.name}`);
+				sql_log(`User updated: [${user.user_id}] ${user.name} (${user.email})`);
 				resolve();
 			}
 		});
@@ -130,10 +131,10 @@ export async function deactivateUserInDB(db, user_id) {
 		const sql = `UPDATE Users SET is_deleted = 1, last_edited = CURRENT_TIMESTAMP WHERE id = ?`;
 		db.run(sql, [user_id], function (err) {
 			if (err) {
-				console.error('Error SQL - deactivateUserInDB:', err.message);
+				sql_error(err, `deactivateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				console.log(`User deactivated: [${user_id}] ${existing.name} (${existing.email})`);
+				sql_log(`User deactivated: [${user.user_id}] ${existing.name} (${existing.email})`);
 				resolve();
 			}
 		});
@@ -157,7 +158,7 @@ export async function getUserByID(db, user_id) {
 		const sql = `SELECT * FROM Users WHERE id = ?`;
 		db.get(sql, [user_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getUserByID:', err.message);
+				sql_error(err, `getUserByID | id=${user_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -177,7 +178,7 @@ export async function getUserByEmail(db, email) {
 		const sql = `SELECT * FROM Users WHERE email = ?`;
 		db.get(sql, [email], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getUserByEmail:', err.message);
+				sql_error(err, `getUserByEmail | email=${email}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -198,6 +199,7 @@ export function getOnlineUsers(db) {
 	return new Promise((resolve, reject) => {
 		db.all(sql, [], (err, rows) => {
 			if (err) {
+				sql_error(err, `getOnlineUsers`);
 				reject(err);
 			} else {
 				resolve(rows)

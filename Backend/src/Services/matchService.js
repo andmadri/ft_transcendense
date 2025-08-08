@@ -118,7 +118,7 @@ export async function handleMatchEndedDB(db, match_id) {
 	await updateMatchInDB(db, {
 		match_id: match.id,
 		winner_id: winner_id,
-		end_time: new Date().toISOString()
+		end_time: true
 	})
 
 	// Add the players to 'in_menu' in UserSessions

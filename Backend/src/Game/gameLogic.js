@@ -45,5 +45,5 @@ export async function updateScore(match, msg, socket) {
 		// paddle_x_player_2: ,
 		// paddle_y_player_2: ,
 	})
-	console.log(`A GOAL SCORED! eventID: ${eventID}`);
+	return eventID;
 }

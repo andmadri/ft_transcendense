@@ -1,3 +1,5 @@
+import { sql_log, sql_error } from './dblogger.js';
+
 /**
  * @brief Creates all tables in the database if they do not exist.
  *
@@ -131,11 +133,17 @@ export function createTables(db)
 	
 	
 	`, (err) => {
-		if (err) return console.error("Error creating tables:", err);
-		console.log("Created database tables and views.");
+		if (err) {
+			sql_error(err, `Error creating tables`);
+			return ;
+		}
+		sql_log(`Created database tables and views.`);
 		db.all(`SELECT name FROM sqlite_master WHERE type='table'`, (err, rows) => {
-			if (err) console.error("Failed to list tables:", err);
-			else console.log("Current tables in database:", rows.map(r => r.name));
+			if (err) {
+				sql_error(err, `Failed to list tables`);
+			} else {
+				sql_log(`Current tables in database: ${rows.map(r => r.name)}`);
+			}
 		});
 	});
 }

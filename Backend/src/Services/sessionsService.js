@@ -17,4 +17,3 @@ export async function onUserLogin(db, user_id) {
 	await addUserSessionToDB(db, { user_id, state: 'login' });
 	await addUserSessionToDB(db, { user_id, state: 'in_menu' });
 }
-
