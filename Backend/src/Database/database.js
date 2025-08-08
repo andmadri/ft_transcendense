@@ -22,7 +22,6 @@ export async function createDatabase() {
 		}
 
 		sql_log(`Connected to the database`);
-		console.log('Connected to the database.');
 		newdDB.run("PRAGMA foreign_keys = ON");
 		if (!existDb) {
 			createTables(newdDB);
@@ -49,5 +48,6 @@ export async function createDatabase() {
 	});
 	await onUserLogin(newdDB, ai_id);
 
+	sql_log(`Finished setting up database`, false, true);
 	return newdDB;
 }
