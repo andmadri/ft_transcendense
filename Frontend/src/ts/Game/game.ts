@@ -13,7 +13,7 @@ function processMatch(data: any) {
 
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
-	Game.state = S.State.Init;
+	Game.state = S.State.Game;
 	log("ProcessMatch?");
 }
 
