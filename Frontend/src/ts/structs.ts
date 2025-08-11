@@ -56,7 +56,8 @@ export type gameInfo = {
 	scoreLeft: number;
 	scoreRight: number;
 
-	colletedSteps: update[]
+	colletedSteps: update[];
+	ballPaused: boolean;
 }
 
 // KEYS

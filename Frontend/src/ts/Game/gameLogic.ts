@@ -113,6 +113,7 @@ function handlePaddleBounce() {
 			Game.scoreLeft++;
 			sendScoreUpdate(Game.player1Id);
 			resetBall();
+			pauseBallTemporarily(3000);
 		}
 	}
 	else if (ballPos.x - radius <= lPlayerPos.x + lPlayerSize.width)
@@ -125,6 +126,7 @@ function handlePaddleBounce() {
 			Game.scoreRight++;
 			sendScoreUpdate(Game.player2Id);
 			resetBall();
+			pauseBallTemporarily(3000);
 		}
 	}
 }
@@ -140,12 +142,24 @@ function updateDOMElements() {
 	if (ball && lPlayer && rPlayer && leftScore && rightScore) {
 		leftScore.textContent = Game.scoreLeft.toString();
 		rightScore.textContent = Game.scoreRight.toString();
-		ball.style.left = `${ballPos.x - ballRadius}px`;
-		ball.style.top = `${ballPos.y - ballRadius}px`;
+		ball.style.left = `${ballPos.x}px`;
+		ball.style.top = `${ballPos.y}px`;
 
 		lPlayer.style.top = `${lPlayerPos.y}px`;
 		rPlayer.style.top = `${rPlayerPos.y}px`;
 	}
+}
+
+export function pauseBallTemporarily(duration: number) {
+	const ball = document.getElementById('ball');
+	if (!ball)
+		return;
+	Game.ballPaused = true;
+	ball.style.animation = 'twinkle 1s ease-in-out infinite';
+	setTimeout(() => {
+		Game.ballPaused = false;
+		ball.style.animation = 'none';
+	}, duration);
 }
 
 export function game() {
@@ -160,8 +174,10 @@ export function game() {
 		}
 		handleWallBounce();
 		handlePaddleBounce();
-		updateBallPos();
-		sendBallUpdate();
+		if (!Game.ballPaused) {
+			updateBallPos();
+			sendBallUpdate();
+		}
 		if (checkPaddleMovement())
 			sendPaddleUpdate();
 	}

@@ -1,46 +1,3 @@
-@keyframes twinkle {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-
-@keyframes scrollTitle {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%) ;}
-}
-
-@font-face {
-	font-family: 'RobotoCondensed';
-	src: url('./fonts/RobotoCondensed-Regular.ttf') format('truetype');
-	font-weight: 300;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'Horizon_Outlined';
-	src: url('./fonts/Horizon_Outlined.otf');
-	font-weight: bold;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'Horizon';
-	src: url('./fonts/Horizon.otf');
-	font-weight: bold;
-	font-style: normal;
-}
-
-@keyframes goX {
-	from {left: 0;} to {left: calc(100% - 4rem)};
-}
-
-@keyframes goY {
-	from {top: 0} to {top: calc(100% - 4rem)};
-}
-
-
-/* Authentification */
-
 .authContainer {
 	display: flex;
 	background-color: #000;
@@ -92,7 +49,6 @@
 .inputButtons {
 	font-family: 'RobotoCondensed', sans-serif;
 	display: flex;
-	position: relative;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;

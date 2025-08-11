@@ -6,8 +6,11 @@ import { getGameField } from './gameContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
+import { initAfterResize } from '../windowEvents.js';
 
-
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
+const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
 
 export function startGame() {
 	switch (Game.opponentType) {
@@ -83,91 +86,88 @@ export function changeMatchFormat(option: string) {
 	}
 }
 
-function scaleToField(fieldDim: number, unit : number) : number {
-	return (fieldDim * unit);
-}
+// function scaleToField(fieldDim: number, unit : number) : number {
+// 	return (fieldDim * unit);
+// }
 
-function initMovement() {
-	const fieldSize = S.size[E.field];
-	const fieldUnit = S.unitSize[E.field];
+// function initMovement() {
+// 	const fieldSize = S.size[E.field];
+// 	const fieldUnit = S.unitSize[E.field];
 
+// 	randomizeBallAngle();
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.movement[e] && S.unitSize[e]) {
+// 			S.movement[e].speed = scaleToField(fieldSize.width, S.unitMovement[e].speed);
+// 		}
+// 	}
+// }
+
+// function scaleGameSizes() {
+// 	const fieldSize = S.size[E.field];
+// 	const fieldUnit = S.unitSize[E.field];
+// 	const ballSize = S.size[E.ball];
+
+// 	fieldSize.width = window.innerWidth * 0.7;
+// 	fieldSize.height = fieldSize.width * fieldUnit.height;
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.size[e] && S.unitSize[e]) {
+// 			S.size[e].width = scaleToField(fieldSize.width, S.unitSize[e].width);
+// 			if (e === E.ball) {
+// 				S.size[e].height = S.size[e].width;
+// 				continue ;
+// 			}
+// 			S.size[e].height = scaleToField(fieldSize.height, S.unitSize[e].height);
+// 		}
+// 	}
+// }
+
+// function scaleGamePos() {
+// 	const fieldSize = S.size[E.field];
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.pos[e] && S.unitPos[e]) {
+// 			S.pos[e].x = scaleToField(fieldSize.width, S.unitPos[e].x);
+// 			S.pos[e].y = scaleToField(fieldSize.height, S.unitPos[e].y);
+// 		}
+// 	}
+// }
+
+export function initPositions() {
+	const field = document.getElementById('field');
+	const ball = document.getElementById('ball');
+	const rPlayer = document.getElementById('rPlayer');
+	const lPlayer = document.getElementById('lPlayer');
+	if (!ball || !rPlayer || !lPlayer || !field) {
+		console.log('Something went wrong (initGame), close game?');
+		return;
+	}
+	const fieldWidth = field.clientWidth;
+	const fieldHeight = field.clientHeight;
+
+	fieldSize.width = fieldWidth;
+	fieldSize.height = fieldHeight;
+
+	ballSize.width =  ball.clientWidth;
+	ballSize.height = ball.clientHeight;
+
+	ballPos.x = fieldWidth / 2;
+	ballPos.y = fieldHeight / 2;
+	ballMove.speed = fieldWidth * 0.01;
 	randomizeBallAngle();
 
-	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-		if (S.movement[e] && S.unitSize[e]) {
-			S.movement[e].speed = scaleToField(fieldSize.width, S.unitMovement[e].speed);
-		}
-	}
-}
+	rPlayerSize.height = rPlayer.clientHeight;
+	rPlayerSize.width = rPlayer.clientWidth;
+	rPlayerPos.y = rPlayer.offsetTop;
+	rPlayerPos.x = rPlayer.offsetLeft;
+	rPlayerMove.speed = fieldHeight * 0.015;
 
-function scaleGameSizes() {
-	const fieldSize = S.size[E.field];
-	const fieldUnit = S.unitSize[E.field];
-	const ballSize = S.size[E.ball];
-
-	fieldSize.width = window.innerWidth * 0.7;
-	fieldSize.height = fieldSize.width * fieldUnit.height;
-
-	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-		if (S.size[e] && S.unitSize[e]) {
-			S.size[e].width = scaleToField(fieldSize.width, S.unitSize[e].width);
-			if (e === E.ball) {
-				S.size[e].height = S.size[e].width;
-				continue ;
-			}
-			S.size[e].height = scaleToField(fieldSize.height, S.unitSize[e].height);
-		}
-	}
-}
-
-function scaleGamePos() {
-	const fieldSize = S.size[E.field];
-
-	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-		if (S.pos[e] && S.unitPos[e]) {
-			S.pos[e].x = scaleToField(fieldSize.width, S.unitPos[e].x);
-			S.pos[e].y = scaleToField(fieldSize.height, S.unitPos[e].y);
-		}
-	}
-}
-
-export function initDOMSizes() {
-	const ballEl = document.getElementById('ball');
-	const lPlayerEl = document.getElementById('rPlayer');
-	const rPlayerEl = document.getElementById('lPlayer');
-	const fieldEl = document.getElementById('field');
-	const gameEl = document.getElementById('game');
-
-	const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
-	const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
-
-	if (ballEl && lPlayerEl && rPlayerEl && fieldEl && gameEl)
-	{
-		// Size
-		fieldEl.style.height = `${fieldSize.height}px`;
-		fieldEl.style.width = `${fieldSize.width}px`;
-		gameEl.style.height = `${fieldSize.height}px`;
-		gameEl.style.width = `${fieldSize.width}px`;
-
-		ballEl.style.height = `${ballSize.height}px`;
-		ballEl.style.width = `${ballSize.width}px`;
-
-		lPlayerEl.style.height = `${lPlayerSize.height}px`;
-		lPlayerEl.style.width = `${lPlayerSize.width}px`;
-		rPlayerEl.style.height = `${rPlayerSize.height}px`;
-		rPlayerEl.style.width = `${rPlayerSize.width}px`;
-
-		//Pos
-		ballEl.style.left = `${ballPos.x - ballSize.width / 2}px`;
-		ballEl.style.top = `${ballPos.y - ballSize.width / 2}px`;
-
-		//lPlayerPos.y = lPlayerEl.offsetTop;
-		rPlayerPos.x = lPlayerEl.offsetLeft;
-		//lPlayerPos.y = rPlayerEl.offsetTop;
-		rPlayerPos.x = fieldSize.width - rPlayerEl.offsetLeft;
-	} else {
-		console.log('Something went wrong (initGame), close game?');
-	}
+	lPlayerSize.height = lPlayer.clientHeight;
+	lPlayerSize.width = lPlayer.clientWidth;
+	lPlayerPos.y = lPlayer.offsetTop;
+	lPlayerPos.x = lPlayer.offsetLeft;
+	lPlayerMove.speed = fieldHeight * 0.015;
 }
 
 export function initGameServer() {
@@ -242,11 +242,11 @@ export function initGame() {
 	// if (document.getElementById('startScreen'))
 	// 	return ;
 	// getStartScreenBeforeGame();
-	//getGameField();
-	scaleGameSizes();
-	scaleGamePos();
-	initMovement();
-	initDOMSizes();
+
+	//scaleGameSizes();
+	//scaleGamePos();
+	//initMovement();
+	initPositions();
 	if (Game.opponentType != S.OT.Online)
 		initGameServer();
 	else {
@@ -258,6 +258,13 @@ export function initGame() {
 			userID: Game.player1Id
 		}
 		Game.socket.send(JSON.stringify(readyToPlay));
+	}
+	const field = document.getElementById('field');
+	if (field) {
+		const resizeObserver = new ResizeObserver(() => {
+			initAfterResize();
+		})
+		resizeObserver.observe(field);
 	}
 	// updateNamesMenu();
 	// resetScoreMenu();

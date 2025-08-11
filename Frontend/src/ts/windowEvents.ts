@@ -34,58 +34,46 @@ export function initAfterResize() {
 	if (ball && rPlayer && lPlayer && field && game) {
 		const oldWidth = fieldSize.width;
 		const oldHeight = fieldSize.height;
-
-		const newWidth = window.innerWidth * 0.7;
-		const newHeight = newWidth * (7 / 10);
-
-		if (oldWidth === 0 || oldHeight === 0) {
-			console.warn("Field too small!!");
-			return;
-		}
-
-		const scaleFactor = Math.min(newWidth / oldWidth, newHeight / oldHeight);
-
-		ballPos.x *= scaleFactor;
-		ballPos.y *= scaleFactor;
-		ballSize.width *= scaleFactor;
-		ballSize.height *= scaleFactor;
-		ballMove.speed *= scaleFactor;
-
-		ball.style.left = `${ballPos.x}px`;
-		ball.style.top = `${ballPos.y}px`;
-		ball.style.width = `${ballSize.width}px`;
-		ball.style.height = `${ballSize.height}px`;
-		
-		rPlayerPos.x *= scaleFactor;
-		rPlayerPos.y *= scaleFactor;
-		rPlayerSize.width *= scaleFactor;
-		rPlayerSize.height *= scaleFactor;
-		rPlayerMove.speed *= scaleFactor;
-
-		rPlayer.style.left = `${rPlayerPos.x}px`;
-		rPlayer.style.top = `${rPlayerPos.y}px`;
-		rPlayer.style.width = `${rPlayerSize.width}px`;
-		rPlayer.style.height = `${rPlayerSize.height}px`;
-
-		lPlayerPos.x *= scaleFactor;
-		lPlayerPos.y *= scaleFactor;
-		lPlayerSize.width *= scaleFactor;
-		lPlayerSize.height *= scaleFactor;
-		lPlayerMove.speed *= scaleFactor;
-
-		lPlayer.style.left = `${lPlayerPos.x}px`;
-		lPlayer.style.top = `${lPlayerPos.y}px`;
-		lPlayer.style.width = `${lPlayerSize.width}px`;
-		lPlayer.style.height = `${lPlayerSize.height}px`;
-
-		game.style.width = `${newWidth}px`;
-		game.style.height = `${newHeight}px`;
-
-		field.style.width = `${newWidth}px`;
-		field.style.height = `${newHeight}px`;
+		const newWidth = field.clientWidth;
+		const newHeight = field.clientHeight;
 
 		fieldSize.width = newWidth;
 		fieldSize.height = newHeight;
+
+		ballSize.width = ball.clientWidth;
+		ballSize.height = ball.clientHeight;
+
+		const relativeXball = ballPos.x / oldWidth;
+		const relativeYball = ballPos.y / oldHeight;
+
+		ballPos.x = relativeXball * newWidth;
+		ballPos.y = relativeYball * newHeight;
+		ball.style.left = `${ballPos.x}px`;
+		ball.style.top = `${ballPos.y}px`;
+		ballMove.speed = fieldSize.width * 0.01;
+		
+		const relativeXlPlayer = lPlayerPos.x / oldWidth;
+		const relativeYlPlayer = lPlayerPos.y / oldHeight;
+
+		lPlayerSize.width = lPlayer.clientWidth;
+		lPlayerSize.height = lPlayer.clientHeight;
+		lPlayerPos.x = relativeXlPlayer * newWidth;
+		lPlayerPos.y = relativeYlPlayer * newHeight;
+		lPlayer.style.left = `${lPlayerPos.x}px`;
+		lPlayer.style.top = `${lPlayerPos.y}px`;
+		lPlayerMove.speed = fieldSize.height * 0.015;
+
+		const relativeXrPlayer = rPlayerPos.x / oldWidth;
+		const relativeYrPlayer = rPlayerPos.y / oldHeight;
+
+		rPlayerSize.width = rPlayer.clientWidth;
+		rPlayerSize.height = rPlayer.clientHeight;
+		rPlayerPos.x = relativeXrPlayer * newWidth;
+		rPlayerPos.y = relativeYrPlayer * newHeight;
+		rPlayer.style.left = `${rPlayerPos.x}px`;
+		rPlayer.style.top = `${rPlayerPos.y}px`;
+		rPlayerMove.speed = fieldSize.height * 0.015;
+
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
 	}

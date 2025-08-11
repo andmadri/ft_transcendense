@@ -10,7 +10,7 @@ import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
-import { getLoadingPage } from './Loading/loadContent.js'
+// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 import { searchMatch } from './Matchmaking/onlineMatch.js'
 
@@ -43,7 +43,8 @@ export const Game: S.gameInfo = {
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
-	colletedSteps: []
+	colletedSteps: [],
+	ballPaused: false
 }
 
 log("host: " + window.location.host);
@@ -54,7 +55,9 @@ startSocketListeners();
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-window.addEventListener('resize', initAfterResize);
+// window.addEventListener('resize', initAfterResize);
+
+let lastSpeedIncreaseTime = 0;
 
 function mainLoop() {
 	if (Game.socket.connected) {
@@ -82,11 +85,11 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Init:
-				log("init game");
 				if (!document.getElementById('game'))
 				{
 					getGameField();
 					initGame();
+					
 				}
 				break ;
 			case S.State.Game: {
@@ -101,7 +104,6 @@ function mainLoop() {
 				saveGame();
 				break ;
 			default:
-				log("no valid state");
 		}
 
 	}
