@@ -70,21 +70,17 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Pending: {
-				// waiting for opponement
-				// log("No online mode yet...pending...");
 				break ;
 			}
 			case S.State.Init:
 				if (!document.getElementById('game'))
 				{
-					// log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
 					
 				}
 				break ;
 			case S.State.Game: {
-				// if (Game.matchID >= 0)
 				game();
 				break ;
 			}
@@ -92,7 +88,6 @@ function mainLoop() {
 				saveGame();
 				break ;
 			default:
-				// log("no valid state");
 		}
 
 	}

@@ -29,13 +29,17 @@ function styleElement(
 }
 
 function getQuitBtn() {
-	const	quiting = document.createElement('div');
-	quiting.style.display = 'flex';
-	const	quit = document.createElement('button');
-	quit.id = 'quitBtn';
-	quit.textContent = 'Exit';
+	const	quitButton = document.createElement('button');
+	quitButton.id = 'quitButton';
+	quitButton.textContent = 'Quit';
+	quitButton.style.fontFamily = '"Horizon", monospace';
+	quitButton.style.color = 'black';
+	quitButton.style.background = 'transparent';
+	quitButton.style.border = 'none';
+	quitButton.style.fontSize = 'clamp(2rem, 5vh, 5rem)';
+	quitButton.style.pointerEvents = 'auto';
 
-	quit.addEventListener('click', () => {
+	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
 		Game.socket.send(JSON.stringify( {
 			action: 'game',
@@ -46,45 +50,8 @@ function getQuitBtn() {
 		}));
 		Game.state = S.State.End;
 	})
-	quiting.appendChild(quit);
-	return (quiting);
+	return (quitButton);
 }
-
-// export function getGameField() {
-// 	const optionMenu = document.getElementById('optionMenu');
-// 	if (optionMenu) {
-// 		const	app = document.getElementById("app");
-// 		if (!app)
-// 			return ;
-// 		app.removeChild(optionMenu);
-// 	}
-// 	const body = document.getElementById('body');
-// 	if (!body)
-// 		return ;
-// 	body.style.height = "100%";
-// 	body.style.width = "100%";
-// 	body.style.padding = "10px";
-// 	body.style.boxSizing = 'border-box';
-// 	body.style.background = "linear-gradient(90deg, #ff6117, #ffc433, #ffc433)";
-// 	body.style.justifyContent = "center";
-// 	body.innerHTML = `
-// 	<div class="scrollContainer">
-// 		<div class="gameTitle" id="gameTitle">PongPongPongPongPongPongPongPongPong</div>
-// 	</div>`;
-
-// 	const gameContainer = document.createElement('div');
-// 	gameContainer.id = 'game';
-// 	gameContainer.className = 'gameContainer';
-// 	gameContainer.innerHTML = `
-// 	<div class="gameField" id="field">
-// 		<div id="ball"></div>
-// 		<div id="lPlayer"></div>
-// 		<div id="rPlayer"></div>
-// 	</div>
-// 	`;
-// 	body.appendChild(gameContainer);
-
-// }
 
 
 export function getGameField() {
@@ -115,24 +82,30 @@ export function getGameField() {
 	game.style.textAlign = 'center';
 	game.style.boxSizing = 'border-box';
 
-	// const scrollContainer = document.createElement('div');
-	// scrollContainer.style.display = 'inline-flex';
-	// scrollContainer.style.whiteSpace = 'nowrap';
-	// scrollContainer.style.animation = 'scroll 20s linear infinite';
+	const scrollContainer = document.createElement('div');
+	scrollContainer.style.display = 'inline-flex';
+	scrollContainer.style.whiteSpace = 'nowrap';
+	scrollContainer.style.overflow = 'hidden';
+	scrollContainer.style.width = '100%';
+	scrollContainer.style.position = 'relative';
 
 	const title1 = document.createElement('div');
 	title1.id = 'gameTitle';
-	title1.textContent = 'PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG PONG ';
-	title1.style.position = 'relative';
+	title1.textContent = 'PONG '.repeat(30);
 	title1.style.fontFamily = '"Horizon", monospace';
 	title1.style.fontSize = 'clamp(4rem, 8vh, 10rem)';
 	title1.style.color = 'transparent';
-	title1.style.marginBottom = '2rem';
-	title1.style.whiteSpace = 'nowrap';
 	title1.style.webkitTextStroke = '0.2rem #000';
+	title1.style.position = 'relative';
+	title1.style.display = 'inline-block';
 	title1.style.pointerEvents = 'none';
+	title1.style.padding = '1rem';
+	title1.style.animation = 'scrollTitle 35s linear infinite';
 
-	// const title2 = title1.cloneNode(true);
+	const title2 = title1.cloneNode(true);
+
+	scrollContainer.appendChild(title1);
+	scrollContainer.appendChild(title2);
 
 	const	field = document.createElement('div');
 	field.id = 'field';
@@ -207,13 +180,13 @@ export function getGameField() {
 	scoreContainer.appendChild(rightScore);
 
 
-	field.appendChild(ball);
 	field.appendChild(lPlayer);
 	field.appendChild(rPlayer);
 	field.appendChild(scoreContainer);
-	// scrollContainer.appendChild(title2);
-	// game.append(scrollContainer);
-	game.appendChild(title1);
-	game.append(field);
+	field.appendChild(ball);
+
+	game.appendChild(scrollContainer);
+	game.appendChild(field);
+	game.appendChild(getQuitBtn())
 	body.append(game);
 }
