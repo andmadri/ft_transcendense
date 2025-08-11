@@ -1,5 +1,6 @@
-// import { db } from './database.js'; // DELETE THIS LATER
 import bcrypt from 'bcrypt';
+import { addUserSessionToDB } from './sessions.js';
+import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -20,10 +21,10 @@ export async function addUserToDB(db, user) {
 		const sql = `INSERT INTO Users (name, email, password, avatar_url) VALUES (?, ?, ?, ?)`;
 		db.run(sql, [user.name, user.email, hashedPassword, avatar_url], function (err) {
 			if (err) {
-				console.error('Error SQL - addUserToDB:', err.message);
+				sql_error(err, `addUserToDB | name=${user.name} email=${user.email}`);
 				reject(err);
 			} else {
-				console.log(`User created: [${this.lastID}] ${user.name} (${user.email})`);
+				sql_log(`User created: [${this.lastID}] ${user.name} (${user.email})`);
 				resolve(this.lastID);
 			}
 		});
@@ -98,10 +99,10 @@ export async function updateUserInDB(db, user) {
 
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - updateUserInDB:', err.message);
+				sql_error(err, `updateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				console.log(`User updated: [${user.user_id}] ${user.name}`);
+				sql_log(`User updated: [${user.user_id}] ${user.name} (${user.email})`);
 				resolve();
 			}
 		});
@@ -111,6 +112,36 @@ export async function updateUserInDB(db, user) {
 // *************************************************************************** //
 //                          DELETE ROW FROM SQL TABLE                          //
 // *************************************************************************** //
+
+/**
+ * @brief Soft-deletes a user (marks them deleted + logs them out).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} user_id
+ * @returns {Promise<void>}
+ * @throws {Error}
+ */
+export async function deactivateUserInDB(db, user_id) {
+	const existing = await getUserByID(db, user.user_id);
+	if (!existing) {
+		throw new Error(`User ID ${user.user_id} does not exist.`);
+	}
+	
+	await new Promise((resolve, reject) => {
+		const sql = `UPDATE Users SET is_deleted = 1, last_edited = CURRENT_TIMESTAMP WHERE id = ?`;
+		db.run(sql, [user_id], function (err) {
+			if (err) {
+				sql_error(err, `deactivateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
+				reject(err);
+			} else {
+				sql_log(`User deactivated: [${user.user_id}] ${existing.name} (${existing.email})`);
+				resolve();
+			}
+		});
+	});
+
+	await addUserSessionToDB(db, { user_id, state: 'logout' });
+}
 
 // *************************************************************************** //
 //                           VIEW DATA FROM SQL TABLE                          //
@@ -127,7 +158,7 @@ export async function getUserByID(db, user_id) {
 		const sql = `SELECT * FROM Users WHERE id = ?`;
 		db.get(sql, [user_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getUserByID:', err.message);
+				sql_error(err, `getUserByID | id=${user_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -147,7 +178,7 @@ export async function getUserByEmail(db, email) {
 		const sql = `SELECT * FROM Users WHERE email = ?`;
 		db.get(sql, [email], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getUserByEmail:', err.message);
+				sql_error(err, `getUserByEmail | email=${email}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -155,6 +186,10 @@ export async function getUserByEmail(db, email) {
 		});
 	});
 }
+
+// *************************************************************************** //
+//                         VIEW DATA FROM VIEW TABLES                          //
+// *************************************************************************** //
 
 /**
  * @brief Returns the list of currently online users (id + name).
@@ -164,150 +199,11 @@ export function getOnlineUsers(db) {
 	return new Promise((resolve, reject) => {
 		db.all(sql, [], (err, rows) => {
 			if (err) {
+				sql_error(err, `getOnlineUsers`);
 				reject(err);
 			} else {
 				resolve(rows)
 			}
 		});
 	});
-}
-
-
-// DELETE BELOW FUNCTIONS THIS LATER
-
-
-export async function updateOnlineStatus(db, email, newStatus) {
-	return new Promise((resolve, reject) => {
-		db.run(
-			`UPDATE Users SET online_status = ? WHERE email = ?`,
-			[newStatus ? 1 : 0, email],
-			(err) => {
-				if (err)
-					reject(err);
-				else
-					resolve();
-			}
-		);
-	})
-}
-
-export async function isOnline(db, email) {
-	return new Promise((resolve, reject) => {
-		db.get(
-			`SELECT online_status FROM Users WHERE email = ?`,
-			[email],
-			(err, row) => {
-				if (err)
-					reject(err);
-				else
-					resolve(Boolean(row ? row.online_status : 0));
-			}
-		);
-	})
-}
-
-// export async function getOnlineUsers(db) {
-// 	return new Promise((resolve, reject) => {
-// 		db.all(
-// 			// SECET names and avatar of online users only
-// 			`SELECT name, avatar_url FROM Users WHERE online_status = 0 OR online_status = 1`,
-// 			[],
-// 			(err, rows) => {
-// 				if (err)
-// 					reject(err);
-// 				else
-// 					resolve(rows);
-// 			}
-// 		);
-// 	});
-// }
-
-export async function userAlreadyExist(db, email) {
-	return new Promise((resolve, reject) => {
-		db.get(
-			`SELECT EXISTS(SELECT 1 FROM Users WHERE email = ?) AS row_exists`,
-			[email],
-			(err, row) => {
-				if (err)
-					reject(err);
-				else
-					resolve(row.row_exists === 1);
-			}
-		);
-	})
-}
-
-
-// export async function getWins(db, email) {
-// 	return new Promise((resolve, reject) => {
-// 		db.get(
-// 			`SELECT wins FROM Users WHERE email = ?`,
-// 			[email],
-// 			(err, row) => {
-// 				if (err)
-// 					reject(err);
-// 				else
-// 					resolve(row ? row.wins : 0);
-// 			}
-// 		);
-// 	})
-// }
-
-// export async function getLosses(db, email) {
-// 	return new Promise((resolve, reject) => {
-// 		db.get(
-// 			`SELECT losses FROM Users WHERE email = ?`,
-// 			[email],
-// 			(err, row) => {
-// 				if (err)
-// 					reject(err);
-// 				else
-// 					resolve(row ? row.losses : 0);
-// 			}
-// 		);
-// 	})
-// }
-
-export async function updateWins(db, email) {
-	let	wins;
-
-	try {
-		wins = await getWins(db, email);
-	} catch(err) {
-		return ;
-	}
-	return new Promise((resolve, reject) => {
-		db.run(
-			`UPDATE Users SET wins = ? WHERE email = ?`,
-			[wins + 1, email],
-			(err) => {
-				if (err)
-					reject(err);
-				else
-					resolve();
-			}
-		);
-	});
-}
-
-export async function updateLosses(db, email) {
-	let	losses;
-
-	try {
-		losses = await getLosses(db, email);
-	} catch(err) {
-		return ;
-	}
-	return new Promise((resolve, reject) => {
-		db.run(
-			`UPDATE Users SET losses = ? WHERE email = ?`,
-			[losses + 1, email],
-			(err) => {
-				if (err)
-					reject(err);
-				else
-					resolve();
-			}
-		);
-	})
 }
