@@ -9,7 +9,7 @@ import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { getUserByID, updateOnlineStatus } from './Database/users.js';
+// import { getUserByID, updateOnlineStatus } from './Database/users.js';
 import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
@@ -138,12 +138,12 @@ fastify.ready().then(() => {
 
 		socket.on('disconnect', () => {
 			console.log(`User disconnected: ${socket.id}`);
-			try {
-				const user = getUserByID(db, userId1);
-				if (user?.email) updateOnlineStatus(user.email, 'offline');
-			} catch (err) {
-				console.error('Failed logout cleanup', err);
-			}
+			// try {
+			// 	const user = getUserByID(db, userId1);
+			// 	if (user?.email) updateOnlineStatus(user.email, 'offline');
+			// } catch (err) {
+			// 	console.error('Failed logout cleanup', err);
+			// }
 		});
 	});
 });

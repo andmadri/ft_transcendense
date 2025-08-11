@@ -1,7 +1,7 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
-import { sendBallUpdate, sendPaddleUpdate } from './gameStateSync.js'
+import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
@@ -111,6 +111,7 @@ function handlePaddleBounce() {
 		}
 		else {
 			Game.scoreLeft++;
+			sendScoreUpdate(Game.player1Id);
 			resetBall();
 		}
 	}
@@ -122,6 +123,7 @@ function handlePaddleBounce() {
 		}
 		else {
 			Game.scoreRight++;
+			sendScoreUpdate(Game.player2Id);
 			resetBall();
 		}
 	}

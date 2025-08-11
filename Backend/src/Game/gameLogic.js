@@ -31,6 +31,7 @@ export async function updateScore(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 
+	console.log("updateScore -> handleMatchEventDB")
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think

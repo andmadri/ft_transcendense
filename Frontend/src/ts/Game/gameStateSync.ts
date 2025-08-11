@@ -63,7 +63,7 @@ export function sendBallUpdate() {
 	Game.socket.send(JSON.stringify(msg));
 }
 
-function updateScoreServer(id: number) {
+export function sendScoreUpdate(id: number) {
 	const msg = {
 		action: 'game',
 		subaction: 'scoreUpdate',

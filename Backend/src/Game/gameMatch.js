@@ -1,4 +1,4 @@
-// import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
+import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
 

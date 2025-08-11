@@ -56,7 +56,7 @@ export function handleGame(msg, socket, userId1, userId2) {
 			updateScore(match, msg, socket);
 			break ;
 		case 'padelUpdate':
-			updatePadel(match, msg, socket);
+			updatePadel(match, msg, socket); // Maybe add return / break
 		case 'save':
 			return saveMatch(match, msg, socket);
 		case 'quit':
