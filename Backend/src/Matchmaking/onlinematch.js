@@ -12,7 +12,6 @@ async function createMatchOnline(socket, userID) {
 			return ;
 		}
 		const id = newMatch(userID, user.name, '', '');
-		matches.get(id).saveInDB = true;
 		waitlist.set(id, { match: matches.get(id) });
 		socket.join(id);
 	} catch(err) {

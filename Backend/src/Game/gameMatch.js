@@ -16,7 +16,6 @@ export const Stage = {
 // creates a new match, init and returns id nr
 export function newMatch(matchnr, id, name, id2, name2) {
 	matches.set(matchnr, {
-		saveInDB: false,
 		dbID: matchnr,
 		stage: Stage.Start,
 		roomID: '0',
