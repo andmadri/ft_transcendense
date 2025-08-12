@@ -86,7 +86,7 @@ export async function submitAuthForm(e: Event, player: number) {
 
 	log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
 	try {
-		const response = await fetch(`https://${S.host}:8443${endpoint}`, {
+			const response = await fetch(`https://${S.host}${endpoint}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),

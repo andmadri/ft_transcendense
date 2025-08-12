@@ -1,74 +1,103 @@
 import * as S from '../structs.js'
+import { E } from '../structs.js'
 import { Game } from '../script.js'
-import { movePadel } from './gameLogic.js';
+import { movePadel } from './gameLogic.js'
+
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
+const { field : fieldVelocity, ball: ballVelocity, lPlayer: lPlayerVelocity, rPlayer: rPlayerVelocity} = S.velocity;
 
 export const AI: S.AIInfo = {
-	prediction : null,
+	prediction : { 
+		x : rPlayerPos.x, 
+		y : rPlayerPos.y, 
+		dx : 0, 
+		dy : 0 },
 	reactionTime : 1000, //ms
-	lastReaction : 0,
+	lastView : 0,
 	targetDirection : 'ArrowUp'
 };
 
 export function resetAI() {
-	AI.prediction = null;
-	AI.lastReaction = 0;
-	AI.targetDirection = 'ArrowUp';
+	AI.lastView = 0;
 }
 
-function predictBall() {
-	const ball = S.Objects['ball'];
-	const ballRadius = ball.width / 2;
+function	followBall(dx : number, dy : number) {
 
-	//calculate dx and dy
-	const dx = Math.cos(ball.angle) * ball.speed;
-	const dy = Math.sin(ball.angle) * ball.speed;
-
-	//only predict if ball is moving towards AI
-	if (dx <= 0) {
-		AI.prediction = null;
-		return ;
+	const threshold = fieldSize.height * 0.5;
+	
+	if (Math.abs(ballPos.y - rPlayerPos.y) < threshold) {
+		return;
 	}
-
-	//do not repredict if dy is the same as previous prediction
-	if (AI.prediction && Math.sign(dy) === Math.sign(Math.sin(ball.angle) * ball.speed)) {
-		return ;
-	}
-
-	const field = S.Objects['field'];
-	const paddle = S.Objects['rPlayer'];
-
-	//predict ball Y on paddle X
-	const distanceX = paddle.x - (ball.x + ballRadius);
-	const timeToReach = distanceX / dx;
-	const predictedY = ball.y + dy * timeToReach;
-
-	//clamp y to stay within field
-	const clampedY = Math.max(0, Math.min(predictedY, field.height));
-
 	AI.prediction = {
-		x : paddle.x,
-		y : clampedY,
+		x : rPlayerPos.x,
+		y : ballPos.y,
 		dx : dx,
 		dy : dy,
 	}
 }
 
-export function aiAlgorithm() {
-	const ball = S.Objects['ball'];
-	const paddle = S.Objects['rPlayer'];
+function	predictBall(dx : number, dy : number) {
 
-	if (Game.timeGame - AI.lastReaction > AI.reactionTime) {
-		AI.lastReaction = Game.timeGame;
-		predictBall()
-	}
-	if (AI.prediction) {
-		if (AI.prediction.y > paddle.y) {
-			AI.targetDirection = 'ArrowDown';
-			movePadel(AI.targetDirection);
-		}
-		if (AI.prediction.y < paddle.y) {
-			AI.targetDirection = 'ArrowUp';
-			movePadel(AI.targetDirection);
+	const ballPosCopy = { x: ballPos.x, y: ballPos.y};
+	const ballRadius = ballSize.width / 2;
+
+	//simulate ball movement to anticipate bounces
+	while (ballPosCopy.x + ballRadius < rPlayerPos.x - rPlayerSize.width / 2) {
+		ballPosCopy.x += dx;
+		ballPosCopy.y += dy;
+		if (ballPosCopy.y <= 0 || ballPosCopy.y >= fieldSize.height) {
+			ballPosCopy.y = Math.max(0, Math.min(ballPosCopy.y, fieldSize.height));
+			dy *= -1;
 		}
 	}
+	
+	//add error margin
+	let errorMargin = 0.01;
+	const errorOffset = Math.random() * fieldSize.height * errorMargin;
+	const sign = Math.random() < 0.5 ? -1 : 1;
+	const Offset = errorOffset * sign;
+	const predictedY = ballPosCopy.y; + Offset;
+
+	AI.prediction = {
+		x : rPlayerPos.x,
+		y : predictedY,
+		dx : dx,
+		dy : dy,
+	}
+}
+
+function	predictAction() {
+	const ball = S.movement[E.ball];
+
+	//calculate dx and dy
+	const dx = ballVelocity.vx * ball.speed;
+	const dy = ballVelocity.vy * ball.speed;
+
+	if (dx <= 0) {
+		followBall(dx, dy);
+		return;
+	}
+	else {
+		predictBall(dx, dy);
+	}
+}
+
+export function aiAlgorithm() : boolean {
+
+	const paddleCenter = rPlayerPos.y + rPlayerSize.height / 2;
+
+	if (Game.timeGame - AI.lastView > AI.reactionTime) {
+		AI.lastView = Game.timeGame;
+		predictAction()
+	}
+	if (AI.prediction.y > paddleCenter + rPlayerSize.height * 0.1) {
+		movePadel('ArrowDown');
+		return true;
+	}
+	else if (AI.prediction.y < paddleCenter - rPlayerSize.height * 0.1) {
+		movePadel('ArrowUp');
+		return true;
+	}
+	return false;
 }

@@ -1,23 +1,25 @@
-// import { saveMatchDB } from '../Database/match.js'
-import { getUserByID } from '../Database/users.js';
+import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
+import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
+import { db } from '../index.js';
 
-let				matchnr = 0;
 export const 	matches = new Map();
+export const	waitlist = new Map();
 
 export const Stage = {
 	Start: 0,
-	Playing: 1,
-	Finish: 2,
-	Interrupt: 3
+	Pending: 1,
+	Playing: 2,
+	Finish: 3,
+	Interrupt: 4
 }
 
 // creates a new match, init and returns id nr
-export function newMatch(id, name, id2, name2) {
-	matchnr++;
+export function newMatch(matchnr, id, name, id2, name2) {
 	matches.set(matchnr, {
 		saveInDB: false,
-		dbID: -1,
+		dbID: matchnr,
 		stage: Stage.Start,
+		roomID: '0',
 		player1: {
 			id: id,
 			name: name,
@@ -25,6 +27,7 @@ export function newMatch(id, name, id2, name2) {
 			paddle: 0,
 			pressUp: false,
 			pressDown: false,
+			ready: false,
 		},
 		player2: {
 			id: id2,
@@ -32,7 +35,8 @@ export function newMatch(id, name, id2, name2) {
 			score: 0,
 			paddle: 0,
 			pressUp: false,
-			pressDown: false
+			pressDown: false,
+			ready: false,
 		},
 		ball: {
 			angle: 0,
@@ -41,9 +45,7 @@ export function newMatch(id, name, id2, name2) {
 			y: 0
 		}
 	})
-	return (matchnr);
 }
-
 
 /*
 	-> if player wants to play a game (1vs1, 1vsCOM, Online)
@@ -52,27 +54,29 @@ export function newMatch(id, name, id2, name2) {
 	1vsCOM	=> if logged in or guest => new match not in db
 	Online	=> new match + save match db
 */
-export function createMatch(msg, socket, userId1, userId2) {
+export async function createMatch(msg, socket, userId1, userId2) {
 	console.log("create new match");
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = msg.opponentMode;
-	const	player1ID = userId1 ? userId1 : 0;
-	const	player2ID = userId2 ? userId2 : 0;
+	if (opponentMode === 2) {
+		userId2 = 2;
+	}
 
-	const id = newMatch(player1ID, msg.name, player2ID, msg.name2);
-	if (opponentMode == 1 && player1ID != 0 && player2ID != 0) // both not guest or comp
-		matches.get(id).saveInDB = true;
-	else if (opponentMode == 2) // online
-		matches.get(id).saveInDB = true;
+	const matchID = await handleMatchStartDB(db, { 
+		player_1_id: userId1, 
+		player_2_id: userId2
+	});
+	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
 
+	// console.log(`matchid: ${matchID}`);
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'init',
-		id,
-		player1ID,
-		player2ID
+		id: matchID,
+		player1ID: userId1,
+		player2ID: userId2
 	}));
-	matches.get(id).stage = Stage.Playing;
+	matches.get(matchID).stage = Stage.Playing;
 }
 
 export async function quitMatch(match, msg, socket) {
@@ -87,13 +91,20 @@ export async function quitMatch(match, msg, socket) {
 }
 
 
-export function saveMatch(match, msg, socket) {
-	const player1 = match.player1;
-	const player2 = match.player2;
-	console.log("Save match" + player1.score + " " + player2.score);
-	// if (match.saveInDB)
-	// 	saveMatchDB(player1.id, player2.id, player1.score, player2.score);
+export async function saveMatch(match, msg, socket) {
+	// Update the match in the database
+	const matchID = await handleMatchEndedDB(db, msg.matchID);
+	
+	// Show some stats in the terminal
+	console.table(matchID);
+	console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
+	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
+	console.table(await getAllUserStateDurationsDB(db));
+
+	// Delete the data in the backend
 	matches.delete(match.matchID);
+
+	// Send a message to the frontend
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'save',

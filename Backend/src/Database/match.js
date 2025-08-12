@@ -1,6 +1,5 @@
-// import { db } from './database.js'; // DELETE THIS LATER
 import { getUserByID } from './users.js';
-// import { getMatchByID } from './match.js'; // DELETE THIS LATER
+import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -15,45 +14,52 @@ import { getUserByID } from './users.js';
  * @param {Object} match - Match details.
  * @param {number} match.player_1_id - ID of player 1 (required).
  * @param {number|null} match.player_2_id - ID of player 2 (optional).
- * @param {string} match.match_type - Match type (Accepts only '1v1', 'vs_ai', 'tournament')
+ * @param {string} match.match_type - Match type (Accepts only '1v1', 'vs_guest', 'vs_ai', 'tournament')
  *
  * @returns {Promise<number>} - Resolves with the match ID on success.
  *
  * @throws {Error} - If required players do not exist or SQL insert fails.
  */
 export async function addMatchToDB(db, match) {
-	const player1 = await getUserByID(db, match.player_1_id);
-	if (!player1) {
-		throw new Error(`Player 1 (ID ${match.player_1_id}) does not exist.`);
-	}
-
-	const player2 = await getUserByID(db, match.player_2_id);
-	if (!player2) {
-		throw new Error(`Player 2 (ID ${match.player_2_id}) does not exist.`);
-	}
-
-	return new Promise((resolve, reject) => {
+	const matchID = await new Promise((resolve, reject) => {
 		const sql = `INSERT INTO Matches (player_1_id, player_2_id, match_type) VALUES (?, ?, ?)`;
 		db.run(sql, [match.player_1_id, match.player_2_id, match.match_type], function (err) {
 			if (err) {
-				console.error('Error SQL - addMatchToDB:', err.message);
+				sql_error(err, `addMatchToDB | player_1_id=${match.player_1_id} player_2_id=${match.player_2_id}`);
 				reject(err);
 			} else {
-				console.log(`Match started: [${this.lastID}] ${player1.name} vs ${player2.name}`);
 				resolve(this.lastID);
 			}
 		});
 	});
+	await loggerUpdateMatchInDB(db, matchID);
+
+	return matchID;
 }
 
+/**
+ * @brief Inserts a new event into the MatchEvents table.
+ * @param {object} db             SQLite database handle.
+ * @param {object} event          Match event details.
+ * @param {number} event.match_id ID of the match.
+ * @param {number} event.user_id  ID of the user causing the event.
+ * @param {string} event.event_type  Type of event (e.g., 'goal', 'bounce').
+ * @param {number|null} [event.ball_x]            X-position of the ball.
+ * @param {number|null} [event.ball_y]            Y-position of the ball.
+ * @param {number|null} [event.ball_angle]        Angle of ball movement.
+ * @param {number|null} [event.ball_result_x]     X-position after result.
+ * @param {number|null} [event.ball_result_y]     Y-position after result.
+ * @param {number|null} [event.paddle_x_player_1] Paddle X for player 1.
+ * @param {number|null} [event.paddle_y_player_1] Paddle Y for player 1.
+ * @param {number|null} [event.paddle_x_player_2] Paddle X for player 2.
+ * @param {number|null} [event.paddle_y_player_2] Paddle Y for player 2.
+ * @returns {Promise<number>}      Resolves with the new MatchEvent ID.
+ * @throws {Error}                 If the match or user does not exist, or SQL fails.
+ */
 export async function addMatchEventToDB(db, event) {
 	const match = await getMatchByID(db, event.match_id);
 	if (!match) {
 		throw new Error(`Match ID ${event.match_id} does not exist.`);
-	}
-	const user = await getUserByID(db, event.user_id);
-	if (!user) {
-		throw new Error(`User ID ${event.user_id} does not exist.`);
 	}
 
 	return new Promise((resolve, reject) => {
@@ -70,10 +76,9 @@ export async function addMatchEventToDB(db, event) {
 			event.paddle_x_player_2 ?? null, event.paddle_y_player_2 ?? null];
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - addMatchEventToDB:', err.message);
+				sql_error(err, `addMatchEventToDB id=${event.match_id}`);
 				reject(err);
 			} else {
-				console.log(`Match event: [${event.match_id}] ${user.name} - ${event.event_type}`);
 				resolve(this.lastID);
 			}
 		});
@@ -95,7 +100,7 @@ export async function addMatchEventToDB(db, event) {
  * @param {number} [match.player_1_score] - (Final) score of player 1.
  * @param {number} [match.player_2_score] - (Final) score of player 2.
  * @param {number|null} [match.winner_id] - Winner's user ID - only set when the match is ended.
- * @param {string|null} [match.end_time] - Match end timestamp (ISO 8601 or null) - only set when the match is ended.
+ * @param {bool} [match.end_time] - If true set the match end timestamp - only set when the match is ended.
  *
  * @returns {Promise<void>}
  *
@@ -107,7 +112,7 @@ export async function updateMatchInDB(db, match) {
 		throw new Error(`Match ID ${match.match_id} does not exist.`);
 	}
 
-	return new Promise ((resolve, reject) => {
+	const changes = await new Promise ((resolve, reject) => {
 		const updates = [];
 		const values = [];
 
@@ -123,9 +128,8 @@ export async function updateMatchInDB(db, match) {
 			updates.push("winner_id = ?");
 			values.push(match.winner_id);
 		}
-		if (match.end_time !== undefined) {
-			updates.push("end_time = ?");
-			values.push(match.end_time);
+		if (match.end_time === true) {
+			updates.push("end_time = CURRENT_TIMESTAMP");
 		}
 
 		if (updates.length === 0) {
@@ -138,14 +142,16 @@ export async function updateMatchInDB(db, match) {
 
 		db.run(sql, values, function (err) {
 			if (err) {
-				console.error('Error SQL - updateMatchInDB:', err.message);
+				sql_error(err, `updateMatchInDB id=${match.match_id}`);
 				reject(err);
 			} else {
-				console.log(`Match updated: [${match.match_id}] ${existingMatch.player_1_score} - ${existingMatch.player_2_score}`); // CHANGE THIS LATER: Logger is invalid - should we log inside the wrappers functions?
-				resolve();
+				resolve(this.changes);
 			}
 		});
 	});
+	await loggerUpdateMatchInDB(db, match.match_id);
+
+	return changes;
 }
 
 // *************************************************************************** //
@@ -163,7 +169,27 @@ export async function getMatchByID(db, match_id) {
 		const sql = `SELECT * FROM Matches WHERE id = ?`;
 		db.get(sql, [match_id], (err, row) => {
 			if (err) {
-				console.error('Error SQL - getMatchByID:', err.message);
+				sql_error(err, `getMatchByID id=${match_id}`);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
+
+/**
+ * @brief Fetches a MatchEvent row by its ID.
+ *
+ * @param {number} event_id - The ID of the event to retrieve.
+ * @returns {Promise<Object|null>} - Resolves with match object or null.
+ */
+export async function getMatchEventByID(db, event_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM MatchEvents WHERE id = ?`;
+		db.get(sql, [event_id], (err, row) => {
+			if (err) {
+				sql_error(err, `getMatchEventByID id=${event_id}`);
 				reject(err);
 			} else {
 				resolve(row || null);
@@ -173,97 +199,33 @@ export async function getMatchByID(db, match_id) {
 }
 
 // *************************************************************************** //
-//                             ADD ROW TO SQL TABLE                            //
+//                           SHOW DATA IN THE LOGGER                           //
 // *************************************************************************** //
 
-// export async function addMatchToDB(match) {
-// 	const player1 = await getUserByID(match.player_1_id);
-
-// 	if (!player1) {
-// 		throw new Error(`Player 1 (ID ${match.player_1_id}) does not exist.`);
-// 	}
-
-// 	let player2Name = "AI";
-// 	if (match.player_2_id) {
-// 		const player2 = await getUserByID(match.player_2_id);
-// 		if (!player2) {
-// 			throw new Error(`Player 2 (ID ${match.player_2_id}) does not exist.`);
-// 		}
-// 		player2Name = player2.name;
-// 	}
-
-// 	return new Promise((resolve, reject) => {
-// 		const sql = `INSERT INTO Matches (player_1_id, player_2_id, match_type) VALUES (?, ?, ?)`;
-// 		db.run(sql, [match.player_1_id, match.player_2_id, match.match_type], function (err) {
-// 			if (err) {
-// 				console.error('Error SQL - addMatchToDB:', err.message);
-// 				reject(err);
-// 			} else {
-// 				console.log(`Match started: [${this.lastID}] ${player1.name} vs ${player2.name}`);
-// 				resolve(this.lastID);
-// 			}
-// 		});
-// 	});
+// export async function sql_log(msg) {
+// 	// if (process.env.LOGSQL) {
+// 	const ts = new Date().toISOString().slice(0,19).replace('T',' ');
+// 	console.log(`[${ts}] ${msg}`);
+// 	// }
 // }
 
+export async function loggerUpdateMatchInDB(db, match_id) {
+	const match = await getMatchByID(db, match_id);
+	if (!match) {
+		throw new Error(`Match ID ${match_id} does not exist.`);
+	}
 
+	const player_1 = await getUserByID(db, match.player_1_id);
+	const player_2 = await getUserByID(db, match.player_2_id);
+	if (!player_1 || !player_2) {
+		throw new Error(`UserID ${match.player_1_id} and/or ${match.player_2_id} does not exist.`);
+	}
 
-// returns ID nr of match to save
-// export async function saveMatchDB(playerID1, playerID2, score1, score2) {
-// 	const date = new Date();
-// 	const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-
-// 	return new Promise((resolve, reject) => {
-// 		db.run(
-// 			`INSERT INTO Matches (player_1_id, player_2_id, player_1_score, player_2_score, date) VALUES (?, ?, ?, ?, ?)`,
-// 			[playerID1, playerID2, score1, score2, dateString],
-// 			function (err) {
-// 				if (err)
-// 					reject(err);
-// 				else
-// 					resolve(this.lastID);
-// 			}
-// 		);
-// 	});
-// }
-
-// get score in match in map (score1, score2)
-export async function getScore(id) {
-	return new Promise((resolve, reject) => {
-		db.get(
-			`SELECT player_1_score, player_2_score FROM Matches WHERE id = ?`,
-			[id],
-			(err, row) => {
-				if (err)
-					reject(err);
-				else if (!row)
-					resolve(null);
-				else {
-					resolve({
-						score1: row.player_1_score,
-						score2: row.player_2_score
-					});
-				}
-			}
-		);
-	})
+	if (match.player_1_score === 0 && match.player_2_score === 0 && !match.end_time) {
+		sql_log(`Match started: [${match_id}] ${player_1.name} vs ${player_2.name}`)
+	} else if (!match.end_time) {
+		sql_log(`Match updated: [${match_id}] ${player_1.name} ${match.player_1_score} - ${match.player_2_score} ${player_2.name}`)
+	} else {
+		sql_log(`Match ended: [${match_id}] ${player_1.name} ${match.player_1_score} - ${match.player_2_score} ${player_2.name}`)
+	}
 }
-
-// // get the playerID's in the match
-// async function getPlayersInMatch(id) {
-// 	return new Promise((resolve, reject) => {
-// 		db.get(
-// 			`SELECT player_1_id, player_2_id FROM Matches WHERE id = ?`,
-// 			[id],
-// 			(err, row) => {
-// 				if (err)
-// 					reject(err);
-// 				else
-// 					resolve({
-// 						player1ID: row.player_1_id,
-// 						player2ID: row.player_2_id
-// 					});
-// 			}
-// 		);
-// 	});
-// }

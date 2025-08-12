@@ -1,7 +1,8 @@
-import { processBallUpdate, processPadelUpdate } from "./gameLogic.js";
+import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js";
 import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
+// import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
 	log("inited game with id: " + data.id);
@@ -9,6 +10,9 @@ function processMatch(data: any) {
 	Game.matchID = data.id;
 	Game.player1Id = data.player1ID;
 	Game.player2Id = data.player2ID;
+
+	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
+	// the game field as well
 	Game.state = S.State.Game;
 	log("ProcessMatch?");
 }
@@ -34,13 +38,17 @@ export function actionGame(data: any) {
 
 	switch(data.subaction) {
 		case 'init':
+			log(`MatchID frontend: ${data.id}`)
 			processMatch(data);
 			break ;
+		case 'start':
+			Game.state = S.State.Game;
+			break ;
 		case 'ballUpdate':
- 			processBallUpdate(data);
+ 			applyBallUpdate(data);
 			break ;
 		case 'padelUpdate':
-			processPadelUpdate(data);
+			applyPaddleUpdate(data);
 			break ;
 		case 'save':
 			processSavingMatch(data);

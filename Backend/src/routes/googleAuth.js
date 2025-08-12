@@ -2,7 +2,7 @@ import axios from 'axios';
 import { signFastifyJWT } from "../utils/jwt.js";
 import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
-
+import { db } from '../index.js'
 
 /**
  * Handles the Google authentication process.
@@ -24,7 +24,7 @@ async function handleGoogleAuth(user) {
 			return null;
 		}
 
-		const exists = await userDB.getUserByEmail(user.email);
+		const exists = await userDB.getUserByEmail(db, user.email);
 		if (exists) {
 			const isValidPassword = await bcrypt.compare(user.id, exists.password);
 			if (!isValidPassword) {
@@ -128,7 +128,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				signed: true,		// signed cookies
 				path: '/',
 				maxAge: 60 * 60		// 1 hour
-			}).redirect(`https://${window.location.hostname}:8443`);
+			}).redirect(`https://${window.location.host}`);
 
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

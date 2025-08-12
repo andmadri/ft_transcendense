@@ -3,51 +3,77 @@ import * as S from '../structs.js'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
+import { game } from './gameLogic.js';
 
 function handleGameOver() {
 	log("Game Over!");
 
 	const gameOver = document.createElement('div');
-	styleElement(gameOver, {
-		position: 'absolute',
-		top: '30%',
-		left: '50%',
-		transform: 'translateX(-50%)',
-		padding: '20px',
-		backgroundColor: 'black',
-		color: 'white',
-		fontSize: '2rem',
-		textAlign: 'center',
-		borderRadius: '10px',
-		width: '80%',
-		maxWidth: '500px',
-	});
 	gameOver.id = 'gameOver';
+	gameOver.style.display = 'flex';
+	gameOver.style.flexDirection = 'column';
+	gameOver.style.alignItems = 'center';
+	gameOver.style.justifyContent = 'center';
+	gameOver.style.position = 'relative';
+	gameOver.style.backgroundColor = 'transparent';
+	gameOver.style.fontFamily = '"Horizon", monospace';
+	gameOver.style.textAlign = 'center';
+	gameOver.style.width = '100%';
+	gameOver.style.height = '100%';
+	// gameOver.style.gap = '5%'
 
-	const txtGameOver = document.createElement('h1');
-	txtGameOver.style.color = 'white';
-	txtGameOver.textContent = "Game Over!";
+	const txtGameOver = document.createElement('div');
+	txtGameOver.textContent = "Game Over";
+	txtGameOver.style.color = 'transparent';
+	txtGameOver.style.fontSize = '12rem';
+	txtGameOver.style.webkitTextStroke = '0.2rem #000';
 
-	const txtInnerGameOver = document.createElement('p');
-	txtInnerGameOver.style.color = 'white';
-	txtInnerGameOver.textContent = `
-	${Game.scoreLeft > Game.scoreRight ? "Left Player Wins!" : "Right Player Wins!"}`;
-	gameOver.append(txtGameOver, txtInnerGameOver);
+	let result;
+	if (Game.scoreLeft > Game.scoreRight) {
+		result = "Left Player Wins!";
+	} else if (Game.scoreLeft < Game.scoreRight) {
+  result = "Right Player Wins!"; 
+	} else {
+		result = "It is a Tie!"
+	}
 
-	const	backToMenu = document.createElement('button');
-	backToMenu.id = 'menuBtn';
-	backToMenu.textContent = 'Back to menu';
+	const txtInnerGameOver = document.createElement('div');
+	txtInnerGameOver.textContent = `${result}`;
+	txtInnerGameOver.style.color = 'black';
+	txtInnerGameOver.style.fontSize = '3rem';
 
-	backToMenu.addEventListener('click', () => {
-		log("pushed back to menu button");
-		Game.state = S.State.Menu;
+	const	ball = document.createElement('div');
+	ball.id = 'ballEndCredits';
+	ball.style.position = 'absolute';
+	ball.style.top = '50%';
+	ball.style.left = '50%';
+	ball.style.width = '5%';
+	ball.style.aspectRatio = '1 / 1';
+	ball.style.backgroundColor = '#ededeb';
+	ball.style.borderRadius = '50%';
+	ball.style.boxShadow = '0.25rem 0.375rem 0.625rem';
+	ball.style.animation = 'goX 2.2s linear 0s infinite alternate, goY 3.5s linear 0s infinite alternate';
+
+	gameOver.appendChild(txtGameOver);
+	gameOver.appendChild(txtInnerGameOver);
+	gameOver.appendChild(ball);
+
+		// ball.style.transform = 'translate(-50%, -50%)';
+
+	// const	backToMenu = document.createElement('button');
+	// backToMenu.id = 'menuBtn';
+	// backToMenu.textContent = 'Back to menu';
+
+	// backToMenu.addEventListener('click', () => {
+	// 	log("pushed back to menu button");
+	// 	Game.state = S.State.Menu;
+	// 	return ;
+	// })
+
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	})
-	const app = document.getElementById('app');
-	if (!app)
-		return ;
-	app.innerHTML = "";
-	app.append(gameOver, backToMenu);
+	body.appendChild(gameOver);
 	Game.state = S.State.End;
 }
 
@@ -56,8 +82,14 @@ export function saveGame() {
 		return ;
 
 	if (!document.getElementById('gameOver'))
+	{
+		const game = document.getElementById('game');
+		if (game)
+			game.remove();
 		handleGameOver();
+	}
 
+	// MARTY HERE!!! - Is this the place where we can change the data of the message?
 	const saveGameMsg = {
 		action: 'game',
 		subaction: 'save',
