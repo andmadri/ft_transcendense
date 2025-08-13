@@ -3,6 +3,7 @@ import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";
 import { db } from "../index.js"
+import { OT } from '../structs.js';
 
 async function createMatchOnline(socket, userID) {
 	try {
@@ -11,7 +12,7 @@ async function createMatchOnline(socket, userID) {
 			console.log("No username found in createMatchOnline");
 			return ;
 		}
-		const id = newMatch(userID, user.name, '', '');
+		const id = newMatch(userID, user.name, '', '', OT.Online);
 		matches.get(id).saveInDB = true;
 		waitlist.set(id, { match: matches.get(id) });
 		socket.join(id);

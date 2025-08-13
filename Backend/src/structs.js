@@ -37,3 +37,11 @@ export const GameStats = {
 		y: 0
 	}
 }
+
+//maybe change this to a shared file but for now at least
+export const OT = {
+	Empty : 0,
+	ONEvsONE : 1,
+	ONEvsCOM : 2,
+	Online : 3
+}

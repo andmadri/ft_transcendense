@@ -1,6 +1,7 @@
 import { sendBallUpdate, sendPaddleUpdate, updateScore, applyKeyPress } from "./gameStateSync.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
+import { OT } from '../structs.js';
 
 function handleStartOnlineMatch(msg, match) {
 	if (msg.userID == match.player1.id)
@@ -30,7 +31,7 @@ export function handleGame(msg, socket, userId1, userId2) {
 	}
 
 	if (msg.subaction == 'init') {
-		if (msg.opponentMode != 3) // ! online
+		if (msg.opponentMode != OT.Online)
 			return createMatch(msg, socket, userId1, userId2);
 	}
 

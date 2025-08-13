@@ -1,6 +1,7 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
+import { OT } from '../structs.js';
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -59,15 +60,15 @@ export async function createMatch(msg, socket, userId1, userId2) {
 	console.log("create new match");
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = msg.opponentMode;
-	if (opponentMode === 2) {
-		userId2 = 2;
+	if (opponentMode === OT.ONEvsCOM) {
+		userId2 = 2; 
 	}
 
 	const matchID = await handleMatchStartDB(db, { 
 		player_1_id: userId1, 
 		player_2_id: userId2
 	});
-	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
+	newMatch(matchID, userId1, msg.name, userId2, msg.name2, opponentMode);
 
 	// console.log(`matchid: ${matchID}`);
 	socket.send(JSON.stringify({
