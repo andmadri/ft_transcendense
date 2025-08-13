@@ -43,8 +43,13 @@ FROM backend TO frontend
 • error => checkError / errorPage?
 */
 export function receiveFromWS(msg: any) {
-	const data = JSON.parse(msg);
-	
+	let data;
+	try {
+        data = JSON.parse(msg);
+    } catch (e) {
+        data = msg;
+    }
+	console.log('Got message from backend:', data);
 	const action = data.action;
 	if (!action)
 		log('no action');

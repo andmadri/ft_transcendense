@@ -3,6 +3,7 @@ import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";
 import { db } from "../index.js"
+import { handleMatchStartDB } from "../Services/matchService.js";
 
 async function addToWaitinglist(socket, userID) {
 	waitlist.set(waitlist.size, { socket, userID });
@@ -20,15 +21,22 @@ export function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
-function getNamebyUserID(userID) {
+async function getNamebyUserID(userID) {
 	try {
-		const user = getUserByID(userID);
+		const user = await getUserByID(db, userID);
 		if (user && user.name)
 			return (user.name);
+		else {
+			if (!user)
+				console.error(`User ${userID} not found in db`);
+			else
+				console.error(`Username not found in user with ID ${userID}`);
+			return (null);
+		}
 	} catch(err) {
-		console.error(`User is not found in DB with ID ${userID}`);
+		console.error(err);
+		return (null);
 	}
-	return (null);
 }
 
 // checks if there is already someone waiting
@@ -39,9 +47,10 @@ export async function handleOnlineMatch(socket, userID, io) {
 
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
-		const name1 = getNamebyUserID(userID);
-		const name2 = getNamebyUserID(userID2);
-		if (!name1 || name2) {
+		console.log("Player in waitinglist found, making new match");
+		const name1 = await getNamebyUserID(userID);
+		const name2 = await getNamebyUserID(userID2);
+		if (!name1 || !name2) {
 			console.error("Something went wrong handle Online Match");
 			return ;
 		}
@@ -50,9 +59,9 @@ export async function handleOnlineMatch(socket, userID, io) {
 			player_2_id: userID2
 		});
 		newMatch(matchID, userID, name1, userID2, name2);
+		console.log(`New match ${matchID} is made with ${name1} and ${name2}`);
 		socket.join(matchID);
 		socket2.join(matchID);
-		socket.join(matchID);
 		matches.get(matchID).stage = Stage.Playing;
 		const msg = {
 			action: 'game',
@@ -70,6 +79,7 @@ export async function handleOnlineMatch(socket, userID, io) {
 		// send back opponent found to both... play
 
 	} else {
+		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID); 
 	}
 }

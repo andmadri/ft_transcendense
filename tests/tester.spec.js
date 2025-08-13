@@ -24,6 +24,27 @@ async function signup_login_byPlayer(page, player, Name, Email, Password) {
 	await page.waitForTimeout(1000);
   }
 
+async function OneVsComAndQuit(page) {
+	await pressBtn(page, "Play game");
+	await pressBtn(page, "1 VS COM");
+	await pressBtn(page, "PLAY");
+	await pressBtn(page, "QUIT");
+}
+
+async function OneVsOne(page) {
+	await pressBtn(page, "Play game");
+	await pressBtn(page, "1 VS 1");
+	await pressBtn(page, "PLAY");
+	await signup_login_byPlayer(page, 2, name2, email2, password2);
+}
+
+async function onlineMode(page) {
+	await pressBtn(page, "Play game");
+	await pressBtn(page, "Online");
+	await pressBtn(page, "PLAY");
+}
+
+
 test('Pong tester', async ({ page }) => {
 	// OPEN SITE
 	await page.goto('https://localhost:8443');
@@ -32,24 +53,17 @@ test('Pong tester', async ({ page }) => {
 	await signup_login_byPlayer(page, 1, name, email, password);
 	await page.locator('h2', { hasText: 'Menu' }).isVisible();
 
-	// RELOAD temp
 	await page.goto('https://localhost:8443');
 
-	// 1 VS COM + QUIT
-	await pressBtn(page, "Play game");
-	await pressBtn(page, "1 VS COM");
-	await pressBtn(page, "PLAY");
-	await pressBtn(page, "QUIT");
+	await OneVsComAndQuit(page);
 
-	// RELOAD temp
 	await page.goto('https://localhost:8443');
-	await pressBtn(page, "Play game");
-	await pressBtn(page, "1 VS 1");
-	await pressBtn(page, "PLAY");
+	
+	await OneVsOne(page);
 
-	// SIGN UP + LOGIN PLAYER 2
-	await signup_login_byPlayer(page, 2, name2, email2, password2);
+	await page.goto('https://localhost:8443');
 
+	await onlineMode(page);
 
 	// BACK TO MENU
 	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
