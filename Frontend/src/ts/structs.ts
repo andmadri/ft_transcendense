@@ -7,6 +7,7 @@ export enum State {
 	Pending,
 	Init,
 	Game,
+	Dashboard,
 	End
 }
 

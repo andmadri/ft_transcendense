@@ -13,6 +13,7 @@ import { getMenu } from './Menu/menuContent.js'
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 import { searchMatch } from './Matchmaking/onlineMatch.js'
+import { getDashboard } from './Dashboard/dashboardContents.js'
 
 // getLoadingPage();
 createLog();
@@ -99,6 +100,12 @@ function mainLoop() {
 				// if (Game.playMode == true)
 					game();
 				break ;
+			}case S.State.Dashboard: {
+				if (!document.getElementById('dashboard'))
+				{
+					getDashboard();
+				}
+				break;
 			}
 			case S.State.End:
 				saveGame();

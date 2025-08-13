@@ -60,6 +60,24 @@ function getPlayBtn(): HTMLButtonElement {
 	return (playBtn);
 }
 
+function getDashboardBtn(): HTMLButtonElement {
+	const dashboardBtn = document.createElement('button');
+	dashboardBtn.textContent = 'Dashboard';
+	styleElement(dashboardBtn, {
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px',
+		width: '60%',
+	});
+	dashboardBtn.addEventListener('click', () => {
+		Game.state = S.State.Dashboard;
+	});
+	return (dashboardBtn);
+}
+
 function getLoginBtn(playerNr: number): HTMLButtonElement {
 	const loginBtn = document.createElement('button');
 	loginBtn.textContent = 'login';
@@ -253,6 +271,7 @@ export function getMenu() {
 	});
 	bottomButtonDiv.appendChild(getCreditBtn());
 	bottomButtonDiv.appendChild(getPlayBtn());
+	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 
 	const app = document.getElementById('app');
