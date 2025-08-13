@@ -164,7 +164,9 @@ export function pauseBallTemporarily(duration: number) {
 
 export function game() {
 	if (Game.opponentType == S.OT.Online) {
-		
+		//update own paddle immediately in frontend
+		checkPaddleMovement();
+		updateDOMElements();
 	}
 	else {
 		Game.timeGame = performance.now();
