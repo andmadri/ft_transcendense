@@ -41,13 +41,13 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
-		Game.socket.send(JSON.stringify( {
+		Game.socket.send({
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.matchID,
 			player: Game.player1Id,
 			name: Game.player1Name
-		}));
+		});
 		Game.state = S.State.End;
 	})
 	return (quitButton);

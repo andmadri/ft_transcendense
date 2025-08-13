@@ -9,8 +9,8 @@ import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-// import { getUserByID, updateOnlineStatus } from './Database/users.js';
-import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
+import { handleMatchmaking } from './Matchmaking/matchmaking.js';
+import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
@@ -101,19 +101,16 @@ fastify.ready().then(() => {
 		// add user to main room
 		addUserToRoom(socket, 'main');
 
-		socket.on('message', (messageStr) => {
-			let msg;
-			try {
-				msg = typeof messageStr === 'string' ? JSON.parse(messageStr) : messageStr;
-			} catch (err) {
-				return socket.emit('error', { action: 'error', reason: 'Invalid JSON' });
-			}
+		// Socket that listens to incomming msg from frontend
+		socket.on('message', (msg) => {
 			const action = msg.action;
 			if (!action) {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-			console.log("userID is now:", userId1, "typeof:", typeof userId1);
+
+			console.log(`From UserID ${userId1} comes msg: ${msg}`);
+	
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 			switch (action) {
 				case 'playerInfo':
@@ -122,12 +119,12 @@ fastify.ready().then(() => {
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
 					return handleFriends(msg, socket);
+				case 'init':
+					return handleInit(msg, socket, userId1, userId2);
 				case 'matchmaking':
-					handleMatchmaking(msg, socket, userId1, fastify.io);
-					break ;
+					return handleMatchmaking(msg, socket, userId1, fastify.io);
 				case 'game':
-					handleGame(msg, socket, userId1, userId2);
-					break ;
+					return handleGame(msg, socket);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);

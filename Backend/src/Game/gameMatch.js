@@ -68,24 +68,24 @@ export async function createMatch(msg, socket, userId1, userId2) {
 	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
 
 	// console.log(`matchid: ${matchID}`);
-	socket.send(JSON.stringify({
+	socket.send({
 		action: 'game',
 		subaction: 'init',
 		id: matchID,
 		player1ID: userId1,
 		player2ID: userId2
-	}));
+	});
 	matches.get(matchID).stage = Stage.Playing;
 }
 
 export async function quitMatch(match, msg, socket) {
 	const name = msg.name ? msg.name : 'unknown player';
-	socket.send(JSON.stringify({
+	socket.send({
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
-	}));
+	});
 	match.stage = Stage.Finish;
 }
 
@@ -104,10 +104,10 @@ export async function saveMatch(match, msg, socket) {
 	matches.delete(match.matchID);
 
 	// Send a message to the frontend
-	socket.send(JSON.stringify({
+	socket.send({
 		action: 'game',
 		subaction: 'save',
 		matchID: match.matchID,
 		success: true
-	}));
+	});
 }

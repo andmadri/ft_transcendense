@@ -29,11 +29,10 @@ export function startGame() {
 		}
 		case S.OT.Online: {
 			Game.state = S.State.Pending;
-			const msg = {
+			Game.socket.send({
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
-			}
-			Game.socket.send(JSON.stringify(msg));
+			});
 			break ;
 		}
 		default: {
@@ -174,8 +173,8 @@ export function initGameServer() {
 	if (Game.socket.connected) {
 		log("server init")
 		const initGame = {
-			action: 'game',
-			subaction: 'init',
+			action: 'init',
+			subaction: 'createMatch',
 			playerId: Game.player1Id,
 			playerName: Game.player1Name,
 			opponentMode: Game.opponentType,
@@ -184,7 +183,7 @@ export function initGameServer() {
 		}
 		if (Game.opponentType == S.OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
-		Game.socket.send(JSON.stringify(initGame));
+		Game.socket.send(initGame);
 	}
 }
 
@@ -252,12 +251,12 @@ export function initGame() {
 	else {
 		// Send server msg that player is ready with init game
 		const readyToPlay = {
-			action: 'game',
+			action: 'init',
 			subaction: 'start',
 			matchID: Game.matchID,
 			userID: Game.player1Id
 		}
-		Game.socket.send(JSON.stringify(readyToPlay));
+		Game.socket.send(readyToPlay);
 	}
 	const field = document.getElementById('field');
 	if (field) {

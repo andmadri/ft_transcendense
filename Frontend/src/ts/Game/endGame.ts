@@ -90,12 +90,12 @@ export function saveGame() {
 	}
 
 	// MARTY HERE!!! - Is this the place where we can change the data of the message?
-	const saveGameMsg = {
+	// No the last message when the game is finished.. ;)
+	Game.socket.send({
 		action: 'game',
 		subaction: 'save',
 		matchID: Game.matchID
-	}
-	Game.socket.send(JSON.stringify(saveGameMsg));
+	});
 
 	Game.scoreLeft = 0;
 	Game.scoreRight = 0;

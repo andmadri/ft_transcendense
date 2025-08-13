@@ -42,9 +42,7 @@ FROM backend TO frontend
 • game => ballUpdate / padelUpdate / scoreUpdate
 • error => checkError / errorPage?
 */
-export function receiveFromWS(msg: any) {
-	const data = JSON.parse(msg);
-	
+export function receiveFromWS(data: any) {
 	const action = data.action;
 	if (!action)
 		log('no action');

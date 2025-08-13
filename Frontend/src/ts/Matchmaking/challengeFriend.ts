@@ -3,13 +3,12 @@ import { log } from "../logging.js";
 
 // STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
-	const invitation = {
+	Game.socket.send({
 		action: 'matchmaking',
 		subaction: 'challengeFriend',
 		challenger: Game.player1Id,
 		responder: responder,
-	}
-	Game.socket.send(JSON.stringify(invitation));
+	});
 }
 
 function isChallenged(ID: number): boolean {
@@ -20,14 +19,13 @@ function isChallenged(ID: number): boolean {
 
 // STEP: 4: send back response to server
 function responseChallenge(answer: boolean, roomname: string) {
-	const response = {
+	Game.socket.send({
 		action: 'matchmaking',
 		subaction: 'challengeFriendAnswer',
 		answer: answer,
 		roomname: roomname, 
 		responder: Game.player1Id
-	}
-	Game.socket.send(JSON.stringify(response));
+	});
 }
 
 // STEP 3: create popup on screen responder that has accept of deny buttons

@@ -42,39 +42,37 @@ export function sendPaddleUpdate() {
 	if (Game.socket.connected)
 		return ;
 	if (leftPadel && rightPadel) {
-		const msg = {
+
+		Game.socket.send({
 			action: 'game',
 			subaction: 'padelUpdate',
 			lHeight: leftPadel.offsetTop,
 			rHeight: rightPadel.offsetTop,
-			matchID: Game.matchID };
-		Game.socket.send(JSON.stringify(msg));
+			matchID: Game.matchID
+		});
+
 	} else {
 		console.log('No lP ot rP');
 	}
 }
 
 export function sendBallUpdate() {
-	const msg = { 
+	Game.socket.send({ 
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: ballPos.y,
 		ballX: ballPos.x,
 		matchID: Game.matchID 
-	};
-	Game.socket.send(JSON.stringify(msg));
+	});
 }
 
 export function sendScoreUpdate(id: number) {
-	const msg = {
+	Game.socket.send({
 		action: 'game',
 		subaction: 'scoreUpdate',
-		player: 0,
+		player: id,
 		matchID: Game.matchID
-	};
-
-	msg.player = id;
-	Game.socket.send(JSON.stringify(msg));
+	});
 }
 
 export function actionGame(data: any) {

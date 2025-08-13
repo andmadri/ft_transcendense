@@ -44,19 +44,18 @@ export async function handleOnlineMatch(socket, userID, io) {
 		match.roomID = roomID;
 		match.player2.id = userID;
 		match.stage = Stage.Playing;
-		const msg = {
-			action: 'game',
+
+		const sockets = await io.in(roomID).allSockets();
+		console.log(`Aantal clients in room: ${sockets.size}`);
+		console.log(`roomid: ${roomID}`);
+		console.log(`send onlineMatch back to both sockets...${roomID}`);
+	
+		io.to(roomID).emit('message', {action: 'game',
 			subaction: 'init',
 			id: Number(roomID),
 			player1ID: match.player1.id,
 			player2ID: match.player2.id
-		}
-		const sockets = await io.in(roomID).allSockets();
-		console.log(`Aantal clients in room: ${sockets.size}`);
-		console.log(`roomid: ${roomID}`);
-
-		console.log(`send onlineMatch back to both sockets...${roomID}`);
-		io.to(roomID).emit('message', JSON.stringify(msg));
+		});
 		// send back opponent found to both... play
 
 	} else {

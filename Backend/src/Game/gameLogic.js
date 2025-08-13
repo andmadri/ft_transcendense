@@ -10,7 +10,9 @@ export function updateBall(match, msg, socket) {
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
-	socket.send(JSON.stringify(msg));
+
+	// NOW the msg is just send back instead of updated (online if online)
+	socket.send(msg);
 }
 
 export function updatePadel(match, msg, socket) {
@@ -24,7 +26,9 @@ export function updatePadel(match, msg, socket) {
 	msg.player2Paddle = match.player2.paddle;
 	msg.player2Up = match.player2.pressUp;
 	msg.player2Down = match.player2.pressDown;
-	socket.send(JSON.stringify(msg));
+	
+	// NOW the msg is just send back instead of updated (online if online)
+	socket.send(msg);
 }
 
 export async function updateScore(match, msg, socket) {
