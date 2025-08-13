@@ -1,19 +1,27 @@
+import { sql_log, sql_error } from './dblogger.js';
+
 /**
  * @brief Creates all tables in the database if they do not exist.
  *
  * @param {sqlite3.Database} db - The active SQLite database instance.
  */
-export function createTables(db)
+export async function createTables(db)
 {
-	db.exec(`
+	const sql = `
+	BEGIN;
+
 	CREATE TABLE IF NOT EXISTS Users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL UNIQUE,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
+		twofa_secret TEXT,
+		twofa_active INTEGER NOT NULL DEFAULT 0,
 		avatar_url TEXT,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-		last_edited TEXT DEFAULT CURRENT_TIMESTAMP
+		last_edited TEXT DEFAULT CURRENT_TIMESTAMP,
+		is_deleted INTEGER NOT NULL DEFAULT 0,
+		CHECK(twofa_active IN (0,1))
 	);
 
 	CREATE TABLE IF NOT EXISTS UserSessions (
@@ -24,15 +32,6 @@ export function createTables(db)
 		FOREIGN KEY(user_id) REFERENCES Users(id)
 	);
 
-	CREATE TABLE IF NOT EXISTS UserActivityStats (
-		user_id INTEGER PRIMARY KEY,
-		login_secs INTEGER DEFAULT 0,
-		menu_secs INTEGER DEFAULT 0,
-		lobby_secs INTEGER DEFAULT 0,
-		game_secs INTEGER DEFAULT 0,
-		last_ts TEXT NOT NULL
-	);
-
 	CREATE TABLE IF NOT EXISTS Friends (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER NOT NULL,
@@ -40,7 +39,8 @@ export function createTables(db)
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES Users(id),
 		FOREIGN KEY(friend_id) REFERENCES Users(id),
-		UNIQUE(user_id, friend_id)
+		UNIQUE(user_id, friend_id),
+		CHECK(user_id <> friend_id)
 	);
 
 	CREATE TABLE IF NOT EXISTS Matches (
@@ -56,7 +56,7 @@ export function createTables(db)
 		FOREIGN KEY(player_1_id) REFERENCES Users(id),
 		FOREIGN KEY(player_2_id) REFERENCES Users(id),
 		FOREIGN KEY(winner_id) REFERENCES Users(id),
-		UNIQUE(player_1_id, player_2_id)
+		CHECK(player_1_id <> player_2_id)
 	);
 
 	CREATE TABLE IF NOT EXISTS MatchEvents (
@@ -90,7 +90,7 @@ export function createTables(db)
 		) AS s ON u.id = s.user_id
 		WHERE s.state != 'logout';
 	
-	CREATE VIEW UserStateDurations AS 
+	CREATE VIEW IF NOT EXISTS UserStateDurations AS 
 		WITH sessions AS (
 			SELECT
 				user_id,
@@ -133,25 +133,27 @@ export function createTables(db)
 					AVG(CASE WHEN u.id = m.player_1_id THEN m.player_2_score
 					ELSE m.player_1_score END), 1) AS avg_opp_score,
 				ROUND(
-					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 1) AS avg_duration
+					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
-	
-	
-	`, (err) => {
-		if (err) return console.error("Error creating tables:", err);
-		console.log("Created database tables and views.");
-		db.all(`SELECT name FROM sqlite_master WHERE type='table'`, (err, rows) => {
-			if (err) console.error("Failed to list tables:", err);
-			else console.log("Current tables in database:", rows.map(r => r.name));
+
+	COMMIT;
+	`;
+
+	return new Promise((resolve, reject) => {
+		db.exec(sql, (err) => {
+			if (err) {
+				sql_error(err, `Error creating tables`);
+				return reject(err);
+			}
+			sql_log(`Created database tables and views.`);
+			db.all(`SELECT name, type FROM sqlite_schema WHERE type IN ('table','view') ORDER BY name`, (err, rows) => {
+				if (err) {
+					sql_error(e, "Failed to list schema objects");
+				} else {
+					sql_log(`Current objects: ${rows.map(r => `${r.type}:${r.name}`).join(', ')}`);
+					resolve();
+				}
+			});
 		});
 	});
 }
-
-/*
-	Rules: 
-	
-	1) AI vs AI, Guest vs Guest or Guest vs AI matches are not allowed!
-	2) AI and Guest will get one account in the DB
-	3) For tournaments only one Guest and one AI are allowed?
-
-*/

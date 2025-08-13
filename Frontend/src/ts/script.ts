@@ -12,6 +12,7 @@ import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+// import { getTwoFactorFields } from './Auth/twofa.js';
 
 // getLoadingPage();
 createLog();
@@ -70,9 +71,17 @@ function mainLoop() {
 					getLoginFields(2);
 				break ;
 			}
+			// case S.State.TwoFactorP1: {
+			// 	if (!document.getElementById('twofa1'))
+			// 		getTwoFactorFields(1);
+			// 	break ;
+			// }
+			// case S.State.TwoFactorP2: {
+			// 	if (!document.getElementById('twofa2'))
+			// 		getTwoFactorFields(2);
+			// 	break ;
+			// }
 			case S.State.Menu: {
-				// document.getElementById('auth1')?.remove();
-				// document.getElementById('auth2')?.remove();
 				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
 					getMenu();
 				break ;
@@ -92,10 +101,6 @@ function mainLoop() {
 				}
 				break ;
 			case S.State.Game: {
-				// document.getElementById('auth1')?.remove();
-				// document.getElementById('auth2')?.remove();
-				// if (Game.matchID >= 0)
-				// if (Game.playMode == true)
 					game();
 				break ;
 			}

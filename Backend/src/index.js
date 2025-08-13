@@ -12,6 +12,7 @@ import { handleGame } from './Game/game.js'
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
+import  twoFactor  from './routes/twofa.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 // import { testDB }   from './testDB.js';
 import { addUserToDB } from './Database/users.js';
@@ -46,7 +47,6 @@ await onUserLogin(db, ai_id);
 
 // Register the cookie plugin
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
@@ -60,6 +60,11 @@ await fastify.register(fastifyMultipart, {
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
 await fastify.register(userAuthRoutes);
+// POST /2fa/generate - Generate a 2FA secret and QR code
+// POST /2fa/activate - Activate 2FA for a user
+// POST /2fa/disable - Disable 2FA for a user
+// GET /2fa/status - Check if 2FA is enabled for a user
+await fastify.register(twoFactor);
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);

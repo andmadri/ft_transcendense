@@ -1,7 +1,9 @@
 export enum State {
 	LoginP1,
-	Menu,
 	LoginP2,
+	TwoFactorP1,
+	TwoFactorP2,
+	Menu,
 	Pending,
 	Init,
 	Game,
