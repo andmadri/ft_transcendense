@@ -113,7 +113,7 @@ fastify.ready().then(() => {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-			console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
+			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 			switch (action) {
 				case 'playerInfo':

@@ -56,9 +56,10 @@ export function handleGame(msg, socket, userId1, userId2) {
 	switch (msg.subaction) {
 		case 'ballUpdate':
 			sendBallUpdate(match, msg, socket);
+			break;
 		case 'scoreUpdate':
 			updateScore(match, msg, socket);
-			break ;
+			break;
 		case 'keyPressUpdate':
 			applyKeyPress(match, msg, socket);
 			break;

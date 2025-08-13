@@ -58,12 +58,18 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 */
 export async function createMatch(msg, socket, userId1, userId2) {
 	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
-	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = Number(msg.opponentMode);
 	//Maybe errorcheck here if opponentMode is not a number?
 	if (opponentMode === OT.ONEvsCOM) {
+		console.log(`Create match: ONEvsCOM | set userId2=2 (ai) was before ${userId2}`);
 		userId2 = 2;
+	} else if (opponentMode === OT.ONEvsONE) {
+		console.log(`Create match: ONEvsONE | set userId2=1 (guest) was before ${userId2}`);
+		userId2 = 1;
 	}
+	
+	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
+
 
 	const matchID = await handleMatchStartDB(db, { 
 		player_1_id: userId1, 
