@@ -1,7 +1,7 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
-import { OT } from '../structs.js';
+import { OT } from '../structs.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -17,7 +17,6 @@ export const Stage = {
 // creates a new match, init and returns id nr
 export function newMatch(matchnr, id, name, id2, name2, mode) {
 	matches.set(matchnr, {
-		saveInDB: false,
 		mode: mode,
 		dbID: matchnr,
 		stage: Stage.Start,
@@ -57,11 +56,11 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 	Online	=> new match + save match db
 */
 export async function createMatch(msg, socket, userId1, userId2) {
-	console.log("create new match");
+	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-	const	opponentMode = msg.opponentMode;
+	const	opponentMode = Number(msg.opponentMode);
 	if (opponentMode === OT.ONEvsCOM) {
-		userId2 = 2; 
+		userId2 = 2;
 	}
 
 	const matchID = await handleMatchStartDB(db, { 

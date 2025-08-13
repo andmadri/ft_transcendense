@@ -69,7 +69,9 @@ export function sendBallUpdate() {
 		action: 'game',
 		subaction: 'ballUpdate',
 		ballY: ballPos.y,
-		ballX: ballPos.x };
+		ballX: ballPos.x,
+		matchID: Game.matchID 
+	};
 	Game.socket.send(JSON.stringify(msg));
 }
 
