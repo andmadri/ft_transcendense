@@ -207,3 +207,13 @@ export function getOnlineUsers(db) {
 		});
 	});
 }
+
+
+export async function createNewUserToDB(db, { name, email, password, avatar_url=null }) {
+	const existing = await getUserByEmail(db, email);
+	if (existing) {
+		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
+		return existing.id;
+	}
+	return await addUserToDB(db, { name, email, password, avatar_url });
+}
