@@ -39,6 +39,14 @@ async function getNamebyUserID(userID) {
 	}
 }
 
+function matchInterval(match) {
+	match.intervalId = setInterval(() => {
+		if (match.stage == Stage.Init) {
+			initGame();
+		}
+	}, 100)
+}
+
 // checks if there is already someone waiting
 // if no -> make new match
 // if so -> add second player to match and room and send msg back
@@ -58,11 +66,11 @@ export async function handleOnlineMatch(socket, userID, io) {
 			player_1_id: userID, 
 			player_2_id: userID2
 		});
-		newMatch(matchID, userID, name1, userID2, name2);
+		newMatch(matchID, userID, name1, userID2, name2, OT.Online);
 		console.log(`New match ${matchID} is made with ${name1} and ${name2}`);
 		socket.join(matchID);
 		socket2.join(matchID);
-		matches.get(matchID).stage = Stage.Playing;
+		matches.get(matchID).stage = Stage.Init;
 		const msg = {
 			action: 'game',
 			subaction: 'init', // change
@@ -77,9 +85,11 @@ export async function handleOnlineMatch(socket, userID, io) {
 		console.log(`send onlineMatch back to both sockets...${matchID}`);
 		io.to(matchID).emit('message', JSON.stringify(msg));
 		// send back opponent found to both... play
-
+		
+		//set interval for online gamelogic
+		matchInterval(matches.get(matchID));
 	} else {
 		console.log("No open match found...adding player to waitinglist");
-		addToWaitinglist(socket, userID); 
+		addToWaitinglist(socket, userID);
 	}
 }

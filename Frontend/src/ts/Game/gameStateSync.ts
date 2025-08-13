@@ -10,9 +10,9 @@ export function applyBallUpdate(data: any) {
 	if ('ballX' in data) {
 		const ball = document.getElementById('ball');
 		if (ball && typeof data.ballX === 'number')
-			ball.style.left = `${data.ballX}px`;
+			ballPos.x = data.ballX;
 		if (ball && typeof data.ballY === 'number')
-			ball.style.top = `${data.ballY}px`;
+			ballPos.y = data.ballY;
 	}
 }
 
@@ -20,26 +20,36 @@ export function applyPaddleUpdate(data: any) {
 	if ('rPlayerX' in data) {
 		const rPlayer = document.getElementById('rPlayer');
 		if (rPlayer && typeof data.playerOneX === 'number')
-			rPlayer.style.left = `${data.playerOneX}px`;
+			rPlayerPos.x = data.playerOneX;
 		if (rPlayer && typeof data.playerOneY === 'number')
-			rPlayer.style.top = `${data.playerOneY}px`;
-		rPlayerPos.y = data.playerOneY;
-		
+			rPlayerPos.y = data.playerOneY;		
 	}
 	if ('lPlayerX' in data) {
 		const lPlayer = document.getElementById('lPlayer');
 		if (lPlayer && typeof data.playerTwoX === 'number')
-			lPlayer.style.left = `${data.playerTwoX}px`;
+			lPlayerPos.x = data.playerTwoX;
 		if (lPlayer && typeof data.playerTwoY === 'number')
-			lPlayer.style.top = `${data.playerTwoY}px`;
-		lPlayerPos.y = data.playerTwoY;
+			lPlayerPos.y = data.playerTwoY;
 	}
 }
 
+export function sendKeyPressUpdate(key : string) {
+	const msg = {
+		action: 'game',
+		subaction: 'keyPressUpdate',
+		key: key,
+		pressed: S.Keys[key].pressed,
+		id: Game.player1Id,
+		matchID: Game.matchID };
+	Game.socket.send(JSON.stringify(msg));
+}
+
+//change this to sendGameState and send everything at once
+//normalise data before sending
 export function sendPaddleUpdate() {
 	const leftPadel = document.getElementById('lPlayer');
 	const rightPadel = document.getElementById('rPlayer');
-	if (Game.socket.connected)
+	if (Game.socket.connected) //what is this for?
 		return ;
 	if (leftPadel && rightPadel) {
 
@@ -74,6 +84,9 @@ export function sendScoreUpdate(id: number) {
 		matchID: Game.matchID
 	});
 }
+
+
+
 
 export function actionGame(data: any) {
 	if (!data.subaction) {

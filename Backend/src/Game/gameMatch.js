@@ -1,7 +1,7 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
-import { OT } from '../structs.js'
+import { OT } from '../SharedBuild/OT.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -9,14 +9,17 @@ export const	waitlist = new Map();
 export const Stage = {
 	Start: 0,
 	Pending: 1,
-	Playing: 2,
-	Finish: 3,
-	Interrupt: 4
+	Init: 2,
+	Playing: 3,
+	Finish: 4,
+	Interrupt: 5
 }
 
 // creates a new match, init and returns id nr
-export function newMatch(matchnr, id, name, id2, name2) {
+export function newMatch(matchnr, id, name, id2, name2, mode) {
 	matches.set(matchnr, {
+		mode: mode,
+		intervalId : null,
 		dbID: matchnr,
 		stage: Stage.Start,
 		roomID: '0',
@@ -54,11 +57,12 @@ export function newMatch(matchnr, id, name, id2, name2) {
 	1vsCOM	=> if logged in or guest => new match not in db
 	Online	=> new match + save match db
 */
-export async function createMatch(msg, socket, userId1, userId2) {
+export async function createMatch(msg, socket, userId1, userId2) { // maybe call this handlelocalmatch()?
 	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-	const	opponentMode = msg.opponentMode;
-	if (Number(opponentMode) === OT.ONEvsCOM) {
+	const	opponentMode = Number(msg.opponentMode);
+	//Maybe errorcheck here if opponentMode is not a number?
+	if (opponentMode === OT.ONEvsCOM) {
 		userId2 = 2;
 	}
 
@@ -66,7 +70,7 @@ export async function createMatch(msg, socket, userId1, userId2) {
 		player_1_id: userId1, 
 		player_2_id: userId2
 	});
-	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
+	newMatch(matchID, userId1, msg.name, userId2, msg.name2, opponentMode);
 
 	// console.log(`matchid: ${matchID}`);
 	socket.send({

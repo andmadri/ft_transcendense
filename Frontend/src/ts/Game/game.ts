@@ -3,6 +3,7 @@ import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js";
+import { OT } from '@shared/OT'
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
@@ -12,7 +13,7 @@ function processMatch(data: any) {
 	Game.player1Id = data.player1ID;
 	Game.player2Id = data.player2ID;
 
-	if (Game.opponentType == S.OT.Online) {
+	if (Game.opponentType == OT.Online) {
 		getGameField();
 	}
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with

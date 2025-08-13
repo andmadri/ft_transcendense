@@ -3,19 +3,17 @@ import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
 
-export function updateBall(match, msg, socket) {
+export function sendBallUpdate(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
-
-	// NOW the msg is just send back instead of updated (online if online)
-	socket.send(msg);
+	socket.send(JSON.stringify(msg));
 }
 
-export function updatePadel(match, msg, socket) {
+export function sendPaddleUpdate(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 	msg.player1Score = match.player1.score;
@@ -26,9 +24,23 @@ export function updatePadel(match, msg, socket) {
 	msg.player2Paddle = match.player2.paddle;
 	msg.player2Up = match.player2.pressUp;
 	msg.player2Down = match.player2.pressDown;
-	
-	// NOW the msg is just send back instead of updated (online if online)
-	socket.send(msg);
+	socket.send(JSON.stringify(msg));
+}
+
+export function applyKeyPress(match, msg) {
+	let playerObj
+	if (match.player1.id == msg.id) {
+		playerObj = match.player1;
+	}
+	else if (match.player2.id == msg.id) {
+		playerObj = match.player2;
+	}
+	if (msg.key == 'ArrowUp') {
+		playerObj.pressUp = msg.pressed;
+	}
+	else if (msg.key =='ArrowDown') {
+		playerObj.pressDown = msg.pressed;
+	}
 }
 
 export async function updateScore(match, msg, socket) {
@@ -52,4 +64,3 @@ export async function updateScore(match, msg, socket) {
 	})
 	return eventID;
 }
-

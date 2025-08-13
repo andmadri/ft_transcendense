@@ -1,5 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
+import { OT } from '@shared/OT'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';

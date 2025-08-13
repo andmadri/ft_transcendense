@@ -1,5 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
+import { OT } from '@shared/OT'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 
@@ -24,7 +25,7 @@ export function movePadel(key: string) {
 
 function checkPaddleMovement(): boolean {
 	let moved = false;
-	if (Game.opponentType == S.OT.ONEvsCOM) {
+	if (Game.opponentType == OT.ONEvsCOM) {
 		moved = aiAlgorithm();
 	}
 	for (let key in S.Keys) {
@@ -82,7 +83,7 @@ function resetBall(){
 	ballPos.x = fieldSize.width / 2 + ballRadius;
 	ballPos.y = fieldSize.height / 2 + ballRadius;
 	randomizeBallAngle();
-	if (Game.opponentType == S.OT.ONEvsCOM) {
+	if (Game.opponentType == OT.ONEvsCOM) {
 		resetAI();
 	}
 }
@@ -163,8 +164,10 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game() {
-	if (Game.opponentType == S.OT.Online) {
-		
+	if (Game.opponentType == OT.Online) {
+		//update own paddle immediately in frontend
+		checkPaddleMovement();
+		updateDOMElements();
 	}
 	else {
 		Game.timeGame = performance.now();
