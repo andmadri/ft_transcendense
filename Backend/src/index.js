@@ -8,8 +8,9 @@ import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
+import { handleInitGame } from './init/initGame.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { handleMatchmaking } from './Matchmaking/matchmaking.js';
+import { handleMatchmaking } from './init/matchmaking.js';
 import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
@@ -108,7 +109,8 @@ fastify.ready().then(() => {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-			console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
+			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
+			
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 			switch (action) {
 				case 'playerInfo':
@@ -118,7 +120,7 @@ fastify.ready().then(() => {
 				case 'friends':
 					return handleFriends(msg, socket);
 				case 'init':
-					return handleInit(msg, socket, userId1, userId2);
+					return handleInitGame(msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(msg, socket, userId1, fastify.io);
 				case 'game':

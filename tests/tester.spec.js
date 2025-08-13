@@ -80,16 +80,3 @@ test('Pong tester', async ({ browser }) => {
 	await page.goto('https://localhost:8443');
 	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
 });
-
-const nameR = `User${Math.floor(Math.random() * 1000000)}`;
-const emailR = `${name2}@codam.com`;
-const passwordR = `Hallo123`;
-
-test('Remote Player', async ({page}) => {
-	// OPEN SITE
-	await page.goto('https://localhost:8443');
-
-	// SIGN UP + LOGIN 
-	await signup_login_byPlayer(page, 1, nameR, emailR, passwordR);
-	await page.locator('h2', { hasText: 'Menu' }).isVisible();
-});

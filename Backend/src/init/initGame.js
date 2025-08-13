@@ -1,4 +1,4 @@
-import { createMatch } from "./gameMatch.js";
+import { createMatch } from "../Game/gameMatch.js";
 
 function handleStartOnlineMatch(msg, match) {
 	if (msg.userID == match.player1.id)
