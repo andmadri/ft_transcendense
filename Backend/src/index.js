@@ -53,7 +53,7 @@ await fastify.register(userAuthRoutes);
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
 // POST /api/upload-avatar
-// await fastify.register(avatarRoutes);
+await fastify.register(avatarRoutes);
 
 fastify.setNotFoundHandler(function (request, reply) {
   reply.status(404).send({ error: 'Not Found' });
@@ -108,9 +108,7 @@ fastify.ready().then(() => {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-
-			console.log(`From UserID ${userId1} comes msg: ${msg}`);
-	
+			console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
 			switch (action) {
 				case 'playerInfo':

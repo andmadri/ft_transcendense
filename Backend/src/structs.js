@@ -1,3 +1,9 @@
+export const OT = {
+	Empty: 0,
+	ONEvsONE: 1,
+	ONEvsCOM: 2,
+	Online: 3
+}
 
 export const d = {
 	time: 0,

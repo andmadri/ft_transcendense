@@ -1,6 +1,7 @@
 import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
+import { OT } from '../structs.js'
 
 export function handleGame(msg, socket) {
 	if (!msg.subaction)

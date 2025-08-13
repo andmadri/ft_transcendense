@@ -58,7 +58,7 @@ export function receiveFromWS(data: any) {
 			actionFriends(data);
 			break ;
 		case 'matchmaking':
-			actionMatchmaking(msg);
+			actionMatchmaking(data);
 			break ;
 		case 'game':
 			actionGame(data);

@@ -32,22 +32,26 @@ export async function createDatabase() {
 	});
 
 	// creating a guest and AI user for testing purposes -> create a function for that later
-	const guest_id = await addUserToDB(newdDB, {
-		name: 'Guest',
-		email: 'guest@guest.guest',
-		password: 'secretguest',
-		avatar_url: null
-	});
-	await onUserLogin(newdDB, guest_id);
-	
-	const ai_id = await addUserToDB(newdDB, {
-		name: 'AI',
-		email: 'ai@ai.ai',
-		password: 'secretai',
-		avatar_url: null
-	});
-	await onUserLogin(newdDB, ai_id);
+	try {
+		const guest_id = await addUserToDB(newdDB, {
+			name: 'Guest',
+			email: 'guest@guest.guest',
+			password: 'secretguest',
+			avatar_url: null
+		});
+		await onUserLogin(newdDB, guest_id);
+		
+		const ai_id = await addUserToDB(newdDB, {
+			name: 'AI',
+			email: 'ai@ai.ai',
+			password: 'secretai',
+			avatar_url: null
+		});
+		await onUserLogin(newdDB, ai_id);
 
-	sql_log(`Finished setting up database`, false, true);
+		sql_log(`Finished setting up database`, false, true);
+	} catch(err) {
+		console.error("Already existing db guest / ai");
+	}
 	return newdDB;
 }
