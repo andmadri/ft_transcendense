@@ -51,6 +51,8 @@ export function handleGame(msg, socket, userId1, userId2) {
 			return ;
 	}
 
+	if (msg.subaction)
+
 	switch (msg.subaction) {
 		case 'ballUpdate':
 			sendBallUpdate(match, msg, socket);

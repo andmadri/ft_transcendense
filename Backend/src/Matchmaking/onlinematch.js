@@ -63,7 +63,7 @@ export async function handleOnlineMatch(socket, userID, io) {
 		console.log(`New match ${matchID} is made with ${name1} and ${name2}`);
 		socket.join(matchID);
 		socket2.join(matchID);
-		matches.get(matchID).stage = Stage.Playing;
+		matches.get(matchID).stage = Stage.Init;
 		const msg = {
 			action: 'game',
 			subaction: 'init', // change

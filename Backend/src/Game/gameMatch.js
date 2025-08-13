@@ -9,9 +9,10 @@ export const	waitlist = new Map();
 export const Stage = {
 	Start: 0,
 	Pending: 1,
-	Playing: 2,
-	Finish: 3,
-	Interrupt: 4
+	Init: 2,
+	Playing: 3,
+	Finish: 4,
+	Interrupt: 5
 }
 
 // creates a new match, init and returns id nr
@@ -59,6 +60,7 @@ export async function createMatch(msg, socket, userId1, userId2) {
 	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = Number(msg.opponentMode);
+	//Maybe errorcheck here if opponentMode is not a number?
 	if (opponentMode === OT.ONEvsCOM) {
 		userId2 = 2;
 	}
