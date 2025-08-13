@@ -15,10 +15,13 @@ export async function createTables(db)
 		name TEXT NOT NULL UNIQUE,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
+		twofa_secret TEXT,
+		twofa_active INTEGER NOT NULL DEFAULT 0,
 		avatar_url TEXT,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		last_edited TEXT DEFAULT CURRENT_TIMESTAMP,
-		is_deleted INTEGER NOT NULL DEFAULT 0
+		is_deleted INTEGER NOT NULL DEFAULT 0,
+		CHECK(twofa_active IN (0,1))
 	);
 
 	CREATE TABLE IF NOT EXISTS UserSessions (
