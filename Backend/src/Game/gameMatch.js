@@ -1,7 +1,7 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
-import { OT } from '../structs.js'
+import { OT } from '../SharedBuild/OT.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -19,6 +19,7 @@ export const Stage = {
 export function newMatch(matchnr, id, name, id2, name2, mode) {
 	matches.set(matchnr, {
 		mode: mode,
+		intervalId : null,
 		dbID: matchnr,
 		stage: Stage.Start,
 		roomID: '0',
@@ -56,7 +57,7 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 	1vsCOM	=> if logged in or guest => new match not in db
 	Online	=> new match + save match db
 */
-export async function createMatch(msg, socket, userId1, userId2) {
+export async function createMatch(msg, socket, userId1, userId2) { // maybe call this handlelocalmatch()?
 	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 	const	opponentMode = Number(msg.opponentMode);

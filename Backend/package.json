@@ -19,6 +19,9 @@
   	"bcrypt": "^5.0.0",
     "axios": "^1.6.1"
   },
+  "devDependencies": {
+	"typescript": "5.9.2"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

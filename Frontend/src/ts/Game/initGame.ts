@@ -2,6 +2,7 @@ import * as S from '../structs'
 import { E } from '../structs'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { OT } from '@shared/OT'
 import { getGameField } from './gameContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
@@ -14,20 +15,20 @@ const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlaye
 
 export function startGame() {
 	switch (Game.opponentType) {
-		case S.OT.ONEvsONE: {
+		case OT.ONEvsONE: {
 			if (Game.player2Id != -1)
 				Game.state = S.State.Init;
 			else
 				Game.state = S.State.LoginP2;
 			break ;
 		}
-		case S.OT.ONEvsCOM: {
+		case OT.ONEvsCOM: {
 			Game.player2Id = 2; // Is not getting used - only for visability
 			Game.player2Name = "AI"; // Is not getting used - only for visability
 			Game.state = S.State.Init;
 			break ;
 		}
-		case S.OT.Online: {
+		case OT.Online: {
 			Game.state = S.State.Pending;
 			const msg = {
 				action: 'matchmaking',
@@ -60,13 +61,13 @@ export function startGame() {
 export function changeOpponentType(option: string) {
 	switch (option) {
 		case '1 vs 1':
-			Game.opponentType = S.OT.ONEvsONE;
+			Game.opponentType = OT.ONEvsONE;
 			break ;
 		case '1 vs COM':
-			Game.opponentType = S.OT.ONEvsCOM;
+			Game.opponentType = OT.ONEvsCOM;
 			break ;
 		case 'Online':
-			Game.opponentType = S.OT.Online;
+			Game.opponentType = OT.Online;
 			break ;
 		default:
 			log(`unknown opponent type? ${option}`);
@@ -182,7 +183,7 @@ export function initGameServer() {
 			playerId2: Game.player2Id,
 			playerName2: Game.player2Name
 		}
-		if (Game.opponentType == S.OT.ONEvsCOM)
+		if (Game.opponentType == OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
 		Game.socket.send(JSON.stringify(initGame));
 	}
@@ -247,7 +248,7 @@ export function initGame() {
 	//scaleGamePos();
 	//initMovement();
 	initPositions();
-	if (Game.opponentType != S.OT.Online)
+	if (Game.opponentType != OT.Online)
 		initGameServer();
 	else {
 		// Send server msg that player is ready with init game
@@ -273,7 +274,7 @@ export function initGame() {
 // export function saveGame() {
 // 	log("Saving game...");
 // 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
-// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
+// 	if (Game.opponentType == OT.ONEvsONE && Game.player2Id != 0)
 // 	{
 // 		log("Saving game and logout player 2");
 // 		submitLogout(null, 2);

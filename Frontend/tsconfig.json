@@ -9,11 +9,15 @@
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types", "./src/ts/types"],
     "lib": ["DOM", "ES2015"], // maybe not needed
+	"baseUrl":".",
+	"paths": {
+		"@shared/*":["src/Shared/*"]
+	}
     // "typeRoots": ["./node_modules/@types"], not needed I think
     // "module": "commonjs",
     // "noImplicitAny": "any",
     // "strictNullChecks": false,
 
   },
-  "include": ["src/**/*"] // everything in src folder
+  "include": ["src/**/*", "src/Shared/**/*"] // everything in src folder
 }

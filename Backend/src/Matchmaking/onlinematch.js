@@ -4,7 +4,6 @@ import { waitlist, matches } from "../Game/gameMatch.js";
 import { Stage } from "../Game/gameMatch.js";
 import { db } from "../index.js"
 import { handleMatchStartDB } from "../Services/matchService.js";
-import { OT } from "../structs.js";
 
 async function addToWaitinglist(socket, userID) {
 	waitlist.set(waitlist.size, { socket, userID });
@@ -38,6 +37,14 @@ async function getNamebyUserID(userID) {
 		console.error(err);
 		return (null);
 	}
+}
+
+function matchInterval(match) {
+	match.intervalId = setInterval(() => {
+		if (match.stage == Stage.Init) {
+			initGame();
+		}
+	}, 100)
 }
 
 // checks if there is already someone waiting
@@ -78,9 +85,11 @@ export async function handleOnlineMatch(socket, userID, io) {
 		console.log(`send onlineMatch back to both sockets...${matchID}`);
 		io.to(matchID).emit('message', JSON.stringify(msg));
 		// send back opponent found to both... play
-
+		
+		//set interval for online gamelogic
+		matchInterval(matches.get(matchID));
 	} else {
 		console.log("No open match found...adding player to waitinglist");
-		addToWaitinglist(socket, userID); 
+		addToWaitinglist(socket, userID);
 	}
 }

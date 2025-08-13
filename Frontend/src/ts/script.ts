@@ -3,6 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
+import { OT } from '@shared/OT'
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
@@ -22,7 +23,7 @@ type Socket = any;
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
 	state: S.State.LoginP1,
-	opponentType: S.OT.ONEvsONE,
+	opponentType: OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
 	socket: io(`https://${window.location.host}`, {

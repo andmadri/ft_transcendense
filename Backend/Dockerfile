@@ -4,14 +4,22 @@ WORKDIR /usr/app
 
 # RUN apk add sqlite3
 
-COPY package*.json ./
-COPY ./src ./src
+COPY Backend/package*.json Backend/tsconfig*.json ./
+COPY Backend/src ./src
+COPY Shared ./src/Shared
 
 # CHANGE THIS LATER: added: sqlite sqlite-libs sqlite-dev
-RUN apk add --no-cache sqlite sqlite-libs sqlite-dev sqlite sqlite-libs sqlite-dev python3 make g++ && \
-    npm install fastify-socket.io && \
-	npm install && \
-    apk del python3 make g++
+RUN apk add --no-cache sqlite sqlite-libs sqlite-dev sqlite sqlite-libs sqlite-dev python3 make g++
+
+# Install npm dependencies
+RUN npm install fastify-socket.io
+RUN npm install
+
+# Compile shared typescript
+RUN npx tsc
+
+# Clean up build tools
+RUN apk del python3 make g++
 
 EXPOSE 8080 3000
 

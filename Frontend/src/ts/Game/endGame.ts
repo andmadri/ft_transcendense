@@ -1,5 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
+import { OT } from '@shared/OT'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
@@ -102,7 +103,7 @@ export function saveGame() {
 	Game.matchID = -1;
 
 	// LOGOUT PLAYER 2 after game ONE vs ONE
-	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0) {
+	if (Game.opponentType == OT.ONEvsONE && Game.player2Id != 0) {
 		submitLogout(null, 2);
 	} else {
 		Game.player2Id = -1;
