@@ -29,7 +29,6 @@ export function getDashboard()
 	containerDashboard.style.alignItems = 'center';
 	containerDashboard.style.justifyContent = 'center';
 	containerDashboard.style.gap = '1.5%';
-	// containerDashboard.style.textAlign = 'center';
 
 	const dashboard = document.createElement('div');
 	dashboard.id = 'dashboard';
@@ -42,7 +41,6 @@ export function getDashboard()
 	dashboard.style.borderRadius = '16px';
 	dashboard.style.position = 'relative';
 	dashboard.style.boxSizing = 'border-box';
-	// dashboard.style.justifyContent = 'space-between';
 	dashboard.style.alignItems = 'flex-start';
 
 	const title = document.createElement('div');
@@ -50,7 +48,7 @@ export function getDashboard()
 	title.textContent = 'Match History';
 	title.style.fontFamily = '"Horizon", monospace';
 	title.style.color = 'transparent';
-	title.style.fontSize = 'clamp(1.5rem, 3.5rem, 5rem)';
+	title.style.fontSize = 'min(5vw, 5vh)';
 	title.style.webkitTextStroke = '0.2rem #000';
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
@@ -66,29 +64,69 @@ export function getDashboard()
 	headers.style.width = "95%";
 	headers.style.justifyContent = 'space-between';
 	headers.style.alignContent = 'center';
-	headers.style.alignItems = 'flex-start';
+	headers.style.alignItems = 'center';
+	headers.style.fontSize = 'min(1.5vw, 2vh)'
 	headers.style.fontFamily = '"Horizon", monospace';
-	headers.style.textAlign = 'left';
+	headers.style.textAlign = 'center';
+	headers.style.paddingLeft = '2%';
+	headers.style.paddingTop = '1%';
+	headers.style.paddingBottom = '1%';
 
 	const labels = ['Opponents', 'Date', 'Score', 'Duration', 'Total Hits'];
 	labels.forEach(text => {
 	const headerItem = document.createElement('div');
 		headerItem.textContent = text;
-		headerItem.style.flex = '1'; // Equal width for each column
-		// headerItem.style.textAlign = 'center';
+		headerItem.style.flex = '1';
 		headerItem.style.paddingLeft = '1rem';
 		headers.appendChild(headerItem);
 	})
 
-	//data that I got from martijn
-	// .forEch(text => {
-	// 	const headerData = document.createElement('div');
-	// 	headerData.textContent = text;
-	// 	headerData.style.flex = '1';
-	// })
+	const currentUser = {
+		username: 'PlayerOne',
+		matches: [
+			{ opponent: 'PlayerTwo', date: '2025-08-10', score: '3-2', duration: '5m 24s', totalHits: 45 },
+			{ opponent: 'BossMan', date: '2025-08-12', score: '1-5', duration: '8m 11s', totalHits: 30 },
+			{ opponent: 'LazyFriend', date: '2025-08-14', score: '4-4', duration: '10m 11s', totalHits: 60 },
+		]
+	};
 
-	//I need a container that will have lines and if I click on one then 
+	const matchList = document.createElement('div');
+	matchList.id = 'matchList';
+	matchList.style.display = 'flex';
+	matchList.style.flexDirection = 'column';
+	matchList.style.width = '95%';
+	matchList.style.gap = '1rem';
+	matchList.style.overflowY = 'auto';
+	matchList.style.flexGrow = '1';
+	matchList.style.paddingLeft = '2%';
+
+	currentUser.matches.forEach(match =>{
+		const row = document.createElement('div');
+		row.style.display = 'flex';
+		row.style.width = '100%';
+		row.style.height = '5%';
+		row.style.background = 'rgba(0, 0, 0, 0.18)';
+		row.style.cursor = 'point';
+		row.style.borderRadius = '10px';
+		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+		[match.opponent, match.date, match.score, match.duration, match.totalHits].forEach(cell => {
+			const cellDiv = document.createElement('div');
+			cellDiv.textContent = String(cell);
+			cellDiv.style.font = '"RobotoCondensed", sans-serif'
+			cellDiv.style.flex = '1';
+			cellDiv.style.color = 'black';
+			cellDiv.style.padding = '0.5rem 1 rem';
+		});
+
+		row.addEventListener('click', () => {
+			alert(`Match vs ${match.opponent} on ${match.date}`);
+		});
+		matchList.appendChild(row);
+	});
+
 	dashboard.appendChild(headers);
+	dashboard.appendChild(matchList);
 	containerDashboard.appendChild(title);
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
