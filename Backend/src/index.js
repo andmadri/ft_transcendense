@@ -5,6 +5,7 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleMatchInfo } from './DBrequests/getMatchInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
@@ -118,6 +119,8 @@ fastify.ready().then(() => {
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
+				// case 'matchInfo'
+				// 	return handleMatchInfo(msg, socket, userId1);
 				case 'online':
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':

@@ -2,6 +2,11 @@ import { Game } from '../script.js'
 import * as S from '../structs.js'
 //import something from database
 
+// function getMatchInfo() {
+// 	const msg = {action: 'matchIndo', subaction: 'getMatchInfo'};
+// 	Game.socket.send(JSON.stringify(msg));
+// }
+
 export function getDashboard()
 {
 	const menu = document.getElementById('menu');
@@ -17,7 +22,7 @@ export function getDashboard()
 	body.style.margin = '0';
 	body.style.width = '100vw';
 	body.style.height = '100vh';
-	body.style.background = '#ededeb';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 
 	const containerDashboard = document.createElement('div');
 	containerDashboard.style.display = 'flex';
@@ -32,7 +37,7 @@ export function getDashboard()
 
 	const dashboard = document.createElement('div');
 	dashboard.id = 'dashboard';
-	dashboard.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	dashboard.style.background = '#363430';
 	dashboard.style.display = 'flex';
 	dashboard.style.flexDirection = 'column';
 	dashboard.style.aspectRatio = '4 / 3';
@@ -49,10 +54,10 @@ export function getDashboard()
 	title.style.fontFamily = '"Horizon", monospace';
 	title.style.color = 'transparent';
 	title.style.fontSize = 'min(5vw, 5vh)';
-	title.style.webkitTextStroke = '0.2rem #000';
+	title.style.webkitTextStroke = '0.1rem #ffffff';
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
-	title.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	title.style.background = '#363430';;
 	title.style.borderRadius = '16px';
 	title.style.width = '80vw';
 	title.style.padding = '0.5rem';
@@ -67,7 +72,7 @@ export function getDashboard()
 	headers.style.alignItems = 'center';
 	headers.style.fontSize = 'min(1.5vw, 2vh)'
 	headers.style.fontFamily = '"Horizon", monospace';
-	headers.style.textAlign = 'center';
+	headers.style.color = 'white';
 	headers.style.paddingLeft = '2%';
 	headers.style.paddingTop = '1%';
 	headers.style.paddingBottom = '1%';
@@ -77,9 +82,11 @@ export function getDashboard()
 	const headerItem = document.createElement('div');
 		headerItem.textContent = text;
 		headerItem.style.flex = '1';
-		headerItem.style.paddingLeft = '1rem';
+		headers.style.textAlign = 'center';
 		headers.appendChild(headerItem);
 	})
+
+	// const currentUser = receiveMatchData();
 
 	const currentUser = {
 		username: 'PlayerOne',
@@ -99,24 +106,30 @@ export function getDashboard()
 	matchList.style.overflowY = 'auto';
 	matchList.style.flexGrow = '1';
 	matchList.style.paddingLeft = '2%';
+	matchList.style.fontFamily = '"RobotoCondensed", sans-serif';
+	matchList.style.fontSize = 'min(2vw, 2vh)';
+	matchList.style.textAlign = 'center';
 
 	currentUser.matches.forEach(match =>{
 		const row = document.createElement('div');
 		row.style.display = 'flex';
+		row.style.position = 'relative';
 		row.style.width = '100%';
 		row.style.height = '5%';
 		row.style.background = 'rgba(0, 0, 0, 0.18)';
 		row.style.cursor = 'point';
 		row.style.borderRadius = '10px';
+		row.style.justifyContent = 'space-around';
+		row.style.alignItems = 'center';
 		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
 
 		[match.opponent, match.date, match.score, match.duration, match.totalHits].forEach(cell => {
 			const cellDiv = document.createElement('div');
 			cellDiv.textContent = String(cell);
-			cellDiv.style.font = '"RobotoCondensed", sans-serif'
+			cellDiv.style.color = 'white';
+			cellDiv.style.textAlign = 'center';
 			cellDiv.style.flex = '1';
-			cellDiv.style.color = 'black';
-			cellDiv.style.padding = '0.5rem 1 rem';
+			row.appendChild(cellDiv);
 		});
 
 		row.addEventListener('click', () => {
