@@ -2,19 +2,6 @@ import { Stage } from '../Init/match.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
-// Send update match to everrybody in that room
-export function sendMatchUpdate(match, io) {
-	const copyMatch = JSON.parse(JSON.stringify(match));
-
-	// delete info that you don't use in the frontend
-	delete copyMatch.dbID;
-
-	// better to update everything in once?
-	copyMatch.action = 'game';
-	copyMatch.subaction = 'updateBall';
-	io.to(match.roomID).emit('message', copyMatch);
-}
-
 export function sendBallUpdate(match, msg, socket, io) {
 	if (match.stage != Stage.Playing)
 		return ;
@@ -25,9 +12,8 @@ export function sendBallUpdate(match, msg, socket, io) {
 	// match.ball.vX = msg.ballVX;
 	// match.ball.vY = msg.ballVY;
 
-	// update msg -> not send to socket but to room.
-	// socket.send(msg);
-	sendMatchUpdate(match, io);
+	// update msg
+	io.to(match.roomID).emit('message', msg);
 }
 
 export function sendPaddleUpdate(match, msg, socket, io) {
@@ -44,9 +30,9 @@ export function sendPaddleUpdate(match, msg, socket, io) {
 	msg.player2Up = match.player2.pressUp;
 	msg.player2Down = match.player2.pressDown;
 
-	// update msg -> not send to socket but to room.
-	// socket.send(msg);
-	sendMatchUpdate(match, io);
+	// msg.paddle1VY
+	// msg.paddle2VY
+	io.to(match.roomID).emit('message', msg);
 }
 
 export function applyKeyPress(match, msg) {
@@ -84,8 +70,9 @@ export async function updateScore(match, msg, io) {
 		// paddle_x_player_2: ,
 		// paddle_y_player_2: ,
 	})
+
 	// update msg -> not send to socket but to room.
-	// socket.send(msg);
-	sendMatchUpdate(match, io);
+	// io.to(match.roomID).emit('message', msg);
+
 	return eventID;
 }
