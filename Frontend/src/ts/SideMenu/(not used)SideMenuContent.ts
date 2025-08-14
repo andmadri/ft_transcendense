@@ -1,72 +1,72 @@
-import { Game } from '../script.js'
-import { submitLogout } from '../Auth/logout.js';
-import { updatePlayerData } from '../SideMenu/updatePlayerData.js';
-import { log } from '../logging.js';
+// import { Game } from '../script.js'
+// import { submitLogout } from '../Auth/logout.js';
+// import { updatePlayerData } from '../SideMenu/updatePlayerData.js';
+// import { log } from '../logging.js';
 
-function getPlayer(nr: number) {
-	const	player = document.createElement('div');
-	const	playername = document.createElement('p');
-	const	logout = document.createElement('button');
+// function getPlayer(nr: number) {
+// 	const	player = document.createElement('div');
+// 	const	playername = document.createElement('p');
+// 	const	logout = document.createElement('button');
 
-	const	isPlayer1 = nr === 1;
+// 	const	isPlayer1 = nr === 1;
 
-	playername.textContent = isPlayer1 ? Game.player1Name : Game.player2Name;
-	playername.id = 'playerName' + nr;
+// 	playername.textContent = isPlayer1 ? Game.player1Name : Game.player2Name;
+// 	playername.id = 'playerName' + nr;
 
 
-	player.style.padding = '5px';
-	player.style.height = '70px';
-	player.style.width = '500px';
-	player.style.position = 'relative';
+// 	player.style.padding = '5px';
+// 	player.style.height = '70px';
+// 	player.style.width = '500px';
+// 	player.style.position = 'relative';
 
-	logout.id = 'logoutbutton' + nr;
-	logout.textContent = 'Logout';
-	logout.addEventListener('click', (e) => submitLogout(e, nr));
-	player.append(playername, logout);
-	return (player);
-}
+// 	logout.id = 'logoutbutton' + nr;
+// 	logout.textContent = 'Logout';
+// 	logout.addEventListener('click', (e) => submitLogout(e, nr));
+// 	player.append(playername, logout);
+// 	return (player);
+// }
 
-export async function getSideMenu() {
-	const app = document.getElementById('app');
-	if (!app) return ;
-	const menu = document.createElement('div');
-	if (!menu) return ;
+// export async function getSideMenu() {
+// 	const app = document.getElementById('app');
+// 	if (!app) return ;
+// 	const menu = document.createElement('div');
+// 	if (!menu) return ;
 
-	menu.id = 'sidemenu';
-	menu.style.width = '100%';
-	menu.style.position = 'fixed';
-	menu.style.bottom = '10%';
-	menu.style.width = '100%';
-	menu.style.height = '5%';
-	menu.style.display = 'grid';
-	menu.style.zIndex = '1000';
-	menu.style.gridTemplateColumns = '1fr 1fr';
-	menu.style.gap = '1rem';
-	menu.append(getPlayer(1), getPlayer(2));
-	app.appendChild(menu);
-	updatePlayerData(0);
-}
+// 	menu.id = 'sidemenu';
+// 	menu.style.width = '100%';
+// 	menu.style.position = 'fixed';
+// 	menu.style.bottom = '10%';
+// 	menu.style.width = '100%';
+// 	menu.style.height = '5%';
+// 	menu.style.display = 'grid';
+// 	menu.style.zIndex = '1000';
+// 	menu.style.gridTemplateColumns = '1fr 1fr';
+// 	menu.style.gap = '1rem';
+// 	menu.append(getPlayer(1), getPlayer(2));
+// 	app.appendChild(menu);
+// 	// updatePlayerData(0);
+// }
 
-function updateTextbyId(id: string, value: string) {
-	const	element = document.getElementById(id);
-	if (element)
-		element.textContent = value;
-}
+// function updateTextbyId(id: string, value: string) {
+// 	const	element = document.getElementById(id);
+// 	if (element)
+// 		element.textContent = value;
+// }
 
-export function updateNamesMenu() {
-	updateTextbyId('playerName1', Game.player1Name);
-	updateTextbyId('playerName2', Game.player2Name);
-}
+// export function updateNamesMenu() {
+// 	updateTextbyId('playerName1', Game.player1Name);
+// 	updateTextbyId('playerName2', Game.player2Name);
+// }
 
-export function updateScoreMenu() {
-	updateTextbyId('playerScore1', Game.scoreLeft.toString());
-	updateTextbyId('playerScore2', Game.scoreRight.toString());
-}
+// export function updateScoreMenu() {
+// 	updateTextbyId('playerScore1', Game.scoreLeft.toString());
+// 	updateTextbyId('playerScore2', Game.scoreRight.toString());
+// }
 
-export function resetScoreMenu() {
-	updateTextbyId('playerScore1', '0');
-	updateTextbyId('playerScore2', '0');
+// export function resetScoreMenu() {
+// 	updateTextbyId('playerScore1', '0');
+// 	updateTextbyId('playerScore2', '0');
 
-	Game.scoreRight = 0;
-	Game.scoreLeft = 0;
-}
+// 	Game.scoreRight = 0;
+// 	Game.scoreLeft = 0;
+// }

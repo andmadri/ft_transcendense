@@ -43,13 +43,27 @@ export default async function userAuthRoutes(fastify) {
 			reply.status(401).send({ success: false, message: answer.error });
 			return;
 		}
-		reply.setCookie('jwtAuthToken' + playerNr, answer.token, {
-			httpOnly: true,      // Prevents JS access
-			secure: true,        // Only sent over HTTPS
-			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-			path: '/',
-			maxAge: 60 * 60      // 1 hour
-		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name });
+		if (answer.user.twofa_active) {
+			const pendingTwofaToken = signFastifyPendingTwofa(answer.user, fastify);
+			reply.setCookie('pendingTwofaToken' + playerNr, pendingTwofaToken, {
+				httpOnly: true,      // Prevents JS access
+				secure: true,        // Only sent over HTTPS
+				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+				signed: true,		// signed cookies
+				path: '/',
+				maxAge: 60 * 10      // 10 minutes
+			}).send({ success: true, ok: true, message: 'Two-factor authentication required', playerNr: playerNr, userId: answer.user.id, name: answer.user.name, twofaPending: true });
+		} else {
+			const jwtToken = signFastifyJWT(answer.user, fastify);
+			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
+				httpOnly: true,      // Prevents JS access
+				secure: true,        // Only sent over HTTPS
+				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+				signed: true,		// signed cookies
+				path: '/',
+				maxAge: 60 * 60      // 1 hour
+			}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name });
+		}
 	});
 
 	fastify.post('/api/logout', async (request, reply) => {

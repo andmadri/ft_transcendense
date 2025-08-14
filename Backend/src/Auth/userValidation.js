@@ -94,7 +94,8 @@ export async function validateLogin(msg, fastify) {
 		console.error(err.msg);
 		return ({ error: 'Database error' });
 	}
-	const jwtToken = signFastifyJWT(user, fastify);
-	return { token: jwtToken, user: user, player: msg.player };
+	return { user: user };
+	// const jwtToken = signFastifyJWT(user, fastify);
+	// return { token: jwtToken, user: user, player: msg.player };
 }
 

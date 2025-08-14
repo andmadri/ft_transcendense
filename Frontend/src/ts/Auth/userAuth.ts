@@ -1,32 +1,32 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
+// import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 
 // type	Mode = 'login' | 'sign up';
 // const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
 
-function updateLoginPlayer(data: any) {
-	if (data.player == 1) {
-		if (data.userId)
-			Game.player1Id = data.userId;
-		if (data.userName)
-			Game.player1Name = data.userName;
-		Game.playerLogin = 1;
-		Game.player1Login = true;
-		updatePlayerData(1);
+// function updateLoginPlayer(data: any) {
+// 	if (data.player == 1) {
+// 		if (data.userId)
+// 			Game.player1Id = data.userId;
+// 		if (data.userName)
+// 			Game.player1Name = data.userName;
+// 		Game.playerLogin = 1;
+// 		Game.player1Login = true;
+// 		updatePlayerData(1);
 
-	} else {
-		if (data.UserId)
-			Game.player2Id = data.UserId;
-		if (data.userName)
-			Game.player2Name = data.userName;
-		Game.player2Login = true;
-		Game.playerLogin = 2;
-		updatePlayerData(2);
-	}
-}
+// 	} else {
+// 		if (data.UserId)
+// 			Game.player2Id = data.UserId;
+// 		if (data.userName)
+// 			Game.player2Name = data.userName;
+// 		Game.player2Login = true;
+// 		Game.playerLogin = 2;
+// 		updatePlayerData(2);
+// 	}
+// }
 
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
