@@ -1,8 +1,10 @@
-import { verifyAuthCookie } from '../Auth/authToken.js';
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Services/twofs.js';
 import { encryptSecret, decryptSecret } from '../utils/encryption.js';
+import { verifyAuthCookie, verifyPendingTwofaCookie } from '../Auth/authToken.js';
+import { signFastifyJWT } from "../utils/jwt.js";
+import { getUserByID } from '../Database/users.js';
 
 import { db } from '../index.js' // DELETE THIS LATER
 
@@ -23,6 +25,7 @@ export default async function twoFactor(fastify, opts) {
 	fastify.post('/api/2fa/generate', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
+		console.log('Generating 2FA secret for user:', request.user);
 		const userId = request.user.userId;
 		console.log(`Generating 2FA secret for user ID: ${userId}`);
 		try {
@@ -76,11 +79,12 @@ export default async function twoFactor(fastify, opts) {
 	fastify.post('/api/2fa/disable', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
-		const { token } = request.body;
-		const userId = request.user.id;
+		const token = request.body.token;
+		const userId = request.body.userId;
+		const playerNr = request.body.playerNr;
 
 		const encyptedUserSecret = await getUserSecretDB(db, userId);
-		const userSecret = decryptSecret(json.parse(encyptedUserSecret));
+		const userSecret = decryptSecret(JSON.parse(encyptedUserSecret));
 
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,
@@ -95,16 +99,18 @@ export default async function twoFactor(fastify, opts) {
 
 		await toggleUser2faDB(db, userId, false);
 
-		return { success: true };
+		return { success: true, message: '2FA disabled successfully', playerNr: playerNr, userId: userId };
 	});
 
-	fastify.post('/api/2fa/verify', async (request, reply) => {
-		const { token } = request.body;
-		const userId = request.user.id;
-		const playerNr = request.playerNr;
+	fastify.post('/api/2fa/verify', {
+		preHandler: verifyPendingTwofaCookie
+	}, async (request, reply) => {
+		const token = request.body.token;
+		const userId = request.body.userId;
+		const playerNr = request.body.playerNr;
 
 		const encyptedUserSecret = await getUserSecretDB(db, userId);
-		const userSecret = decryptSecret(json.parse(encyptedUserSecret));
+		const userSecret = decryptSecret(JSON.parse(encyptedUserSecret));
 
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,
@@ -128,8 +134,8 @@ export default async function twoFactor(fastify, opts) {
 			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 			path: '/',
 			maxAge: 60 * 60      // 1 hour
-		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name });
-	
+		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name, twofa: user.twofa_active });
+
 
 		return { success: true };
 	});

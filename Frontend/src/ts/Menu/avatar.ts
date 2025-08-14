@@ -13,6 +13,7 @@ export async function changeAvatar(file: File,  playerNr: number) {
 
 	if (response.ok) {
 		log("Upload succeeded!");
+		document.getElementById('menu')?.remove();
 	} else {
 		alert("Upload failed");
 		log("Error with upload avatar");

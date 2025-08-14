@@ -45,7 +45,7 @@ await onUserLogin(db, ai_id);
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
 // await testDB(db);
 
-// Register the cookie plugin
+// Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
@@ -93,21 +93,31 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 	let userId1 = null;
 	let userId2 = null;
 	if (authTokens && authTokens.jwtAuthToken1) {
-		try {
-			decoded = fastify.jwt.verify(authTokens.jwtAuthToken1);
-			userId1 = decoded.userId;
-			// Use userId or decoded as needed for player 1
-		} catch (err) {
-			console.error('JWT1 verification failed:', err);
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+		if (unsigned.valid) {
+			try {
+				decoded = fastify.jwt.verify(unsigned.value);
+				userId1 = decoded.userId;
+				// Use userId or decoded as needed for player 1
+			} catch (err) {
+				console.error('JWT1 verification failed:', err);
+			}
+		} else {
+			console.error('JWT1 verification failed: Invalid cookie');
 		}
 	}
 	if (authTokens && authTokens.jwtAuthToken2) {
-		try {
-			decoded = fastify.jwt.verify(authTokens.jwtAuthToken2);
-			userId2 = decoded.userId;
-			// Use userId or decoded as needed for player 2
-		} catch (err) {
-			console.error('JWT2 verification failed:', err);
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
+		if (unsigned.valid) {
+			try {
+				decoded = fastify.jwt.verify(unsigned.value);
+				userId2 = decoded.userId;
+				// Use userId or decoded as needed for player 2
+			} catch (err) {
+				console.error('JWT2 verification failed:', err);
+			}
+		} else {
+			console.error('JWT2 verification failed: Invalid cookie');
 		}
 	}
 	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);

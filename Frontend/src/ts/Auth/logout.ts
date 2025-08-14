@@ -29,6 +29,7 @@ export async function submitLogout(e: Event | null, player: number) {
 				Game.player1Name = "";
 				Game.player1Login = false;
 				Game.state = S.State.LoginP1;
+				document.getElementById('menu')?.remove();
 			} else {
 				Game.player2Id = 1;
 				Game.player2Name = "Guest";

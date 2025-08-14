@@ -36,14 +36,55 @@ export function parseAuthTokenFromCookies(cookieHeader) {
  * It is designed to be used as a middleware in Fastify routes to ensure that the user is authenticated before accessing protected resources.
  */
 export async function verifyAuthCookie(request, reply) {
+	const fastify = request.server;
 	const cookies = request.cookies;
 	const token = cookies['jwtAuthToken1'];
 	if (!token) {
 		reply.code(401).send({ error: 'Unauthorized: No token' });
 		return;
 	}
+	const unsigned = fastify.unsignCookie(token);
+	if (!unsigned.valid) {
+		reply.code(401).send({ error: 'Unauthorized: Invalid token' });
+		return;
+	}
 	try {
-		const decoded = await request.server.jwt.verify(token);
+		const decoded = await request.server.jwt.verify(unsigned.value);
+		request.user = decoded; // Attach user info to request if needed
+	} catch (err) {
+		reply.code(401).send({ error: 'Unauthorized: Invalid token' });
+	}
+}
+
+/**
+ * Verifies the pending 2FA token from the request cookies.
+ * @param {*} request - The Fastify request object.
+ * @param {*} reply - The Fastify reply object.
+ * @returns {Promise<void>} - Returns a promise that resolves when the token is verified.
+ */
+export async function verifyPendingTwofaCookie(request, reply) {
+	const fastify = request.server;
+	const cookies = request.cookies;
+	const userId = request.body.userId;
+	const playerNr = request.body.playerNr;
+	console.log('Verifying pending 2FA token for userId:', userId, 'playerNr:', playerNr);
+	console.log('Cookies:', cookies);
+	const token = cookies['pendingTwofaToken' + playerNr];
+	if (!token) {
+		reply.code(401).send({ error: 'Unauthorized: No token' });
+		return;
+	}
+	const unsigned = fastify.unsignCookie(token);
+	if (!unsigned.valid) {
+		reply.code(401).send({ error: 'Unauthorized: Invalid token' });
+		return;
+	}
+	try {
+		const decoded = await request.server.jwt.verify(unsigned.value);
+		if (decoded.userId !== userId) {
+			reply.code(401).send({ error: 'Unauthorized: Invalid token for user' });
+			return;
+		}
 		request.user = decoded; // Attach user info to request if needed
 	} catch (err) {
 		reply.code(401).send({ error: 'Unauthorized: Invalid token' });

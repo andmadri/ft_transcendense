@@ -29,9 +29,11 @@ export const Game: S.gameInfo = {
 	player1Id: -1,
 	player1Name: 'unknown',
 	player1Login: false,
+	player1Twofa: false,
 	player2Id: 1,			// default player2Id for guest login
 	player2Name: 'Guest',	// default player2Name for guest login
 	player2Login: false,	// default player2Login for guest login
+	player2Twofa: false,
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,

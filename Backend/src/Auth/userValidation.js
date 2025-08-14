@@ -1,6 +1,5 @@
 import { addUserToDB, updateOnlineStatus, isOnline, getUserByEmail, userAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { signFastifyJWT } from "../utils/jwt.js";
 import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
 import { onUserLogin } from '../Services/sessionsService.js';
