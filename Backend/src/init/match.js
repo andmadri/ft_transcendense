@@ -27,7 +27,8 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 			id: id,
 			name: name,
 			score: 0,
-			paddle: 0,
+			paddleY: 0,
+			paddleVY: 0,
 			pressUp: false,
 			pressDown: false,
 			ready: false,
@@ -36,14 +37,15 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 			id: id2,
 			name: name2,
 			score: 0,
-			paddle: 0,
+			paddleY: 0,
+			paddleVY: 0,
 			pressUp: false,
 			pressDown: false,
 			ready: false,
 		},
 		ball: {
-			angle: 0,
-			speed: 10,
+			vX: 10,
+			vY: 10,
 			x: 0,
 			y: 0
 		}
@@ -93,7 +95,6 @@ export async function quitMatch(match, msg, socket) {
 	});
 	match.stage = Stage.Finish;
 }
-
 
 export async function saveMatch(match, msg, socket) {
 	// Update the match in the database

@@ -1,4 +1,4 @@
-import { Stage } from './gameMatch.js';
+import { Stage } from '../init/match.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 

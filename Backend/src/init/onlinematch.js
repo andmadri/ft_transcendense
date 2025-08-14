@@ -1,7 +1,7 @@
 import { getUserByID } from "../Database/users.js";
-import { newMatch } from "../Game/gameMatch.js";
-import { waitlist, matches } from "../Game/gameMatch.js";
-import { Stage } from "../Game/gameMatch.js";
+import { newMatch } from "./match.js";
+import { waitlist, matches } from "./match.js";
+import { Stage } from "./match.js";
 import { db } from "../index.js"
 import { handleMatchStartDB } from "../Services/matchService.js";
 

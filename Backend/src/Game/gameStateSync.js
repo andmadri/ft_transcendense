@@ -2,7 +2,6 @@ import { Stage } from './gameMatch.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
-
 export function sendBallUpdate(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
