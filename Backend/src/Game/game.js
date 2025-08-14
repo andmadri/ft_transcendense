@@ -11,12 +11,11 @@ export function handleGame(msg, socket, io) {
 	if (!msg.matchID)
 		return console.log("No matchID found in msg from frontend");
 
-
 	const match = matches.get(msg.matchID);
 	if (!match)
-		return ;
+		return console.error(`No match found with ${msg.matchID}`);
 
-	// Updates that are comming into the backend (Maybe update all in once)
+	// Updates that are comming into the backend (Maybe better to update all in once)
 	switch (msg.subaction) {
 		case 'ballUpdate':
 			sendBallUpdate(match, msg, socket, io);
@@ -28,7 +27,7 @@ export function handleGame(msg, socket, io) {
 			applyKeyPress(match, msg, socket);
 			break;;
 		case 'padelUpdate':
-			sendPaddleUpdate(match, msg, socket, io); // Maybe add return / break
+			sendPaddleUpdate(match, msg, socket, io);
 			break ;
 		case 'save':
 			saveMatch(match, msg, socket);

@@ -13,7 +13,6 @@ export function sendMatchUpdate(match, io) {
 	copyMatch.action = 'game';
 	copyMatch.subaction = 'updateBall';
 	io.to(match.roomID).emit('message', copyMatch);
-
 }
 
 export function sendBallUpdate(match, msg, socket, io) {

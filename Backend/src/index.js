@@ -7,10 +7,11 @@ import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
+import { getUserByID } from './Database/users.js';
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './Init/initGame.js'
-import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { handleMatchmaking } from './Init/matchmaking.js';
+import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
@@ -134,13 +135,13 @@ fastify.ready().then(() => {
 		});
 
 		socket.on('disconnect', () => {
-			console.log(`User disconnected: ${socket.id}`);
-			// try {
-			// 	const user = getUserByID(db, userId1);
-			// 	if (user?.email) updateOnlineStatus(user.email, 'offline');
-			// } catch (err) {
-			// 	console.error('Failed logout cleanup', err);
-			// }
+			console.log(`User disconnected: ${userId1}`);
+			try {
+				// WHERE WENT THIS FUNCTION GO TO?
+				// updateOnlineStatus(userId1, 'offline');
+			} catch (err) {
+				console.error('Failed logout cleanup', err);
+			}
 		});
 	});
 });
