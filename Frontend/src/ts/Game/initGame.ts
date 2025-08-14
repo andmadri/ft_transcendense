@@ -270,24 +270,19 @@ export function initGame() {
 	// resetScoreMenu();
 }
 
-// export function saveGame() {
-// 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
-// 	if (Game.opponentType == OT.ONEvsONE && Game.player2Id != 0)
-// 	{
-// 		log("Saving game and logout player 2");
-// 		submitLogout(null, 2);
-// 	}
-// 	const saveGameMsg = {
-// 		action: 'game',
-// 		subaction: 'save',
-// 		matchID: Game.matchID
-// 	}
-// 	Game.socket.send(JSON.stringify(saveGameMsg));
+export function actionInitOnlineGame(data: any) {
+	const match = data.match;
 
-// 	Game.scoreLeft = 0;
-// 	Game.scoreRight = 0;
-// 	Game.matchID = -1;
-// 	updateNamesMenu();
-// 	resetScoreMenu();
-// }
+	getGameField();
+
+	Game.player1Id = match.player1.id;
+	Game.player2Id = match.player2.id;
+	Game.player1Name = match.player1.name;
+	Game.player2Name = match.player2.name;
+	Game.matchID = data.matchID;
+
+	// Function to set all data sync with match in game...
+
+	Game.state = S.State.Game;
+	console.log("Start online game...");
+}

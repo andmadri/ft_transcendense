@@ -4,6 +4,7 @@ import { waitlist, matches } from "./match.js";
 import { Stage } from "./match.js";
 import { db } from "../index.js"
 import { handleMatchStartDB } from "../Services/matchService.js";
+import { OT } from '../SharedBuild/OT.js'
 
 async function addToWaitinglist(socket, userID) {
 	waitlist.set(waitlist.size, { socket, userID });
@@ -41,9 +42,9 @@ async function getNamebyUserID(userID) {
 
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
-		if (match.stage == Stage.Init) {
-			initGame();
-		}
+		// if (match.stage == Stage.Init) {
+		// 	initGame();
+		// }
 	}, 100)
 }
 
@@ -71,23 +72,24 @@ export async function handleOnlineMatch(socket, userID, io) {
 		socket.join(matchID);
 		socket2.join(matchID);
 		matches.get(matchID).stage = Stage.Init;
-		const msg = {
-			action: 'game',
-			subaction: 'init', // change
-			id: Number(matchID),
-			player1ID: userID,
-			player2ID: userID2
-		}
+
 		const sockets = await io.in(matchID).allSockets();
 		console.log(`Aantal clients in room: ${sockets.size}`);
 		console.log(`matchID: ${matchID}`);
 
 		console.log(`send onlineMatch back to both sockets...${matchID}`);
-		io.to(matchID).emit('message', JSON.stringify(msg));
+
+		// CREATE START VALUES FOR GAME so players have the same values
+		io.to(matchID).emit('message', {
+			action: 'initOnlineGame',
+			matchID: matchID,
+			match: matches.get(matchID)
+		});
 		// send back opponent found to both... play
 		
 		//set interval for online gamelogic
 		matchInterval(matches.get(matchID));
+
 	} else {
 		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID);

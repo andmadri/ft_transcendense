@@ -1,9 +1,9 @@
-import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
-import { createMatch, saveMatch, quitMatch } from '../init/match.js';
-import { matches } from '../init/match.js';
+import { sendBallUpdate, sendPaddleUpdate, updateScore } from "./gameStateSync.js";
+import { saveMatch, quitMatch } from '../Init/match.js';
+import { matches } from '../Init/match.js';
 import { OT } from '../SharedBuild/OT.js'
 
-export function handleGame(msg, socket) {
+export function handleGame(msg, socket, io) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleGame');
 
@@ -19,16 +19,16 @@ export function handleGame(msg, socket) {
 	// Updates that are comming into the backend (Maybe update all in once)
 	switch (msg.subaction) {
 		case 'ballUpdate':
-			sendBallUpdate(match, msg, socket);
+			sendBallUpdate(match, msg, socket, io);
 			break;
 		case 'scoreUpdate':
-			updateScore(match, msg, socket);
+			updateScore(match, msg, io);
 			break;
 		case 'keyPressUpdate':
 			applyKeyPress(match, msg, socket);
 			break;;
 		case 'padelUpdate':
-			sendPaddleUpdate(match, msg, socket); // Maybe add return / break
+			sendPaddleUpdate(match, msg, socket, io); // Maybe add return / break
 			break ;
 		case 'save':
 			saveMatch(match, msg, socket);

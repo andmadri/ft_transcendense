@@ -5,6 +5,9 @@ import { Game } from './script.js'
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
+import { applyBallUpdate, applyPaddleUpdate } from './Game/gameStateSync.js'
+import { actionInitOnlineGame } from './Game/initGame.js'
+import * as S from './structs.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -16,7 +19,7 @@ export function startSocketListeners() {
 
 	socket.on('message', (msg: any)=> {
 		receiveFromWS(msg)
-	}); 
+	});
 
 	socket.on('disconnect', (reason: any) => {
 		log('Disconnected: '+ reason);
@@ -59,6 +62,9 @@ export function receiveFromWS(data: any) {
 			break ;
 		case 'matchmaking':
 			actionMatchmaking(data);
+			break ;
+		case 'initOnlineGame':
+			actionInitOnlineGame(data);
 			break ;
 		case 'game':
 			actionGame(data);

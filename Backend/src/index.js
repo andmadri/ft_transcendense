@@ -8,9 +8,9 @@ import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
-import { handleInitGame } from './init/initGame.js'
+import { handleInitGame } from './Init/initGame.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-import { handleMatchmaking } from './init/matchmaking.js';
+import { handleMatchmaking } from './Init/matchmaking.js';
 import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
@@ -124,7 +124,7 @@ fastify.ready().then(() => {
 				case 'matchmaking':
 					return handleMatchmaking(msg, socket, userId1, fastify.io);
 				case 'game':
-					return handleGame(msg, socket);
+					return handleGame(msg, socket, fastify.io);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);

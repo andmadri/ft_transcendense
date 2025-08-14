@@ -1,12 +1,18 @@
 import * as S from '../structs.js'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { renderGameInterpolated } from './renderSnapshots.js';
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
 const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
 
 export function applyBallUpdate(data: any) {
+	if (Game.opponentType == S.OT.Online) {
+		renderGameInterpolated(data);
+		return ;
+	}
+
 	if ('ballX' in data) {
 		const ball = document.getElementById('ball');
 		if (ball && typeof data.ballX === 'number')
@@ -17,6 +23,11 @@ export function applyBallUpdate(data: any) {
 }
 
 export function applyPaddleUpdate(data: any) {
+	if (Game.opponentType == S.OT.Online) {
+		renderGameInterpolated(data);
+		return ;
+	}
+
 	if ('rPlayerX' in data) {
 		const rPlayer = document.getElementById('rPlayer');
 		if (rPlayer && typeof data.playerOneX === 'number')
@@ -42,6 +53,7 @@ export function sendKeyPressUpdate(key : string) {
 		id: Game.player1Id,
 		matchID: Game.matchID };
 	Game.socket.send(JSON.stringify(msg));
+	// Send also ballX/Y ballVX/Y and paddleVy
 }
 
 //change this to sendGameState and send everything at once
@@ -74,6 +86,7 @@ export function sendBallUpdate() {
 		ballX: ballPos.x,
 		matchID: Game.matchID 
 	});
+	// Send also ballVY/X 
 }
 
 export function sendScoreUpdate(id: number) {

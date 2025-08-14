@@ -1,29 +1,53 @@
-import { Stage } from './gameMatch.js';
+import { Stage } from '../Init/match.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
-export function sendBallUpdate(match, msg, socket) {
+// Send update match to everrybody in that room
+export function sendMatchUpdate(match, io) {
+	const copyMatch = JSON.parse(JSON.stringify(match));
+
+	// delete info that you don't use in the frontend
+	delete copyMatch.dbID;
+
+	// better to update everything in once?
+	copyMatch.action = 'game';
+	copyMatch.subaction = 'updateBall';
+	io.to(match.roomID).emit('message', copyMatch);
+
+}
+
+export function sendBallUpdate(match, msg, socket, io) {
 	if (match.stage != Stage.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
-	match.ball.angle = msg.ballAngle;
+	match.ball.angle = msg.ballAngle; // this not
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
-	socket.send(JSON.stringify(msg));
+	// match.ball.vX = msg.ballVX;
+	// match.ball.vY = msg.ballVY;
+
+	// update msg -> not send to socket but to room.
+	// socket.send(msg);
+	sendMatchUpdate(match, io);
 }
 
-export function sendPaddleUpdate(match, msg, socket) {
+export function sendPaddleUpdate(match, msg, socket, io) {
 	if (match.stage != Stage.Playing)
 		return ;
+
 	msg.player1Score = match.player1.score;
-	msg.player1Paddle = match.player1.paddle;
+	msg.player1Paddle = match.player1.paddleY;
+	msg.player1paddleVY = match.player1.paddleVY;
 	msg.player1Up = match.player1.pressUp;
 	msg.player1Down = match.player1.pressDown;
 	msg.player2Score = match.player2.score;
-	msg.player2Paddle = match.player2.paddle;
+	msg.player2Paddle = match.player2.paddleY;
 	msg.player2Up = match.player2.pressUp;
 	msg.player2Down = match.player2.pressDown;
-	socket.send(JSON.stringify(msg));
+
+	// update msg -> not send to socket but to room.
+	// socket.send(msg);
+	sendMatchUpdate(match, io);
 }
 
 export function applyKeyPress(match, msg) {
@@ -42,7 +66,7 @@ export function applyKeyPress(match, msg) {
 	}
 }
 
-export async function updateScore(match, msg, socket) {
+export async function updateScore(match, msg, io) {
 	if (match.stage != Stage.Playing)
 		return ;
 
@@ -61,5 +85,8 @@ export async function updateScore(match, msg, socket) {
 		// paddle_x_player_2: ,
 		// paddle_y_player_2: ,
 	})
+	// update msg -> not send to socket but to room.
+	// socket.send(msg);
+	sendMatchUpdate(match, io);
 	return eventID;
 }
