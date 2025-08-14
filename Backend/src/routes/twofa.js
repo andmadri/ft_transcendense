@@ -80,7 +80,7 @@ export default async function twoFactor(fastify, opts) {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
 		const token = request.body.token;
-		const userId = request.body.userId;
+		const userId = request.user.userId;
 		const playerNr = request.body.playerNr;
 
 		const encyptedUserSecret = await getUserSecretDB(db, userId);
@@ -127,6 +127,8 @@ export default async function twoFactor(fastify, opts) {
 		if (!user) {
 			return reply.status(404).send({ success: false, message: 'User not found' });
 		}
+
+		reply.clearCookie('pendingTwofaToken' + playerNr, { path: '/' });
 		const jwtToken = signFastifyJWT(user, fastify);
 		reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 			httpOnly: true,      // Prevents JS access

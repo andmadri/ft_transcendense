@@ -76,6 +76,7 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 	});
 	loginBtn.addEventListener('click', () => {
 		log('Login button clicked for player ' + playerNr);
+		document.getElementById('menu')?.remove();
 		if (playerNr == 2)
 			Game.state = S.State.LoginP2;
 		else
@@ -206,13 +207,12 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 				if (data.success) {
 					label.textContent = '2FA disabled successfully!';
 					form.remove();
-					if (data.playerNr == 1) {
+					if (data.playerNr == 1)
 						Game.player1Twofa = false;
-					} else {
+					else
 						Game.player2Twofa = false;
-					}
 					setTimeout(() => overlay.remove(), 1000);
-
+					document.getElementById('menu')?.remove();
 				} else {
 					alert(data.message || 'Failed to disable 2FA.');
 				}
@@ -355,6 +355,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					qrImg.remove();
 					qrLabel.textContent = '2FA activated successfully!';
 					form.remove();
+					Game.player1Twofa = playerNr === 1 ? true : Game.player1Twofa;
 					setTimeout(() => {
 						overlay.remove();
 					}, 1000); // 1000 ms = 1 second
