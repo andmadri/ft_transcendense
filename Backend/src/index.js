@@ -9,8 +9,8 @@ import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { getUserByID } from './Database/users.js';
 import { handleGame } from './Game/game.js'
-import { handleInitGame } from './Init/initGame.js'
-import { handleMatchmaking } from './Init/matchmaking.js';
+import { handleInitGame } from './InitGame/initGame.js'
+import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';

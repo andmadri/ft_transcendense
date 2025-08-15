@@ -1,4 +1,5 @@
 const INTERPOLATION_DELAY = 100;
+const MAX_SNAPSHOT_AGE = 2000;
 
 interface Snapshot {
 	ballX: number;
@@ -79,6 +80,11 @@ function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number,
  */
 function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: number, player: number) {
 	// calculate the right position at the right delay time
+	if (snap2.timestamp <= snap1.timestamp) {
+		console.error("Invalid snapshots: snap2.timestamp must be greater than snap1.timestamp");
+		return;
+	}
+
 	const t = (Date.now() - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
 	const fraction = Math.min(Math.max(t, 0), 1);
 
@@ -116,7 +122,7 @@ function deleteOldSnapshots(renderTime: number) {
 }
 
 /**
- * @brief calculates the right time (interpolation) between two snapshots with a delaay of INTERPOLATION_DELAY
+ * @brief calculates the right time (interpolation) between two snapshots with a delay of INTERPOLATION_DELAY
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
 export function renderGameInterpolated(data: any) {
@@ -133,13 +139,16 @@ export function renderGameInterpolated(data: any) {
 	const renderTime = now - INTERPOLATION_DELAY;
 
 	const [snap1, snap2] = getBoundingSnapshots(renderTime);
-	if (!snap1 && !snap2)
-		return;
-
-	if (snap1 && snap2)
+	if (snap1 && snap2) {
 		interpolateSnapshot(snap1, snap2, renderTime, data.playerNr);
-	else if (snap1)
-		extrapolateFromSnapshot(snap1, data.playerNr);
-
-	deleteOldSnapshots(renderTime);
+		deleteOldSnapshots(renderTime);
+	} 
+	else if (snap1) {
+		if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
+			extrapolateFromSnapshot(snap1, data.playerNr);
+		} else {
+			console.error("snap1 is too old for extrapolation");
+		}
+	}
+	
 }

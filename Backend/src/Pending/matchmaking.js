@@ -11,7 +11,7 @@ function challengeFriend(socket, challenger, responder) {
 		subaction: 'challengeFriend',
 		challenger: userID,
 		responder: friendID,
-		roomname: challenger + responder
+		roomname: challenger + responder // change to matchID!
 	});
 }
 

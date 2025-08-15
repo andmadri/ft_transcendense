@@ -1,6 +1,6 @@
 import { sendBallUpdate, sendPaddleUpdate, updateScore } from "./gameStateSync.js";
-import { saveMatch, quitMatch } from '../Init/match.js';
-import { matches } from '../Init/match.js';
+import { saveMatch, quitMatch } from '../InitGame/match.js';
+import { matches } from '../InitGame/match.js';
 import { OT } from '../SharedBuild/OT.js'
 
 export function handleGame(msg, socket, io) {
