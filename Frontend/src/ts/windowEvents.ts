@@ -7,34 +7,25 @@ const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayer
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
 const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
 
-export function releaseButton(e: KeyboardEvent) {
-	if (Game.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		return ;
-	}
-	if (Game.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
-		return ;
-	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		S.Keys[e.key].pressed = false;
-		if (Game.opponentType == OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
-	}
-}
-
-export function pressButton(e: KeyboardEvent) {
-	if (Game.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		return ;
-	}
-	if (Game.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
-		return ;
-	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		console.log(`Key pressed ${e.key}`);
-		S.Keys[e.key].pressed = true;
-		if (Game.opponentType == OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
+export function buttonPress(e: KeyboardEvent, pressed: boolean) {
+	switch (Game.opponentType) {
+		case OT.ONEvsCOM: // against AI not key up and down??
+			if (e.key === 'w' || e.key === 's')
+				S.Keys[e.key].pressed = pressed;
+			break ;
+		case OT.ONEvsONE:
+			if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's')
+				S.Keys[e.key].pressed = pressed;
+			break ;
+		case OT.Online:
+			if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+				S.Keys[e.key].pressed = pressed;
+				sendKeyPressUpdate(e.key);
+			}
+			console.log(`Key ${pressed == true ? "pressed" : "released"} ${e.key}`);
+			break ;
+		default: 
+			;
 	}
 }
 
