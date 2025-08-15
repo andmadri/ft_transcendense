@@ -54,6 +54,9 @@ test('Pong tester', async ({ browser }) => {
 	// SIGN UP + LOGIN 
 	await signup_login_byPlayer(page, 1, name, email, password);
 	await page.locator('h2', { hasText: 'Menu' }).isVisible();
+	
+	const playerNameElement = page.locator('#playerNameMenu' + '1');
+	await expect(playerNameElement).toHaveText(name);
 
 	await page.goto('https://localhost:8443');
 

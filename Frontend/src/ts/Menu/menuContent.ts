@@ -182,7 +182,7 @@ export function getRightSideMenu(playerNr: number) {
 	});
 
 	const playername = document.createElement('div');
-	playername.id = "playerNameMenu";
+	playername.id = "playerNameMenu" + playerNr;
 	if (playerNr == 1)
 		playername.textContent = Game.player1Name;
 	else
