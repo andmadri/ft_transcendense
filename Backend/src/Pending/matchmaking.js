@@ -33,7 +33,7 @@ function receiveResponseChallenge(socket, msg) {
 	}
 }
 
-export function handleMatchmaking(msg, socket, userID, io) {
+export function handleMatchmaking(db, msg, socket, userID, io) {
 	if (!msg.subaction)
 		return ;
 
@@ -45,7 +45,7 @@ export function handleMatchmaking(msg, socket, userID, io) {
 			receiveResponseChallenge(socket, msg);
 			break ;
 		case 'createOnlineMatch':
-			handleOnlineMatch(socket, userID, io);
+			handleOnlineMatch(db, socket, userID, io);
 			break ;
 		default:
 			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);

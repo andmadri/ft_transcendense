@@ -13,7 +13,7 @@ import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
-import { searchMatch } from './Matchmaking/onlineMatch.js'
+
 
 // getLoadingPage();
 createLog();

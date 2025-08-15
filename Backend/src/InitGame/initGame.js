@@ -1,5 +1,6 @@
 import { createMatch } from "./match.js";
 
+// To frontend: players get msg that server is ready with init, game can start
 function sendStartMsgToPlayers(roomID) {
 	console.log("both players are ready to play! START");
 	io.to(roomID).emit('message', {
@@ -28,13 +29,16 @@ function handleStartOnlineMatch(msg, match) {
 	return false
 }
 
-export function handleInitGame(msg, socket, userId1, userId2) {
+// From Frontend
+export function handleInitGame(db, msg, socket, userId1, userId2) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleInitGame');
 
+	// for local games
 	if (msg.subaction == 'createMatch' && msg.opponentMode != 3)
-		return createMatch(msg, socket, userId1, userId2);
+		return createMatch(db, msg.opponentMode, socket, userId1, userId2);
 
+	// receive msg that frontend is ready to play (online match)
 	if (msg.subaction == 'start') {
 		if (handleStartOnlineMatch(msg, match))
 			return ;

@@ -1,16 +1,15 @@
-import { getUserByID } from "../Database/users.js";
-import { newMatch } from "../InitGame/match.js";
+
 import { waitlist, matches } from "../InitGame/match.js";
 import { Stage } from "../InitGame/match.js";
-import { db } from "../index.js"
-import { handleMatchStartDB } from "../Services/matchService.js";
 import { OT } from '../SharedBuild/OT.js'
+import { assert } from "console";
+import { createMatch } from "../InitGame/match.js";
 
 async function addToWaitinglist(socket, userID) {
 	waitlist.set(waitlist.size, { socket, userID });
 }
 
-export function findOpenMatch() {
+function findOpenMatch() {
 	if (waitlist.size === 0)
 		return ([null, null]);
 
@@ -22,23 +21,7 @@ export function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
-async function getNamebyUserID(userID) {
-	try {
-		const user = await getUserByID(db, userID);
-		if (user && user.name)
-			return (user.name);
-		else {
-			if (!user)
-				console.error(`User ${userID} not found in db`);
-			else
-				console.error(`Username not found in user with ID ${userID}`);
-			return (null);
-		}
-	} catch(err) {
-		console.error(err);
-		return (null);
-	}
-}
+
 
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
@@ -51,42 +34,30 @@ function matchInterval(match) {
 // checks if there is already someone waiting
 // if no -> make new match
 // if so -> add second player to match and room and send msg back
-export async function handleOnlineMatch(socket, userID, io) {
+export async function handleOnlineMatch(db, socket, userID, io) {
 	const [socket2, userID2] = findOpenMatch();
 
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
-		console.log("Player in waitinglist found, making new match");
-		const name1 = await getNamebyUserID(userID);
-		const name2 = await getNamebyUserID(userID2);
-		if (!name1 || !name2) {
-			console.error("Something went wrong handle Online Match");
-			return ;
-		}
-		const matchID = await handleMatchStartDB(db, { 
-			player_1_id: userID, 
-			player_2_id: userID2
-		});
-		newMatch(matchID, userID, name1, userID2, name2, OT.Online);
-		console.log(`New match ${matchID} is made with ${name1} and ${name2}`);
+		const matchID = createMatch(db, OT.Online, socket, userID, userID2);
+
+		// add both players to the room
 		socket.join(matchID);
 		socket2.join(matchID);
 		matches.get(matchID).stage = Stage.Init;
 
 		const sockets = await io.in(matchID).allSockets();
-		console.log(`Aantal clients in room: ${sockets.size}`);
-		console.log(`matchID: ${matchID}`);
+		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
 
-		console.log(`send onlineMatch back to both sockets...${matchID}`);
+		// CREATE START VALUES FOR GAME HERE
 
-		// CREATE START VALUES FOR GAME so players have the same values
 		io.to(matchID).emit('message', {
 			action: 'initOnlineGame',
 			matchID: matchID,
 			match: matches.get(matchID)
+			// more info about the game
 		});
-		// send back opponent found to both... play
-		
+
 		//set interval for online gamelogic
 		matchInterval(matches.get(matchID));
 

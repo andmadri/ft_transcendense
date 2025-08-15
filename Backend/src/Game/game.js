@@ -1,9 +1,8 @@
 import { sendBallUpdate, sendPaddleUpdate, updateScore } from "./gameStateSync.js";
-import { saveMatch, quitMatch } from '../InitGame/match.js';
+import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
-import { OT } from '../SharedBuild/OT.js'
 
-export function handleGame(msg, socket, io) {
+export function handleGame(db, msg, socket, io) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleGame');
 
@@ -30,7 +29,7 @@ export function handleGame(msg, socket, io) {
 			sendPaddleUpdate(match, msg, socket, io);
 			break ;
 		case 'save':
-			saveMatch(match, msg, socket);
+			saveMatch(db, match, msg, socket);
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket);

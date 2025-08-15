@@ -1,6 +1,6 @@
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from "../Database/sessions.js";
 import { handleMatchEndedDB } from "../Services/matchService.js";
-import { matches } from "../InitGame/match.js";
+import { matches, Stage } from "../InitGame/match.js";
 
 export async function quitMatch(match, msg, socket) {
 	const name = msg.name ? msg.name : 'unknown player';
@@ -13,7 +13,7 @@ export async function quitMatch(match, msg, socket) {
 	match.stage = Stage.Finish;
 }
 
-export async function saveMatch(match, msg, socket) {
+export async function saveMatch(db, match, msg, socket) {
 	// Update the match in the database
 	const matchID = await handleMatchEndedDB(db, msg.matchID);
 	
@@ -23,7 +23,7 @@ export async function saveMatch(match, msg, socket) {
 	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
 	console.table(await getAllUserStateDurationsDB(db));
 
-	// Delete the data in the backend
+	// Delete the match in the backend
 	matches.delete(match.matchID);
 
 	// Send a message to the frontend

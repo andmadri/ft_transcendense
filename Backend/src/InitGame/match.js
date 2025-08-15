@@ -1,6 +1,5 @@
-import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
-import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
-import { db } from '../index.js';
+import { handleMatchStartDB } from '../Services/matchService.js';
+import { getUserByID } from "../Database/users.js";
 import { OT } from '../SharedBuild/OT.js'
 
 export const 	matches = new Map();
@@ -15,11 +14,29 @@ export const Stage = {
 	Interrupt: 5
 }
 
-// creates a new match, init and returns id nr
-async function newMatch(matchnr, id, id2, mode) {
+async function getNamebyUserID(db, userID) {
 	try {
-		const name = await getNamebyUserID(id);
-		const name2 = await getNamebyUserID(id2);
+		const user = await getUserByID(db, userID);
+		if (user && user.name)
+			return (user.name);
+		else {
+			if (!user)
+				console.error(`User ${userID} not found in db`);
+			else
+				console.error(`Username not found in user with ID ${userID}`);
+			return (null);
+		}
+	} catch(err) {
+		console.error(err);
+		return (null);
+	}
+}
+
+// creates a new match, init and returns id nr
+async function newMatch(db, matchnr, id, id2, mode) {
+	try {
+		const name = await getNamebyUserID(db, id);
+		const name2 = await getNamebyUserID(db, id2);
 		if (!name || !name2) {
 			console.error(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
 			return;
@@ -75,50 +92,37 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
 	});
 }
 
-// Emit a message to the room indicating the game is starting
-function sendInitMatchReadyRemote(io, matchID) {
-	
-	io.to(matchID).emit('message', {
-		action: 'game',
-		subaction: 'init',
-		id: matchID,
-		// include more info about the game init state
-	});
-}
-
 /*
  * @brief creates a new match and sends init msg to players
  * @param msg - message containing match details
  * @param socket - socket to send the message back to player
+ * @returns match ID (needed for rooms)
 */
-export async function createMatch(msg, socket, userId1, userId2) {
-	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
+export async function createMatch(db, opponentMode, socket, userId1, userId2) {
+	console.log(`create new match in OT: ${opponentMode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-
-	let opponentMode;
-	try {
-		opponentMode = Number(msg.opponentMode);
-	} catch (err) {
-		return console.error("Error parsing opponentMode:", err);
-	}
 
 	if (opponentMode === OT.ONEvsCOM)
 		userId2 = 2; // COM
 
-	// CREATE MATCH IN DB
-	const matchID = await handleMatchStartDB(db, { 
-		player_1_id: userId1, 
-		player_2_id: userId2
-	});
+	try {
+		// CREATE MATCH IN DB
+		const matchID = await handleMatchStartDB(db, { 
+			player_1_id: userId1, 
+			player_2_id: userId2
+		});
 
-	// CREATE MATCH IN MEMORY
-	await newMatch(matchID, userId1, userId2, opponentMode);
+		// CREATE MATCH IN MEMORY
+		await newMatch(db, matchID, userId1, userId2, opponentMode);
 
-	if (opponentMode != OT.Online) {
-		sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
-	} else {
-		// INIT GAME FIRST IN BACKEND
-		sendInitMatchReadyRemote(socket.io, matchID);
+		if (opponentMode != OT.Online) {
+			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
+			matches.get(matchID).stage = Stage.Playing;
+		}
+		return (matchID);
+	} catch (err) {
+		console.error(`Error creating match: ${err}`);
+		return (-1);
 	}
-	matches.get(matchID).stage = Stage.Playing;
+	
 }

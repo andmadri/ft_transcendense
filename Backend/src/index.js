@@ -121,11 +121,11 @@ fastify.ready().then(() => {
 				case 'friends':
 					return handleFriends(msg, socket);
 				case 'init':
-					return handleInitGame(msg, socket, userId1, userId2);
+					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'matchmaking':
-					return handleMatchmaking(msg, socket, userId1, fastify.io);
+					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
 				case 'game':
-					return handleGame(msg, socket, fastify.io);
+					return handleGame(db, msg, socket, fastify.io);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);
