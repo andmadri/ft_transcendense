@@ -44,7 +44,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		// add both players to the room
 		socket.join(matchID);
 		socket2.join(matchID);
-		matches.get(matchID).stage = Stage.Init;
+		// matches.get(matchID).stage = Stage.Init;
 
 		const sockets = await io.in(matchID).allSockets();
 		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
