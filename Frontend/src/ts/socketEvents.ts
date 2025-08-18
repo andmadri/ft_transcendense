@@ -5,6 +5,7 @@ import { Game } from './script.js'
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
+import { renderMatchInfo } from './Dashboard/dashboardContents.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -65,6 +66,9 @@ export function receiveFromWS(msg: any) {
 		case 'game':
 			actionGame(data);
 			break ;
+		// case 'matchInfo':
+		// 	renderMatchInfo(data);
+			break;
 		case 'error':
 			if (data.reason)
 				log('error' + `${data.reason}`);

@@ -119,8 +119,8 @@ fastify.ready().then(() => {
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
-				case 'matchInfo'
-					return handleMatchInfo(msg, socket, userId1);
+				// case 'matchInfo'
+				// 	return handleMatchInfo(msg, socket, userId1);
 				case 'online':
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':

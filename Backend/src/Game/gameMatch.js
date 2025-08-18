@@ -1,9 +1,10 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
+import { getMatchHistoryDB } from '../Database/dashboard.
 import { db } from '../index.js';
 
-export const 	matches = new Map();
-export const	waitlist = new Map();
+export const matches = new Map();
+export const waitlist = new Map();
 
 export const Stage = {
 	Start: 0,
@@ -56,13 +57,13 @@ export function newMatch(matchnr, id, name, id2, name2) {
 export async function createMatch(msg, socket, userId1, userId2) {
 	console.log("create new match");
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-	const	opponentMode = msg.opponentMode;
+	const opponentMode = msg.opponentMode;
 	if (opponentMode === 2) {
 		userId2 = 2;
 	}
 
-	const matchID = await handleMatchStartDB(db, { 
-		player_1_id: userId1, 
+	const matchID = await handleMatchStartDB(db, {
+		player_1_id: userId1,
 		player_2_id: userId2
 	});
 	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
@@ -93,12 +94,15 @@ export async function quitMatch(match, msg, socket) {
 export async function saveMatch(match, msg, socket) {
 	// Update the match in the database
 	const matchID = await handleMatchEndedDB(db, msg.matchID);
-	
+
 	// Show some stats in the terminal
 	console.table(matchID);
 	console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
 	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
 	console.table(await getAllUserStateDurationsDB(db));
+
+	console.table(await getMatchHistoryDB(db, matchID.player_1_id));
+	console.table(await getMatchHistoryDB(db, matchID.player_2_id));
 
 	// Delete the data in the backend
 	matches.delete(match.matchID);

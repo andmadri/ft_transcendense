@@ -1,11 +1,40 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
-//import something from database
 
-// function getMatchInfo() {
-// 	const msg = {action: 'matchIndo', subaction: 'getMatchInfo'};
-// 	Game.socket.send(JSON.stringify(msg));
-// }
+export function renderMatchInfo(msg: any)
+{
+	const matchList = document.getElementById('matchList');
+	if (!matchList)
+		return;
+	const matches = msg.matches_array;
+	for (let match of matches) {
+		const row = document.createElement('div');
+		row.style.display = 'flex';
+		row.style.position = 'relative';
+		row.style.width = '100%';
+		row.style.height = '5%';
+		row.style.background = 'rgba(0, 0, 0, 0.18)';
+		row.style.cursor = 'point';
+		row.style.borderRadius = '10px';
+		row.style.justifyContent = 'space-around';
+		row.style.alignItems = 'center';
+		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+		let score_match = `${match.my_score} - ${match.opp_score}`;
+		[match.opponent, match.date, match.winner, score_match, match.duration, match.totalHits].forEach(cell => {
+			const cellDiv = document.createElement('div');
+			cellDiv.textContent = String(cell);
+			cellDiv.style.color = 'white';
+			cellDiv.style.textAlign = 'center';
+			cellDiv.style.flex = '1';
+			row.appendChild(cellDiv);
+		});
+		row.addEventListener('click', () => {
+		alert(`Match vs ${match.opponent} on ${match.date}`);
+		});
+		matchList.appendChild(row);
+	}
+}
 
 export function getDashboard()
 {
@@ -77,7 +106,7 @@ export function getDashboard()
 	headers.style.paddingTop = '1%';
 	headers.style.paddingBottom = '1%';
 
-	const labels = ['Opponents', 'Date', 'Score', 'Duration', 'Total Hits'];
+	const labels = ['Opponents', 'Date', 'Winner', 'Score', 'Duration', 'Total Hits'];
 	labels.forEach(text => {
 	const headerItem = document.createElement('div');
 		headerItem.textContent = text;
@@ -88,14 +117,14 @@ export function getDashboard()
 
 	// const currentUser = receiveMatchData();
 
-	const currentUser = {
-		username: 'PlayerOne',
-		matches: [
-			{ opponent: 'PlayerTwo', date: '2025-08-10', score: '3-2', duration: '5m 24s', totalHits: 45 },
-			{ opponent: 'BossMan', date: '2025-08-12', score: '1-5', duration: '8m 11s', totalHits: 30 },
-			{ opponent: 'LazyFriend', date: '2025-08-14', score: '4-4', duration: '10m 11s', totalHits: 60 },
-		]
-	};
+	// const currentUser = {
+	// 	username: 'PlayerOne',
+	// 	matches: [
+	// 		{ opponent: 'PlayerTwo', date: '2025-08-10', score: '3-2', duration: '5m 24s', totalHits: 45 },
+	// 		{ opponent: 'BossMan', date: '2025-08-12', score: '1-5', duration: '8m 11s', totalHits: 30 },
+	// 		{ opponent: 'LazyFriend', date: '2025-08-14', score: '4-4', duration: '10m 11s', totalHits: 60 },
+	// 	]
+	// };
 
 	const matchList = document.createElement('div');
 	matchList.id = 'matchList';
@@ -110,33 +139,33 @@ export function getDashboard()
 	matchList.style.fontSize = 'min(2vw, 2vh)';
 	matchList.style.textAlign = 'center';
 
-	currentUser.matches.forEach(match =>{
-		const row = document.createElement('div');
-		row.style.display = 'flex';
-		row.style.position = 'relative';
-		row.style.width = '100%';
-		row.style.height = '5%';
-		row.style.background = 'rgba(0, 0, 0, 0.18)';
-		row.style.cursor = 'point';
-		row.style.borderRadius = '10px';
-		row.style.justifyContent = 'space-around';
-		row.style.alignItems = 'center';
-		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+	// currentUser.matches.forEach(match =>{
+	// 	const row = document.createElement('div');
+	// 	row.style.display = 'flex';
+	// 	row.style.position = 'relative';
+	// 	row.style.width = '100%';
+	// 	row.style.height = '5%';
+	// 	row.style.background = 'rgba(0, 0, 0, 0.18)';
+	// 	row.style.cursor = 'point';
+	// 	row.style.borderRadius = '10px';
+	// 	row.style.justifyContent = 'space-around';
+	// 	row.style.alignItems = 'center';
+	// 	row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
 
-		[match.opponent, match.date, match.score, match.duration, match.totalHits].forEach(cell => {
-			const cellDiv = document.createElement('div');
-			cellDiv.textContent = String(cell);
-			cellDiv.style.color = 'white';
-			cellDiv.style.textAlign = 'center';
-			cellDiv.style.flex = '1';
-			row.appendChild(cellDiv);
-		});
+	// 	[match.opponent, match.date, match.score, match.duration, match.totalHits].forEach(cell => {
+	// 		const cellDiv = document.createElement('div');
+	// 		cellDiv.textContent = String(cell);
+	// 		cellDiv.style.color = 'white';
+	// 		cellDiv.style.textAlign = 'center';
+	// 		cellDiv.style.flex = '1';
+	// 		row.appendChild(cellDiv);
+	// 	});
 
-		row.addEventListener('click', () => {
-			alert(`Match vs ${match.opponent} on ${match.date}`);
-		});
-		matchList.appendChild(row);
-	});
+	// 	row.addEventListener('click', () => {
+	// 		alert(`Match vs ${match.opponent} on ${match.date}`);
+	// 	});
+	// 	matchList.appendChild(row);
+	// });
 
 	dashboard.appendChild(headers);
 	dashboard.appendChild(matchList);

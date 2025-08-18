@@ -131,6 +131,56 @@ export function createTables(db)
 					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
 	
+	CREATE VIEW IF NOT EXISTS UserMatchHistory AS
+		SELECT
+			m.id AS match_id,
+			p1.id AS user_id,
+			p2.id AS opponent_id,
+			p2.name AS opponent_name,
+			m.start_time AS match_ts,
+			strftime('%d-%m-%Y', m.start_time) AS date,
+			strftime('%H:%M', m.start_time) AS time,
+			m.winner_id,
+			w.name AS winner_name,
+			m.player_1_score AS my_score,
+			m.player_2_score AS opp_score,
+			ROUND((julianday(m.end_time) - julianday(m.start_time)) * 86400, 0) AS duration_secs,
+			(
+				SELECT COUNT(*)
+				FROM MatchEvents e
+				WHERE e.match_id = m.id AND e.event_type = 'hit'
+			)	AS total_hits
+			FROM Matches m
+			JOIN Users p1 ON p1.id = m.player_1_id
+			JOIN Users p2 ON p2.id = m.player_2_id
+			LEFT JOIN Users w ON w.id = m.winner_id
+			WHERE m.end_time IS NOT NULL
+
+		UNION ALL
+
+		SELECT
+			m.id AS match_id,
+			p2.id AS user_id,
+			p1.id AS opponent_id,
+			p1.name AS opponent_name,
+			m.start_time AS match_ts,
+			strftime('%d-%m-%Y', m.start_time) AS date,
+			strftime('%H:%M', m.start_time) AS time,
+			m.winner_id,
+			w.name AS winner_name,
+			m.player_2_score AS my_score,
+			m.player_1_score AS opp_score,
+			ROUND((julianday(m.end_time) - julianday(m.start_time)) * 86400, 0) AS duration_secs,
+			(
+				SELECT COUNT(*)
+				FROM MatchEvents e
+				WHERE e.match_id = m.id AND e.event_type = 'hit'
+			)	AS total_hits
+			FROM Matches m
+			JOIN Users p1 ON p1.id = m.player_1_id
+			JOIN Users p2 ON p2.id = m.player_2_id
+			LEFT JOIN Users w ON w.id = m.winner_id
+			WHERE m.end_time IS NOT NULL;
 	
 	`, (err) => {
 		if (err) {
