@@ -1,7 +1,6 @@
 
 import { waitlist, matches } from "../InitGame/match.js";
-import { Stage } from "../InitGame/match.js";
-import { OT } from '../SharedBuild/OT.js'
+import { OT, Stage } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 

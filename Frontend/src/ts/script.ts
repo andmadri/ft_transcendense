@@ -3,7 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { OT } from '@shared/OT'
+import { OT, Stage } from '@shared/enums'
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
@@ -80,12 +80,12 @@ function mainLoop() {
 					getMenu();
 				break ;
 			}
-			case S.State.Pending: {
+			case Stage.Pending: {
 				// waiting for opponement
 				log("...pending...");
 				break ;
 			}
-			case S.State.Init:
+			case Stage.Init:
 				if (!document.getElementById('game'))
 				{
 					getGameField();
@@ -93,7 +93,7 @@ function mainLoop() {
 					
 				}
 				break ;
-			case S.State.Game: {
+			case Stage.Playing: {
 				// document.getElementById('auth1')?.remove();
 				// document.getElementById('auth2')?.remove();
 				// if (Game.matchID >= 0)
@@ -101,7 +101,7 @@ function mainLoop() {
 					game();
 				break ;
 			}
-			case S.State.End:
+			case Stage.End:
 				saveGame();
 				break ;
 			default:

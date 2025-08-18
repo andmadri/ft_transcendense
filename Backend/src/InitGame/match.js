@@ -1,18 +1,9 @@
 import { handleMatchStartDB } from '../Services/matchService.js';
 import { getUserByID } from "../Database/users.js";
-import { OT } from '../SharedBuild/OT.js'
+import { OT, Stage } from '../SharedBuild/enums.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
-
-export const Stage = {
-	Start: 0,
-	Pending: 1,
-	Init: 2,
-	Playing: 3,
-	Finish: 4,
-	Interrupt: 5
-}
 
 async function getNamebyUserID(db, userID) {
 	try {

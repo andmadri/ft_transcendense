@@ -1,7 +1,7 @@
 import * as S from './structs.js'
 import { Game} from './script.js'
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;

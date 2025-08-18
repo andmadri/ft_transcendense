@@ -1,6 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
@@ -75,7 +75,7 @@ function handleGameOver() {
 	if (!body)
 		return ;
 	body.appendChild(gameOver);
-	Game.state = S.State.End;
+	Game.state = Stage.End;
 }
 
 export function saveGame() {

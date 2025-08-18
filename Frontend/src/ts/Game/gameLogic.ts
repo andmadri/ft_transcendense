@@ -1,6 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
-import { OT } from '@shared/OT'
+import { OT, Stage } from '@shared/enums'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 
@@ -172,7 +172,7 @@ export function game() {
 	else {
 		Game.timeGame = performance.now();
 		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-			Game.state = S.State.End;
+			Game.state = State.End;
 			return ;
 		}
 		handleWallBounce();

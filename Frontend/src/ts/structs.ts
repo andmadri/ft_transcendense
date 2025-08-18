@@ -1,6 +1,6 @@
 type Socket = any;
 
-export enum State {
+export enum frontendState {
 	LoginP1,
 	Menu,
 	LoginP2,
@@ -165,34 +165,34 @@ export type AIInfo = {
 };
 
 
-type gameState = {
-	field : {
-		size : Size
-	}
-	lPlayer : {
-		pos : Pos,
-		movement : Movement,
-		velocity : Velocity
-	}
-	rPlayer : {
-		pos : Pos,
-		movement : Movement,
-		velocity : Velocity
-	}
-	paddle : {
-		size : Size
-	}
-	ball : {
-		size : Size,
-		pos : Pos,
-		movement : Movement,
-		velocity : Velocity
-	}
-score : {
-		left : number,
-		right : number
-	}
-};
+// type gameState = {
+// 	field : {
+// 		size : Size
+// 	}
+// 	lPlayer : {
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// 	rPlayer : {
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// 	paddle : {
+// 		size : Size
+// 	}
+// 	ball : {
+// 		size : Size,
+// 		pos : Pos,
+// 		movement : Movement,
+// 		velocity : Velocity
+// 	}
+// score : {
+// 		left : number,
+// 		right : number
+// 	}
+// };
 
 //export const host = window.location.hostname;
 export const host = window.location.host;

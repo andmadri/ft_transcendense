@@ -2,7 +2,7 @@ import * as S from '../structs'
 import { E } from '../structs'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { OT } from '@shared/OT'
+import { OT, Stage } from '@shared/enums'
 import { getGameField } from './gameContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
@@ -17,7 +17,7 @@ export function startGame() {
 	switch (Game.opponentType) {
 		case OT.ONEvsONE: {
 			if (Game.player2Id != -1)
-				Game.state = S.State.Init;
+				Game.state = State.Init;
 			else
 				Game.state = S.State.LoginP2;
 			break ;
@@ -25,11 +25,11 @@ export function startGame() {
 		case OT.ONEvsCOM: {
 			Game.player2Id = 2; // Is not getting used - only for visability
 			Game.player2Name = "AI"; // Is not getting used - only for visability
-			Game.state = S.State.Init;
+			Game.state = State.Init;
 			break ;
 		}
 		case OT.Online: {
-			Game.state = S.State.Pending;
+			Game.state = State.Pending;
 			Game.socket.send({
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
@@ -283,6 +283,6 @@ export function actionInitOnlineGame(data: any) {
 
 	// Function to set all data sync with match in game...
 
-	Game.state = S.State.Game;
+	Game.state = Stage.Game;
 	console.log("Start online game...");
 }

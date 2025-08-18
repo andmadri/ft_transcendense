@@ -1,5 +1,6 @@
 import { log } from '../logging.js'
 import { Game } from '../script.js'
+import { Stage } from '@shared/enums'
 import * as S from '../structs.js'
 
 function styleElement(
@@ -48,7 +49,7 @@ function getQuitBtn() {
 			player: Game.player1Id,
 			name: Game.player1Name
 		});
-		Game.state = S.State.End;
+		Game.state = Stage.End;
 	})
 	return (quitButton);
 }

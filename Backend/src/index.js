@@ -120,10 +120,10 @@ fastify.ready().then(() => {
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
 					return handleFriends(msg, socket);
-				case 'init':
-					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+				case 'init':
+					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
 				case 'error':

@@ -1,6 +1,6 @@
-import { Stage } from '../Init/match.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
+import { Stage } from "../SharedBuild/enums.js"
 
 export function updateBall(match, msg, socket) {
 	if (match.stage != Stage.Playing)
