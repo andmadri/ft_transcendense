@@ -84,7 +84,6 @@ export async function submitAuthForm(e: Event, player: number) {
 export function loginSuccessfull(playerNr: number, userId: number, name: string, twofa: boolean) {
 	document.getElementById('auth1')?.remove();
 	document.getElementById('auth2')?.remove();
-	document.getElementById('menu')?.remove();
 	if (playerNr == 1) {
 		log("Login Successfull playerNr: " + playerNr + " with id: " + userId);
 		Game.player1Id = userId;
@@ -100,6 +99,7 @@ export function loginSuccessfull(playerNr: number, userId: number, name: string,
 		Game.player2Twofa = twofa;
 	}
 	Game.state = S.State.Menu;
+	document.getElementById('menu')?.remove();
 	log("playerNr 1 logged in: " + Game.player1Login + "\n playerNr 2 logged in: " + Game.player2Login);
 }
 
