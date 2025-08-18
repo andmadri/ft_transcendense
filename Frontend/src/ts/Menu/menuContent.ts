@@ -10,7 +10,6 @@ import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
-import * as S from '../structs.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 

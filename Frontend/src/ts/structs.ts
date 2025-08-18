@@ -122,26 +122,26 @@ export const size : Record<E, Size> = {
 }
 
 //this will move to the backend
-export const unitMovement : Record<E, Movement> = {
-	[E.field] : { speed : 0, angle : 0},
-	[E.ball] : { speed : 0.015, angle : 0},
-	[E.lPlayer] : { speed : 0.025, angle : 0},
-	[E.rPlayer] : { speed : 0.025, angle : 0},
-}
+// export const unitMovement : Record<E, Movement> = {
+// 	[E.field] : { speed : 0, angle : 0},
+// 	[E.ball] : { speed : 0.015, angle : 0},
+// 	[E.lPlayer] : { speed : 0.025, angle : 0},
+// 	[E.rPlayer] : { speed : 0.025, angle : 0},
+// }
 
-export const unitSize : Record<E, Size> = {
-	[E.field] : { width : 1, height : 0.7},
-	[E.ball] : { width : 0.05, height : 0.05 },
-	[E.lPlayer] : { width : 0.02, height : 0.3 },
-	[E.rPlayer] : { width : 0.02, height : 0.3 }
-};
+// export const unitSize : Record<E, Size> = {
+// 	[E.field] : { width : 1, height : 0.7},
+// 	[E.ball] : { width : 0.05, height : 0.05 },
+// 	[E.lPlayer] : { width : 0.02, height : 0.3 },
+// 	[E.rPlayer] : { width : 0.02, height : 0.3 }
+// };
 
-export const unitPos : Record<E, Pos> = {
-	[E.field] : { x : 0, y : 0},
-	[E.ball] : { x : 0.5, y : 0.5},
-	[E.lPlayer] : { x : 0.02, y : 0.5},
-	[E.rPlayer] : { x : 0.98, y : 0.5}
-}
+// export const unitPos : Record<E, Pos> = {
+// 	[E.field] : { x : 0, y : 0},
+// 	[E.ball] : { x : 0.5, y : 0.5},
+// 	[E.lPlayer] : { x : 0.02, y : 0.5},
+// 	[E.rPlayer] : { x : 0.98, y : 0.5}
+// }
 
 export const velocity : Record<E, Velocity> = {
 	[E.field] : { vx : 0, vy : 0},
@@ -166,34 +166,34 @@ export type AIInfo = {
 };
 
 
-// type gameState = {
-// 	field : {
-// 		size : Size
-// 	}
-// 	lPlayer : {
-// 		pos : Pos,
-// 		movement : Movement,
-// 		velocity : Velocity
-// 	}
-// 	rPlayer : {
-// 		pos : Pos,
-// 		movement : Movement,
-// 		velocity : Velocity
-// 	}
-// 	paddle : {
-// 		size : Size
-// 	}
-// 	ball : {
-// 		size : Size,
-// 		pos : Pos,
-// 		movement : Movement,
-// 		velocity : Velocity
-// 	}
-// score : {
-//		left : number,
-//		right : number
-//	}
-// }
+type gameState = {
+	field : {
+		size : Size
+	}
+	lPlayer : {
+		pos : Pos,
+		movement : Movement,
+		velocity : Velocity
+	}
+	rPlayer : {
+		pos : Pos,
+		movement : Movement,
+		velocity : Velocity
+	}
+	paddle : {
+		size : Size
+	}
+	ball : {
+		size : Size,
+		pos : Pos,
+		movement : Movement,
+		velocity : Velocity
+	}
+score : {
+		left : number,
+		right : number
+	}
+};
 
 //export const host = window.location.hostname;
 export const host = window.location.host;

@@ -1,4 +1,3 @@
-
 export const d = {
 	time: 0,
 	ID: 1,
@@ -36,4 +35,12 @@ export const GameStats = {
 		x: 0,
 		y: 0
 	}
+}
+
+//maybe change this to a shared file but for now at least
+export const OT = {
+	Empty : 0,
+	ONEvsONE : 1,
+	ONEvsCOM : 2,
+	Online : 3
 }

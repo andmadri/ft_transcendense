@@ -1,5 +1,6 @@
 import * as S from './structs.js'
 import { Game} from './script.js'
+import { sendKeyPressUpdate } from './Game/gameStateSync.js';
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
 const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
@@ -9,8 +10,14 @@ export function releaseButton(e: KeyboardEvent) {
 	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		return ;
 	}
+	if (Game.opponentType == S.OT.Online && (e.key === 'w' || e.key === 's')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		S.Keys[e.key].pressed = false;
+		if (Game.opponentType == S.OT.Online) {
+			sendKeyPressUpdate(e.key);
+		}
 	}
 }
 
@@ -18,9 +25,15 @@ export function pressButton(e: KeyboardEvent) {
 	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		return ;
 	}
+	if (Game.opponentType == S.OT.Online && (e.key === 'w' || e.key === 's')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		console.log(`Key pressed ${e.key}`);
 		S.Keys[e.key].pressed = true;
+		if (Game.opponentType == S.OT.Online) {
+			sendKeyPressUpdate(e.key);
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
-import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
+import { sendBallUpdate, sendPaddleUpdate, updateScore, applyKeyPress } from "./gameStateSync.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
+import { OT } from '../structs.js'
 
 function handleStartOnlineMatch(msg, match) {
 	if (msg.userID == match.player1.id)
@@ -30,12 +31,13 @@ export function handleGame(msg, socket, userId1, userId2) {
 	}
 
 	if (msg.subaction == 'init') {
-		if (msg.opponentMode != 3) // ! online
+		if (msg.opponentMode != OT.Online)
 			return createMatch(msg, socket, userId1, userId2);
 	}
 
 	if (!msg.matchID) {
 		console.log("No matchID found in msg from frontend");
+		console.log(`msg: ${msg.subaction}`);
 		return ;
 	}
 
@@ -49,14 +51,20 @@ export function handleGame(msg, socket, userId1, userId2) {
 			return ;
 	}
 
+	if (msg.subaction)
+
 	switch (msg.subaction) {
 		case 'ballUpdate':
-			updateBall(match, msg, socket);
+			sendBallUpdate(match, msg, socket);
+			break;
 		case 'scoreUpdate':
 			updateScore(match, msg, socket);
-			break ;
+			break;
+		case 'keyPressUpdate':
+			applyKeyPress(match, msg, socket);
+			break;
 		case 'padelUpdate':
-			updatePadel(match, msg, socket); // Maybe add return / break
+			sendPaddleUpdate(match, msg, socket); // Maybe add return / break
 		case 'save':
 			return saveMatch(match, msg, socket);
 		case 'quit':

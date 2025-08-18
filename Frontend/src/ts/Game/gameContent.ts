@@ -110,7 +110,7 @@ export function getGameField() {
 	const	field = document.createElement('div');
 	field.id = 'field';
 	field.style.aspectRatio = '4 / 3'
-	field.style.width = 'calc(min(100vw, 100vh) - 2vw)';
+	field.style.width = 'calc(min(100vw, 100vh) - 2vw)'; //this will cause issues for remote games since 
 	field.style.maxHeight = '80vh';
 	field.style.backgroundColor = 'black';
 	field.style.borderRadius = '16px';

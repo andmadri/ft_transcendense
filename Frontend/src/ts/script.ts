@@ -119,4 +119,4 @@ function mainLoop() {
 
 setTimeout(() => {
 	mainLoop();
-}, 2000);
+}, 1000);

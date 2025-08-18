@@ -5,18 +5,23 @@ import { sql_log, sql_error } from './dblogger.js';
  *
  * @param {sqlite3.Database} db - The active SQLite database instance.
  */
-export function createTables(db)
+export async function createTables(db)
 {
-	db.exec(`
+	const sql = `
+	BEGIN;
+
 	CREATE TABLE IF NOT EXISTS Users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL UNIQUE,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL,
+		twofa_secret TEXT,
+		twofa_active INTEGER NOT NULL DEFAULT 0,
 		avatar_url TEXT,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		last_edited TEXT DEFAULT CURRENT_TIMESTAMP,
-		is_deleted INTEGER NOT NULL DEFAULT 0
+		is_deleted INTEGER NOT NULL DEFAULT 0,
+		CHECK(twofa_active IN (0,1))
 	);
 
 	CREATE TABLE IF NOT EXISTS UserSessions (
@@ -34,7 +39,7 @@ export function createTables(db)
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES Users(id),
 		FOREIGN KEY(friend_id) REFERENCES Users(id),
-		UNIQUE(user_id, friend_id)
+		UNIQUE(user_id, friend_id),
 		CHECK(user_id <> friend_id)
 	);
 
@@ -130,7 +135,7 @@ export function createTables(db)
 				ROUND(
 					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
-	
+
 	CREATE VIEW IF NOT EXISTS UserMatchHistory AS
 		SELECT
 			m.id AS match_id,
@@ -181,19 +186,24 @@ export function createTables(db)
 			JOIN Users p2 ON p2.id = m.player_2_id
 			LEFT JOIN Users w ON w.id = m.winner_id
 			WHERE m.end_time IS NOT NULL;
-	
-	`, (err) => {
-		if (err) {
-			sql_error(err, `Error creating tables`);
-			return ;
-		}
-		sql_log(`Created database tables and views.`);
-		db.all(`SELECT name FROM sqlite_master WHERE type='table'`, (err, rows) => {
+	COMMIT;
+	`;
+
+	return new Promise((resolve, reject) => {
+		db.exec(sql, (err) => {
 			if (err) {
-				sql_error(err, `Failed to list tables`);
-			} else {
-				sql_log(`Current tables in database: ${rows.map(r => r.name)}`);
+				sql_error(err, `Error creating tables`);
+				return reject(err);
 			}
+			sql_log(`Created database tables and views.`);
+			db.all(`SELECT name, type FROM sqlite_schema WHERE type IN ('table','view') ORDER BY name`, (err, rows) => {
+				if (err) {
+					sql_error(e, "Failed to list schema objects");
+				} else {
+					sql_log(`Current objects: ${rows.map(r => `${r.type}:${r.name}`).join(', ')}`);
+					resolve();
+				}
+			});
 		});
 	});
 }

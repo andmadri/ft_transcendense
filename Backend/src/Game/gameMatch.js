@@ -2,6 +2,7 @@ import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { getMatchHistoryDB } from '../Database/dashboard.
 import { db } from '../index.js';
+import { OT } from '../structs.js'
 
 export const matches = new Map();
 export const waitlist = new Map();
@@ -9,14 +10,16 @@ export const waitlist = new Map();
 export const Stage = {
 	Start: 0,
 	Pending: 1,
-	Playing: 2,
-	Finish: 3,
-	Interrupt: 4
+	Init: 2,
+	Playing: 3,
+	Finish: 4,
+	Interrupt: 5
 }
 
 // creates a new match, init and returns id nr
-export function newMatch(matchnr, id, name, id2, name2) {
+export function newMatch(matchnr, id, name, id2, name2, mode) {
 	matches.set(matchnr, {
+		mode: mode,
 		dbID: matchnr,
 		stage: Stage.Start,
 		roomID: '0',
@@ -55,18 +58,25 @@ export function newMatch(matchnr, id, name, id2, name2) {
 	Online	=> new match + save match db
 */
 export async function createMatch(msg, socket, userId1, userId2) {
-	console.log("create new match");
-	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-	const opponentMode = msg.opponentMode;
-	if (opponentMode === 2) {
+	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
+	const	opponentMode = Number(msg.opponentMode);
+	//Maybe errorcheck here if opponentMode is not a number?
+	if (opponentMode === OT.ONEvsCOM) {
+		console.log(`Create match: ONEvsCOM | set userId2=2 (ai) was before ${userId2}`);
 		userId2 = 2;
+	} else if (opponentMode === OT.ONEvsONE) {
+		console.log(`Create match: ONEvsONE | set userId2=1 (guest) was before ${userId2}`);
+		userId2 = 1;
 	}
+	
+	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
+
 
 	const matchID = await handleMatchStartDB(db, {
 		player_1_id: userId1,
 		player_2_id: userId2
 	});
-	newMatch(matchID, userId1, msg.name, userId2, msg.name2);
+	newMatch(matchID, userId1, msg.name, userId2, msg.name2, opponentMode);
 
 	// console.log(`matchid: ${matchID}`);
 	socket.send(JSON.stringify({
