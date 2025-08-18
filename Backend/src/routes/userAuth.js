@@ -70,7 +70,7 @@ export default async function userAuthRoutes(fastify) {
 	});
 
 	fastify.post('/api/logout', async (request, reply) => {
-		const { playerNr } = request.body;
+		const playerNr = request.body.playerNr;
 		console.log(`Logging out player ${playerNr}`);
 		const cookies = request.cookies;
 		console.log('Cookies:', cookies);
