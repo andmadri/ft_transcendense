@@ -5,19 +5,19 @@ import { db } from '../index.js';
 
 async function getMatchData(msg, socket, userId1) {
 	let player1 = null;
-	let matches = null;
+	let matches_arr = null;
 
 	if (userId1) {
 		player1 = await userDB.getUserByID(db, userId1);
 	}
 
-	matches = await getMatchHistoryDB(db, userId1);
-	console.log("Recieved DB content: ", matches);
+	matches_arr = await getMatchHistoryDB(db, userId1);
+	console.log("Recieved DB content: ", matches_arr);
 
 	let returnMsg = {
 		action: "matchInfo",
 		subaction: "receivePlayerData",
-		matches_array: matches
+		matches: matches_arr
 	};
 	socket.send(JSON.stringify(returnMsg));
 }

@@ -1,12 +1,8 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
 
-export function renderMatchInfo(msg: any)
+function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
-	const matchList = document.getElementById('matchList');
-	if (!matchList)
-		return;
-	const matches = msg.matches_array;
 	for (let match of matches) {
 		const row = document.createElement('div');
 		row.style.display = 'flex';
@@ -35,6 +31,57 @@ export function renderMatchInfo(msg: any)
 		});
 		matchList.appendChild(row);
 	}
+}
+
+function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
+{
+	const card = document.createElement('div');
+	card.id = 'userInfoCard';
+	card.style.aspectRatio = '4 / 3';
+	card.style.borderRadius = '16px';
+	card.style.background = '#363430';
+}
+
+function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
+{
+	//WE WANT TO MAKE STATS FOR WINNER AND THAT KIND OF DATA
+	const card = document.createElement('div');
+	card.id = 'statsCard';
+	card.style.aspectRatio = '4 / 3';
+	card.style.borderRadius = '16px';
+	card.style.background = '#363430';
+
+	const cardTitle = document.createElement('div');
+	cardTitle.textContent = 'User Stats';
+	cardTitle.style.display = 'inline-block';
+	cardTitle.style.alignItems = 'flex-start';
+}
+
+function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
+{
+	//WE WANT TO MAKE A GENERAL SMALL CONTAINER AND THEN ATTACH A PIE GRAPH
+	const card = document.createElement('div');
+	card.id = 'playingTimeCard';
+	card.style.aspectRatio = '4 / 3';
+	card.style.borderRadius = '16px';
+	card.style.background = '#363430';
+
+	const cardTitle = document.createElement('div');
+	cardTitle.textContent = 'Playing Time';
+	cardTitle.style.display = 'inline-block';
+	cardTitle.style.alignItems = 'flex-start';
+}
+
+export function populateDashboard(msg: any)
+{
+	const matchList = document.getElementById('matchList');
+	const infoCardsContainer = document.getElementById('infoCardsContainer');
+	if (!infoCardsContainer || !matchList)
+		return ;
+	renderMatchInfo(msg.matches, matchList);
+	renderUserInfoCard(msg.user_info, infoCardsContainer);
+	renderUserStatsCard(msg.stats, infoCardsContainer);
+	renderPlayingTimeCard(msg.user_playing_time, infoCardsContainer);
 }
 
 export function getDashboard()
@@ -168,11 +215,22 @@ export function getDashboard()
 	// 	matchList.appendChild(row);
 	// });
 
+	const infoCardsContainer = document.createElement('div');
+	infoCardsContainer.id = 'infoCardsContainer';
+	infoCardsContainer.style.display = 'flex';
+	infoCardsContainer.style.direction = 'row';
+	infoCardsContainer.style.width = '80vw';
+	infoCardsContainer.style.justifyContent = 'space-between';
+	infoCardsContainer.style.marginBottom = '1rem';
+	infoCardsContainer.style.background = 'transparent';
+	infoCardsContainer.style.gap = '1rem';
+
 	dashboard.appendChild(headers);
 	dashboard.appendChild(matchList);
+	containerDashboard.appendChild(infoCardsContainer);
 	containerDashboard.appendChild(title);
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
-	const msg = {action: 'matchInfo', subaction: 'getMatchData'};
+	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
 	Game.socket.send(JSON.stringify(msg));
 }
