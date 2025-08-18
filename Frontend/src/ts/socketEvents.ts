@@ -71,8 +71,8 @@ export function receiveFromWS(msg: any) {
 		case 'game':
 			actionGame(data);
 			break ;
-		// case 'matchInfo':
-		// 	renderMatchInfo(data);
+		case 'matchInfo':
+			renderMatchInfo(data);
 			break;
 		case 'error':
 			if (data.reason)

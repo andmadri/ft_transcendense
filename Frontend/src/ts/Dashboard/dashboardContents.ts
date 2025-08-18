@@ -21,6 +21,7 @@ export function renderMatchInfo(msg: any)
 		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
 
 		let score_match = `${match.my_score} - ${match.opp_score}`;
+		//duration should be in seconds and also minutes
 		[match.opponent, match.date, match.winner, score_match, match.duration, match.totalHits].forEach(cell => {
 			const cellDiv = document.createElement('div');
 			cellDiv.textContent = String(cell);
@@ -172,4 +173,6 @@ export function getDashboard()
 	containerDashboard.appendChild(title);
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
+	const msg = {action: 'matchInfo', subaction: 'getMatchData'};
+	Game.socket.send(JSON.stringify(msg));
 }

@@ -1,5 +1,6 @@
 import { match } from 'assert';
 import * as userDB from '../Database/users.js';
+import { getMatchHistoryDB } from '../Database/dashboard.js';
 import { db } from '../index.js';
 
 async function getMatchData(msg, socket, userId1) {
@@ -9,31 +10,15 @@ async function getMatchData(msg, socket, userId1) {
 	if (userId1) {
 		player1 = await userDB.getUserByID(db, userId1);
 	}
-	
-	//I need you
-	matches = await getMatchesByUserId(db, user_id);
-	console.log("Recieved DB content: ", onlineUsers);
+
+	matches = await getMatchHistoryDB(db, userId1);
+	console.log("Recieved DB content: ", matches);
 
 	let returnMsg = {
 		action: "matchInfo",
 		subaction: "receivePlayerData",
 		matches_array: matches
 	};
-	// for (const match of matches)
-	// {
-	// 	const opponent_id = match.player_1_id === user_id ? match.player_2_id : match.player_1_id;
-	// 	player2 = await userDB.getUserByID(db, opponent_id);
-	// 	let opponent = player2?.name || 'unknown';
-	// 	returnMsg.matches.push({
-	// 		opponent,
-	// 		date: match.start_time,
-	// 		score: `${match.player_1_score} - ${match.player_2_id}`,
-	// 		duration:  match.end_time
-  //     ? (new Date(match.end_time) - new Date(match.start_time)) / 1000
-  //     : null,
-	// 		totalHits: match.total_hits ?? null
-	// 	});
-	// }
 	socket.send(JSON.stringify(returnMsg));
 }
 

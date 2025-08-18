@@ -1,6 +1,6 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
-import { getMatchHistoryDB } from '../Database/dashboard.
+import { getMatchHistoryDB } from '../Database/dashboard.js';
 import { db } from '../index.js';
 import { OT } from '../structs.js'
 
@@ -59,7 +59,7 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 */
 export async function createMatch(msg, socket, userId1, userId2) {
 	console.log(`create new match in OT: ${msg.opponentMode} - ${OT.Online}`);
-	const	opponentMode = Number(msg.opponentMode);
+	const opponentMode = Number(msg.opponentMode);
 	//Maybe errorcheck here if opponentMode is not a number?
 	if (opponentMode === OT.ONEvsCOM) {
 		console.log(`Create match: ONEvsCOM | set userId2=2 (ai) was before ${userId2}`);
@@ -68,7 +68,7 @@ export async function createMatch(msg, socket, userId1, userId2) {
 		console.log(`Create match: ONEvsONE | set userId2=1 (guest) was before ${userId2}`);
 		userId2 = 1;
 	}
-	
+
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
 
 
