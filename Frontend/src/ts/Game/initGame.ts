@@ -2,7 +2,7 @@ import * as S from '../structs'
 import { E } from '../structs'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 import { getGameField } from './gameContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';

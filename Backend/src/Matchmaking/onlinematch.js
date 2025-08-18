@@ -1,7 +1,7 @@
 import { getUserByID } from "../Database/users.js";
 import { newMatch } from "../Game/gameMatch.js";
 import { waitlist, matches } from "../Game/gameMatch.js";
-import { Stage } from "../Game/gameMatch.js";
+import { gameStage } from "../SharedBuild/enums.js";
 import { db } from "../index.js"
 import { handleMatchStartDB } from "../Services/matchService.js";
 
@@ -41,7 +41,7 @@ async function getNamebyUserID(userID) {
 
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
-		if (match.stage == Stage.Init) {
+		if (match.stage == gameStage.Init) {
 			initGame();
 		}
 	}, 100)
@@ -70,7 +70,7 @@ export async function handleOnlineMatch(socket, userID, io) {
 		console.log(`New match ${matchID} is made with ${name1} and ${name2}`);
 		socket.join(matchID);
 		socket2.join(matchID);
-		matches.get(matchID).stage = Stage.Init;
+		matches.get(matchID).stage = gameStage.Init;
 		const msg = {
 			action: 'game',
 			subaction: 'init', // change

@@ -1,7 +1,7 @@
 import { sendBallUpdate, sendPaddleUpdate, updateScore, applyKeyPress } from "./gameStateSync.js";
 import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
 import { matches } from './gameMatch.js';
-import { OT } from '../SharedBuild/OT.js'
+import { OT } from '../SharedBuild/enums.js'
 
 function handleStartOnlineMatch(msg, match) {
 	if (msg.userID == match.player1.id)

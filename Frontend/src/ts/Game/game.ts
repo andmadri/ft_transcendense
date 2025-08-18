@@ -3,7 +3,7 @@ import { log } from '../logging.js'
 import { Game } from "../script.js";
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js";
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {

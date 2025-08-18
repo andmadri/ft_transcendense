@@ -91,7 +91,6 @@ export enum E {
   field = 'field',
 }
 
-
 export type Pos = { x : number, y : number };
 export type Velocity = { vx : number, vy : number };
 export type Movement = { speed : number, angle : number };
@@ -188,7 +187,7 @@ type gameState = {
 		movement : Movement,
 		velocity : Velocity
 	}
-score : {
+	score : {
 		left : number,
 		right : number
 	}

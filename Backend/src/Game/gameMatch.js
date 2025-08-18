@@ -1,19 +1,10 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
-import { OT } from '../SharedBuild/OT.js'
+import { OT, gameStage } from '../SharedBuild/enums.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
-
-export const Stage = {
-	Start: 0,
-	Pending: 1,
-	Init: 2,
-	Playing: 3,
-	Finish: 4,
-	Interrupt: 5
-}
 
 // creates a new match, init and returns id nr
 export function newMatch(matchnr, id, name, id2, name2, mode) {
@@ -21,7 +12,7 @@ export function newMatch(matchnr, id, name, id2, name2, mode) {
 		mode: mode,
 		intervalId : null,
 		dbID: matchnr,
-		stage: Stage.Start,
+		stage: gameStage.Start,
 		roomID: '0',
 		player1: {
 			id: id,
@@ -80,7 +71,7 @@ export async function createMatch(msg, socket, userId1, userId2) { // maybe call
 		player1ID: userId1,
 		player2ID: userId2
 	}));
-	matches.get(matchID).stage = Stage.Playing;
+	matches.get(matchID).stage = gameStage.Playing;
 }
 
 export async function quitMatch(match, msg, socket) {
@@ -91,7 +82,7 @@ export async function quitMatch(match, msg, socket) {
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	}));
-	match.stage = Stage.Finish;
+	match.stage = gameStage.End;
 }
 
 

@@ -1,6 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 

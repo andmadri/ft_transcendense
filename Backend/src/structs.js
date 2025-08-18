@@ -1,18 +1,18 @@
-export const d = {
-	time: 0,
-	ID: 1,
-	Paddle: 2,
-	PressUp: 3,
-	PressDown: 4,
-	Miss: 5,
-	Score: 6,
-	BallX: 7,
-	BallY: 8,
-	BallAngle: 9,
-	BallSpeed: 10
-}
+// export const d = {
+// 	time: 0,
+// 	ID: 1,
+// 	Paddle: 2,
+// 	PressUp: 3,
+// 	PressDown: 4,
+// 	Miss: 5,
+// 	Score: 6,
+// 	BallX: 7,
+// 	BallY: 8,
+// 	BallAngle: 9,
+// 	BallSpeed: 10
+// }
 
-export const GameStats = {
+export const GameState = {
 	player1: {
 		id: 0,
 		name: '',
@@ -27,7 +27,7 @@ export const GameStats = {
 		score: 0,
 		paddle: 0, // paddle in %
 		pressUp: false,
-		pressDown: false
+		pressDown: falseww
 	},
 	ball: {
 		angle: 0,

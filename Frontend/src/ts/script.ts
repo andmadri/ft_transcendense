@@ -3,7 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
-import { OT } from '@shared/OT'
+import { OT } from '@shared/enums'
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'

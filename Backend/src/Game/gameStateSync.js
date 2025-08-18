@@ -1,10 +1,9 @@
-import { Stage } from './gameMatch.js';
+import { gameStage } from '../SharedBuild/enums.js';
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
-
 export function sendBallUpdate(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != gameStage.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
@@ -14,7 +13,7 @@ export function sendBallUpdate(match, msg, socket) {
 }
 
 export function sendPaddleUpdate(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != gameStage.Playing)
 		return ;
 	msg.player1Score = match.player1.score;
 	msg.player1Paddle = match.player1.paddle;
@@ -44,7 +43,7 @@ export function applyKeyPress(match, msg) {
 }
 
 export async function updateScore(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != gameStage.Playing)
 		return ;
 
 	console.log("updateScore -> handleMatchEventDB")
