@@ -3,8 +3,7 @@ import * as S from '../structs.js'
 import { OT } from '@shared/enums'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
-import { styleElement } from '../Menu/menuContent.js';
-import { game } from './gameLogic.js';
+import { buttonPress } from '../windowEvents.js'
 
 function handleGameOver() {
 	log("Game Over!");
@@ -78,9 +77,16 @@ function handleGameOver() {
 	Game.state = S.State.End;
 }
 
+function stopKeyListeners() {
+	window.removeEventListener('keydown', (e) => buttonPress(e, true));
+	window.removeEventListener('keyup', (e) => buttonPress(e, false));
+}
+
 export function saveGame() {
 	if (Game.matchID == -1)
 		return ;
+
+	stopKeyListeners();
 
 	if (!document.getElementById('gameOver'))
 	{

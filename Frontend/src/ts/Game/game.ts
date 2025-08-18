@@ -4,7 +4,15 @@ import { Game } from "../script.js";
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js";
 import { OT } from '@shared/enums'
+import { buttonPress } from '../windowEvents.js'
 // import { receiveUpdateFromServer } from "./updateServer.js";
+
+function startKeyListeners() {
+	window.addEventListener('keydown', (e) => buttonPress(e, true));
+	window.addEventListener('keyup', (e) => buttonPress(e, false));
+}
+
+
 
 function processMatch(data: any) {
 	console.log("inited game with id: " + data.id);
@@ -18,6 +26,7 @@ function processMatch(data: any) {
 	}
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
+	startKeyListeners();
 	Game.state = S.State.Game;
 	log("ProcessMatch");
 }
@@ -47,6 +56,7 @@ export function actionGame(data: any) {
 			processMatch(data);
 			break ;
 		case 'start':
+			startKeyListeners();
 			Game.state = S.State.Game;
 			break ;
 		case 'ballUpdate':

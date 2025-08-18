@@ -5,15 +5,13 @@ import { game } from './Game/gameLogic.js' //imports everything from gamelogic.j
 import * as S from './structs.js' //imports structures from the file structs.js
 import { OT } from '@shared/enums'
 import { initGame } from './Game/initGame.js'
-import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
-// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
-import { searchMatch } from './Matchmaking/onlineMatch.js'
+// import { getLoadingPage } from './Loading/loadContent.js'
 
 // getLoadingPage();
 createLog();
@@ -54,8 +52,6 @@ log("hostname: " + window.location.hostname);
 startSocketListeners();
 
 // addEventListeners for Window
-window.addEventListener('keydown', pressButton);
-window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
