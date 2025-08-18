@@ -2,9 +2,11 @@ NAME	= transcendence
 
 VOLUME	= "./Database"
 
+NGROK_VOLUME = "ft_transcendense_ngrok_shared"
+
 all:	up
 
-up:	update-host-ip	
+up:	update-host-ip
 	rm -rf Server/src
 	mkdir -p Database
 	cp -r Frontend/* Server/

@@ -21,33 +21,37 @@ import https from 'https';
 
 export let publicUrl = '';
 
+import fs from 'fs/promises';
+
 export async function getNgrokUrl() {
-	try {
-		const agent = new https.Agent({ rejectUnauthorized: false }); // Allow self-signed cert
+	const maxAttempts = 30;
+	const delay = ms => new Promise(r => setTimeout(r, ms));
+	const filePath = '/shared/ngrok/ngrok_url';
 
-		const res = await fetch('https://server/ngrok/api/tunnels', {
-			agent,
-			headers: {
-				Accept: 'application/json'
-			}
-		});
-
-		if (!res.ok) {
-			throw new Error(`HTTP error ${res.status}`);
-		} else {
-			console.log('✅ Successfully fetched Ngrok URL');
-		}
-		const data = await res.json();
-		publicUrl = data.tunnels.find(t => t.proto === 'https')?.public_url;
-
-		if (publicUrl) {
-			console.log('🟢 Ngrok URL:', publicUrl);
-		} else {
-			console.warn('⚠️ No HTTPS tunnel found in Ngrok response.');
-		}
-	} catch (err) {
-		console.error('❌ Could not fetch Ngrok URL:', err.message);
+	// prefer explicit env override
+	if (process.env.NGROK_URL) {
+		publicUrl = process.env.NGROK_URL.replace(/\/$/, '');
+		console.log('Using NGROK_URL from env:', publicUrl);
+		return publicUrl;
 	}
+
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			const text = (await fs.readFile(filePath, 'utf8')).trim();
+			if (text) {
+				publicUrl = text.replace(/\/$/, '');
+				console.log('Using NGROK_URL from shared file:', publicUrl);
+				return publicUrl;
+			}
+		} catch (err) {
+			// file may not exist yet — that's fine, continue to retry
+		}
+		console.log(`Waiting for ngrok URL file... (attempt ${attempt})`);
+		await delay(1000); // wait 1 second before retrying
+	}
+
+	console.error('❌ Could not fetch Ngrok URL after retries.');
+	return '';
 }
 
 
@@ -83,6 +87,9 @@ await fastify.register(fastifyMultipart, {
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
 await fastify.register(userAuthRoutes);
+
+// Ensure publicUrl is resolved before registering routes that depend on it
+await getNgrokUrl(); // <-- wait for ngrok/public URL (no-op if it fails)
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);

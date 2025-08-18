@@ -43,7 +43,7 @@ COPY tools /etc/nginx/ssl
 RUN chmod +x /etc/nginx/nginx.conf && \
 	chmod 600 /etc/nginx/ssl
 
-EXPOSE 8080
+EXPOSE 8080 443
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
