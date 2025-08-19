@@ -51,7 +51,7 @@ export default async function userAuthRoutes(fastify) {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-				signed: true,		// signed cookies
+				signed: true,        // signed cookies
 				path: '/',
 				maxAge: 60 * 10      // 10 minutes
 			}).send({ success: true, ok: true, message: 'Two-factor authentication required', playerNr: playerNr, userId: answer.user.id, name: answer.user.name, twofaPending: true });
@@ -61,7 +61,7 @@ export default async function userAuthRoutes(fastify) {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-				signed: true,		// signed cookies
+				signed: true,        // signed cookies
 				path: '/',
 				maxAge: 60 * 60      // 1 hour
 			}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name, twofa: answer.user.twofa_active });

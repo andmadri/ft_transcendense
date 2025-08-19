@@ -17,7 +17,6 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
-import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 // import { testDB }   from './testDB.js';
 
 // FASTIFY => API SERVER
@@ -71,11 +70,13 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-		console.log('🔌 A user connected:', socket.id);
-		// Check if the request has a valid JWT token in cookies
-		// const cookies = req.headers.cookie;
-		const cookies = socket.handshake.headers.cookie || '';
-		const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('🔌 A user connected:', socket.id);
+	// Check if the request has a valid JWT token in cookies
+	// const cookies = req.headers.cookie;
+	const cookies = socket.handshake.headers.cookie || '';
+	console.log('Cookies from handshake:', cookies);
+	const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('Auth tokens from cookies:', authTokens);
 
 	let decoded;
 	let userId1 = null;
@@ -111,7 +112,7 @@ fastify.ready().then(() => {
 	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
 	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
-		connection.socket.send(JSON.stringify({ action: "error", reason: "Unauthorized: No auth tokens found" }));
+		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
 		return ;
 	}
 

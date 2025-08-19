@@ -125,7 +125,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 					httpOnly: true,      // Prevents JS access
 					secure: true,        // Only sent over HTTPS
 					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-					signed: true,		// signed cookies
+					signed: true,        // signed cookies
 					path: '/',
 					maxAge: 60 * 10      // 10 minutes
 				}).redirect(`https://${window.location.hostname}:8443`);
@@ -135,7 +135,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 					httpOnly: true,      // Prevents JS access
 					secure: true,        // Only sent over HTTPS
 					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-					signed: true,		// signed cookies
+					signed: true,        // signed cookies
 					path: '/',
 					maxAge: 60 * 60      // 1 hour
 				}).redirect(`https://${window.location.hostname}:8443`);
