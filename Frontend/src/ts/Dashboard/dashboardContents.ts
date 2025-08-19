@@ -1,6 +1,7 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
-import { renderPie } from './pie'
+// import { renderPie } from './pie'
+import { renderPlayingTimeCard } from './playingTime'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -119,73 +120,73 @@ function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 // 	cardTitle.style.whiteSpace = 'nowrap';
 // }
 
-function formatTotalMinsLabel(secs: number): string
-{
-	return `${Math.round(secs / 60)}m`;
-}
+// function formatTotalMinsLabel(secs: number): string
+// {
+// 	return `${Math.round(secs / 60)}m`;
+// }
 
-export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement) {
-	// Card shell
-	const card = document.createElement('div');
-	card.style.aspectRatio = '4 / 3';
-	card.style.borderRadius = '16px';
-	card.style.background = '#363430';
-	card.style.padding = '16px';
-	card.style.display = 'grid';
-	card.style.gridTemplateRows = 'auto 1fr auto';
-	card.style.gap = '1rem';
-	card.style.justifyContent = 'center';
-	card.style.alignItems = 'center';
+// export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement) {
+// 	// Card shell
+// 	const card = document.createElement('div');
+// 	card.style.aspectRatio = '4 / 3';
+// 	card.style.borderRadius = '16px';
+// 	card.style.background = '#363430';
+// 	card.style.padding = '16px';
+// 	card.style.display = 'grid';
+// 	card.style.gridTemplateRows = 'auto 1fr auto';
+// 	card.style.gap = '1rem';
+// 	card.style.justifyContent = 'center';
+// 	card.style.alignItems = 'center';
 
-	// Title
-	const cardTitle = document.createElement('div');
-	cardTitle.textContent = 'Playing Time';
-	cardTitle.style.color = 'transparent';
-	cardTitle.style.fontFamily = 'Horizon, sans-serif';
-	cardTitle.style.whiteSpace = 'nowrap';
-	cardTitle.style.fontSize = 'min(2vw, 2.5vh)';
-	cardTitle.style.display = 'inline-flex';
-	cardTitle.style.webkitTextStroke = '0.1rem #ffffff';
-	cardTitle.style.textAlign = 'center';  // Center the title
-	cardTitle.style.paddingBottom = '1rem';
-	card.appendChild(cardTitle);
+// 	// Title
+// 	const cardTitle = document.createElement('div');
+// 	cardTitle.textContent = 'Playing Time';
+// 	cardTitle.style.color = 'transparent';
+// 	cardTitle.style.fontFamily = 'Horizon, sans-serif';
+// 	cardTitle.style.whiteSpace = 'nowrap';
+// 	cardTitle.style.fontSize = 'min(2vw, 2.5vh)';
+// 	cardTitle.style.display = 'inline-flex';
+// 	cardTitle.style.webkitTextStroke = '0.1rem #ffffff';
+// 	cardTitle.style.textAlign = 'center';  // Center the title
+// 	cardTitle.style.paddingBottom = '1rem';
+// 	card.appendChild(cardTitle);
 
-	// Chart container
-	const chartWrap = document.createElement('div');
-	chartWrap.style.width = '70%';
-	card.appendChild(chartWrap);
+// 	// Chart container
+// 	const chartWrap = document.createElement('div');
+// 	chartWrap.style.width = '70%';
+// 	card.appendChild(chartWrap);
 
-	// Footer (total time)
-	const total = document.createElement('div');
-	total.textContent = `Total time: ${formatTotalMinsLabel(user_playing_time.login_secs)}`;
-	total.style.color = 'white';
-	total.style.fontFamily = '"RobotoCondensed", sans-serif';
-	total.style.fontSize = 'min(1vw, 1.2vh)';
-	total.style.textAlign = 'center';  // Center the footer text
-	card.appendChild(total);
+// 	// Footer (total time)
+// 	const total = document.createElement('div');
+// 	total.textContent = `Total time: ${formatTotalMinsLabel(user_playing_time.login_secs)}`;
+// 	total.style.color = 'white';
+// 	total.style.fontFamily = '"RobotoCondensed", sans-serif';
+// 	total.style.fontSize = 'min(1vw, 1.2vh)';
+// 	total.style.textAlign = 'center';  // Center the footer text
+// 	card.appendChild(total);
 
-	// Build data for the pie chart
-	const parts = [
-		{ label: 'Menu', value: user_playing_time.menu_secs, className: 'slice--menu', color: '#f59e0b' },
-		{ label: 'Lobby', value: user_playing_time.lobby_secs, className: 'slice--lobby', color: '#fb923c' },
-		{ label: 'Game', value: user_playing_time.game_secs, className: 'slice--game', color: '#f97316' },
-	];
+// 	// Build data for the pie chart
+// 	const parts = [
+// 		{ label: 'Menu', value: user_playing_time.menu_secs, className: 'slice--menu', color: '#f59e0b' },
+// 		{ label: 'Lobby', value: user_playing_time.lobby_secs, className: 'slice--lobby', color: '#fb923c' },
+// 		{ label: 'Game', value: user_playing_time.game_secs, className: 'slice--game', color: '#f97316' },
+// 	];
 
-	const aria = `Playing time: Menu ${Math.round(100 * parts[0].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%, ` +
-		`Lobby ${Math.round(100 * parts[1].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%, ` +
-		`Game ${Math.round(100 * parts[2].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%`;
+// 	const aria = `Playing time: Menu ${Math.round(100 * parts[0].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%, ` +
+// 		`Lobby ${Math.round(100 * parts[1].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%, ` +
+// 		`Game ${Math.round(100 * parts[2].value / (parts.reduce((s, p) => s + p.value, 0) || 1))}%`;
 
-	renderPie(chartWrap, parts, {
-		totalText: formatTotalMinsLabel(user_playing_time.login_secs),
-		ariaLabel: aria,
-		radius: 36,
-		thickness: 18,
-		startAngleDeg: -90
-	});
+// 	renderPie(chartWrap, parts, {
+// 		totalText: formatTotalMinsLabel(user_playing_time.login_secs),
+// 		ariaLabel: aria,
+// 		radius: 36,
+// 		thickness: 18,
+// 		startAngleDeg: -90
+// 	});
 
-	// Append the card to the container
-	infoCardsContainer.appendChild(card);
-}
+// 	// Append the card to the container
+// 	infoCardsContainer.appendChild(card);
+// }
 
 
 export function populateDashboard(msg: any)
@@ -194,7 +195,7 @@ export function populateDashboard(msg: any)
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
 	if (!infoCardsContainer || !matchList)
 		return ;
-	// renderMatchInfo(msg.matches, matchList);
+	renderMatchInfo(msg.matches, matchList);
 	renderUserInfoCard(msg.player, infoCardsContainer);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
