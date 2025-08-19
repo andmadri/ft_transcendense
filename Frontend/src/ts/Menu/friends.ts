@@ -1,5 +1,5 @@
 import { styleElement } from "./menuContent.js";
-import { Game } from '../script.js'
+import { Game } from "../gameData.js"
 import { log } from "../logging.js";
 
 function createFriendsList(playerNr: number) : HTMLDivElement {

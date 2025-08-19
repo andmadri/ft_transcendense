@@ -1,4 +1,4 @@
-import { Game } from '../script.js'
+import { Game } from "../gameData.js"
 import { submitLogout } from '../Auth/logout.js';
 import { updatePlayerData } from '../SideMenu/updatePlayerData.js';
 import { log } from '../logging.js';
@@ -10,7 +10,7 @@ function getPlayer(nr: number) {
 
 	const	isPlayer1 = nr === 1;
 
-	playername.textContent = isPlayer1 ? Game.player1Name : Game.player2Name;
+	playername.textContent = isPlayer1 ? Game.match.player1.name : Game.match.player2.name;
 	playername.id = 'playerName' + nr;
 
 
@@ -54,19 +54,19 @@ function updateTextbyId(id: string, value: string) {
 }
 
 export function updateNamesMenu() {
-	updateTextbyId('playerName1', Game.player1Name);
-	updateTextbyId('playerName2', Game.player2Name);
+	updateTextbyId('playerName1', Game.match.player1.name);
+	updateTextbyId('playerName2', Game.match.player2.name);
 }
 
 export function updateScoreMenu() {
-	updateTextbyId('playerScore1', Game.scoreLeft.toString());
-	updateTextbyId('playerScore2', Game.scoreRight.toString());
+	updateTextbyId('playerScore1', Game.match.player1.score.toString());
+	updateTextbyId('playerScore2', Game.match.player2.score.toString());
 }
 
 export function resetScoreMenu() {
 	updateTextbyId('playerScore1', '0');
 	updateTextbyId('playerScore2', '0');
 
-	Game.scoreRight = 0;
-	Game.scoreLeft = 0;
+	Game.match.player2.score = 0;
+	Game.match.player1.score = 0;
 }

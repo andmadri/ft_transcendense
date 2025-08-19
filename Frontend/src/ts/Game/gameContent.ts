@@ -1,6 +1,5 @@
 import { log } from '../logging.js'
-import { Game } from '../script.js'
-import { Stage } from '@shared/enums'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 
 function styleElement(
@@ -45,11 +44,11 @@ function getQuitBtn() {
 		Game.socket.send({
 			action: 'game',
 			subaction: 'quit',
-			matchID: Game.matchID,
-			player: Game.player1Id,
-			name: Game.player1Name
+			matchID: Game.match.ID,
+			player: Game.match.player1.ID,
+			name: Game.match.player1.name
 		});
-		Game.state = Stage.End;
+		UI.state = S.stateUI.Menu;
 	})
 	return (quitButton);
 }

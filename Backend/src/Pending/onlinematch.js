@@ -1,6 +1,6 @@
 
 import { waitlist, matches } from "../InitGame/match.js";
-import { OT, Stage } from '../SharedBuild/enums.js'
+import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 
@@ -24,7 +24,7 @@ function findOpenMatch() {
 
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
-		// if (match.stage == Stage.Init) {
+		// if (match.stage == state.Init) {
 		// 	initGame();
 		// }
 	}, 100)
@@ -43,7 +43,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		// add both players to the room
 		socket.join(matchID);
 		socket2.join(matchID);
-		// matches.get(matchID).stage = Stage.Init;
+		// matches.get(matchID).stage = state.Init;
 
 		const sockets = await io.in(matchID).allSockets();
 		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);

@@ -1,0 +1,43 @@
+import { OT, MF, state} from "./enums.js"
+
+export type pos = { x: number, y: number };
+export type velocity = { vx: number, vy: number };
+export type movement = { speed: number, angle: number };
+export type size = { width: number, height: number};
+
+export type entity = {
+	size: size,
+	pos: pos,
+	velocity: velocity,
+	movement: movement, // don't think we need angle anymore, maybe replace for just speed
+}
+
+export type player = {
+	ID: number
+	name: string,
+	ready: boolean,
+	login: boolean,
+	input: {
+		pressUP: boolean,
+		pressDOWN: boolean
+	},
+	score: number
+}
+
+export type gameState = {
+	time: number,
+	field: size,
+	ball: entity
+	paddle1: entity
+	paddle2: entity
+}
+
+export type matchInfo = {
+	state: state,
+	matchID: number,
+	matchFormat: MF
+	mode: OT,
+	player1: player,
+	player2: player,
+	gameState?: gameState
+}

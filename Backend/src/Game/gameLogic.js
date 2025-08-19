@@ -1,9 +1,9 @@
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
-import { Stage } from "../SharedBuild/enums.js"
+import { state } from "../SharedBuild/enums.js"
 
 export function updateBall(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != state.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
@@ -15,7 +15,7 @@ export function updateBall(match, msg, socket) {
 }
 
 export function updatePadel(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != state.Playing)
 		return ;
 	msg.player1Score = match.player1.score;
 	msg.player1Paddle = match.player1.paddle;
@@ -31,7 +31,7 @@ export function updatePadel(match, msg, socket) {
 }
 
 export async function updateScore(match, msg, socket) {
-	if (match.stage != Stage.Playing)
+	if (match.stage != state.Playing)
 		return ;
 
 	console.log("updateScore -> handleMatchEventDB")

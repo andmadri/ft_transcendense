@@ -1,0 +1,65 @@
+import { entity } from '@shared/types'
+import { OT, state, MF } from '@shared/enums'
+import * as S from './structs.js'
+
+declare const io: any;
+type Socket = any;
+
+export const UI : S.UI = {
+	state: S.stateUI.LoginP1,
+	logDiv : document.getElementById('log') as HTMLDivElement,
+	ballPaused : false
+}
+
+export const Game : S.Game = { 
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
+	match: {
+		state: state.Pending,
+		matchID: -1,
+		matchFormat: MF.Empty,
+		mode: OT.Empty,
+		player1: {
+			ID: -1,
+			name: 'unknown',
+			ready: false,
+			login: false,
+			input: { pressUP: false, pressDOWN: false },
+			score: 0
+		},
+		player2: {
+			ID: -1,
+			name: 'guest',
+			ready: false,
+			login: false,
+			input: { pressUP: false, pressDOWN: false },
+			score: 0
+		},
+		gameState: {
+			time: 0,
+			field: { size: {width: 1, height: 0.7}},
+			ball: { 
+				size: { width: 0.05, height: 0.05 },
+				pos: { x: 0.5, y: 0.5 },
+				velocity: { x: 0, y: 0 },
+				movement: { speed: 0.15 },
+				},
+			paddle1: { 
+				size: { width: 0.02, height: 0.3 },
+				pos: { x: 0.2, y: 0.5 },
+				velocity: { x: 0, y: 0 },
+				movement: { speed: 0.25 },
+				},
+			paddle2: { 
+				size: { width: 0.02, height: 0.3 },
+				pos: { x: 0.98, y: 0.5 },
+				velocity: { x: 0, y: 0 },
+				movement: { speed: 0.25 },
+				},
+		}
+	},
+	colletedSteps: [],
+}

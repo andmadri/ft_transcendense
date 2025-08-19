@@ -1,5 +1,5 @@
 import * as S from '../structs.js'
-import { Game } from '../script.js'
+import { UI, Game } from '../gameData.js'
 import { log } from '../logging.js'
 import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { getOnlineList } from '../Menu/online.js';
@@ -13,20 +13,18 @@ const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
 function updateLoginPlayer(data: any) {
 	if (data.player == 1) {
 		if (data.userId)
-			Game.player1Id = data.userId;
+			Game.match.player1.ID = data.userId;
 		if (data.userName)
-			Game.player1Name = data.userName;
-		Game.playerLogin = 1;
-		Game.player1Login = true;
+			Game.match.player1.name = data.userName;
+		Game.match.player1.login = true;
 		updatePlayerData(1);
 
 	} else {
 		if (data.UserId)
-			Game.player2Id = data.UserId;
+			Game.match.player2.ID = data.UserId;
 		if (data.userName)
-			Game.player2Name = data.userName;
-		Game.player2Login = true;
-		Game.playerLogin = 2;
+			Game.match.player2.name = data.userName;
+		Game.match.player2.login = true;
 		updatePlayerData(2);
 	}
 }
@@ -117,27 +115,27 @@ export function loginSuccessfull(player: number, userId: number, name: string) {
 	document.getElementById('auth2')?.remove();
 	if (player == 1) {
 		log("Login Successfull (player one) with id: " + userId);
-		Game.player1Id = userId;
-		Game.player1Name = name;
-		Game.player1Login = true;
+		Game.match.player1.ID = userId;
+		Game.match.player1.name = name;
+		Game.match.player1.login = true;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two) with id: " + userId);
-		Game.player2Id = userId;
-		Game.player2Name = name;
-		Game.player2Login = true;
+		Game.match.player2.ID = userId;
+		Game.match.player2.name = name;
+		Game.match.player2.login = true;
 	}
-	Game.state = S.State.Menu;
-	log("players logged in: " + Game.player1Login + " " + Game.player2Login);
+	UI.state = S.stateUI.Menu;
+	log("players logged in: " + Game.match.player1.login + " " + Game.match.player2.login);
 }
 
 // export function addGuest(e: Event, player: number) {
 // 	e.preventDefault();
 
 // 	if (player == 1) {
-// 		Game.player1Login = true;
+// 		Game.match.player1.login = true;
 // 	} else if (player == 2) {
-// 		Game.player2Login = true;
+// 		Game.match.player2.login = true;
 // 	}
 // 	loginSuccessfull(player, 0, 'Guest ' + player);
 // 	updatePlayerData(0);

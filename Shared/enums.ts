@@ -11,7 +11,7 @@ export enum MF {
 	Tournament
 }
 
-export enum Stage {
+export enum state {
 	Start,
 	Pending,
 	Init,

@@ -1,6 +1,6 @@
 import { handleMatchStartDB } from '../Services/matchService.js';
 import { getUserByID } from "../Database/users.js";
-import { OT, Stage } from '../SharedBuild/enums.js'
+import { OT, state } from '../SharedBuild/enums.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -36,7 +36,7 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			mode: mode,
 			intervalId : null,
 			dbID: matchnr,
-			stage: Stage.Start,
+			stage: state.Start,
 			roomID: '0',
 			player1: {
 				id: id,
@@ -108,7 +108,7 @@ export async function createMatch(db, opponentMode, socket, userId1, userId2) {
 
 		if (opponentMode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
-			matches.get(matchID).stage = Stage.Playing;
+			matches.get(matchID).stage = state.Playing;
 		}
 		return (matchID);
 	} catch (err) {

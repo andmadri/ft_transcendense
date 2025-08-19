@@ -1,4 +1,4 @@
-import { Game } from "../script.js"
+import { Game } from "../gameData.js"
 import { log } from "../logging.js";
 
 // STEP 1: after push button invite friend..
@@ -6,13 +6,13 @@ export function inviteFriendForGame(responder: string) {
 	Game.socket.send({
 		action: 'matchmaking',
 		subaction: 'challengeFriend',
-		challenger: Game.player1Id,
+		challenger: Game.match.player1.ID,
 		responder: responder,
 	});
 }
 
 function isChallenged(ID: number): boolean {
-	if (ID == Game.player1Id)
+	if (ID == Game.match.player1.ID)
 		return (true);
 	return (false);
 }
@@ -24,7 +24,7 @@ function responseChallenge(answer: boolean, roomname: string) {
 		subaction: 'challengeFriendAnswer',
 		answer: answer,
 		roomname: roomname, 
-		responder: Game.player1Id
+		responder: Game.match.player1.ID
 	});
 }
 

@@ -1,4 +1,4 @@
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
@@ -76,9 +76,9 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 	loginBtn.addEventListener('click', () => {
 		log('Login button clicked for player ' + playerNr);
 		if (playerNr == 2)
-			Game.state = S.State.LoginP2;
+			UI.state = S.stateUI.LoginP2;
 		else 
-			Game.state = S.State.LoginP1;
+			UI.state = S.stateUI.LoginP1;
 	});
 	return (loginBtn);
 }
@@ -162,7 +162,7 @@ export function getRightSideMenu(playerNr: number) {
 	})
 
 	const avatarImg = document.createElement('img');
-	const userId = playerNr === 1 ? Game.player1Id : Game.player2Id;
+	const userId = playerNr === 1 ? Game.match.player1.ID : Game.match.player2.ID;
 	avatarImg.src = `/api/avatar/${userId}`;
 	styleElement(avatarImg, {
 		maxWidth: '120px',
@@ -184,9 +184,9 @@ export function getRightSideMenu(playerNr: number) {
 	const playername = document.createElement('div');
 	playername.id = "playerNameMenu" + playerNr;
 	if (playerNr == 1)
-		playername.textContent = Game.player1Name;
+		playername.textContent = Game.match.player1.name;
 	else
-		playername.textContent = Game.player2Name;
+		playername.textContent = Game.match.player2.name;
 	playername.style.fontSize = '1.5em';
 
 	const buttons = document.createElement('div');

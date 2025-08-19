@@ -1,6 +1,6 @@
 import { styleElement } from "./menuContent.js";
 import { getRightSideMenu } from "./menuContent.js";
-import { Game } from "../script.js";
+import { Game } from "../gameData.js"
 import { getAuthField } from "../Auth/authContent.js";
 
 function getPlayerCard(playerNum: number): HTMLDivElement {
