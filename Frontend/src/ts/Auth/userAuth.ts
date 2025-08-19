@@ -189,7 +189,7 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 			});
 			const data = await response.json();
 			if (response.ok && data.success) {
-				label.textContent = '2FA activated successfully!';
+				label.textContent = '2FA validated successfully!';
 				codeInput.remove();
 				submitBtn.remove();
 				setTimeout(() => {

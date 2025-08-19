@@ -135,6 +135,7 @@ export default async function twoFactor(fastify, opts) {
 			secure: true,        // Only sent over HTTPS
 			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 			path: '/',
+			singed: true,		// signed cookies
 			maxAge: 60 * 60      // 1 hour
 		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name, twofa: user.twofa_active });
 
