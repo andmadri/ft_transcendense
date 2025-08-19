@@ -69,8 +69,8 @@ function	predictBall(dx : number, dy : number) {
 
 function	predictAction() {
 	//calculate dx and dy
-	const dx = ball.velocity.vx * ball.speed;
-	const dy = ball.velocity.vy * ball.speed;
+	const dx = ball.velocity.vx * ball.movement.speed;
+	const dy = ball.velocity.vy * ball.movement.speed;
 
 	if (dx <= 0) {
 		followBall(dx, dy);
