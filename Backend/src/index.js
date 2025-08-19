@@ -5,7 +5,7 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
-import { handleMatchInfo } from './DBrequests/getMatchInfo.js';
+import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
@@ -125,8 +125,8 @@ fastify.ready().then(() => {
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
 					return handleFriends(msg, socket);
-				case 'matchmaking':
-					handleMatchmaking(msg, socket, userId1, fastify.io);
+				case 'dashboard':
+					handleDashboardMaking(msg, socket, userId1, fastify.io);
 					break ;
 				case 'game':
 					handleGame(msg, socket, userId1, userId2);

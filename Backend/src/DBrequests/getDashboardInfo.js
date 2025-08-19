@@ -1,37 +1,37 @@
-import { match } from 'assert';
-import * as userDB from '../Database/users.js';
+import { getUserByID } from '../Database/users.js';
 import { getMatchHistoryDB } from '../Database/dashboard.js';
+import { getUserMatchStatsDB } from '../Database/sessions.js';
+import { getUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
 
-async function getMatchData(msg, socket, userId1) {
-	let player1 = null;
-	let matches_arr = null;
-
-	if (userId1) {
-		player1 = await userDB.getUserByID(db, userId1);
-	}
-
-	matches_arr = await getMatchHistoryDB(db, userId1);
-	console.log("Recieved DB content: ", matches_arr);
+async function getDashboardInfo(msg, socket, userId1) {
+	let player = await getUserByID(db, userId1);
+	let stats = await getUserMatchStatsDB(db, userId1);
+	let matches = await getMatchHistoryDB(db, userId1);
+	let log_time = await getUserStateDurationsDB(db, userId1);
+	console.log("Recieved DB content: ", matches);
 
 	let returnMsg = {
-		action: "matchInfo",
+		action: "dashboardInfo",
 		subaction: "receivePlayerData",
-		matches: matches_arr
+		player,
+		matches,
+		stats,
+		log_time
 	};
 	socket.send(JSON.stringify(returnMsg));
 }
 
-export function handleMatchInfo(msg, socket, userId1) {
-if (!msg || !msg.action || msg.action !== 'matchInfo' || !msg.subaction) {
+export function handleDashboardMaking(msg, socket, userId1) {
+if (!msg || !msg.action || msg.action !== 'dashboard' || !msg.subaction) {
 		const returnMsg = { action: "Error", message: "Invalid message format" };
 		console.log('Invalid message format:', msg);
 		socket.send(JSON.stringify(returnMsg));
 		return false;
 	}
-	if (msg.subaction == 'getMatchData') {
+	if (msg.subaction == 'getFullDataDashboard') {
 		console.log('Received request for match data:', msg, userId1);
-		getMatchData(msg, socket, userId1);
+		getDashboardInfo(msg, socket, userId1);
 		return true;
 	} else {
 		const returnMsg = { action: "Error", message: "Unknown subaction" };

@@ -71,7 +71,7 @@ export function receiveFromWS(msg: any) {
 		case 'game':
 			actionGame(data);
 			break ;
-		case 'matchInfo':
+		case 'dashboardInfo':
 			populateDashboard(data);
 			break;
 		case 'error':

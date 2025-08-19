@@ -1,5 +1,6 @@
 import { Game } from '../script.js'
 import * as S from '../structs.js'
+import { renderPie } from './pie'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -39,37 +40,150 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.id = 'userInfoCard';
 	card.style.aspectRatio = '4 / 3';
 	card.style.borderRadius = '16px';
+	card.style.display = 'flex';
 	card.style.background = '#363430';
+	card.style.flex = '1 1 50%';
+	card.style.direction = 'column';
+
+	const userName = document.createElement('div');
+	userName.textContent = `${user_info.name}`;
+	userName.style.display = 'inline-flex';
+	userName.style.alignItems = 'center';
+	userName.style.justifyContent = 'center';
+	userName.style.color = 'white';
+	userName.style.fontSize = 'min(2vw, 2.5vh)';
+	// userName.style.webkitTextStroke = '0.1rem #ffffff';
+	userName.style.fontFamily = '"Horizon", sans-serif';
+	userName.style.whiteSpace = 'nowrap';
+
+	const userDateCreation = document.createElement('div');
+	userDateCreation.style.color = 'white';
+	userDateCreation.style.fontSize = 'min(1vw, 1.5vh)';
+	userDateCreation.textContent = `Created at: ${user_info.create_at}`;
+
+	card.appendChild(userName);
+	card.appendChild(userDateCreation);
+	infoCardsContainer.appendChild(card);
 }
 
 function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 {
-	//WE WANT TO MAKE STATS FOR WINNER AND THAT KIND OF DATA
 	const card = document.createElement('div');
 	card.id = 'statsCard';
-	card.style.aspectRatio = '4 / 3';
+	// card.style.aspectRatio = '4 / 3';
 	card.style.borderRadius = '16px';
 	card.style.background = '#363430';
+	card.style.flex = '1 1 50%';
 
 	const cardTitle = document.createElement('div');
 	cardTitle.textContent = 'User Stats';
-	cardTitle.style.display = 'inline-block';
-	cardTitle.style.alignItems = 'flex-start';
+	cardTitle.style.display = 'inline-flex';
+	cardTitle.style.alignItems = 'center';
+	cardTitle.style.justifyContent = 'center';
+	cardTitle.style.fontSize = 'min(2vw, 2.5vh)';
+	cardTitle.style.webkitTextStroke = '0.1rem #ffffff';
+	cardTitle.style.whiteSpace = 'nowrap';
+
+	card.appendChild(cardTitle);
+	infoCardsContainer.appendChild(card);
 }
 
-function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
+// function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
+// {
+// 	const card = document.createElement('div');
+// 	card.id = 'playingTimeCard';
+// 	card.style.borderRadius = '16px';
+// 	card.style.background = '#363430';
+// 	card.style.flex = '1 1 50%';
+	
+
+// 	const cardTitle = document.createElement('div');
+// 	cardTitle.textContent = 'Playing Time';
+// 	cardTitle.style.display = 'inline-flex';
+// 	cardTitle.style.alignItems = 'center';
+// 	cardTitle.style.justifyContent = 'center';
+// 	cardTitle.style.fontSize = 'min(2vw, 2.5vh)';
+// 	cardTitle.style.webkitTextStroke = '0.1rem #ffffff';
+// 	cardTitle.style.whiteSpace = 'nowrap';
+// }
+
+function formatTotalMinsLabel(secs: number): string
+{
+	return `${Math.round(secs / 60)}m`;
+}
+
+export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
 {
 	//WE WANT TO MAKE A GENERAL SMALL CONTAINER AND THEN ATTACH A PIE GRAPH
+
+	// Card shell
 	const card = document.createElement('div');
 	card.id = 'playingTimeCard';
-	card.style.aspectRatio = '4 / 3';
-	card.style.borderRadius = '16px';
-	card.style.background = '#363430';
+	Object.assign(card.style, {
+		aspectRatio: '4 / 3',
+		borderRadius: '16px',
+		background: '#363430',
+		padding: '16px',
+		display: 'grid',
+		gridTemplateRows: 'auto 1fr auto',
+		gap: '8px',
+		justifyContent: 'center',
+		alignItems:'center'
+	} as CSSStyleDeclaration);
 
+	// Title
 	const cardTitle = document.createElement('div');
 	cardTitle.textContent = 'Playing Time';
-	cardTitle.style.display = 'inline-block';
-	cardTitle.style.alignItems = 'flex-start';
+	Object.assign(cardTitle.style, {
+		color: 'transparent',
+		// letterSpacing: '0.02em',
+		fontFamily: 'Horizon, sans-serif',
+		whiteSpace:'nowrap',
+		fontSize: 'min(2vw, 2.5vh)',
+		display:'inline-flex',
+		webkitTextStroke: '0.1rem #ffffff'
+	} as CSSStyleDeclaration);
+	card.appendChild(cardTitle);
+
+	// Chart container
+	const chartWrap = document.createElement('div');
+	Object.assign(chartWrap.style, {
+		width: '70%',
+	} as CSSStyleDeclaration);
+	card.appendChild(chartWrap);
+
+	// Footer (total)
+	const total = document.createElement('div');
+	total.textContent = `Total time: ${formatTotalMinsLabel(user_playing_time.login_secs)}`;
+	Object.assign(total.style, {
+		color: 'white',
+		fontFamily: '"RobotoCondensed", sans-serif',
+		fontSize: 'min(0.3vw, 0.6vh)'
+	} as CSSStyleDeclaration);
+	card.appendChild(total);
+
+	// Build data for the pie
+	const parts = [
+		{ label: 'Menu', value: user_playing_time.menu_secs, className: 'slice--menu', color: '#f59e0b' },
+		{ label: 'Lobby', value: user_playing_time.lobby_secs, className: 'slice--lobby', color: '#fb923c' },
+		{ label: 'Game', value: user_playing_time.game_secs, className: 'slice--game', color: '#f97316' },
+	];
+
+	const aria = `Playing time: Menu ${Math.round(100*parts[0].value/(parts.reduce((s,p)=>s+p.value,0)||1))}%, ` +
+				`Lobby ${Math.round(100*parts[1].value/(parts.reduce((s,p)=>s+p.value,0) || 1))}%, ` +
+				`Game ${Math.round(100*parts[2].value/(parts.reduce((s,p)=>s+p.value,0) || 1))}%`;
+
+	console.table(parts);
+	console.log('total =', parts.reduce((s,p)=>s+p.value, 0));
+
+	renderPie(chartWrap, parts, {
+		totalText: formatTotalMinsLabel(user_playing_time.login_secs),
+		ariaLabel: aria,
+		radius: 36,
+		thickness: 18,
+		startAngleDeg: -90
+	});
+	infoCardsContainer.appendChild(card);
 }
 
 export function populateDashboard(msg: any)
@@ -79,9 +193,9 @@ export function populateDashboard(msg: any)
 	if (!infoCardsContainer || !matchList)
 		return ;
 	renderMatchInfo(msg.matches, matchList);
-	renderUserInfoCard(msg.user_info, infoCardsContainer);
+	renderUserInfoCard(msg.player, infoCardsContainer);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
-	renderPlayingTimeCard(msg.user_playing_time, infoCardsContainer);
+	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
 export function getDashboard()
@@ -119,7 +233,7 @@ export function getDashboard()
 	dashboard.style.flexDirection = 'column';
 	dashboard.style.aspectRatio = '4 / 3';
 	dashboard.style.width = '80vw';
-	dashboard.style.height = '70vh';
+	dashboard.style.height = '50vh';
 	dashboard.style.borderRadius = '16px';
 	dashboard.style.position = 'relative';
 	dashboard.style.boxSizing = 'border-box';
@@ -130,7 +244,7 @@ export function getDashboard()
 	title.textContent = 'Match History';
 	title.style.fontFamily = '"Horizon", monospace';
 	title.style.color = 'transparent';
-	title.style.fontSize = 'min(5vw, 5vh)';
+	title.style.fontSize = 'min(3vw, 3vh)';
 	title.style.webkitTextStroke = '0.1rem #ffffff';
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
@@ -143,16 +257,17 @@ export function getDashboard()
 	const headers = document.createElement('div');
 	headers.id = 'dashboardHeaders';
 	headers.style.display = 'flex';
-	headers.style.width = "95%";
+	headers.style.width = "100%";
 	headers.style.justifyContent = 'space-between';
 	headers.style.alignContent = 'center';
 	headers.style.alignItems = 'center';
-	headers.style.fontSize = 'min(1.5vw, 2vh)'
+	headers.style.fontSize = 'min(1.2vw, 1.4vh)'
 	headers.style.fontFamily = '"Horizon", monospace';
 	headers.style.color = 'white';
-	headers.style.paddingLeft = '2%';
-	headers.style.paddingTop = '1%';
-	headers.style.paddingBottom = '1%';
+	// headers.style.paddingLeft = '2%';
+	headers.style.paddingTop = '0.7%';
+	headers.style.paddingBottom = '0.7%';
+	headers.style.whiteSpace = 'nowrap';
 
 	const labels = ['Opponents', 'Date', 'Winner', 'Score', 'Duration', 'Total Hits'];
 	labels.forEach(text => {
@@ -220,10 +335,11 @@ export function getDashboard()
 	infoCardsContainer.style.display = 'flex';
 	infoCardsContainer.style.direction = 'row';
 	infoCardsContainer.style.width = '80vw';
+	infoCardsContainer.style.height = '25vh';
 	infoCardsContainer.style.justifyContent = 'space-between';
-	infoCardsContainer.style.marginBottom = '1rem';
 	infoCardsContainer.style.background = 'transparent';
 	infoCardsContainer.style.gap = '1rem';
+	infoCardsContainer.style.aspectRatio = '3/4';
 
 	dashboard.appendChild(headers);
 	dashboard.appendChild(matchList);

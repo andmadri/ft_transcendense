@@ -1,14 +1,15 @@
 // Tells how the code has to compilerOptions
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2019", //"ES6",
     "outDir": "./build/js",
     "rootDir": "./src",
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types", "./src/ts/types"],
-    "lib": ["DOM", "ES2015"], // maybe not needed
+    "lib": ["ES2019", "DOM", "DOM.Iterable"], // maybe not needed
+    "module": "ES2020",
     // "typeRoots": ["./node_modules/@types"], not needed I think
     // "module": "commonjs",
     // "noImplicitAny": "any",
