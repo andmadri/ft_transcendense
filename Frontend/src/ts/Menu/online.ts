@@ -43,9 +43,10 @@ export function getOnlineList(): HTMLDivElement {
 
 	// backend request to the DB for all online players
 	// const online_players = ['Player1', 'Player2', 'Player3']; // This should be replaced with actual data from the backend
-	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
-	Game.socket.send(JSON.stringify(msg));
-
+	Game.socket.send({
+		action: 'online', 
+		subaction: 'getOnlinePlayers'
+	});
 	return (online);
 }
 

@@ -39,8 +39,11 @@ export function getStatsList(playerNr: number): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = {action: 'stats', subaction: 'getStats', player: playerNr};
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({
+		action: 'stats', 
+		subaction: 'getStats', 
+		player: playerNr
+	});
 
 	return (stats);
 }

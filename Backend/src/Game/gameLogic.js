@@ -1,12 +1,17 @@
-import { matches, Stage } from './gameMatch.js';
+import { Stage } from '../Init/match.js';
+import { handleMatchEventDB } from '../Services/matchService.js';
+import { db } from '../index.js';
 
 export function updateBall(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
+	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
-	socket.send(JSON.stringify(msg));
+
+	// NOW the msg is just send back instead of updated (online if online)
+	socket.send(msg);
 }
 
 export function updatePadel(match, msg, socket) {
@@ -20,15 +25,30 @@ export function updatePadel(match, msg, socket) {
 	msg.player2Paddle = match.player2.paddle;
 	msg.player2Up = match.player2.pressUp;
 	msg.player2Down = match.player2.pressDown;
-	socket.send(JSON.stringify(msg));
+	
+	// NOW the msg is just send back instead of updated (online if online)
+	socket.send(msg);
 }
 
-export function updateScore(match, msg, socket) {
+export async function updateScore(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 
-	if (match.player1.id == msg.playerID)
-		match.player1.score++;
-	else
-		match.player2.score++;
+	console.log("updateScore -> handleMatchEventDB")
+	const eventID = await handleMatchEventDB(db, {
+		match_id: msg.matchID,
+		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think
+		event_type: 'goal'
+		// ball_x: ,
+		// ball_y: ,
+		// ball_angle: ,
+		// ball_result_x: ,
+		// ball_result_y: ,
+		// paddle_x_player_1: ,
+		// paddle_y_player_1: ,
+		// paddle_x_player_2: ,
+		// paddle_y_player_2: ,
+	})
+	return eventID;
 }
+

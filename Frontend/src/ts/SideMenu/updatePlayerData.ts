@@ -37,8 +37,9 @@ function receivePlayerData(data: any) {
 }
 
 export function getPlayerData() {
-	const msg = {action: 'playerInfo', subaction: 'getPlayerData'};
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({
+		action: 'playerInfo', 
+		subaction: 'getPlayerData'});
 }
 
 export function updatePlayerData(player: number) {

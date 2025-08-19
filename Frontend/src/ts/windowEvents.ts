@@ -1,14 +1,40 @@
 import * as S from './structs.js'
+import { Game} from './script.js'
+import { sendKeyPressUpdate } from './Game/gameStateSync.js';
+import { OT } from '@shared/OT'
+
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
+const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
 
 export function releaseButton(e: KeyboardEvent) {
+	if (Game.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		return ;
+	}
+	if (Game.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		S.Keys[e.key].pressed = false;
+		if (Game.opponentType == OT.Online) {
+			sendKeyPressUpdate(e.key);
+		}
 	}
 }
 
 export function pressButton(e: KeyboardEvent) {
+	if (Game.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		return ;
+	}
+	if (Game.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
+		return ;
+	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
+		console.log(`Key pressed ${e.key}`);
 		S.Keys[e.key].pressed = true;
+		if (Game.opponentType == OT.Online) {
+			sendKeyPressUpdate(e.key);
+		}
 	}
 }
 
@@ -20,61 +46,48 @@ export function initAfterResize() {
 	const game = document.getElementById('game');
 
 	if (ball && rPlayer && lPlayer && field && game) {
-		const oldWidth = S.Objects['field'].width;
-		const oldHeight = S.Objects['field'].height;
+		const oldWidth = fieldSize.width;
+		const oldHeight = fieldSize.height;
+		const newWidth = field.clientWidth;
+		const newHeight = field.clientHeight;
 
-		const newWidth = window.innerWidth * 0.7;
-		const newHeight = newWidth * (7 / 10);
+		fieldSize.width = newWidth;
+		fieldSize.height = newHeight;
 
-		if (oldWidth === 0 || oldHeight === 0) {
-			console.warn("Field too small!!");
-			return;
-		}
+		ballSize.width = ball.clientWidth;
+		ballSize.height = ball.clientHeight;
 
-		const scaleFactor = Math.min(newWidth / oldWidth, newHeight / oldHeight);
+		const relativeXball = ballPos.x / oldWidth;
+		const relativeYball = ballPos.y / oldHeight;
 
-		S.Objects['ball'].x *= scaleFactor;
-		S.Objects['ball'].y *= scaleFactor;
-		S.Objects['ball'].width *= scaleFactor;
-		S.Objects['ball'].height *= scaleFactor;
-		S.Objects['ball'].speed *= scaleFactor;
-
-		ball.style.left = `${S.Objects['ball'].x}px`;
-		ball.style.top = `${S.Objects['ball'].y}px`;
-		ball.style.width = `${S.Objects['ball'].width}px`;
-		ball.style.height = `${S.Objects['ball'].height}px`;
+		ballPos.x = relativeXball * newWidth;
+		ballPos.y = relativeYball * newHeight;
+		ball.style.left = `${ballPos.x}px`;
+		ball.style.top = `${ballPos.y}px`;
+		ballMove.speed = fieldSize.width * 0.01;
 		
-		S.Objects['rPlayer'].x *= scaleFactor;
-		S.Objects['rPlayer'].y *= scaleFactor;
-		S.Objects['rPlayer'].width *= scaleFactor;
-		S.Objects['rPlayer'].height *= scaleFactor;
-		S.Objects['rPlayer'].speed *= scaleFactor;
+		const relativeXlPlayer = lPlayerPos.x / oldWidth;
+		const relativeYlPlayer = lPlayerPos.y / oldHeight;
 
-		rPlayer.style.left = `${S.Objects['rPlayer'].x}px`;
-		rPlayer.style.top = `${S.Objects['rPlayer'].y}px`;
-		rPlayer.style.width = `${S.Objects['rPlayer'].width}px`;
-		rPlayer.style.height = `${S.Objects['rPlayer'].height}px`;
+		lPlayerSize.width = lPlayer.clientWidth;
+		lPlayerSize.height = lPlayer.clientHeight;
+		lPlayerPos.x = relativeXlPlayer * newWidth;
+		lPlayerPos.y = relativeYlPlayer * newHeight;
+		lPlayer.style.left = `${lPlayerPos.x}px`;
+		lPlayer.style.top = `${lPlayerPos.y}px`;
+		lPlayerMove.speed = fieldSize.height * 0.015;
 
-		S.Objects['lPlayer'].x *= scaleFactor;
-		S.Objects['lPlayer'].y *= scaleFactor;
-		S.Objects['lPlayer'].width *= scaleFactor;
-		S.Objects['lPlayer'].height *= scaleFactor;
-		S.Objects['lPlayer'].speed *= scaleFactor;
+		const relativeXrPlayer = rPlayerPos.x / oldWidth;
+		const relativeYrPlayer = rPlayerPos.y / oldHeight;
 
-		lPlayer.style.left = `${S.Objects['lPlayer'].x}px`;
-		lPlayer.style.top = `${S.Objects['lPlayer'].y}px`;
-		lPlayer.style.width = `${S.Objects['lPlayer'].width}px`;
-		lPlayer.style.height = `${S.Objects['lPlayer'].height}px`;
+		rPlayerSize.width = rPlayer.clientWidth;
+		rPlayerSize.height = rPlayer.clientHeight;
+		rPlayerPos.x = relativeXrPlayer * newWidth;
+		rPlayerPos.y = relativeYrPlayer * newHeight;
+		rPlayer.style.left = `${rPlayerPos.x}px`;
+		rPlayer.style.top = `${rPlayerPos.y}px`;
+		rPlayerMove.speed = fieldSize.height * 0.015;
 
-		game.style.width = `${newWidth}px`;
-		game.style.height = `${newHeight}px`;
-
-		field.style.width = `${newWidth}px`;
-		field.style.height = `${newHeight}px`;
-
-		S.Objects['field'].width = newWidth;
-		S.Objects['field'].height = newHeight;
-		console.log(`Resized field to ${S.Objects['field'].width}x${S.Objects['field'].height}`);
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
 	}

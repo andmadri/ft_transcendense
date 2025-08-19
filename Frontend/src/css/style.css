@@ -1,12 +1,49 @@
-body {
-	height: 100vh;
-	background-color: #ededeb;
-	justify-content: center;
+@keyframes twinkle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
 }
+
+@keyframes scrollTitle {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%) ;}
+}
+
+@font-face {
+	font-family: 'RobotoCondensed';
+	src: url('./fonts/RobotoCondensed-Regular.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Horizon_Outlined';
+	src: url('./fonts/Horizon_Outlined.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Horizon';
+	src: url('./fonts/Horizon.otf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@keyframes goX {
+	from {left: 0;} to {left: calc(100% - 4rem)};
+}
+
+@keyframes goY {
+	from {top: 0} to {top: calc(100% - 4rem)};
+}
+
+
+/* Authentification */
 
 .authContainer {
 	display: flex;
-	background-color: #363430;
+	background-color: #000;
 	border-radius: 24px;
 	flex-direction: row;
 	justify-content: space-evenly;
@@ -38,7 +75,7 @@ body {
 
 .header1Text {
 	font-size: 2.5rem;
-	color:#363430;
+	color:#000;
 	font-family: 'Horizon', sans-serif;
 }
 
@@ -55,6 +92,7 @@ body {
 .inputButtons {
 	font-family: 'RobotoCondensed', sans-serif;
 	display: flex;
+	position: relative;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
@@ -67,16 +105,9 @@ body {
 	gap: 0.5rem;
 }
 
-@font-face {
-	font-family: 'RobotoCondensed';
-	src: url('./fonts/RobotoCondensed-Regular.ttf') format('truetype');
-	font-weight: 300;
-	font-style: normal;
-}
-
 .inputSingle input {
 	background-color: transparent;
-	border: 1px solid #363430;
+	border: 1px solid #000;
 	border-radius: 0.5rem;
 	outline: none;
 	width: 238px;
@@ -90,7 +121,7 @@ body {
 	width: 238px;
 	height: 34px;
 	color: #ededeb;
-	background-color: #363430;
+	background-color: #000;
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
@@ -100,7 +131,7 @@ body {
 .submitButton:hover {
 	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
 	border: none;
-	color: #363430;
+	color: #000;
 }
 
 .googleLoginButton {
@@ -138,24 +169,11 @@ p.loginSignUpPrompt {
 	overflow: hidden;
 }
 
-@font-face {
-	font-family: 'Horizon_Outlined';
-	src: url('./fonts/Horizon_Outlined.otf');
-	font-weight: bold;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'Horizon';
-	src: url('./fonts/Horizon.otf');
-	font-weight: bold;
-	font-style: normal;
-}
 
 .pongText {
 	font-size: 4.063rem;
 	font-family: 'Horizon', sans-serif;
-	-webkit-text-stroke: 0.15rem #363430;
+	-webkit-text-stroke: 0.15rem #000;
 	letter-spacing: 0.5rem;
 	line-height: 1;
 	color: transparent;
@@ -170,12 +188,4 @@ p.loginSignUpPrompt {
 	background-position: center;
 	box-shadow: 0.25rem 0.375rem 0.625rem;
 	animation: goX 1.2s linear 0s infinite alternate, goY 1.5s linear 0s infinite alternate;
-}
-
-@keyframes goX {
-	from {left: 0;} to {left: calc(100% - 4rem)};
-}
-
-@keyframes goY {
-	from {top: 0} to {top: calc(100% - 4rem)};
 }

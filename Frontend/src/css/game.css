@@ -1,0 +1,92 @@
+.gameContainer {
+	display: flex;
+	flex-direction: column;
+	background: transparent;
+	align-items: center;
+	justify-content: center;
+	margin: 10px auto 0;
+	height: 100%;
+	width: 100%;
+	/* box-sizing: border-box; */
+	padding: 10px;
+	gap: 20px;
+}
+
+.scrollContainer {
+	width: 100%;
+	/* overflow: hidden;
+	white-space: nowrap;
+	box-sizing: border-box; */
+}
+
+.gameTitle {
+	display: inline-block;
+	font-family: 'Horizon', sans-serif;
+	font-size: 56px;
+	color: transparent;
+	-webkit-text-stroke: 0.15rem #000;
+	/* animation: infin-x 10s linear infinite; */
+}
+
+.gameField {
+	box-sizing: border-box;
+	width: 800px;
+	height: 600px;
+	position: relative;
+	background-color: #000;
+	border-radius: 24px;
+	/* border: 24px solid blue; */
+	/* padding: 30px; */
+	/* white-space: nowrap; */
+	
+}
+
+
+.gameField #lPlayer {
+	width: 10px;
+	height: 100px;
+	top: 35%;
+	position: absolute;
+	left: 0px;
+	/* background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433); */
+	background: white;
+	/* mix-blend-mode: ; */
+}
+
+.gameField #rPlayer {
+	width: 10px;
+	height: 100px;
+	top: 35%;
+	position: absolute;
+	right: 0px;
+	background: white;
+	/* background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433); */
+	/* z-index: 2; */
+}
+
+/* .gameField #centerLine {
+
+} */
+
+.gameField #ball {
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
+	position: absolute;
+	background-color: #ededeb;
+}
+
+@keyframes scroll {
+ 0% {
+	transform: translateX(0%);
+ }
+ 100% {
+	transform: translateX(-50%);
+ }
+}
+
+@keyframes twinkle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}

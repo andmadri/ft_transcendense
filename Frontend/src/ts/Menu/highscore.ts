@@ -40,8 +40,10 @@ export function getHighscores(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = {action: 'highscores', subaction: 'getHighscores'};
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({
+		action: 'highscores', 
+		subaction: 'getHighscores'
+	});
 
 	return (highscores);
 }

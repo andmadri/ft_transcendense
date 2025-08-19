@@ -1,24 +1,39 @@
-import * as S from '../structs.js'
+import * as S from '../structs'
+import { E } from '../structs'
 import { Game } from '../script.js'
 import { log } from '../logging.js'
+import { OT } from '@shared/OT'
+import { getGameField } from './gameContent.js';
+import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
+import { initAfterResize } from '../windowEvents.js';
+
+const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
+const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
+const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
 
 export function startGame() {
 	switch (Game.opponentType) {
-		case S.OT.ONEvsONE: {
+		case OT.ONEvsONE: {
 			if (Game.player2Id != -1)
 				Game.state = S.State.Init;
 			else
 				Game.state = S.State.LoginP2;
 			break ;
 		}
-		case S.OT.ONEvsCOM: {
+		case OT.ONEvsCOM: {
+			Game.player2Id = 2; // Is not getting used - only for visability
+			Game.player2Name = "AI"; // Is not getting used - only for visability
 			Game.state = S.State.Init;
 			break ;
 		}
-		case S.OT.Online: {
+		case OT.Online: {
 			Game.state = S.State.Pending;
+			Game.socket.send({
+				action: 'matchmaking',
+				subaction: 'createOnlineMatch',
+			});
 			break ;
 		}
 		default: {
@@ -45,13 +60,13 @@ export function startGame() {
 export function changeOpponentType(option: string) {
 	switch (option) {
 		case '1 vs 1':
-			Game.opponentType = S.OT.ONEvsONE;
+			Game.opponentType = OT.ONEvsONE;
 			break ;
 		case '1 vs COM':
-			Game.opponentType = S.OT.ONEvsCOM;
+			Game.opponentType = OT.ONEvsCOM;
 			break ;
 		case 'Online':
-			Game.opponentType = S.OT.Online;
+			Game.opponentType = OT.Online;
 			break ;
 		default:
 			log(`unknown opponent type? ${option}`);
@@ -71,71 +86,105 @@ export function changeMatchFormat(option: string) {
 	}
 }
 
-// Get start position of ball
+// function scaleToField(fieldDim: number, unit : number) : number {
+// 	return (fieldDim * unit);
+// }
+
+// function initMovement() {
+// 	const fieldSize = S.size[E.field];
+// 	const fieldUnit = S.unitSize[E.field];
+
+// 	randomizeBallAngle();
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.movement[e] && S.unitSize[e]) {
+// 			S.movement[e].speed = scaleToField(fieldSize.width, S.unitMovement[e].speed);
+// 		}
+// 	}
+// }
+
+// function scaleGameSizes() {
+// 	const fieldSize = S.size[E.field];
+// 	const fieldUnit = S.unitSize[E.field];
+// 	const ballSize = S.size[E.ball];
+
+// 	fieldSize.width = window.innerWidth * 0.7;
+// 	fieldSize.height = fieldSize.width * fieldUnit.height;
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.size[e] && S.unitSize[e]) {
+// 			S.size[e].width = scaleToField(fieldSize.width, S.unitSize[e].width);
+// 			if (e === E.ball) {
+// 				S.size[e].height = S.size[e].width;
+// 				continue ;
+// 			}
+// 			S.size[e].height = scaleToField(fieldSize.height, S.unitSize[e].height);
+// 		}
+// 	}
+// }
+
+// function scaleGamePos() {
+// 	const fieldSize = S.size[E.field];
+
+// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
+// 		if (S.pos[e] && S.unitPos[e]) {
+// 			S.pos[e].x = scaleToField(fieldSize.width, S.unitPos[e].x);
+// 			S.pos[e].y = scaleToField(fieldSize.height, S.unitPos[e].y);
+// 		}
+// 	}
+// }
+
 export function initPositions() {
-	const ball = document.getElementById('ball');
-	const playerOne = document.getElementById('rPlayer');
-	const playerTwo = document.getElementById('lPlayer');
 	const field = document.getElementById('field');
-	const game = document.getElementById('game');
-
-	if (ball && playerOne && playerTwo && field && game)
-	{
-		// Field
-		S.Objects['field'].width = window.innerWidth * 0.7;
-		S.Objects['field'].height = S.Objects['field'].width * (7 / 10);
-		field.style.height = `${S.Objects['field'].height}px`;
-		field.style.width = `${S.Objects['field'].width}px`;
-		game.style.height = `${S.Objects['field'].height}px`;
-		game.style.width = `${S.Objects['field'].width}px`;
-
-		// Ball
-		const ballSize = S.Objects['field'].width * 0.05;
-		ball.style.height = `${ballSize}px`;
-		ball.style.width = `${ballSize}px`;
-		S.Objects['ball'].height = ballSize;
-		S.Objects['ball'].width = ballSize;
-		S.Objects['ball'].x = field.clientWidth / 2;
-		S.Objects['ball'].y = field.clientHeight / 2;
-		S.Objects['ball'].speed = field.clientWidth * 0.01;
-		ball.style.left = `${S.Objects['ball'].x - ballSize / 2}px`;
-		ball.style.top = `${S.Objects['ball'].y - ballSize / 2}px`;
-
-		// Players
-		playerOne.style.height = `${S.Objects['field'].height * 0.30}px`;
-		playerTwo.style.height = `${S.Objects['field'].height * 0.30}px`;
-		playerOne.style.width = `${S.Objects['field'].width * 0.02}px`;
-		playerTwo.style.width = `${S.Objects['field'].width * 0.02}px`;
-		S.Objects['rPlayer'].height = playerOne.clientHeight;
-		S.Objects['rPlayer'].width = playerOne.clientWidth;
-		S.Objects['rPlayer'].y = playerOne.offsetTop;
-		S.Objects['rPlayer'].x = playerOne.offsetLeft;
-		S.Objects['rPlayer'].speed = field.clientHeight * 0.015;
-		S.Objects['lPlayer'].height = playerTwo.clientHeight;
-		S.Objects['lPlayer'].width = playerTwo.clientWidth;
-		S.Objects['lPlayer'].y = playerTwo.offsetTop;
-		S.Objects['lPlayer'].x = playerTwo.offsetLeft;
-		S.Objects['lPlayer'].speed = field.clientHeight * 0.015;
-	} else {
+	const ball = document.getElementById('ball');
+	const rPlayer = document.getElementById('rPlayer');
+	const lPlayer = document.getElementById('lPlayer');
+	if (!ball || !rPlayer || !lPlayer || !field) {
 		console.log('Something went wrong (initGame), close game?');
+		return;
 	}
+	const fieldWidth = field.clientWidth;
+	const fieldHeight = field.clientHeight;
+
+	fieldSize.width = fieldWidth;
+	fieldSize.height = fieldHeight;
+
+	ballSize.width =  ball.clientWidth;
+	ballSize.height = ball.clientHeight;
+
+	ballPos.x = fieldWidth / 2;
+	ballPos.y = fieldHeight / 2;
+	ballMove.speed = fieldWidth * 0.01;
+	randomizeBallAngle();
+
+	rPlayerSize.height = rPlayer.clientHeight;
+	rPlayerSize.width = rPlayer.clientWidth;
+	rPlayerPos.y = rPlayer.offsetTop;
+	rPlayerPos.x = rPlayer.offsetLeft;
+	rPlayerMove.speed = fieldHeight * 0.015;
+
+	lPlayerSize.height = lPlayer.clientHeight;
+	lPlayerSize.width = lPlayer.clientWidth;
+	lPlayerPos.y = lPlayer.offsetTop;
+	lPlayerPos.x = lPlayer.offsetLeft;
+	lPlayerMove.speed = fieldHeight * 0.015;
 }
 
 export function initGameServer() {
-	if (Game.socket.readyState == WebSocket.OPEN) {
+	if (Game.socket.connected) {
 		log("server init")
 		const initGame = {
-			action: 'game',
-			subaction: 'init',
+			action: 'init',
+			subaction: 'createMatch',
 			playerId: Game.player1Id,
 			playerName: Game.player1Name,
 			opponentMode: Game.opponentType,
 			playerId2: Game.player2Id,
 			playerName2: Game.player2Name
 		}
-		if (Game.opponentType == S.OT.ONEvsCOM)
+		if (Game.opponentType == OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
-		Game.socket.send(JSON.stringify(initGame));
+		Game.socket.send(initGame);
 	}
 }
 
@@ -193,30 +242,47 @@ export function initGame() {
 	// if (document.getElementById('startScreen'))
 	// 	return ;
 	// getStartScreenBeforeGame();
+
+	//scaleGameSizes();
+	//scaleGamePos();
+	//initMovement();
 	initPositions();
-	initGameServer();
+	if (Game.opponentType != OT.Online)
+		initGameServer();
+	else {
+		// Send server msg that player is ready with init game
+		const readyToPlay = {
+			action: 'init',
+			subaction: 'start',
+			matchID: Game.matchID,
+			userID: Game.player1Id
+		}
+		Game.socket.send(readyToPlay);
+	}
+	const field = document.getElementById('field');
+	if (field) {
+		const resizeObserver = new ResizeObserver(() => {
+			initAfterResize();
+		})
+		resizeObserver.observe(field);
+	}
 	// updateNamesMenu();
 	// resetScoreMenu();
 }
 
-// export function saveGame() {
-// 	log("Saving game...");
-// 	log("Saving game: For id:" + Game.player1Id + " and id2: " + Game.player2Id);
-// 	if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0)
-// 	{
-// 		log("Saving game and logout player 2");
-// 		submitLogout(null, 2);
-// 	}
-// 	const saveGameMsg = {
-// 		action: 'game',
-// 		subaction: 'save',
-// 		matchID: Game.matchID
-// 	}
-// 	Game.socket.send(JSON.stringify(saveGameMsg));
+export function actionInitOnlineGame(data: any) {
+	const match = data.match;
 
-// 	Game.scoreLeft = 0;
-// 	Game.scoreRight = 0;
-// 	Game.matchID = -1;
-// 	updateNamesMenu();
-// 	resetScoreMenu();
-// }
+	getGameField();
+
+	Game.player1Id = match.player1.id;
+	Game.player2Id = match.player2.id;
+	Game.player1Name = match.player1.name;
+	Game.player2Name = match.player2.name;
+	Game.matchID = data.matchID;
+
+	// Function to set all data sync with match in game...
+
+	Game.state = S.State.Game;
+	console.log("Start online game...");
+}

@@ -1,46 +1,38 @@
 import Fastify from 'fastify';
-import websocket from '@fastify/websocket';
+import fastifyIO from 'fastify-socket.io';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
-// import fastifyCors from '@fastify/cors';
 import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
+import { getUserByID } from './Database/users.js';
 import { handleGame } from './Game/game.js'
+import { handleInitGame } from './InitGame/initGame.js'
+import { handleMatchmaking } from './Pending/matchmaking.js';
+import { parseAuthTokenFromCookies } from './Auth/authToken.js';
+import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 // import { testDB }   from './testDB.js';
-import { addUserToDB } from './Database/users.js';
-import { onUserLogin } from './Services/sessionsService.js';
 
-const fastify = Fastify();
-await fastify.register(websocket);
+// FASTIFY => API SERVER
+const fastify = Fastify({ logger: true });
+
+// fastify-socket.io enables the use of Socket.io in a Fastify application.
+fastify.register(fastifyIO, {
+	preClose: (done) => {
+		fastify.io.local.disconnectSockets(true);
+		done();
+	}
+});
 
 // change how you create database
 export const db = await createDatabase();
-
-
-// creating a guest and AI user for testing purposes -> create a function for that later
-const guest_id = await addUserToDB(db, {
-	name: 'Guest',
-	email: 'guest@guest.guest',
-	password: 'secretguest',
-	avatar_url: null
-});
-await onUserLogin(db, guest_id);
-
-const ai_id = await addUserToDB(db, {
-	name: 'AI',
-	email: 'ai@ai.ai',
-	password: 'secretai',
-	avatar_url: null
-});
-await onUserLogin(db, ai_id);
 
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
 // await testDB(db);
@@ -71,23 +63,19 @@ await fastify.register(googleAuthRoutes);
 // POST /api/upload-avatar
 await fastify.register(avatarRoutes);
 
-/*
-FROM frontend TO backend
-• login => loginUpser / signUpUser / logout
-• playerInfo => changeName / addAvatar / delAvatar / getPlayerData
-• chat => outgoing
-• online => getOnlinePlayers / getOnlinePlayersWaiting
-• friends => getFriends / addFriend / deleteFriend
-• pending => addToWaitlist / acceptGame
-• game => init / ballUpdate / padelUpdate / scoreUpdate
-• error => crash
-*/
+fastify.setNotFoundHandler(function (request, reply) {
+  reply.status(404).send({ error: 'Not Found' });
+});
 
-fastify.get('/wss', { websocket: true }, (connection, req) => {
+// const httpServer = createServer(fastify.server);
 
-	// Check if the request has a valid JWT token in cookies
-	const cookies = req.headers.cookie;
-	const authTokens = parseAuthTokenFromCookies(cookies);
+fastify.ready().then(() => {
+	fastify.io.on('connection', (socket) => {
+		console.log('🔌 A user connected:', socket.id);
+		// Check if the request has a valid JWT token in cookies
+		// const cookies = req.headers.cookie;
+		const cookies = socket.handshake.headers.cookie || '';
+		const authTokens = parseAuthTokenFromCookies(cookies);
 
 	let decoded;
 	let userId1 = null;
@@ -127,59 +115,56 @@ fastify.get('/wss', { websocket: true }, (connection, req) => {
 		return ;
 	}
 
+		// add user to main room
+		addUserToRoom(socket, 'main');
 
-	connection.socket.on('message', (message) => {
-		const msg = JSON.parse(message.toString());
-		console.log('Received from frontend:', JSON.stringify(msg));
-		const action = msg.action;
-		// console.log('Received from frontend: ' + message);
-		if (!action) {
-			const returnMsg = { action: "Error" }
-			connection.socket.send(JSON.stringify(returnMsg));
-			return ;
-		}
-
-		// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
-		switch (action) {
-			// case 'login':
-			// 	return handleUserAuth(msg, connection.socket, fastify);
-			case 'playerInfo':
-				return handlePlayerInfo(msg, connection.socket, userId1, userId2);
-			case 'online':
-				return handleOnlinePlayers(msg, connection.socket);
-			case 'friends':
-				return handleFriends(msg, connection.socket);
-			case 'pending':
-				break ;
-			case 'game':
-				return handleGame(msg, connection.socket, userId1, userId2);
-			case 'error':
-				console.log('Error from frontend..');
-				connection.socket.send(JSON.stringify(msg));
-				break ;
-			default:
-				console.log('No valid action: ' + action);
-				connection.socket.send(JSON.stringify(msg));
+		// Socket that listens to incomming msg from frontend
+		socket.on('message', (msg) => {
+			const action = msg.action;
+			if (!action) {
+				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
-		}
-	});
-
-	connection.on('close', () => {
-		(async () => {
-			try {
-				const user = getUserByID(userId1);
-				if (user && user.email)
-					updateOnlineStatus(user.email, 'offline');
-			} catch (err) {
-				console.error('Player can not logged out', err);
 			}
-		})
+			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
+			
+			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
+			switch (action) {
+				case 'playerInfo':
+					return handlePlayerInfo(msg, socket, userId1, userId2);
+				case 'online':
+					return handleOnlinePlayers(msg, socket);
+				case 'friends':
+					return handleFriends(msg, socket);
+				case 'init':
+					return handleInitGame(db, msg, socket, userId1, userId2);
+				case 'matchmaking':
+					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+				case 'game':
+					return handleGame(db, msg, socket, fastify.io);
+				case 'error':
+					console.log('Error from frontend..');
+					return socket.emit('error', msg);
+				default:
+					return socket.emit('error', { reason: 'Unknown action' + action });
+			}
+		});
+
+		socket.on('disconnect', () => {
+			console.log(`User disconnected: ${userId1}`);
+			try {
+				// WHERE WENT THIS FUNCTION GO TO?
+				// updateOnlineStatus(userId1, 'offline');
+			} catch (err) {
+				console.error('Failed logout cleanup', err);
+			}
+		});
 	});
 });
 
-fastify.setNotFoundHandler(function (request, reply) {
-  reply.status(404).send({ error: 'Not Found' });
-});
-
-fastify.listen({ port: 3000, host: '0.0.0.0' });
-
+try {
+	await fastify.listen({ port: 3000, host: '0.0.0.0' });
+	console.log('Server listening on port 3000');
+} catch (err) {
+	fastify.log.error(err);
+	process.exit(1);
+}

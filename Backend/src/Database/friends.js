@@ -1,4 +1,6 @@
-// import { db } from '../index.js' // DELETE THIS LATER
+// *************************************************************************** //
+//                             ADD ROW TO SQL TABLE                            //
+// *************************************************************************** //
 
 export async function addFriend(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
@@ -15,6 +17,10 @@ export async function addFriend(db, user_id, friend_id) {
 	})
 }
 
+// *************************************************************************** //
+//                          DELETE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
 export function deleteFriend(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
 		db.run(
@@ -29,3 +35,14 @@ export function deleteFriend(db, user_id, friend_id) {
 		)
 	})
 }
+
+// *************************************************************************** //
+//                           VIEW DATA FROM SQL TABLE                          //
+// *************************************************************************** //
+
+
+
+// *************************************************************************** //
+//                         VIEW DATA FROM VIEW TABLES                          //
+// *************************************************************************** //
+

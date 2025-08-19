@@ -1,4 +1,3 @@
-import { updateOnlineStatus } from '../Database/users.js';
 import { addUser, validateLogin } from '../Auth/userValidation.js';
 import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
 import { addUserSessionToDB } from '../Database/sessions.js';

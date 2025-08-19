@@ -1,5 +1,5 @@
-import { changeOpponentType, changeMatchFormat, startGame } from '../Game/initGame.js';
 import { Game } from '../script.js'
+import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
 import { getStatsList } from './stats.js';
@@ -10,7 +10,6 @@ import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
-import * as S from '../structs.js';
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 
@@ -457,7 +456,7 @@ export function getRightSideMenu(playerNr: number) {
 	});
 
 	const playername = document.createElement('div');
-	playername.id = "playerNameMenu";
+	playername.id = "playerNameMenu" + playerNr;
 	if (playerNr == 1)
 		playername.textContent = Game.player1Name;
 	else

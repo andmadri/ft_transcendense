@@ -8,7 +8,7 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 		access: accessible,
 		content: content
 	}
-	socket.send(JSON.stringify(msg));
+	socket.send(msg);
 }
 
 async function getOnlinePlayers(msg, socket) {

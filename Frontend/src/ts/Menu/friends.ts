@@ -40,8 +40,10 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = { action: 'friends', subaction: 'getFriends', player: playerNr };
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({ 
+		action: 'friends', 
+		subaction: 'getFriends', 
+		player: playerNr });
 	return (friends);
 }
 

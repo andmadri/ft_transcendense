@@ -88,8 +88,9 @@ export function getLoginFields(player: number) {
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
 	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
-		window.location.href = `https://${S.host}:8443/api/auth/google?player=` + player;
+		window.location.href = `https://${S.host}/api/auth/google?player=` + player;
 	});
 
+	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
 	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
 }

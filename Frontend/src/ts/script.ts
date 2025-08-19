@@ -3,6 +3,7 @@
 
 import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
+import { OT } from '@shared/OT'
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
@@ -10,58 +11,60 @@ import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getMenu } from './Menu/menuContent.js'
-import { getLoadingPage } from './Loading/loadContent.js'
+// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
 // import { getTwoFactorFields } from './Auth/twofa.js';
 
+
 // getLoadingPage();
 createLog();
+declare const io: any;
+type Socket = any;
 
 // Prepare Div for error and create a new socket
 export const Game: S.gameInfo = {
 	state: S.State.LoginP1,
-	opponentType: S.OT.ONEvsONE,
+	opponentType: OT.ONEvsONE,
 	matchFormat: S.MF.SingleGame,
 	logDiv: document.getElementById('log') as HTMLDivElement,
-	socket: new WebSocket('wss://localhost:8443/wss'),
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
 	playMode: false,
+	searchMatch: false,
 	matchID: -1,
 	player1Id: -1,
-	player1Name: 'unknown',
+	player1Name: 'unknown',	// Add later: getUserID from DB
 	player1Login: false,
 	player1Twofa: false,
 	player2Id: 1,			// default player2Id for guest login
-	player2Name: 'Guest',	// default player2Name for guest login
+	player2Name: 'Guest',		// Add later: getUserID from DB // default player2Name for guest login
 	player2Login: false,	// default player2Login for guest login
 	player2Twofa: false,
 	playerLogin: 1,
 	timeGame: 0,
 	scoreLeft: 0,
 	scoreRight: 0,
+	colletedSteps: [],
+	ballPaused: false
 }
+
+log("host: " + window.location.host);
+log("hostname: " + window.location.hostname);
 
 startSocketListeners();
 
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
-window.addEventListener('resize', initAfterResize);
+// window.addEventListener('resize', initAfterResize);
 
 let lastSpeedIncreaseTime = 0;
 
-//test to increment ball speed every minute for better AI data and more exciting game
-function incrementBallSpeed() {
-  if (!Game.timeGame) return;
-
-  // Check if at least 60,000ms (1 minute) passed since last increment
-  if (Game.timeGame - lastSpeedIncreaseTime >= 60000) {
-    S.Objects['ball'].speed *= 1.3;  // Increase speed by 10%
-    lastSpeedIncreaseTime = Game.timeGame;
-  }
-}
-
 function mainLoop() {
-	if (Game.socket.readyState == WebSocket.OPEN) {
+	if (Game.socket.connected) {
 		switch (Game.state) {
 			case S.State.LoginP1: {
 				if (!document.getElementById('auth1'))
@@ -90,16 +93,15 @@ function mainLoop() {
 			}
 			case S.State.Pending: {
 				// waiting for opponement
-				log("No online mode yet...pending...");
+				log("...pending...");
 				break ;
 			}
 			case S.State.Init:
-				log("init game");
 				if (!document.getElementById('game'))
 				{
-					log("On Init:" + JSON.stringify(Game));
 					getGameField();
 					initGame();
+					
 				}
 				break ;
 			case S.State.Game: {
@@ -110,7 +112,6 @@ function mainLoop() {
 				saveGame();
 				break ;
 			default:
-				log("no valid state");
 		}
 
 	}
@@ -118,6 +119,5 @@ function mainLoop() {
 }
 
 setTimeout(() => {
-	log(S.host);
 	mainLoop();
-}, 2000);
+}, 1000);

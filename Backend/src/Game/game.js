@@ -1,37 +1,39 @@
-import { updateBall, updatePadel, updateScore } from "./gameLogic.js";
-import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
-import { matches } from './gameMatch.js';
+import { sendBallUpdate, sendPaddleUpdate, updateScore } from "./gameStateSync.js";
+import { saveMatch, quitMatch } from "../End/endGame.js";
+import { matches } from '../InitGame/match.js';
 
-export function handleGame(msg, socket, userId1, userId2) {
-	if (!msg.subaction) {
-		console.log('no subaction');
-		return ;
-	}
+export function handleGame(db, msg, socket, io) {
+	if (!msg.subaction)
+		return console.log('no subaction in handleGame');
 
-	if (msg.subaction == 'init')
-		return createMatch(msg, socket, userId1, userId2);
-
-	if (!msg.matchID) {
-		console.log("No matchID found in msg from frontend");
-		return ;
-	}
+	// we need to have a matchID by now
+	if (!msg.matchID)
+		return console.log("No matchID found in msg from frontend");
 
 	const match = matches.get(msg.matchID);
-	if (!match) {
-		return ;
-	}
+	if (!match)
+		return console.error(`No match found with ${msg.matchID}`);
 
+	// Updates that are comming into the backend (Maybe better to update all in once)
 	switch (msg.subaction) {
 		case 'ballUpdate':
-			return updateBall(match, msg, socket);
-		case 'padelUpdate':
-			return updatePadel(match, msg, socket );
+			sendBallUpdate(match, msg, socket, io);
+			break;
 		case 'scoreUpdate':
-			return updateScore(match, msg, socket);
+			updateScore(match, msg, io);
+			break;
+		case 'keyPressUpdate':
+			applyKeyPress(match, msg, socket);
+			break;;
+		case 'padelUpdate':
+			sendPaddleUpdate(match, msg, socket, io);
+			break ;
 		case 'save':
-			return saveMatch(match, msg, socket);
+			saveMatch(db, match, msg, socket);
+			break ;
 		case 'quit':
-			return quitMatch(match, msg, socket);
+			quitMatch(match, msg, socket);
+			break ;
 		default:
 			console.log("subaction not found: " + msg.subaction);
 	}
