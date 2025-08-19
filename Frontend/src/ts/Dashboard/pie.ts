@@ -12,13 +12,11 @@ function el<K extends keyof SVGElementTagNameMap>(
 	return node;
 }
 
-function polar(cx: number, cy: number, r: number, angle: number)
-{
+function polar(cx: number, cy: number, r: number, angle: number) {
 	return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
 }
 
-function arcPath(cx: number, cy: number, r: number, start: number, end: number )
-{
+function arcPath(cx: number, cy: number, r: number, start: number, end: number) {
 	const s = polar(cx, cy, r, start);
 	const e = polar(cx, cy, r, end);
 	const sweep = 1;
@@ -30,11 +28,11 @@ export function renderPie(
 	container: HTMLElement,
 	parts: PiePart[],
 	opts?: {
-		radius?: number;		// donut radius
-		thickness?: number;		// stroke width
-		startAngleDeg?: number;	// where to start, 0 = 3 o'clock
+		radius?: number;         // donut radius
+		thickness?: number;      // stroke width
+		startAngleDeg?: number;  // where to start, 0 = 3 o'clock
 		ariaLabel?: string;
-		totalText?: string;		// shown in the middle
+		totalText?: string;      // shown in the middle
 	}
 ): SVGElement {
 	const radius = opts?.radius ?? 36;
@@ -43,27 +41,28 @@ export function renderPie(
 
 	const total = parts.reduce((s, p) => s + Math.max(0, p.value), 0);
 
+	// Create the SVG container
 	const svg = el("svg", {
 		viewBox: "0 0 100 100",
 		role: "img",
 		"aria-label": opts?.ariaLabel ?? "Pie chart",
 	});
-	
+
+	// Create a group element and move it to the center
 	const g = el("g", { transform: "translate(50,50)" });
 
-	//Background ring
+	// Background ring
 	const bg = el("circle", { r: String(radius) });
 	bg.setAttribute("fill", "none");
 	bg.setAttribute("stroke", "#2b2a27");
-	bg.setAttribute("stroke-width", String(thickness))
+	bg.setAttribute("stroke-width", String(thickness));
 	g.appendChild(bg);
 
+	// Draw the slices (pie segments)
 	if (total > 0) {
 		let a = startAngle;
-		for (const p of parts)
-		{
-			if (p.value <= 0)
-				continue ;
+		for (const p of parts) {
+			if (p.value <= 0) continue;
 
 			const slice = (p.value / total) * Math.PI * 2;
 			const path = el("path", {
@@ -71,9 +70,9 @@ export function renderPie(
 				class: `slice ${p.className ?? ""}`.trim(),
 			});
 
-			// fallback inline color so it renders even if CSS isn't wired yet
-			if (p.color)
-				path.setAttribute("stroke", p.color);
+			// Fallback inline color if CSS isn't wired yet
+			if (p.color) path.setAttribute("stroke", p.color);
+
 			path.setAttribute("fill", "none");
 			path.setAttribute("stroke-width", String(thickness));
 			path.setAttribute("stroke-linecap", "round");
@@ -82,15 +81,20 @@ export function renderPie(
 		}
 	}
 
-	// Center text
-	if (opts?.totalText)
-	{
-		const t = el("text", { class: "total", y: "4" });
+	// Center text (total value)
+	if (opts?.totalText) {
+		const t = el("text", { class: "total", y: "0", textAnchor: "middle" });
 		t.textContent = opts.totalText;
+		t.setAttribute("dominant-baseline", "middle");
+		t.setAttribute("font-size", "12px");
+		t.setAttribute("fill", "white");
 		g.appendChild(t);
 	}
 
+	// Append the group to the SVG container
 	svg.appendChild(g);
+
+	// Append the SVG to the container
 	container.appendChild(svg);
 	return svg;
 }
