@@ -39,7 +39,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 	if (socket2) {
 		if (userID2 && userID2 == userID) {
 			console.log('Player can not play against himself');
-			io.to(matchID).emit('message', {
+			socket.emit('message', {
 				action: 'initOnlineGame',
 				match: null
 				// more info about the game
@@ -62,17 +62,23 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
 
 		// CREATE START VALUES FOR GAME HERE
+		const match = matches.get(matchID);
+		if (!match) {
+			console.log("Something went wrong!!!");
+			return ;
+		}
 		console.log(`handleOnlineMatch: ${matchID}:
-			${matches.get(matchID).player1.id} and ${matches.get(matchID).player2.id}`)
+			${match.player1.id} and ${match.player2.id}`)
+
 		io.to(matchID).emit('message', {
 			action: 'initOnlineGame',
 			matchID: matchID,
-			match: matches.get(matchID)
+			match: match
 			// more info about the game
 		});
 
 		//set interval for online gamelogic
-		matchInterval(matches.get(matchID));
+		matchInterval(match);
 
 	} else {
 		console.log("No open match found...adding player to waitinglist");
