@@ -55,8 +55,13 @@ export default async function avatarRoutes(fastify) {
 		const exts = ['.png', '.jpg', '.jpeg', '.webp'];
 		for (const ext of exts) {
 			const filePath = path.join(avatarDir, `avatar${ext}`);
+			console.log('Checking file path:', filePath);
 			if (fs.existsSync(filePath)) {
 				reply.type(`image/${ext.replace('.', '')}`);
+				return fs.createReadStream(filePath);
+			} else {
+				const filePath = path.join(process.cwd(), 'uploads', 'avatars', '-1', `avatar.png`);
+				console.log('File not found:', filePath);
 				return fs.createReadStream(filePath);
 			}
 		}

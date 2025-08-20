@@ -21,6 +21,9 @@ RUN npx tsc
 # Clean up build tools
 RUN apk del python3 make g++
 
+# copy folders from ./default_iamges to folder uploads/avatars inside the container
+COPY Backend/default_avatars/ /usr/app/uploads/avatars/
+
 EXPOSE 8080 3000
 
 CMD ["node", "src/index.js"]
