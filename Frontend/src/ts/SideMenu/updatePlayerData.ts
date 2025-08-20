@@ -21,11 +21,9 @@ function receivePlayerData(data: any) {
 	} else {
 		Game.match.player1.name = data.name || 'unknown';
 		Game.match.player1.ID = data.id || -1;
-		Game.match.player1.login = data.player1Login || false;
 		Game.match.player1.score = data.score || 0;
 		Game.match.player2.name = data.name2 || 'unknown';
 		Game.match.player2.ID = data.id2 || -1;
-		Game.match.player2.login = data.player2Login || false;
 		Game.match.player2.score = data.score2 || 0;
 	}
 	if (Game.match.player1.ID != -1)

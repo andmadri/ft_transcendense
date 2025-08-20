@@ -16,7 +16,6 @@ export type player = {
 	ID: number
 	name: string,
 	ready: boolean,
-	login: boolean,
 	input: {
 		pressUP: boolean,
 		pressDOWN: boolean

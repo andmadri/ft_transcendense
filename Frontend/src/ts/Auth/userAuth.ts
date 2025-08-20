@@ -4,52 +4,6 @@ import { log } from '../logging.js'
 // import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 
-// type	Mode = 'login' | 'sign up';
-// const	modes: Record<number, Mode> = { 1: 'sign up', 2: 'sign up' };
-
-// function updateLoginPlayer(data: any) {
-// 	if (data.player == 1) {
-// 		if (data.userId)
-// 			Game.match.player1.ID = data.userId;
-// 		if (data.userName)
-// 			Game.match.player1.name = data.userName;
-// 		Game.match.player1.login = true;
-// 		updatePlayerData(1);
-
-// 	} else {
-// 		if (data.UserId)
-// 			Game.match.player2.ID = data.UserId;
-// 		if (data.userName)
-// 			Game.match.player2.name = data.userName;
-// 		Game.match.player2.login = true;
-// 		updatePlayerData(2);
-// 	}
-// }
-
-// export function changeLoginMode(player: number) {
-// 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
-
-// 	const modeLabel = document.getElementById('modelabel' + player);
-// 	const nameField = document.getElementById('nameField' + player);
-// 	const nameInput = document.getElementById('name' + player) as HTMLInputElement | null;
-// 	const submitButton = document.getElementById('submitBtn' + player);
-// 	const toggleButton = document.getElementById('toggle-mode' + player);
-// 	const authTitle = document.getElementById('authTitle' + player);
-
-// 	if (modeLabel)
-// 		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
-
-// 	if (nameField && nameInput) {
-// 		if (modes[player] === 'login') {
-// 			nameField.style.display = 'none';
-// 			nameInput.required = false;
-// 		} else {
-// 			nameField.style.display = 'block';
-// 			nameInput.required = true;
-// 		}
-// 	}
-// }
-
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
 	const form = e.target as HTMLFormElement;
@@ -110,14 +64,12 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		log("Login Successfull (player one) with id: " + userId);
 		Game.match.player1.ID = userId;
 		Game.match.player1.name = name;
-		Game.match.player1.login = true;
 		Game.match.player1.Twofa = twofa;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two) with id: " + userId);
 		Game.match.player2.ID = userId;
 		Game.match.player2.name = name;
-		Game.match.player2.login = true;
 		Game.match.player2.Twofa = twofa;
 	}
 	UI.state = S.stateUI.Menu;
@@ -203,7 +155,7 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 			return;
 		}
 		try {
-			const response = await fetch(`https://${S.host}:8443/api/2fa/verify`, {
+			const response = await fetch(`https://${S.host}/api/2fa/verify`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ playerNr, userId, token: code }),
