@@ -32,12 +32,12 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			console.error(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
 			return;
 		}
+		console.log(`Creating match with ID: ${matchnr}, mode: ${mode}, player1: ${name} (${id}), player2: ${name2} (${id2})`);
 		matches.set(matchnr, {
 			mode: mode,
 			intervalId : null,
-			dbID: matchnr,
+			matchID: matchnr,
 			stage: state.Start,
-			roomID: '0',
 			player1: {
 				id: id,
 				name: name,

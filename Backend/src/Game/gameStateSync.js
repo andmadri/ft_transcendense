@@ -13,7 +13,7 @@ export function sendBallUpdate(match, msg, socket, io) {
 	// match.ball.vY = msg.ballVY;
 
 	// update msg
-	io.to(match.roomID).emit('message', msg);
+	io.to(match.matchID).emit('message', msg);
 }
 
 export function sendPaddleUpdate(match, msg, socket, io) {
@@ -32,7 +32,7 @@ export function sendPaddleUpdate(match, msg, socket, io) {
 
 	// msg.paddle1VY
 	// msg.paddle2VY
-	io.to(match.roomID).emit('message', msg);
+	io.to(match.matchID).emit('message', msg);
 }
 
 export function applyKeyPress(match, msg) {
@@ -72,7 +72,7 @@ export async function updateScore(match, msg, io) {
 	})
 
 	// update msg -> not send to socket but to room.
-	// io.to(match.roomID).emit('message', msg);
+	// io.to(match.matchID).emit('message', msg);
 
 	return eventID;
 }

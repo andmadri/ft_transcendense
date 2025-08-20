@@ -1,9 +1,9 @@
 import { createMatch } from "./match.js";
 
 // To frontend: players get msg that server is ready with init, game can start
-function sendStartMsgToPlayers(roomID) {
+function sendStartMsgToPlayers(matchID) {
 	console.log("both players are ready to play! START");
-	io.to(roomID).emit('message', {
+	io.to(matchID).emit('message', {
 		action: 'game',
 		subaction: 'start',
 	});
@@ -21,7 +21,7 @@ function handleStartOnlineMatch(msg, match) {
 	console.log(`Player ${msg.userID} is ready..`);
 
 	if (match.player1.ready && match.player2.ready) {
-		sendStartMsgToPlayers(match.roomID);
+		sendStartMsgToPlayers(match.matchID);
 	} else {
 		console.log("waiting till the opponent is ready");
 		return true;

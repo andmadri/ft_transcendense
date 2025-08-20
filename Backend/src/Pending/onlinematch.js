@@ -47,7 +47,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		return ;
 		}
 	
-		const matchID = createMatch(db, OT.Online, socket, userID, userID2);
+		const matchID = await createMatch(db, OT.Online, socket, userID, userID2);
 
 		if (matchID == -1) {
 			console.log("CreateMatch went wrong");
@@ -64,7 +64,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		// CREATE START VALUES FOR GAME HERE
 		const match = matches.get(matchID);
 		if (!match) {
-			console.log("Something went wrong!!!");
+			console.log(`Something went wrong!!! No match for matchID: ${matchID}`);
 			return ;
 		}
 		console.log(`handleOnlineMatch: ${matchID}:
