@@ -1,6 +1,7 @@
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from "../Database/sessions.js";
 import { handleMatchEndedDB } from "../Services/matchService.js";
-import { matches, Stage } from "../InitGame/match.js";
+import { matches } from "../InitGame/match.js";
+import { state } from "../SharedBuild/enums.js"
 
 export async function quitMatch(match, msg, socket) {
 	const name = msg.name ? msg.name : 'unknown player';
@@ -10,7 +11,7 @@ export async function quitMatch(match, msg, socket) {
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.stage = Stage.Finish;
+	match.stage = state.Finish;
 }
 
 export async function saveMatch(db, match, msg, socket) {

@@ -1,5 +1,5 @@
 import { log } from '../logging.js'
-import { Game  } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 
 export async function submitLogout(e: Event | null, playerNr: number) {
@@ -8,7 +8,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		e.preventDefault();
 
 	const payload = { playerNr };
-	if (playerNr == 1 && Game.player2Login) {  // Ensure player 2 is logged out too
+	if (playerNr == 1 && Game.match.player2.login) {  // Ensure player 2 is logged out too
 		log(`Player 2 is logged in, logging out player 2 as well.`);
 		submitLogout(null, 2);
 	}
@@ -24,15 +24,14 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			const data = await response.json();
 			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
 			if (playerNr == 1) {
-				Game.player1Id = -1;
-				Game.player1Name = "";
-				Game.player1Login = false;
-				Game.state = S.State.LoginP1;
-				document.getElementById('menu')?.remove();
+				Game.match.player1.ID = -1;
+				Game.match.player1.name = "";
+				Game.match.player1.login = false;
+				UI.state = S.stateUI.LoginP1;
 			} else {
-				Game.player2Id = 1;
-				Game.player2Name = "Guest";
-				Game.player2Login = false;
+				Game.match.player2.ID = 1;
+				Game.match.player2.name = "Guest";
+				Game.match.player2.login = false;
 			}
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);

@@ -1,11 +1,11 @@
 
 import { waitlist, matches } from "../InitGame/match.js";
-import { Stage } from "../InitGame/match.js";
-import { OT } from '../SharedBuild/OT.js'
+import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 
 async function addToWaitinglist(socket, userID) {
+	console.log(`Add ${userID} to waiting list`);
 	waitlist.set(waitlist.size, { socket, userID });
 }
 
@@ -21,11 +21,9 @@ function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
-
-
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
-		// if (match.stage == Stage.Init) {
+		// if (match.stage == state.Init) {
 		// 	initGame();
 		// }
 	}, 100)
@@ -39,27 +37,48 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
-		const matchID = createMatch(db, OT.Online, socket, userID, userID2);
+		if (userID2 && userID2 == userID) {
+			console.log('Player can not play against himself');
+			socket.emit('message', {
+				action: 'initOnlineGame',
+				match: null
+				// more info about the game
+			});
+		return ;
+		}
+	
+		const matchID = await createMatch(db, OT.Online, socket, userID, userID2);
 
+		if (matchID == -1) {
+			console.log("CreateMatch went wrong");
+			return ;
+		}
 		// add both players to the room
 		socket.join(matchID);
 		socket2.join(matchID);
-		// matches.get(matchID).stage = Stage.Init;
+		// matches.get(matchID).stage = state.Init;
 
 		const sockets = await io.in(matchID).allSockets();
 		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
 
 		// CREATE START VALUES FOR GAME HERE
+		const match = matches.get(matchID);
+		if (!match) {
+			console.log(`Something went wrong!!! No match for matchID: ${matchID}`);
+			return ;
+		}
+		console.log(`handleOnlineMatch: ${matchID}:
+			${match.player1.id} and ${match.player2.id}`)
 
 		io.to(matchID).emit('message', {
 			action: 'initOnlineGame',
 			matchID: matchID,
-			match: matches.get(matchID)
+			match: match
 			// more info about the game
 		});
 
 		//set interval for online gamelogic
-		matchInterval(matches.get(matchID));
+		matchInterval(match);
 
 	} else {
 		console.log("No open match found...adding player to waitinglist");

@@ -1,5 +1,5 @@
 import * as S from '../structs.js'
-import { Game } from '../script.js'
+import { UI, Game } from '../gameData.js'
 import { log } from '../logging.js'
 // import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
@@ -10,21 +10,43 @@ import { authenticationMode, changeAuthMode } from './authContent.js'
 // function updateLoginPlayer(data: any) {
 // 	if (data.player == 1) {
 // 		if (data.userId)
-// 			Game.player1Id = data.userId;
+// 			Game.match.player1.ID = data.userId;
 // 		if (data.userName)
-// 			Game.player1Name = data.userName;
-// 		Game.playerLogin = 1;
-// 		Game.player1Login = true;
+// 			Game.match.player1.name = data.userName;
+// 		Game.match.player1.login = true;
 // 		updatePlayerData(1);
 
 // 	} else {
 // 		if (data.UserId)
-// 			Game.player2Id = data.UserId;
+// 			Game.match.player2.ID = data.UserId;
 // 		if (data.userName)
-// 			Game.player2Name = data.userName;
-// 		Game.player2Login = true;
-// 		Game.playerLogin = 2;
+// 			Game.match.player2.name = data.userName;
+// 		Game.match.player2.login = true;
 // 		updatePlayerData(2);
+// 	}
+// }
+
+// export function changeLoginMode(player: number) {
+// 	modes[player] = modes[player] == 'login' ? 'sign up' : 'login';
+
+// 	const modeLabel = document.getElementById('modelabel' + player);
+// 	const nameField = document.getElementById('nameField' + player);
+// 	const nameInput = document.getElementById('name' + player) as HTMLInputElement | null;
+// 	const submitButton = document.getElementById('submitBtn' + player);
+// 	const toggleButton = document.getElementById('toggle-mode' + player);
+// 	const authTitle = document.getElementById('authTitle' + player);
+
+// 	if (modeLabel)
+// 		modeLabel.textContent = modes[player] === 'login' ? 'Login mode' : 'Sign Up mode';
+
+// 	if (nameField && nameInput) {
+// 		if (modes[player] === 'login') {
+// 			nameField.style.display = 'none';
+// 			nameInput.required = false;
+// 		} else {
+// 			nameField.style.display = 'block';
+// 			nameInput.required = true;
+// 		}
 // 	}
 // }
 
@@ -81,26 +103,26 @@ export async function submitAuthForm(e: Event, player: number) {
 	}
 }
 
-export function loginSuccessfull(playerNr: number, userId: number, name: string, twofa: boolean) {
+export function loginSuccessfull(player: number, userId: number, name: string, twofa: boolean) {
 	document.getElementById('auth1')?.remove();
 	document.getElementById('auth2')?.remove();
-	if (playerNr == 1) {
-		log("Login Successfull playerNr: " + playerNr + " with id: " + userId);
-		Game.player1Id = userId;
-		Game.player1Name = name;
-		Game.player1Login = true;
-		Game.player1Twofa = twofa;
+	if (player == 1) {
+		log("Login Successfull (player one) with id: " + userId);
+		Game.match.player1.ID = userId;
+		Game.match.player1.name = name;
+		Game.match.player1.login = true;
+		Game.match.player1.Twofa = twofa;
 	}
-	else if (playerNr == 2) {
-		log("Login Successfull playerNr: " + playerNr + " with id: " + userId);
-		Game.player2Id = userId;
-		Game.player2Name = name;
-		Game.player2Login = true;
-		Game.player2Twofa = twofa;
+	else if (player == 2) {
+		log("Login Successfull (player two) with id: " + userId);
+		Game.match.player2.ID = userId;
+		Game.match.player2.name = name;
+		Game.match.player2.login = true;
+		Game.match.player2.Twofa = twofa;
 	}
-	Game.state = S.State.Menu;
+	UI.state = S.stateUI.Menu;
 	document.getElementById('menu')?.remove();
-	log("playerNr 1 logged in: " + Game.player1Login + "\n playerNr 2 logged in: " + Game.player2Login);
+	log("playerNr 1 logged in: " + Game.match.player1.Login + "\n playerNr 2 logged in: " + Game.match.player2.Login);
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {

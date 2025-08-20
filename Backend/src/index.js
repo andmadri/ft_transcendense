@@ -82,7 +82,10 @@ fastify.ready().then(() => {
 	let userId1 = null;
 	let userId2 = null;
 	if (authTokens && authTokens.jwtAuthToken1) {
+		console.log('signed:', authTokens.jwtAuthToken1);
 		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+		console.log('unsigned:', unsigned.value);
+		console.log('Unsigned JWT1:', unsigned);
 		if (unsigned.valid) {
 			try {
 				decoded = fastify.jwt.verify(unsigned.value);
@@ -129,6 +132,7 @@ fastify.ready().then(() => {
 			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
+			console.log(`Action: ${msg.action} + ${msg.subaction}`);
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
@@ -136,10 +140,10 @@ fastify.ready().then(() => {
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
 					return handleFriends(msg, socket);
-				case 'init':
-					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+				case 'init':
+					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
 				case 'error':

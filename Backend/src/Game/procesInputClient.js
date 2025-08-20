@@ -18,7 +18,7 @@
 // 	updateClients(match);
 // }
 
-// export function updateClients(roomID) {
+// export function updateClients(matchID) {
 // 	const data = {
 // 		action: 'game',
 // 		subaction: 'update',
@@ -29,5 +29,5 @@
 // 		score: [match.player1.score, match.player2.score]				
 // 	}
 
-// 	io.to(match.roomID).emit('message', data);
+// 	io.to(match.matchID).emit('message', data);
 // }

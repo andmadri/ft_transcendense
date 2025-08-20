@@ -1,4 +1,4 @@
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
@@ -77,9 +77,9 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 		log('Login button clicked for player ' + playerNr);
 		document.getElementById('menu')?.remove();
 		if (playerNr == 2)
-			Game.state = S.State.LoginP2;
-		else
-			Game.state = S.State.LoginP1;
+			UI.state = S.stateUI.LoginP2;
+		else 
+			UI.state = S.stateUI.LoginP1;
 	});
 	return (loginBtn);
 }
@@ -103,9 +103,9 @@ function getLogoutBtn(playerNr: number): HTMLButtonElement {
 }
 
 function get2faBtn(playerNr: number): HTMLButtonElement {
-	if (Game.player1Twofa && playerNr == 1)
+	if (Game.match.player1.Twofa && playerNr == 1)
 		return (get2faDisableBtn(playerNr));
-	if (Game.player2Twofa && playerNr == 2)
+	if (Game.match.player2.Twofa && playerNr == 2)
 		return (get2faDisableBtn(playerNr));
 	return (get2faSetupBtn(playerNr));
 }
@@ -207,9 +207,9 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 					label.textContent = '2FA disabled successfully!';
 					form.remove();
 					if (data.playerNr == 1)
-						Game.player1Twofa = false;
+						Game.match.player1.Twofa = false;
 					else
-						Game.player2Twofa = false;
+						Game.match.player2.Twofa = false;
 					setTimeout(() => overlay.remove(), 1000);
 					document.getElementById('menu')?.remove();
 				} else {
@@ -354,7 +354,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					qrImg.remove();
 					qrLabel.textContent = '2FA activated successfully!';
 					form.remove();
-					Game.player1Twofa = playerNr === 1 ? true : Game.player1Twofa;
+					Game.match.player1.Twofa = playerNr === 1 ? true : Game.match.player1.Twofa;
 					setTimeout(() => {
 						overlay.remove();
 					}, 1000); // 1000 ms = 1 second
@@ -436,7 +436,7 @@ export function getRightSideMenu(playerNr: number) {
 	})
 
 	const avatarImg = document.createElement('img');
-	const userId = playerNr === 1 ? Game.player1Id : Game.player2Id;
+	const userId = playerNr === 1 ? Game.match.player1.ID : Game.match.player2.ID;
 	avatarImg.src = `/api/avatar/${userId}`;
 	styleElement(avatarImg, {
 		maxWidth: '120px',
@@ -458,9 +458,9 @@ export function getRightSideMenu(playerNr: number) {
 	const playername = document.createElement('div');
 	playername.id = "playerNameMenu" + playerNr;
 	if (playerNr == 1)
-		playername.textContent = Game.player1Name;
+		playername.textContent = Game.match.player1.name;
 	else
-		playername.textContent = Game.player2Name;
+		playername.textContent = Game.match.player2.name;
 	playername.style.fontSize = '1.5em';
 
 	const buttons = document.createElement('div');

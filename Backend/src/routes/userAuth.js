@@ -52,16 +52,19 @@ export default async function userAuthRoutes(fastify) {
 				secure: true,        // Only sent over HTTPS
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 				signed: true,        // signed cookies
+				encode: v => v,      // Use default encoding
 				path: '/',
 				maxAge: 60 * 10      // 10 minutes
 			}).send({ success: true, ok: true, message: 'Two-factor authentication required', playerNr: playerNr, userId: answer.user.id, name: answer.user.name, twofaPending: true });
 		} else {
 			const jwtToken = signFastifyJWT(answer.user, fastify);
+			console.log('JWT Token:', jwtToken);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
 				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 				signed: true,        // signed cookies
+				encode: v => v,      // Use default encoding
 				path: '/',
 				maxAge: 60 * 60      // 1 hour
 			}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name, twofa: answer.user.twofa_active });
@@ -91,6 +94,7 @@ export default async function userAuthRoutes(fastify) {
 				httpOnly: true,
 				secure: true,
 				signed: true,
+				encode: v => v,
 				sameSite: 'Strict',
 				path: '/',
 			}).send({ message: 'Logged out', ok: true });

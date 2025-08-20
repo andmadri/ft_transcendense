@@ -119,27 +119,17 @@ export default async function googleAuthRoutes(fastify, opts) {
 			}
 			console.log('Google user data:', dbUserObj);
 
-			if (dbUserObj.twofa_active) {
-				const pendingTwofaToken = signFastifyPendingTwofa(dbUserObj, fastify);
-				reply.setCookie('pendingTwofaToken' + playerNr, pendingTwofaToken, {
-					httpOnly: true,      // Prevents JS access
-					secure: true,        // Only sent over HTTPS
-					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-					signed: true,        // signed cookies
-					path: '/',
-					maxAge: 60 * 10      // 10 minutes
-				}).redirect(`https://${window.location.hostname}:8443`);
-			} else {
-				const jwtToken = signFastifyJWT(dbUserObj, fastify);
-				reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
-					httpOnly: true,      // Prevents JS access
-					secure: true,        // Only sent over HTTPS
-					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
-					signed: true,        // signed cookies
-					path: '/',
-					maxAge: 60 * 60      // 1 hour
-				}).redirect(`https://${window.location.hostname}:8443`);
-			}
+			const jwtToken = signFastifyJWT(dbUserObj, fastify);
+			console.log('Generated JWT:', jwtToken);
+			reply.setCookie('jwtAuthToken' + loginId, jwtToken, {
+				httpOnly: true,		// Prevents JS access
+				secure: true,		// Only sent over HTTPS
+				sameSite: 'Lax',	// CSRF protection ('Strict' is even more secure)
+				signed: true,		// signed cookies
+				path: '/',
+				maxAge: 60 * 60		// 1 hour
+			}).redirect(`https://${window.location.host}`);
+
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);
 			reply.code(500).send('OAuth login failed.');

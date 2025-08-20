@@ -1,24 +1,24 @@
-import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js";
+import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js"
 import { log } from '../logging.js'
-import { Game } from "../script.js";
+import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
-import { getGameField } from "./gameContent.js";
-import { OT } from '@shared/OT'
+import { getGameField } from "./gameContent.js"
+import { OT, Stage } from '@shared/enums'
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
 	console.log("inited game with id: " + data.id);
 	console.log("players: " + data.player1ID + " " + data.player2ID);
-	Game.matchID = data.id;
-	Game.player1Id = data.player1ID;
-	Game.player2Id = data.player2ID;
+	Game.match.ID = data.id;
+	Game.match.player1.ID = data.player1ID;
+	Game.match.player2.ID = data.player2ID;
 
-	if (Game.opponentType == OT.Online) {
+	if (Game.match.mode == OT.Online) {
 		getGameField();
 	}
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
-	Game.state = S.State.Game;
+	UI.state = S.stateUI.Game;
 	log("ProcessMatch");
 }
 
@@ -30,7 +30,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	Game.state = S.State.End;
+	UI.state = S.stateUI.Menu;
 	log(data.reason);
 }
 
@@ -47,7 +47,7 @@ export function actionGame(data: any) {
 			processMatch(data);
 			break ;
 		case 'start':
-			Game.state = S.State.Game;
+			UI.state = S.stateUI.Game;
 			break ;
 		case 'ballUpdate':
  			applyBallUpdate(data);

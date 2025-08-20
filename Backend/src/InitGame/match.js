@@ -1,18 +1,9 @@
 import { handleMatchStartDB } from '../Services/matchService.js';
 import { getUserByID } from "../Database/users.js";
-import { OT } from '../SharedBuild/OT.js'
+import { OT, state } from '../SharedBuild/enums.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
-
-export const Stage = {
-	Start: 0,
-	Pending: 1,
-	Init: 2,
-	Playing: 3,
-	Finish: 4,
-	Interrupt: 5
-}
 
 async function getNamebyUserID(db, userID) {
 	try {
@@ -41,12 +32,12 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			console.error(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
 			return;
 		}
+		console.log(`Creating match with ID: ${matchnr}, mode: ${mode}, player1: ${name} (${id}), player2: ${name2} (${id2})`);
 		matches.set(matchnr, {
 			mode: mode,
 			intervalId : null,
-			dbID: matchnr,
-			stage: Stage.Start,
-			roomID: '0',
+			matchID: matchnr,
+			stage: state.Start,
 			player1: {
 				id: id,
 				name: name,
@@ -98,11 +89,15 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
  * @param socket - socket to send the message back to player
  * @returns match ID (needed for rooms)
 */
-export async function createMatch(db, opponentMode, socket, userId1, userId2) {
-	console.log(`create new match in OT: ${opponentMode} - ${OT.Online}`);
+export async function createMatch(db, mode, socket, userId1, userId2) {
+	console.log(`create new match in OT: ${mode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
+	if (userId1 == userId2) {
+		console.log(`UserIds are the same`);
+		return (-1);
+	}
 
-	if (opponentMode === OT.ONEvsCOM)
+	if (mode === OT.ONEvsCOM)
 		userId2 = 2; // COM
 
 	try {
@@ -113,11 +108,11 @@ export async function createMatch(db, opponentMode, socket, userId1, userId2) {
 		});
 
 		// CREATE MATCH IN MEMORY
-		await newMatch(db, matchID, userId1, userId2, opponentMode);
+		await newMatch(db, matchID, userId1, userId2, mode);
 
-		if (opponentMode != OT.Online) {
+		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
-			matches.get(matchID).stage = Stage.Playing;
+			matches.get(matchID).stage = state.Playing;
 		}
 		return (matchID);
 	} catch (err) {

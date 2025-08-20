@@ -1,31 +1,32 @@
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
-import { OT } from '@shared/OT'
+import { OT, state } from '@shared/enums'
+import { entity } from '@shared/types'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 
-const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
-const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos } = S.pos;
-const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
-const { field : fieldVelocity, ball: ballVelocity, lPlayer: lPlayerVelocity, rPlayer: rPlayerVelocity } = S.velocity;
+const field = Game.match.gameState.field;
+const ball = Game.match.gameState.ball;
+const paddle1 = Game.match.gameState.paddle1;
+const paddle2 = Game.match.gameState.paddle2;
 
-function handlePaddleMovement(player: S.E, element : string, dir: number) {
-	const nextPos = S.pos[player].y + (dir * S.movement[player].speed);
-	S.pos[player].y = Math.max(0, Math.min(nextPos, fieldSize.height - S.size[player].height));
+function handlePaddleMovement(paddle: entity, dir: number) {
+	const nextPos = paddle.pos.y + (dir * paddle.movement.speed);
+	paddle.pos.y = Math.max(0, Math.min(nextPos, field.size.height - paddle.size.height));
 }
 
 export function movePadel(key: string) {
 	if (key === 'w' || key === 's') {
-		handlePaddleMovement(S.E.lPlayer, 'lPlayer', S.Keys[key].dir);
+		handlePaddleMovement(paddle1, S.Keys[key].dir);
 		
 	} else if (key === 'ArrowUp' || key === 'ArrowDown') {
-		handlePaddleMovement(S.E.rPlayer, 'rPlayer', S.Keys[key].dir);
+		handlePaddleMovement(paddle2, S.Keys[key].dir);
 	}
 }
 
 function checkPaddleMovement(): boolean {
 	let moved = false;
-	if (Game.opponentType == OT.ONEvsCOM) {
+	if (Game.match.mode == OT.ONEvsCOM) {
 		moved = aiAlgorithm();
 	}
 	for (let key in S.Keys) {
@@ -38,18 +39,18 @@ function checkPaddleMovement(): boolean {
 }
 
 export function updateBallPos() {
-	const ballRadius = ballSize.height / 2;
-	ballPos.x += ballVelocity.vx * ballMove.speed;
-	ballPos.y += ballVelocity.vy * ballMove.speed;
-	if (ballPos.y - ballRadius < 0)
-		ballPos.y = ballRadius;
+	const ballRadius = ball.size.height / 2;
+	ball.pos.x += ball.velocity.vx * ball.movement.speed;
+	ball.pos.y += ball.velocity.vy * ball.movement.speed;
+	if (ball.pos.y - ballRadius < 0)
+		ball.pos.y = ballRadius;
 	//this line keeps the ball from going past the bottom
-	else if (ballPos.y + ballRadius > fieldSize.height)
-		ballPos.y = fieldSize.height - ballRadius;
-	if (ballPos.x - ballRadius < 0)
-		ballPos.x = ballRadius;
-	else if (ballPos.x + ballRadius > fieldSize.width)
-		ballPos.x = fieldSize.width - ballRadius;
+	else if (ball.pos.y + ballRadius > field.size.height)
+		ball.pos.y = field.size.height - ballRadius;
+	if (ball.pos.x - ballRadius < 0)
+		ball.pos.x = ballRadius;
+	else if (ball.pos.x + ballRadius > field.size.width)
+		ball.pos.x = field.size.width - ballRadius;
 }
 
 export function randomizeBallAngle() {
@@ -61,8 +62,8 @@ export function randomizeBallAngle() {
 	const vx = Math.cos(radians);
 	const vy = Math.sin(radians);
 
-	ballVelocity.vx = Math.random() < 0.5 ? vx : vx * -1;
-	ballVelocity.vy = Math.random() < 0.5 ? vy : vy * -1;
+	ball.velocity.vx = Math.random() < 0.5 ? vx : -vx;
+	ball.velocity.vy = Math.random() < 0.5 ? vy : -vy;
 }
 
 
@@ -72,112 +73,125 @@ function normalizeAngle(angle: number) {
 }
 
 function handleWallBounce() {
-	const radius = ballSize.height / 2;
-	if (ballPos.y <= radius || ballPos.y + radius >= fieldSize.height)
-		ballVelocity.vy *= -1;
+	const radius = ball.size.height / 2;
+	if (ball.pos.y <= radius || ball.pos.y + radius >= field.size.height)
+		ball.velocity.vy *= -1;
 }
 
 //change direction of the ball on each reset
 function resetBall(){
-	const ballRadius = ballSize.width / 2;
-	ballPos.x = fieldSize.width / 2 + ballRadius;
-	ballPos.y = fieldSize.height / 2 + ballRadius;
+	const ballRadius = ball.size.width / 2;
+	ball.pos.x = field.size.width / 2 + ballRadius;
+	ball.pos.y = field.size.height / 2 + ballRadius;
 	randomizeBallAngle();
-	if (Game.opponentType == OT.ONEvsCOM) {
+	if (Game.match.mode == OT.ONEvsCOM) {
 		resetAI();
 	}
 }
 
-function changeVelocityOnPaddleBounce(PlayerPos : S.Pos, playerSize : S.Size) {
-	const relativeHitPoint = (ballPos.y - PlayerPos.y) - playerSize.height / 2;
-	const normalizedHitPoint = relativeHitPoint / (playerSize.height / 2);
+function changeVelocityOnPaddleBounce(player : entity) {
+	const relativeHitPoint = (ball.pos.y - player.pos.y) - player.size.height / 2;
+	const normalizedHitPoint = relativeHitPoint / (player.size.height / 2);
 
 	const maxBounceAngle = (Math.PI / 4) //45 degrees max
 	const angle = normalizedHitPoint * maxBounceAngle;
 
-	const direction = ballVelocity.vx > 0 ? -1 : 1;
+	const direction = ball.velocity.vx > 0 ? -1 : 1;
 
-	ballVelocity.vx = Math.cos(angle) * direction;
-	ballVelocity.vy = Math.sin(angle);
+	ball.velocity.vx = Math.cos(angle) * direction;
+	ball.velocity.vy = Math.sin(angle);
 }
 
 function handlePaddleBounce() {
-	const radius = ballSize.width / 2;
+	const radius = ball.size.width / 2;
 
-	if (ballPos.x + radius >= rPlayerPos.x)
+	if (ball.pos.x + radius >= paddle2.pos.x)
 	{
-		if ((ballPos.y - radius < rPlayerPos.y + rPlayerSize.height) && (ballPos.y + radius > rPlayerPos.y))
+		if ((ball.pos.y - radius < paddle2.pos.y + paddle2.size.height) && (ball.pos.y + radius > paddle2.pos.y))
 		{
-			changeVelocityOnPaddleBounce(rPlayerPos, rPlayerSize);
+			changeVelocityOnPaddleBounce(paddle2);
 		}
 		else {
-			Game.scoreLeft++;
-			sendScoreUpdate(Game.player1Id);
+			Game.match.player1.score++;
+			sendScoreUpdate(Game.match.player1.ID);
 			resetBall();
 			pauseBallTemporarily(3000);
+				console.log('Field, Ball and Paddles:', {
+				field: { width: field.size.width, height: field.size.height },
+				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
+				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
+				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
+				});
 		}
 	}
-	else if (ballPos.x - radius <= lPlayerPos.x + lPlayerSize.width)
+	else if (ball.pos.x - radius <= paddle1.pos.x + paddle1.size.width)
 	{
-		if ((ballPos.y - radius < lPlayerPos.y + lPlayerSize.height) && (ballPos.y + radius > lPlayerPos.y))
+		if ((ball.pos.y - radius < paddle1.pos.y + paddle1.size.height) && (ball.pos.y + radius > paddle1.pos.y))
 		{
-			changeVelocityOnPaddleBounce(lPlayerPos, lPlayerSize);
+			changeVelocityOnPaddleBounce(paddle1);
 		}
 		else {
-			Game.scoreRight++;
-			sendScoreUpdate(Game.player2Id);
+			Game.match.player2.score++;
+			sendScoreUpdate(Game.match.player2.ID);
 			resetBall();
 			pauseBallTemporarily(3000);
+				console.log('Field, Ball and Paddles:', {
+				field: { width: field.size.width, height: field.size.height },
+				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
+				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
+				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
+				});
 		}
 	}
 }
 
 function updateDOMElements() {
-	const lPlayer = document.getElementById('lPlayer');
-	const rPlayer = document.getElementById('rPlayer');
-	const ball = document.getElementById('ball');
+	const ballRadius = ball.size.height / 2;
+	const paddle1Div = document.getElementById('lPlayer');
+	const paddle2Div = document.getElementById('rPlayer');
+	const ballDiv = document.getElementById('ball');
 	const leftScore = document.getElementById('leftScore');
 	const rightScore = document.getElementById('rightScore');
-	const ballRadius = ballSize.height / 2;
+	const fieldDiv = document.getElementById('field');
 
-	if (ball && lPlayer && rPlayer && leftScore && rightScore) {
-		leftScore.textContent = Game.scoreLeft.toString();
-		rightScore.textContent = Game.scoreRight.toString();
-		ball.style.left = `${ballPos.x}px`;
-		ball.style.top = `${ballPos.y}px`;
+	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore) {
+		leftScore.textContent = Game.match.player1.score.toString();
+		rightScore.textContent = Game.match.player2.score.toString();
+		ballDiv.style.left = `${ball.pos.x * field.clientWidth}px`;
+		ballDiv.style.top = `${ball.pos.y * field.clientHeight}px`;
 
-		lPlayer.style.top = `${lPlayerPos.y}px`;
-		rPlayer.style.top = `${rPlayerPos.y}px`;
+		paddle1Div.style.top = `${paddle1.pos.y * field.clientHeight}px`;
+		paddle2Div.style.top = `${paddle2.pos.y * field.clientHeight}px`;
 	}
 }
 
 export function pauseBallTemporarily(duration: number) {
-	const ball = document.getElementById('ball');
-	if (!ball)
+	const ballDiv = document.getElementById('ball');
+	if (!ballDiv)
 		return;
-	Game.ballPaused = true;
-	ball.style.animation = 'twinkle 1s ease-in-out infinite';
+	Game.match.state = state.Paused;
+	ballDiv.style.animation = 'twinkle 1s ease-in-out infinite';
 	setTimeout(() => {
-		Game.ballPaused = false;
-		ball.style.animation = 'none';
+		Game.match.state = state.Playing;
+		ballDiv.style.animation = 'none';
 	}, duration);
 }
 
 export function game() {
-	if (Game.opponentType == OT.Online) {
+	if (Game.match.mode == OT.Online) {
 		//update own paddle immediately in frontend
 		checkPaddleMovement();
 		updateDOMElements();
 	}
 	else {
-		Game.timeGame = performance.now();
-		if (Game.scoreRight == 5 || Game.scoreLeft == 5) {
-			Game.state = S.State.End;
+		Game.match.time = performance.now();
+		if (Game.match.player1.score == 5 || Game.match.player2.score == 5) {
+			UI.state = S.stateUI.Menu;
 			return ;
 		}
 		handleWallBounce();
 		handlePaddleBounce();
-		if (!Game.ballPaused) {
+		if (Game.match.state == state.Playing) {
 			updateBallPos();
 			sendBallUpdate();
 		}

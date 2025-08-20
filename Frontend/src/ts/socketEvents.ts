@@ -1,7 +1,7 @@
 import { actionGame } from './Game/game.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
-import { Game } from './script.js'
+import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'

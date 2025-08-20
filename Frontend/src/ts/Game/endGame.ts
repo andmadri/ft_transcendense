@@ -1,6 +1,6 @@
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
-import { OT } from '@shared/OT'
+import { OT, state } from '@shared/enums'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
@@ -30,9 +30,9 @@ function handleGameOver() {
 	txtGameOver.style.webkitTextStroke = '0.2rem #000';
 
 	let result;
-	if (Game.scoreLeft > Game.scoreRight) {
+	if (Game.match.player1.score > Game.match.player2.score) {
 		result = "Left Player Wins!";
-	} else if (Game.scoreLeft < Game.scoreRight) {
+	} else if (Game.match.player1.score < Game.match.player2.score) {
   result = "Right Player Wins!"; 
 	} else {
 		result = "It is a Tie!"
@@ -67,7 +67,7 @@ function handleGameOver() {
 
 	// backToMenu.addEventListener('click', () => {
 	// 	log("pushed back to menu button");
-	// 	Game.state = S.State.Menu;
+	// 	UI.state = S.stateUI.Menu;
 	// 	return ;
 	// })
 
@@ -75,11 +75,11 @@ function handleGameOver() {
 	if (!body)
 		return ;
 	body.appendChild(gameOver);
-	Game.state = S.State.End;
+	UI.state = S.stateUI.Menu
 }
 
 export function saveGame() {
-	if (Game.matchID == -1)
+	if (Game.match.ID == -1)
 		return ;
 
 	if (!document.getElementById('gameOver'))
@@ -95,18 +95,18 @@ export function saveGame() {
 	Game.socket.send({
 		action: 'game',
 		subaction: 'save',
-		matchID: Game.matchID
+		matchID: Game.match.ID
 	});
 
-	Game.scoreLeft = 0;
-	Game.scoreRight = 0;
-	Game.matchID = -1;
+	Game.match.player1.score = 0;
+	Game.match.player2.score = 0;
+	Game.match.ID = -1;
 
 	// LOGOUT PLAYER 2 after game ONE vs ONE
-	// if (Game.opponentType == S.OT.ONEvsONE && Game.player2Id != 0) {
+	// if (Game.match.opponentType == S.OT.ONEvsONE && Game.match.player2.ID != 0) {
 	// 	submitLogout(null, 2);
 	// } else {
-	// 	Game.player2Id = -1;
-	// 	Game.player2Name = 'unknown';
+	// 	Game.match.player2.ID = -1;
+	// 	Game.match.player2.name = 'unknown';
 	// }
 }

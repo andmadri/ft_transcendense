@@ -1,4 +1,4 @@
-import { Game } from "../script.js";
+import { Game } from "../gameData.js"
 
 // send when player wants to play an online game
 export function searchMatch(userID: number) {
