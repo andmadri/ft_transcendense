@@ -116,7 +116,7 @@ export default async function twoFactor(fastify, opts) {
 			secret: userSecret,
 			encoding: 'base32',
 			token,
-			window: 1, // allow a little drift on the current timeslot
+			window: 1,          // allow a little drift on the current timeslot
 		});
 
 		if (!verified) {
@@ -134,8 +134,8 @@ export default async function twoFactor(fastify, opts) {
 			httpOnly: true,      // Prevents JS access
 			secure: true,        // Only sent over HTTPS
 			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+			signed: true,        // signed cookies
 			path: '/',
-			singed: true,		// signed cookies
 			maxAge: 60 * 60      // 1 hour
 		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name, twofa: user.twofa_active });
 
