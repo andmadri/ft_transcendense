@@ -92,20 +92,6 @@ export function changeMatchFormat(option: string) {
 	}
 }
 
-export function initPositions() {
-	const fieldDiv = document.getElementById('field');
-	const ballDiv = document.getElementById('ball');
-	const rPlayer = document.getElementById('rPlayer');
-	const lPlayer = document.getElementById('lPlayer');
-	if (!ballDiv || !rPlayer || !lPlayer || !fieldDiv) {
-		console.log('Something went wrong (initGame), close game?');
-		return;
-	}
-	const fieldWidth = fieldDiv.clientWidth;
-	const fieldHeight = fieldDiv.clientHeight;
-	randomizeBallAngle();
-}
-
 export function initGameServer() {
 	if (Game.socket.connected) {
 		log("server init")
@@ -174,7 +160,6 @@ function getStartScreenBeforeGame() {
 }
 
 export function initGame() {
-	initPositions();
 	if (Game.match.mode != OT.Online)
 		initGameServer();
 	else {
@@ -194,6 +179,7 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
+	randomizeBallAngle();
 	// updateNamesMenu();
 	// resetScoreMenu();
 }
