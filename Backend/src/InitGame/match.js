@@ -89,11 +89,15 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
  * @param socket - socket to send the message back to player
  * @returns match ID (needed for rooms)
 */
-export async function createMatch(db, opponentMode, socket, userId1, userId2) {
-	console.log(`create new match in OT: ${opponentMode} - ${OT.Online}`);
+export async function createMatch(db, mode, socket, userId1, userId2) {
+	console.log(`create new match in OT: ${mode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
+	if (userId1 == userId2) {
+		console.log(`UserIds are the same`);
+		return (-1);
+	}
 
-	if (opponentMode === OT.ONEvsCOM)
+	if (mode === OT.ONEvsCOM)
 		userId2 = 2; // COM
 
 	try {
@@ -104,9 +108,9 @@ export async function createMatch(db, opponentMode, socket, userId1, userId2) {
 		});
 
 		// CREATE MATCH IN MEMORY
-		await newMatch(db, matchID, userId1, userId2, opponentMode);
+		await newMatch(db, matchID, userId1, userId2, mode);
 
-		if (opponentMode != OT.Online) {
+		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
 			matches.get(matchID).stage = state.Playing;
 		}

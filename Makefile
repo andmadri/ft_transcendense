@@ -4,7 +4,7 @@ VOLUME	= "./Database"
 
 all:	up
 
-up:		
+up:	
 	rm -rf Server/src
 	mkdir -p Database
 	cp -r Frontend/* Server/
@@ -33,6 +33,14 @@ server: Frontend/*
 
 backend:
 	docker compose up -d --build --force-recreate backend
+
+# update-host-ip:
+# 	@HOST_IP=$$(hostname -I | awk '{print $$1}'); \
+# 	if grep -q '^HOST_IP=' .env; then \
+# 		sed -i "s/^HOST_IP=.*/HOST_IP=$$HOST_IP/" .env; \
+# 	else \
+# 		echo "HOST_IP=$$HOST_IP" >> .env; \
+# 	fi
 
 build_volumes:
 	mkdir -p $(VOLUME)

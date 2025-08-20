@@ -16,6 +16,7 @@ import { addUserToRoom } from './rooms.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
+import  twoFactor  from './routes/twofa.js';
 // import { testDB }   from './testDB.js';
 
 // FASTIFY => API SERVER
@@ -35,9 +36,8 @@ export const db = await createDatabase();
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
 // await testDB(db);
 
-// Register the cookie plugin
+// Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
@@ -51,6 +51,11 @@ await fastify.register(fastifyMultipart, {
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
 await fastify.register(userAuthRoutes);
+// POST /2fa/generate - Generate a 2FA secret and QR code
+// POST /2fa/activate - Activate 2FA for a user
+// POST /2fa/disable - Disable 2FA for a user
+// GET /2fa/status - Check if 2FA is enabled for a user
+await fastify.register(twoFactor);
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
@@ -65,40 +70,51 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-		console.log('🔌 A user connected:', socket.id);
-		// Check if the request has a valid JWT token in cookies
-		// const cookies = req.headers.cookie;
-		const cookies = socket.handshake.headers.cookie || '';
-		const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('🔌 A user connected:', socket.id);
+	// Check if the request has a valid JWT token in cookies
+	// const cookies = req.headers.cookie;
+	const cookies = socket.handshake.headers.cookie || '';
+	console.log('Cookies from handshake:', cookies);
+	const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('Auth tokens from cookies:', authTokens);
 
-		let decoded;
-		let userId1 = null;
-		let userId2 = null;
-		if (authTokens && authTokens.jwtAuthToken1) {
+	let decoded;
+	let userId1 = null;
+	let userId2 = null;
+	if (authTokens && authTokens.jwtAuthToken1) {
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+		if (unsigned.valid) {
 			try {
-				decoded = fastify.jwt.verify(authTokens.jwtAuthToken1);
+				decoded = fastify.jwt.verify(unsigned.value);
 				userId1 = decoded.userId;
 				// Use userId or decoded as needed for player 1
 			} catch (err) {
 				console.error('JWT1 verification failed:', err);
 			}
+		} else {
+			console.error('JWT1 verification failed: Invalid cookie');
 		}
-		if (authTokens && authTokens.jwtAuthToken2) {
+	}
+	if (authTokens && authTokens.jwtAuthToken2) {
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
+		if (unsigned.valid) {
 			try {
-				decoded = fastify.jwt.verify(authTokens.jwtAuthToken2);
+				decoded = fastify.jwt.verify(unsigned.value);
 				userId2 = decoded.userId;
 				// Use userId or decoded as needed for player 2
 			} catch (err) {
 				console.error('JWT2 verification failed:', err);
 			}
+		} else {
+			console.error('JWT2 verification failed: Invalid cookie');
 		}
-		console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
-		if (!userId1) {
-			console.error('No valid auth tokens found in cookies');
-			socket.emit('error', { reason: 'Unauthorized: No valid tokens' });
-			return ;
-		}
-		console.log('✅ Authenticated user(s):', userId1, userId2);
+	}
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	if (!userId1) {
+		console.error('No valid auth tokens found in cookies');
+		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+		return ;
+	}
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
@@ -113,6 +129,7 @@ fastify.ready().then(() => {
 			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
+			console.log(`Action: ${msg.action} + ${msg.subaction}`);
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);

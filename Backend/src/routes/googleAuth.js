@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { signFastifyJWT } from "../utils/jwt.js";
+import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js'
@@ -78,25 +78,25 @@ async function handleGoogleAuth(user) {
  */
 export default async function googleAuthRoutes(fastify, opts) {
 	fastify.get('/api/auth/google', async (request, reply) => {
-		const player = request.query.player || '1';
-		console.log('1backend: Google OAuth for player:', player);
-		if ( player == 'undefined' )
-			player = '1';
+		const playerNr = request.query.playerNr || '1';
+		console.log('1backend: Google OAuth for playerNr:', playerNr);
+		if ( playerNr == 'undefined' )
+			playerNr = '1';
 
 
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
-		const loginId = encodeURIComponent(player);
-		console.log('2backend: Google OAuth for player:', loginId);
+		const playerNrEncoded = encodeURIComponent(playerNr);
+		console.log('2backend: Google OAuth for playerNr:', playerNr);
 
-		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${loginId}`;
+		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${playerNrEncoded}`;
 		reply.redirect(redirectURL);
 	});
 
 	fastify.get('/api/auth/google/callback', async (request, reply) => {
 		const { code, state } = request.query;
-		const loginId = state || '1';
-		console.log('callback: Google OAuth for player:', loginId);
+		const playerNr = state || '1';
+		console.log('callback: Google OAuth for playerNr:', playerNr);
 
 		try {
 			const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
@@ -119,17 +119,27 @@ export default async function googleAuthRoutes(fastify, opts) {
 			}
 			console.log('Google user data:', dbUserObj);
 
-			const jwtToken = signFastifyJWT(dbUserObj, fastify);
-			console.log('Generated JWT:', jwtToken);
-			reply.setCookie('jwtAuthToken' + loginId, jwtToken, {
-				httpOnly: true,		// Prevents JS access
-				secure: true,		// Only sent over HTTPS
-				sameSite: 'Lax',	// CSRF protection ('Strict' is even more secure)
-				signed: true,		// signed cookies
-				path: '/',
-				maxAge: 60 * 60		// 1 hour
-			}).redirect(`https://${window.location.host}`);
-
+			if (dbUserObj.twofa_active) {
+				const pendingTwofaToken = signFastifyPendingTwofa(dbUserObj, fastify);
+				reply.setCookie('pendingTwofaToken' + playerNr, pendingTwofaToken, {
+					httpOnly: true,      // Prevents JS access
+					secure: true,        // Only sent over HTTPS
+					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+					signed: true,        // signed cookies
+					path: '/',
+					maxAge: 60 * 10      // 10 minutes
+				}).redirect(`https://${window.location.hostname}:8443`);
+			} else {
+				const jwtToken = signFastifyJWT(dbUserObj, fastify);
+				reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
+					httpOnly: true,      // Prevents JS access
+					secure: true,        // Only sent over HTTPS
+					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+					signed: true,        // signed cookies
+					path: '/',
+					maxAge: 60 * 60      // 1 hour
+				}).redirect(`https://${window.location.hostname}:8443`);
+			}
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);
 			reply.code(500).send('OAuth login failed.');

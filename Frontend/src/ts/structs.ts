@@ -4,8 +4,8 @@ import { matchInfo, gameState } from '@shared/types'
 type Socket = any;
 
 export enum stateUI {
-	LoginP1,
 	Menu,
+	LoginP1,
 	LoginP2,
 	Game
 }
@@ -57,5 +57,5 @@ export type AIInfo = {
 	targetDirection: 'ArrowUp' | 'ArrowDown' | 'noAction';
 };
 
-//export const host = window.location.hostname;
+//export const host = window.location.host;
 export const host = window.location.host;

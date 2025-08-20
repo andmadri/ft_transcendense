@@ -1,6 +1,6 @@
 import { addUserToDB, getUserByEmail } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { signFastifyJWT } from "../utils/jwt.js";
+import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
 import { onUserLogin } from '../Services/sessionsService.js';
 
@@ -93,7 +93,8 @@ export async function validateLogin(msg, fastify) {
 		console.error(err.msg);
 		return ({ error: 'Database error' });
 	}
-	const jwtToken = signFastifyJWT(user, fastify);
-	return { token: jwtToken, user: user, player: msg.player };
+	return { user: user };
+	// const jwtToken = signFastifyJWT(user, fastify);
+	// return { token: jwtToken, user: user, player: msg.player };
 }
 

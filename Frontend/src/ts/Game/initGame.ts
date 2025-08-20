@@ -14,8 +14,22 @@ const paddle1 = Game.match.gameState.paddle1;
 const paddle2 = Game.match.gameState.paddle2;
 
 export function startGame() {
-	console.log("function startGame()");
-	switch (Game.match.opponentType) {
+	console.log(`function startGame() ${Game.match.mode}`);
+	switch (Game.match.matchFormat) {
+		case MF.SingleGame: {
+			break ;
+		}
+		case MF.Tournament: {
+			// create tournament once?
+			break ;
+		}
+		default: {
+			log('No match format choosen');
+			return ;
+		}
+	}
+	
+	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
 			if (Game.match.player2.ID != -1) {
 				UI.state = S.stateUI.Game;
@@ -35,6 +49,7 @@ export function startGame() {
 		case OT.Online: {
 			UI.state = S.stateUI.Game;
 			Game.match.state = state.Pending;
+			console.log("Send online request to backend");
 			Game.socket.send({
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
@@ -42,21 +57,7 @@ export function startGame() {
 			break ;
 		}
 		default: {
-			log('No opponent type choosen');
-			return ;
-		}
-	}
-
-	switch (Game.match.matchFormat) {
-		case MF.SingleGame: {
-			break ;
-		}
-		case MF.Tournament: {
-			// create tournament once?
-			break ;
-		}
-		default: {
-			log('No match format choosen');
+			alert('No opponent type choosen');
 			return ;
 		}
 	}
@@ -65,13 +66,13 @@ export function startGame() {
 export function changeOpponentType(option: string) {
 	switch (option) {
 		case '1 vs 1':
-			Game.match.opponentType = OT.ONEvsONE;
+			Game.match.mode = OT.ONEvsONE;
 			break ;
 		case '1 vs COM':
-			Game.match.opponentType = OT.ONEvsCOM;
+			Game.match.mode = OT.ONEvsCOM;
 			break ;
 		case 'Online':
-			Game.match.opponentType = OT.Online;
+			Game.match.mode = OT.Online;
 			break ;
 		default:
 			log(`unknown opponent type? ${option}`);
@@ -183,11 +184,11 @@ export function initGameServer() {
 			subaction: 'createMatch',
 			playerId: Game.match.player1.ID,
 			playerName: Game.match.player1.name,
-			opponentMode: Game.match.opponentType,
+			mode: Game.match.mode,
 			playerId2: Game.match.player2.ID,
 			playerName2: Game.match.player2.name
 		}
-		if (Game.match.opponentType == OT.ONEvsCOM)
+		if (Game.match.mode == OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
 		Game.socket.send(initGame);
 	}
@@ -251,7 +252,7 @@ export function initGame() {
 	//scaleGamePos();
 	//initMovement();
 	initPositions();
-	if (Game.match.opponentType != OT.Online)
+	if (Game.match.mode != OT.Online)
 		initGameServer();
 	else {
 		// Send server msg that player is ready with init game
@@ -277,6 +278,10 @@ export function initGame() {
 export function actionInitOnlineGame(data: any) {
 	const match = data.match;
 
+	if (match == null) { // something went wrong
+		alert('Could not start a new game');
+		UI.state = S.stateUI.Menu;
+	}
 	getGameField();
 
 	Game.match.player1.ID = match.player1.id;

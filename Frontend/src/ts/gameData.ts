@@ -28,15 +28,17 @@ export const Game : S.Game = {
 			ready: false,
 			login: false,
 			input: { pressUP: false, pressDOWN: false },
-			score: 0
+			score: 0,
+			Twofa: false
 		},
 		player2: {
 			ID: -1,
-			name: 'guest',
+			name: 'unknown',
 			ready: false,
 			login: false,
 			input: { pressUP: false, pressDOWN: false },
-			score: 0
+			score: 0,
+			Twofa: false
 		},
 		gameState: {
 			time: 0,

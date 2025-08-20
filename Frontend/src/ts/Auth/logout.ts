@@ -2,12 +2,11 @@ import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 
-export async function submitLogout(e: Event | null, player: number) {
-	log(`Submitting logout for player ${player}`);
+export async function submitLogout(e: Event | null, playerNr: number) {
+	log(`Submitting logout for playerNr ${playerNr}`);
 	if (e)
 		e.preventDefault();
 
-	const playerNr = player || 1;
 	const payload = { playerNr };
 	if (playerNr == 1 && Game.match.player2.login) {  // Ensure player 2 is logged out too
 		log(`Player 2 is logged in, logging out player 2 as well.`);
@@ -23,7 +22,7 @@ export async function submitLogout(e: Event | null, player: number) {
 		});
 		if (response.ok) {
 			const data = await response.json();
-			log(`Logout successful for player ${playerNr}: ${data.message || ''}`);
+			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
 			if (playerNr == 1) {
 				Game.match.player1.ID = -1;
 				Game.match.player1.name = "";

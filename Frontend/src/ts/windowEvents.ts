@@ -9,31 +9,31 @@ const paddle1 = Game.match.gameState.paddle1;
 const paddle2 = Game.match.gameState.paddle2;
 
 export function releaseButton(e: KeyboardEvent) {
-	if (Game.match.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		return ;
 	}
-	if (Game.match.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
+	if (Game.match.mode == OT.Online && (e.key === 'w' || e.key === 's')) {
 		return ;
 	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		S.Keys[e.key].pressed = false;
-		if (Game.match.opponentType == OT.Online) {
+		if (Game.match.mode == OT.Online) {
 			sendKeyPressUpdate(e.key);
 		}
 	}
 }
 
 export function pressButton(e: KeyboardEvent) {
-	if (Game.match.opponentType == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		return ;
 	}
-	if (Game.match.opponentType == OT.Online && (e.key === 'w' || e.key === 's')) {
+	if (Game.match.mode == OT.Online && (e.key === 'w' || e.key === 's')) {
 		return ;
 	}
 	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
 		console.log(`Key pressed ${e.key}`);
 		S.Keys[e.key].pressed = true;
-		if (Game.match.opponentType == OT.Online) {
+		if (Game.match.mode == OT.Online) {
 			sendKeyPressUpdate(e.key);
 		}
 	}

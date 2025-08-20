@@ -14,6 +14,7 @@ import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+// import { getTwoFactorFields } from './Auth/twofa.js';
 
 // getLoadingPage();
 createLog();
@@ -40,6 +41,7 @@ function gameLoop() {
 		case state.Init:
 			if (!document.getElementById('game'))
 			{
+				log('Init game');
 				getGameField();
 				initGame();
 				Game.match.state = state.Playing;
@@ -47,11 +49,9 @@ function gameLoop() {
 			}
 			break ;
 		case state.Playing: {
-			// document.getElementById('auth1')?.remove();
-			// document.getElementById('auth2')?.remove();
-			// if (Game.match.ID >= 0)
-			// if (Game.playMode == true)
-				game();
+			document.getElementById('auth1')?.remove();
+			document.getElementById('auth2')?.remove();
+			game();
 			break ;
 		}
 		case state.End:
@@ -76,8 +76,8 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Menu: {
-				// document.getElementById('auth1')?.remove();
-				// document.getElementById('auth2')?.remove();
+				document.getElementById('auth1')?.remove();
+				document.getElementById('auth2')?.remove();
 				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
 					getMenu();
 				break ;

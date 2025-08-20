@@ -10,7 +10,7 @@ const paddle1 = Game.match.gameState.paddle1;
 const paddle2 = Game.match.gameState.paddle2;
 
 export function applyBallUpdate(data: any) {
-	if (Game.match.opponentType == OT.Online) {
+	if (Game.match.mode == OT.Online) {
 		renderGameInterpolated(data);
 		return ;
 	}
@@ -24,7 +24,7 @@ export function applyBallUpdate(data: any) {
 }
 
 export function applyPaddleUpdate(data: any) {
-	if (Game.match.opponentType == OT.Online) {
+	if (Game.match.mode == OT.Online) {
 		renderGameInterpolated(data);
 		return ;
 	}

@@ -26,7 +26,7 @@ export function movePadel(key: string) {
 
 function checkPaddleMovement(): boolean {
 	let moved = false;
-	if (Game.match.opponentType == OT.ONEvsCOM) {
+	if (Game.match.mode == OT.ONEvsCOM) {
 		moved = aiAlgorithm();
 	}
 	for (let key in S.Keys) {
@@ -84,7 +84,7 @@ function resetBall(){
 	ball.pos.x = field.size.width / 2 + ballRadius;
 	ball.pos.y = field.size.height / 2 + ballRadius;
 	randomizeBallAngle();
-	if (Game.match.opponentType == OT.ONEvsCOM) {
+	if (Game.match.mode == OT.ONEvsCOM) {
 		resetAI();
 	}
 }
@@ -165,7 +165,7 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game() {
-	if (Game.match.opponentType == OT.Online) {
+	if (Game.match.mode == OT.Online) {
 		//update own paddle immediately in frontend
 		checkPaddleMovement();
 		updateDOMElements();

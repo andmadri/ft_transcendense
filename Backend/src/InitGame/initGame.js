@@ -35,8 +35,8 @@ export function handleInitGame(db, msg, socket, userId1, userId2) {
 		return console.log('no subaction in handleInitGame');
 
 	// for local games
-	if (msg.subaction == 'createMatch' && msg.opponentMode != 3)
-		return createMatch(db, msg.opponentMode, socket, userId1, userId2);
+	if (msg.subaction == 'createMatch' && msg.mode != 3)
+		return createMatch(db, msg.mode, socket, userId1, userId2);
 
 	// receive msg that frontend is ready to play (online match)
 	if (msg.subaction == 'start') {
