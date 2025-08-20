@@ -20,7 +20,6 @@ export type update = {
 export type UI = {
 	state: stateUI,
 	logDiv: HTMLDivElement,
-	ballPaused: boolean
 }
 
 export type Game = {

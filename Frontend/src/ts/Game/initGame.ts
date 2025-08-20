@@ -91,54 +91,6 @@ export function changeMatchFormat(option: string) {
 	}
 }
 
-// function scaleToField(fieldDim: number, unit : number) : number {
-// 	return (fieldDim * unit);
-// }
-
-// function initMovement() {
-// 	const fieldSize = S.size[E.field];
-// 	const fieldUnit = S.unitSize[E.field];
-
-// 	randomizeBallAngle();
-
-// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-// 		if (S.movement[e] && S.unitSize[e]) {
-// 			S.movement[e].speed = scaleToField(fieldSize.width, S.unitMovement[e].speed);
-// 		}
-// 	}
-// }
-
-// function scaleGameSizes() {
-// 	const fieldSize = S.size[E.field];
-// 	const fieldUnit = S.unitSize[E.field];
-// 	const ballSize = S.size[E.ball];
-
-// 	fieldSize.width = window.innerWidth * 0.7;
-// 	fieldSize.height = fieldSize.width * fieldUnit.height;
-
-// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-// 		if (S.size[e] && S.unitSize[e]) {
-// 			S.size[e].width = scaleToField(fieldSize.width, S.unitSize[e].width);
-// 			if (e === E.ball) {
-// 				S.size[e].height = S.size[e].width;
-// 				continue ;
-// 			}
-// 			S.size[e].height = scaleToField(fieldSize.height, S.unitSize[e].height);
-// 		}
-// 	}
-// }
-
-// function scaleGamePos() {
-// 	const fieldSize = S.size[E.field];
-
-// 	for (const e of [E.ball, E.lPlayer, E.rPlayer]) {
-// 		if (S.pos[e] && S.unitPos[e]) {
-// 			S.pos[e].x = scaleToField(fieldSize.width, S.unitPos[e].x);
-// 			S.pos[e].y = scaleToField(fieldSize.height, S.unitPos[e].y);
-// 		}
-// 	}
-// }
-
 export function initPositions() {
 	const fieldDiv = document.getElementById('field');
 	const ballDiv = document.getElementById('ball');
@@ -150,29 +102,7 @@ export function initPositions() {
 	}
 	const fieldWidth = fieldDiv.clientWidth;
 	const fieldHeight = fieldDiv.clientHeight;
-
-	field.size.width = fieldWidth;
-	field.size.height = fieldHeight;
-
-	ball.size.width =  ballDiv.clientWidth;
-	ball.size.height = ballDiv.clientHeight;
-
-	ball.pos.x = fieldWidth / 2;
-	ball.pos.y = fieldHeight / 2;
-	ball.movement.speed = fieldWidth * 0.01;
 	randomizeBallAngle();
-
-	paddle2.size.height = rPlayer.clientHeight;
-	paddle2.size.width = rPlayer.clientWidth;
-	paddle2.pos.y = rPlayer.offsetTop;
-	paddle2.pos.x = rPlayer.offsetLeft;
-	paddle2.movement.speed = fieldHeight * 0.015;
-
-	paddle1.size.height = lPlayer.clientHeight;
-	paddle1.size.width = lPlayer.clientWidth;
-	paddle1.pos.y = lPlayer.offsetTop;
-	paddle1.pos.x = lPlayer.offsetLeft;
-	paddle1.movement.speed = fieldHeight * 0.015;
 }
 
 export function initGameServer() {
@@ -243,13 +173,6 @@ function getStartScreenBeforeGame() {
 }
 
 export function initGame() {
-	// if (document.getElementById('startScreen'))
-	// 	return ;
-	// getStartScreenBeforeGame();
-
-	//scaleGameSizes();
-	//scaleGamePos();
-	//initMovement();
 	initPositions();
 	if (Game.match.opponentType != OT.Online)
 		initGameServer();
