@@ -110,10 +110,10 @@ export function actionGame(data: any) {
 
 	switch(data.subaction) {
 		case 'ballUpdate':
-			applyBallUpdate(data);
+			//applyBallUpdate(data);
 			break ;
 		case 'padelUpdate':
-			applyPaddleUpdate(data);
+			//applyPaddleUpdate(data);
 			break ;
 		default:
 			log(`(actionGame) Unknown action: ${data.subaction}`);

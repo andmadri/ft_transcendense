@@ -12,7 +12,7 @@ const paddle2 = Game.match.gameState.paddle2;
 
 function handlePaddleMovement(paddle: entity, dir: number) {
 	const nextPos = paddle.pos.y + (dir * paddle.movement.speed);
-	paddle.pos.y = Math.max(0, Math.min(nextPos, field.size.height - paddle.size.height));
+	paddle.pos.y = Math.max(paddle.size.height / 2, Math.min(nextPos, field.size.height - paddle.size.height / 2));
 }
 
 export function movePadel(key: string) {
@@ -39,18 +39,19 @@ function checkPaddleMovement(): boolean {
 }
 
 export function updateBallPos() {
-	const ballRadius = ball.size.height / 2;
-	ball.pos.x += ball.velocity.vx * ball.movement.speed;
-	ball.pos.y += ball.velocity.vy * ball.movement.speed;
-	if (ball.pos.y - ballRadius < 0)
-		ball.pos.y = ballRadius;
+	const halfHeight = ball.size.height / 2;
+	const halfWidth = ball.size.width / 2;
+	ball.pos.x += ball.velocity.vx;
+	ball.pos.y += ball.velocity.vy;
+	if (ball.pos.y - halfHeight < 0)
+		ball.pos.y = halfHeight;
 	//this line keeps the ball from going past the bottom
-	else if (ball.pos.y + ballRadius > field.size.height)
-		ball.pos.y = field.size.height - ballRadius;
-	if (ball.pos.x - ballRadius < 0)
-		ball.pos.x = ballRadius;
-	else if (ball.pos.x + ballRadius > field.size.width)
-		ball.pos.x = field.size.width - ballRadius;
+	else if (ball.pos.y + halfHeight > field.size.height)
+		ball.pos.y = field.size.height - halfHeight;
+	if (ball.pos.x - halfWidth < 0)
+		ball.pos.x = halfWidth;
+	else if (ball.pos.x + halfWidth > field.size.width)
+		ball.pos.x = field.size.width - halfWidth;
 }
 
 export function randomizeBallAngle() {
@@ -60,10 +61,19 @@ export function randomizeBallAngle() {
 	const radians = randomAngle * (Math.PI / 180);
 
 	const vx = Math.cos(radians);
-	const vy = Math.sin(radians);
+	const vy = Math.sin(radians) //* (1 / 0.75);
 
-	ball.velocity.vx = Math.random() < 0.5 ? vx : -vx;
-	ball.velocity.vy = Math.random() < 0.5 ? vy : -vy;
+	const norm = Math.sqrt(vx * vx + vy * vy);
+
+	const ux = vx / norm;
+	const uy = vy / norm;
+
+	ball.velocity.vx = ball.movement.speed * (Math.random() < 0.5 ? ux : -ux);
+	ball.velocity.vy = ball.movement.speed * (Math.random() < 0.5 ? uy : -uy);
+
+	console.log('RandomizeBallAngle Ball:', {
+		ball: { vx: ball.velocity.vx, vy: ball.velocity.vy, speed: ball.movement.speed },
+		});
 }
 
 
@@ -80,9 +90,8 @@ function handleWallBounce() {
 
 //change direction of the ball on each reset
 function resetBall(){
-	const ballRadius = ball.size.width / 2;
-	ball.pos.x = field.size.width / 2 + ballRadius;
-	ball.pos.y = field.size.height / 2 + ballRadius;
+	ball.pos.x = 0.5;
+	ball.pos.y = 0.5;
 	randomizeBallAngle();
 	if (Game.match.opponentType == OT.ONEvsCOM) {
 		resetAI();
@@ -90,63 +99,73 @@ function resetBall(){
 }
 
 function changeVelocityOnPaddleBounce(player : entity) {
-	const relativeHitPoint = (ball.pos.y - player.pos.y) - player.size.height / 2;
+	const relativeHitPoint = ball.pos.y - player.pos.y;
 	const normalizedHitPoint = relativeHitPoint / (player.size.height / 2);
 
-	const maxBounceAngle = (Math.PI / 4) //45 degrees max
+	const maxBounceAngle = (Math.PI / 6)
 	const angle = normalizedHitPoint * maxBounceAngle;
 
 	const direction = ball.velocity.vx > 0 ? -1 : 1;
 
-	ball.velocity.vx = Math.cos(angle) * direction;
-	ball.velocity.vy = Math.sin(angle);
+	const vx = Math.cos(angle) * direction;
+	const vy = Math.sin(angle)
+
+	const norm = Math.sqrt(vx * vx + vy * vy);
+
+	const ux = vx / norm;
+	const uy = vy / norm;
+
+	ball.velocity.vx = ux * ball.movement.speed;
+	ball.velocity.vy = uy * ball.movement.speed;
 }
 
 function handlePaddleBounce() {
-	const radius = ball.size.width / 2;
+	const halfWidth = ball.size.width / 2;
+	const halfheight = ball.size.height / 2;
 
-	if (ball.pos.x + radius >= paddle2.pos.x)
+	if (ball.velocity.vx > 0 && ball.pos.x + halfWidth >= paddle2.pos.x)
 	{
-		if ((ball.pos.y - radius < paddle2.pos.y + paddle2.size.height) && (ball.pos.y + radius > paddle2.pos.y))
+		if ((ball.pos.y - halfheight < paddle2.pos.y + paddle2.size.height / 2) && (ball.pos.y + halfheight > paddle2.pos.y - paddle2.size.height / 2))
 		{
 			changeVelocityOnPaddleBounce(paddle2);
+			console.log('Field, Ball and Paddles:', {
+				field: { width: field.size.width, height: field.size.height },
+				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
+				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
+				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
+			});
 		}
 		else {
+			pauseBallTemporarily(3000);
 			Game.match.player1.score++;
 			sendScoreUpdate(Game.match.player1.ID);
 			resetBall();
-			pauseBallTemporarily(3000);
-				console.log('Field, Ball and Paddles:', {
+		}
+	}
+	else if (ball.velocity.vx < 0 && ball.pos.x - halfWidth <= paddle1.pos.x + paddle1.size.width)
+	{
+		if ((ball.pos.y - halfheight < paddle1.pos.y + paddle1.size.height / 2) && (ball.pos.y + halfheight > paddle1.pos.y - paddle1.size.height / 2))
+		{
+			changeVelocityOnPaddleBounce(paddle1);
+			console.log('Field, Ball and Paddles:', {
 				field: { width: field.size.width, height: field.size.height },
 				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
 				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
 				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
-				});
-		}
-	}
-	else if (ball.pos.x - radius <= paddle1.pos.x + paddle1.size.width)
-	{
-		if ((ball.pos.y - radius < paddle1.pos.y + paddle1.size.height) && (ball.pos.y + radius > paddle1.pos.y))
-		{
-			changeVelocityOnPaddleBounce(paddle1);
+			});
 		}
 		else {
+			pauseBallTemporarily(3000);
 			Game.match.player2.score++;
 			sendScoreUpdate(Game.match.player2.ID);
 			resetBall();
-			pauseBallTemporarily(3000);
-				console.log('Field, Ball and Paddles:', {
-				field: { width: field.size.width, height: field.size.height },
-				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
-				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
-				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
-				});
 		}
 	}
 }
 
 function updateDOMElements() {
-	const ballRadius = ball.size.height / 2;
+	const halfHeight = ball.size.height / 2;
+	const halfWidth = ball.size.width / 2;
 	const paddle1Div = document.getElementById('lPlayer');
 	const paddle2Div = document.getElementById('rPlayer');
 	const ballDiv = document.getElementById('ball');
@@ -154,14 +173,15 @@ function updateDOMElements() {
 	const rightScore = document.getElementById('rightScore');
 	const fieldDiv = document.getElementById('field');
 
-	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore) {
+	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore && fieldDiv) {
 		leftScore.textContent = Game.match.player1.score.toString();
 		rightScore.textContent = Game.match.player2.score.toString();
-		ballDiv.style.left = `${ball.pos.x * field.clientWidth}px`;
-		ballDiv.style.top = `${ball.pos.y * field.clientHeight}px`;
 
-		paddle1Div.style.top = `${paddle1.pos.y * field.clientHeight}px`;
-		paddle2Div.style.top = `${paddle2.pos.y * field.clientHeight}px`;
+		ballDiv.style.left = `${(ball.pos.x * fieldDiv.clientWidth)}px`;
+		ballDiv.style.top = `${(ball.pos.y * fieldDiv.clientWidth)}px`;
+
+		paddle1Div.style.top = `${(paddle1.pos.y * fieldDiv.clientWidth) - (paddle1.size.height * fieldDiv.clientWidth / 2)}px`;
+		paddle2Div.style.top = `${(paddle2.pos.y * fieldDiv.clientWidth) - (paddle2.size.height * fieldDiv.clientWidth / 2)}px`;
 	}
 }
 
@@ -187,6 +207,7 @@ export function game() {
 		Game.match.time = performance.now();
 		if (Game.match.player1.score == 5 || Game.match.player2.score == 5) {
 			UI.state = S.stateUI.Menu;
+			Game.match.state = state.End;
 			return ;
 		}
 		handleWallBounce();
