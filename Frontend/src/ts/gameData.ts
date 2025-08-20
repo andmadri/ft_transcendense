@@ -7,8 +7,7 @@ type Socket = any;
 
 export const UI : S.UI = {
 	state: S.stateUI.LoginP1,
-	logDiv : document.getElementById('log') as HTMLDivElement,
-	ballPaused : false
+	logDiv : document.getElementById('log') as HTMLDivElement
 }
 
 export const Game : S.Game = { 
@@ -42,16 +41,16 @@ export const Game : S.Game = {
 		},
 		gameState: {
 			time: 0,
-			field: { size: {width: 1, height: 0.7}},
+			field: { size: {width: 1, height: 0.75}},
 			ball: { 
 				size: { width: 0.05, height: 0.05 },
 				pos: { x: 0.5, y: 0.5 },
 				velocity: { x: 0, y: 0 },
-				movement: { speed: 0.15 },
+				movement: { speed: 0.015 },
 				},
 			paddle1: { 
-				size: { width: 0.02, height: 0.3 },
-				pos: { x: 0.2, y: 0.5 },
+				size: { width: 0.02, height: 0.14 },
+				pos: { x: 0.01, y: 0.5 },
 				velocity: { x: 0, y: 0 },
 				movement: { speed: 0.25 },
 				},
@@ -59,7 +58,7 @@ export const Game : S.Game = {
 				size: { width: 0.02, height: 0.3 },
 				pos: { x: 0.98, y: 0.5 },
 				velocity: { x: 0, y: 0 },
-				movement: { speed: 0.25 },
+				movement: { speed: 0.025 },
 				},
 		}
 	},

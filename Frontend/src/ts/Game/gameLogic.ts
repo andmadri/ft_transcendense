@@ -1,6 +1,6 @@
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
-import { OT, Stage } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 import { entity } from '@shared/types'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
@@ -62,8 +62,8 @@ export function randomizeBallAngle() {
 	const vx = Math.cos(radians);
 	const vy = Math.sin(radians);
 
-	ball.velocity.vx = Math.random() < 0.5 ? vx : vx * -1;
-	ball.velocity.vy = Math.random() < 0.5 ? vy : vy * -1;
+	ball.velocity.vx = Math.random() < 0.5 ? vx : -vx;
+	ball.velocity.vy = Math.random() < 0.5 ? vy : -vy;
 }
 
 
@@ -116,6 +116,12 @@ function handlePaddleBounce() {
 			sendScoreUpdate(Game.match.player1.ID);
 			resetBall();
 			pauseBallTemporarily(3000);
+				console.log('Field, Ball and Paddles:', {
+				field: { width: field.size.width, height: field.size.height },
+				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
+				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
+				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
+				});
 		}
 	}
 	else if (ball.pos.x - radius <= paddle1.pos.x + paddle1.size.width)
@@ -129,6 +135,12 @@ function handlePaddleBounce() {
 			sendScoreUpdate(Game.match.player2.ID);
 			resetBall();
 			pauseBallTemporarily(3000);
+				console.log('Field, Ball and Paddles:', {
+				field: { width: field.size.width, height: field.size.height },
+				ball: { x: ball.pos.x, y: ball.pos.y, width: ball.size.width, height: ball.size.height },
+				paddle1: { x: paddle1.pos.x, y: paddle1.pos.y, width: paddle1.size.width, height: paddle1.size.height },
+				paddle2: { x: paddle2.pos.x, y: paddle2.pos.y, width: paddle2.size.width, height: paddle2.size.height }
+				});
 		}
 	}
 }
@@ -140,15 +152,16 @@ function updateDOMElements() {
 	const ballDiv = document.getElementById('ball');
 	const leftScore = document.getElementById('leftScore');
 	const rightScore = document.getElementById('rightScore');
+	const fieldDiv = document.getElementById('field');
 
 	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore) {
 		leftScore.textContent = Game.match.player1.score.toString();
 		rightScore.textContent = Game.match.player2.score.toString();
-		ballDiv.style.left = `${ball.pos.x}px`;
-		ballDiv.style.top = `${ball.pos.y}px`;
+		ballDiv.style.left = `${ball.pos.x * field.clientWidth}px`;
+		ballDiv.style.top = `${ball.pos.y * field.clientHeight}px`;
 
-		paddle1Div.style.top = `${paddle1.pos.y}px`;
-		paddle2Div.style.top = `${paddle2.pos.y}px`;
+		paddle1Div.style.top = `${paddle1.pos.y * field.clientHeight}px`;
+		paddle2Div.style.top = `${paddle2.pos.y * field.clientHeight}px`;
 	}
 }
 
@@ -156,10 +169,10 @@ export function pauseBallTemporarily(duration: number) {
 	const ballDiv = document.getElementById('ball');
 	if (!ballDiv)
 		return;
-	UI.ballPaused = true;
+	Game.match.state = state.Paused;
 	ballDiv.style.animation = 'twinkle 1s ease-in-out infinite';
 	setTimeout(() => {
-		UI.ballPaused = false;
+		Game.match.state = state.Playing;
 		ballDiv.style.animation = 'none';
 	}, duration);
 }
@@ -178,7 +191,7 @@ export function game() {
 		}
 		handleWallBounce();
 		handlePaddleBounce();
-		if (!UI.ballPaused) {
+		if (Game.match.state == state.Playing) {
 			updateBallPos();
 			sendBallUpdate();
 		}
