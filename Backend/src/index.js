@@ -82,7 +82,10 @@ fastify.ready().then(() => {
 	let userId1 = null;
 	let userId2 = null;
 	if (authTokens && authTokens.jwtAuthToken1) {
+		console.log('signed:', authTokens.jwtAuthToken1);
 		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+		console.log('unsigned:', unsigned.value);
+		console.log('Unsigned JWT1:', unsigned);
 		if (unsigned.valid) {
 			try {
 				decoded = fastify.jwt.verify(unsigned.value);

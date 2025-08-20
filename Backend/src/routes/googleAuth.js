@@ -126,6 +126,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 					secure: true,        // Only sent over HTTPS
 					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 					signed: true,        // signed cookies
+					encode: v => v,      // Use default encoding
 					path: '/',
 					maxAge: 60 * 10      // 10 minutes
 				}).redirect(`https://${window.location.hostname}:8443`);
@@ -136,6 +137,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 					secure: true,        // Only sent over HTTPS
 					sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
 					signed: true,        // signed cookies
+					encode: v => v,      // Use default encoding
 					path: '/',
 					maxAge: 60 * 60      // 1 hour
 				}).redirect(`https://${window.location.hostname}:8443`);
