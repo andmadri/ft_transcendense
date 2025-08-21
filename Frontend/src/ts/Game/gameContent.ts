@@ -121,8 +121,8 @@ export function getGameField() {
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
 	ball.style.position = 'absolute';
-	ball.style.top = '50%';
-	ball.style.left = '50%';
+	ball.style.top = '47.5%';
+	ball.style.left = '47.5%';
 	ball.style.width = '5%';
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';
