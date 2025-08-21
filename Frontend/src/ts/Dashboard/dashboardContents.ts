@@ -40,7 +40,7 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 {
 	const card = document.createElement('div');
 	card.id = 'userInfoCard';
-	card.style.aspectRatio = '4 / 3';
+	// card.style.aspectRatio = '4 / 3';
 	card.style.borderRadius = '16px';
 	card.style.display = 'flex';
 	card.style.background = '#363430';

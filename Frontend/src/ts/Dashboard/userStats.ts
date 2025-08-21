@@ -4,7 +4,7 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 {
 	const card = document.createElement('div');
 	card.id = 'statsCard';
-	card.style.aspectRatio = '4 / 3';
+	// card.style.aspectRatio = '4 / 3';
 	card.style.borderRadius = '16px';
 	card.style.background = '#363430';
 	card.style.flex = '1 1 50%';
@@ -21,6 +21,7 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	title.style.borderRadius = '16px';
 	title.style.padding = '0.5rem';
 	title.style.boxSizing = 'border-box';
+	title.style.fontSize = 'min(2.5vw, 2.5vh)';
 	card.appendChild(title);
 
 	const headers = document.createElement('div');
