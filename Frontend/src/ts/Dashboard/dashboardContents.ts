@@ -51,7 +51,8 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.justifyContent = 'center'; 
 
 	const userPic = document.createElement('img')
-	userPic.src = `/api/avatar/${user_info.user_id}`;
+	userPic.src = `/api/avatar/${user_info.id}`;
+	// `/api/avatar/${userId}`
 	userPic.style.width = '30%';
 	userPic.style.maxWidth = '100px';
 	userPic.style.height = 'auto';

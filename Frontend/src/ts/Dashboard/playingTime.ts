@@ -26,34 +26,72 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	// title.style.position = 'relative';
 	card.appendChild(title);
 
-	// const stage = document.createElement('div');     // fills the middle area
-	// stage.id = 'stage';
-	// Object.assign(stage.style, {
+	// const wrapperDonut = document.createElement('div');     // fills the middle area
+	// wrapperDonut.id = 'wrapperDonut';
+	// Object.assign(wrapperDonut.style, {
 	// 	width: '100%',
 	// 	height: '100%',
 	// 	position: 'relative',
 	// 	display: 'flex',
-	// 	placeItems: 'center',
+	// 	justifyContent: 'center',
+	// 	alignItems: 'center',
 	// 	overflow: 'hidden',                  // belt-and-suspenders
 	// } as CSSStyleDeclaration);
-	// card.appendChild(stage);
+	// card.appendChild(wrapperDonut);
 	
-	// the visible square we’ll later replace with an <svg>
+	// // the visible square we’ll later replace with an <svg>
+	// const square = document.createElement('div');
+	// square.id = 'square';
+	// Object.assign(square.style, {
+	// 	position: 'relative',
+	// 	boxSizing: 'border-box',
+	// 	border: '2px solid rgba(9, 255, 0, 1)',
+		
+	// 	// borderRadius: '14px',
+	// 	width: '80%',									// responsive
+	// 	aspectRatio: '1 / 1',							// keep it perfectly square
+	// 	// border: '2px solid rgba(9, 255, 0, 1)',
+	// 	borderRadius: '50%',
+	// 	// background: 'radial-gradient(50% 50% at 50% 50%, #f59e0b 0%, #f97316 60%, #fb923c 100%)',
+	// } as CSSStyleDeclaration);
+	// wrapperDonut.appendChild(square);
+
+
+	// ===== Stage (middle row) keeps donut centered ============================
+	const stage = document.createElement('div');
+	Object.assign(stage.style, {
+		width: '100%',
+		height: '100%',
+		position: 'relative',
+		display: 'grid',
+		placeItems: 'center',
+		overflow: 'hidden', // never let children overflow the card
+	} as CSSStyleDeclaration);
+	card.appendChild(stage);
+
+	// Wrapper + square (the donut background)
+	const wrapper = document.createElement('div');
+	Object.assign(wrapper.style, {
+		position: 'relative',
+		display: 'grid',
+		placeItems: 'center',
+		width: '100%',
+		height: '100%',
+		overflow: 'hidden',
+	} as CSSStyleDeclaration);
+	stage.appendChild(wrapper);
+
 	const square = document.createElement('div');
-	square.id = 'square';
+	square.id = 'donutSquare';
 	Object.assign(square.style, {
 		position: 'relative',
 		boxSizing: 'border-box',
-		border: '2px solid rgba(9, 255, 0, 1)',
-		
-		// borderRadius: '14px',
-		// width: '18vw',									// responsive
-		aspectRatio: '1 / 1',							// keep it perfectly square
-		// border: '2px solid rgba(9, 255, 0, 1)',
 		borderRadius: '50%',
-		// background: 'radial-gradient(50% 50% at 50% 50%, #f59e0b 0%, #f97316 60%, #fb923c 100%)',
+		inlineSize: 'var(--size, 0px)',   // width from ResizeObserver
+		blockSize: 'var(--size, 0px)',    // height from ResizeObserver
+		border: '2px solid rgba(9, 255, 0, 1)',
 	} as CSSStyleDeclaration);
-	card.appendChild(square);
+	wrapper.appendChild(square);
 
 	// const { game_secs, lobby_secs, menu_secs } = user_playing_time;
 
@@ -226,10 +264,112 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	// legend.appendChild(item);
 	// });
 
-	card.appendChild(square);
+	// card.appendChild(square);
 
 	// place legend BELOW the square (append to the card, after the stage)
 	// card.appendChild(legend);
 
+
+	  // ===== Data → conic gradient =============================================
+  const total = Math.max(
+    0,
+    Number(user_playing_time.game_secs) +
+      Number(user_playing_time.lobby_secs) +
+      Number(user_playing_time.menu_secs)
+  );
+  const pct = (n: number) => (total ? (n / total) * 100 : 0);
+
+  const gamePct = pct(user_playing_time.game_secs);
+  const lobbyPct = pct(user_playing_time.lobby_secs);
+  const stop1 = gamePct;
+  const stop2 = gamePct + lobbyPct;
+
+  // Game → Lobby → Menu, start at 12 o’clock
+  square.style.background = `conic-gradient(
+    from -90deg,
+    #f97316 0% ${stop1}%,
+    #fb923c ${stop1}% ${stop2}%,
+    #f59e0b ${stop2}% 100%
+  )`;
+
+	// ===== Donut hole + center label =========================================
+	const hole = document.createElement('div');
+	const innerSize = `${100 - 2 * 18}%`; // ring thickness = 18%; tweak as you like
+	Object.assign(hole.style, {
+		position: 'absolute',
+		left: '50%',
+		top: '50%',
+		transform: 'translate(-50%, -50%)',
+		width: innerSize,
+		aspectRatio: '1 / 1',
+		borderRadius: '50%',
+		background: getComputedStyle(card).backgroundColor || '#363430',
+		boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.06)',
+		display: 'grid',
+		placeItems: 'center',
+		textAlign: 'center',
+		pointerEvents: 'none',
+	} as CSSStyleDeclaration);
+
+	const labelWrap = document.createElement('div');
+	Object.assign(labelWrap.style, {
+		color: '#fff',
+		fontFamily: 'system-ui, sans-serif',
+		lineHeight: '1.1',
+	} as CSSStyleDeclaration);
+
+	const small = document.createElement('div');
+	small.textContent = 'Total';
+	Object.assign(small.style, { fontSize: '10px', opacity: '0.8' } as CSSStyleDeclaration);
+
+	const big = document.createElement('div');
+	big.textContent = `${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
+	Object.assign(big.style, { fontSize: '16px', fontWeight: '800' } as CSSStyleDeclaration);
+
+	labelWrap.appendChild(small);
+	labelWrap.appendChild(big);
+	hole.appendChild(labelWrap);
+	square.appendChild(hole);
+
+	// ===== Footer (bottom row) ===============================================
+	const footer = document.createElement('div');
+	footer.textContent = `Total time: ${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
+	Object.assign(footer.style, {
+		color: '#ddd',
+		fontFamily: 'system-ui, sans-serif',
+		fontSize: '12px',
+	} as CSSStyleDeclaration);
+	card.appendChild(footer);
+
+	// ===== Keep the donut perfectly inside the stage =========================
+	const MARGIN = 8; // px gap from the stage edges
+	function layoutSquare() {
+		const r = stage.getBoundingClientRect();
+		const size = Math.max(0, Math.min(r.width, r.height) - MARGIN * 2);
+		square.style.setProperty('--size', `${size}px`);
+	}
+	const ro = new ResizeObserver(layoutSquare);
+	ro.observe(stage);
+	layoutSquare();
+
+	// Mount the card
 	infoCardsContainer.appendChild(card);
+
+
+	// infoCardsContainer.appendChild(card);
 }
+
+
+// const wrapper = document.getElementById('wrapperDonut') as HTMLElement;
+// const square  = document.getElementById('square') as HTMLElement;
+// function layoutDonut() {
+
+// const MARGIN = 8;
+// const r = wrapper.getBoundingClientRect();
+// const size = Math.max(0, Math.min(r.width, r.height) - MARGIN * 2);
+// square.style.width = size + 'px';
+// square.style.height = size + 'px';
+// }
+// const ro = new ResizeObserver(layoutDonut);
+// ro.observe(wrapper);
+// layoutDonut();
