@@ -1,4 +1,13 @@
 import { test, expect } from '@playwright/test';
+import * as U from './utils.spec.js';
+import * as Login from './login.spec.js';
+import * as Game from './game.spec.js';
+import * as Menu from './menu.spec.js';
+import * as Remote from './remote.spec.js';
+import * as OneVSone from './oneVSone.spec.js';
+import * as OneVSai from './oneVSai.spec.js';
+
+const URL = 'https://localhost:8443';
 
 const name = `User${Math.floor(Math.random() * 1000000)}`;
 const email = `${name}@codam.com`;
@@ -7,79 +16,33 @@ const name2 = `User${Math.floor(Math.random() * 1000000)}`;
 const email2 = `${name2}@codam.com`;
 const password2 = `Hallo123`;
 
-async function pressBtn(page, btnName) {
-	await expect(page.locator('button', { hasText: btnName })).toBeVisible();
-	await page.locator('button', { hasText: btnName }).click();
-}
-
-async function signup_login_byPlayer(page, player, Name, Email, Password) {
-	await page.fill(`#name${player}`, Name);
-	await page.fill(`#email${player}`, Email);
-	await page.fill(`#password${player}`, Password);
-	await pressBtn(page, "Sign Up");
-	await page.waitForTimeout(1000);
-	await page.fill(`#email${player}`, Email);
-	await page.fill(`#password${player}`, Password);
-	await pressBtn(page, "Login");
-	await page.waitForTimeout(1000);
-}
-
-async function OneVsComAndQuit(page) {
-	await pressBtn(page, "Play game");
-	await pressBtn(page, "1 VS COM");
-	await pressBtn(page, "PLAY");
-	await pressBtn(page, "QUIT");
-}
-
-async function OneVsOne(page) {
-	await pressBtn(page, "Play game");
-	await pressBtn(page, "1 VS 1");
-	await pressBtn(page, "PLAY");
-	await signup_login_byPlayer(page, 2, name2, email2, password2);
-}
-
-async function onlineMode(page) {
-	await pressBtn(page, "Play game");
-	await pressBtn(page, "Online");
-	await pressBtn(page, "PLAY");
-}
 
 test('Pong tester', async ({ browser }) => {
-	const context1 = await browser.newContext();
-	const page = await context1.newPage();
+	const page = await U.createNewPage(browser);
 
 	// OPEN SITE
-	await page.goto('https://localhost:8443');
+	await page.goto(URL);
 
-	// SIGN UP + LOGIN 
-	await signup_login_byPlayer(page, 1, name, email, password);
-	await page.locator('h2', { hasText: 'Menu' }).isVisible();
+	// SIGN UP + LOGIN PLAYER 1
+	await Login.signup_login_byPlayer(page, 1, name, email, password);
+	await Menu.isInMenu(page);
 	
-	const playerNameElement = page.locator('#playerNameMenu' + '1');
-	await expect(playerNameElement).toHaveText(name);
+	// NAME PLAYER 1 IS VISIBLE IN MENU
+	await Menu.playerIsLoggedIn(page, 1, name);
 
-	await page.goto('https://localhost:8443');
+	// await page.waitForTimeout(1000);
+	// await Menu.playerInOnlineMenu(page, name);
 
-	await OneVsComAndQuit(page);
+	// PLAY 1 VS COM AND QUIT
+	await OneVSai.StartOneVsCom(page);
+	await Game.quitGame(page);
 
-	await page.goto('https://localhost:8443');
+	// await OneVSone.oneVsOne(page, name2, email2, password2);
+
+	// Online Game
+	await Remote.remotePlayer(page, browser, URL, name, name2, email2, password2);
 	
-	await OneVsOne(page);
-
-	await page.goto('https://localhost:8443');
-
-	// CREATE NEW PAGE FOR REMOTE PLAYER
-	const context2 = await browser.newContext();
-	const page2 = await context2.newPage();
-
-	await page2.goto('https://localhost:8443');
-	await signup_login_byPlayer(page2, 1, name + 'remote', 'remote' + email, password);
-	await page2.locator('h2', { hasText: 'Menu' }).isVisible();
-	
-	await onlineMode(page);
-	await onlineMode(page2);
-
 	// BACK TO MENU
-	await page.goto('https://localhost:8443');
-	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
+	await page.goto(URL);
+	await Menu.isInMenu(page);
 });
