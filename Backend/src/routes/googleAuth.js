@@ -129,13 +129,13 @@ export default async function googleAuthRoutes(fastify, opts) {
 
 			const jwtToken = signFastifyJWT(dbUserObj, fastify);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
-				httpOnly: true,		// Prevents JS access
-				secure: true,		// Only sent over HTTPS
-				sameSite: 'Lax',	// CSRF protection ('Strict' is even more secure)
-				signed: true,		// signed cookies
-				encode: v => v,		// Use default encoding
+				httpOnly: true,      // Prevents JS access
+				secure: true,        // Only sent over HTTPS
+				sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+				signed: true,        // signed cookies
+				encode: v => v,      // Use default encoding
 				path: '/',
-				maxAge: 60 * 60		// 1 hour
+				maxAge: 60 * 60      // 1 hour
 			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
 
 		} catch (err) {
