@@ -11,5 +11,12 @@ export async function pressBtn(page, btnName) {
 	await page.locator('button', { hasText: btnName }).click();
 }
 
+export async function pressDiv(page, btnName) {
+	await expect(page.locator(`text="${btnName}"`).first()).toBeVisible();
+	await page.locator(`text="${btnName}"`).click();
+}
 
-
+export async function pressLabel(page, labelName) {
+	await expect(page.locator(`label[for=${labelName}]`)).toBeVisible();
+	await page.locator(`label[for=${labelName}]`).click();
+}
