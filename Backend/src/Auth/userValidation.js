@@ -99,12 +99,6 @@ export async function validateLogin(msg, fastify) {
 		return ({ error: 'Database error' });
 	}
 
-	try {
-		await onUserLogin(db, user.id);
-	} catch(err) {
-		console.error(err.msg);
-		return ({ error: 'Database error' });
-	}
 	return { user: user };
 }
 
