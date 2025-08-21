@@ -76,13 +76,13 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 }
 
 export function getLoginFields(player: number) {
-	const	body = document.getElementById('body');
-	if (!body)
+	const	app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.style.height = "100vh";
-	body.style.backgroundColor = "#ededeb";
-	body.style.justifyContent = "center";
-	body.appendChild(getAuthField(player, true));
+	app.style.height = "100vh";
+	app.style.backgroundColor = "#ededeb";
+	app.style.justifyContent = "center";
+	app.appendChild(getAuthField(player, true));
 
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));

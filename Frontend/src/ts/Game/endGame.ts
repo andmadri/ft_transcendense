@@ -46,8 +46,8 @@ function handleGameOver() {
 	const	ball = document.createElement('div');
 	ball.id = 'ballEndCredits';
 	ball.style.position = 'absolute';
-	ball.style.top = '50%';
-	ball.style.left = '50%';
+	ball.style.top = '47.5%';
+	ball.style.left = '47.5%';
 	ball.style.width = '5%';
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';
@@ -71,10 +71,10 @@ function handleGameOver() {
 	// 	return ;
 	// })
 
-	const body = document.getElementById('body');
-	if (!body)
+	const app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.appendChild(gameOver);
+	app.appendChild(gameOver);
 	UI.state = S.stateUI.Menu
 }
 

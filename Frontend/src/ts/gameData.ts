@@ -48,13 +48,13 @@ export const Game : S.Game = {
 				},
 			paddle1: { 
 				size: { width: 0.02, height: 0.14},
-				pos: { x: 0.02, y: 0.75 / 2 },
+				pos: { x: 0.02, y: (0.75 / 2) },
 				velocity: { vx: 0, vy: 0 },
 				movement: { speed: 0.015 },
 				},
 			paddle2: { 
 				size: { width: 0.02, height: 0.14 },
-				pos: { x: 0.98, y: 0.75 / 2 },
+				pos: { x: 0.98, y: (0.75 / 2) },
 				velocity: { vx: 0, vy: 0 },
 				movement: { speed: 0.015 },
 				},

@@ -62,14 +62,14 @@ export function getGameField() {
 			return ;
 		app.removeChild(optionMenu);
 	}
-	const body = document.getElementById('body');
-	if (!body)
+	const app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
-	body.style.overflow = 'hidden';
+	app.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
+	app.style.margin = '0';
+	app.style.width = '100vw';
+	app.style.height = '100vh';
+	app.style.overflow = 'hidden';
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';
@@ -121,8 +121,8 @@ export function getGameField() {
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
 	ball.style.position = 'absolute';
-	ball.style.top = '50%';
-	ball.style.left = '50%';
+	ball.style.top = '47.5%';
+	ball.style.left = '47.5%';
 	ball.style.width = '5%';
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';
@@ -188,5 +188,5 @@ export function getGameField() {
 	game.appendChild(scrollContainer);
 	game.appendChild(field);
 	game.appendChild(getQuitBtn())
-	body.append(game);
+	app.append(game);
 }

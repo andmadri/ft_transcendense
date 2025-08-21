@@ -40,6 +40,9 @@ export function pressButton(e: KeyboardEvent) {
 }
 
 export function initAfterResize() {
+	const ballRadius = ball.size.height / 2;
+	const paddleHalfWidth = paddle1.size.width / 2;
+	const paddleHalfHeight = paddle1.size.height / 2;
 	const ballDiv = document.getElementById('ball');
 	const rPlayer = document.getElementById('rPlayer');
 	const lPlayer = document.getElementById('lPlayer');
@@ -50,12 +53,12 @@ export function initAfterResize() {
 		const newWidth = fieldDiv.clientWidth;
 		const newHeight = fieldDiv.clientHeight;
 
-		ballDiv.style.left = `${ball.pos.x * newWidth}px`;
-		ballDiv.style.top = `${ball.pos.y * newHeight}px`;
-		lPlayer.style.left = `${paddle1.pos.x * newWidth}px`;
-		lPlayer.style.top = `${paddle1.pos.y * newHeight}px`;
-		rPlayer.style.left = `${paddle2.pos.x * newWidth}px`;
-		rPlayer.style.top = `${paddle2.pos.y * newHeight}px`;
+		ballDiv.style.left = `${(ball.pos.x * newWidth) - (ballRadius * newWidth)}px`;
+		ballDiv.style.top = `${(ball.pos.y * newWidth) - (ballRadius * newWidth)}px`;
+		lPlayer.style.left = `${paddle1.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
+		lPlayer.style.top = `${paddle1.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
+		rPlayer.style.left = `${paddle2.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
+		rPlayer.style.top = `${paddle2.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
 
 	} else {
 		console.log('Something went wrong (initAfterResizing), close game?');
