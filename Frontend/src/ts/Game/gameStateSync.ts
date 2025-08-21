@@ -4,44 +4,51 @@ import { log } from '../logging.js'
 import { OT } from '@shared/enums'
 import { renderGameInterpolated } from './renderSnapshots.js';
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
+// const field = Game.match.gameState.field;
+// const ball = Game.match.gameState.ball;
+// const paddle1 = Game.match.gameState.paddle1;
+// const paddle2 = Game.match.gameState.paddle2;
 
-export function applyBallUpdate(data: any) {
+// export function applyBallUpdate(data: any) {
+// 	if (Game.match.mode == OT.Online) {
+// 		renderGameInterpolated(data);
+// 		return ;
+// 	}
+
+// 	if ('ballX' in data) {
+// 		if (typeof data.ballX === 'number')
+// 			ball.pos.x = data.ballX;
+// 		if (ball && typeof data.ballY === 'number')
+// 			ball.pos.y = data.ballY;
+// 	}
+// }
+
+// export function applyPaddleUpdate(data: any) {
+// 	if (Game.match.mode == OT.Online) {
+// 		renderGameInterpolated(data);
+// 		return ;
+// 	}
+
+// 	if ('rPlayerX' in data) {
+// 		const rPlayer = document.getElementById('rPlayer');
+// 		if (rPlayer && typeof data.playerOneX === 'number') //is right or left player player1???
+// 			paddle2.pos.x = data.playerOneX;
+// 		if (rPlayer && typeof data.playerOneY === 'number')
+// 			paddle2.pos.y = data.playerOneY;		
+// 	}
+// 	if ('lPlayerX' in data) {
+// 		const lPlayer = document.getElementById('lPlayer');
+// 		if (lPlayer && typeof data.playerTwoX === 'number')
+// 			paddle1.pos.x = data.playerTwoX;
+// 		if (lPlayer && typeof data.playerTwoY === 'number')
+// 			paddle1.pos.y = data.playerTwoY;
+// 	}
+// }
+
+function applyGameStateUpdate(data : any) {
 	if (Game.match.mode == OT.Online) {
 		renderGameInterpolated(data);
 		return ;
-	}
-
-	if ('ballX' in data) {
-		if (typeof data.ballX === 'number')
-			ball.pos.x = data.ballX;
-		if (ball && typeof data.ballY === 'number')
-			ball.pos.y = data.ballY;
-	}
-}
-
-export function applyPaddleUpdate(data: any) {
-	if (Game.match.mode == OT.Online) {
-		renderGameInterpolated(data);
-		return ;
-	}
-
-	if ('rPlayerX' in data) {
-		const rPlayer = document.getElementById('rPlayer');
-		if (rPlayer && typeof data.playerOneX === 'number') //is right or left player player1???
-			paddle2.pos.x = data.playerOneX;
-		if (rPlayer && typeof data.playerOneY === 'number')
-			paddle2.pos.y = data.playerOneY;		
-	}
-	if ('lPlayerX' in data) {
-		const lPlayer = document.getElementById('lPlayer');
-		if (lPlayer && typeof data.playerTwoX === 'number')
-			paddle1.pos.x = data.playerTwoX;
-		if (lPlayer && typeof data.playerTwoY === 'number')
-			paddle1.pos.y = data.playerTwoY;
 	}
 }
 
@@ -57,37 +64,13 @@ export function sendKeyPressUpdate(key : string) {
 	// Send also ballX/Y ballVX/Y and paddleVy
 }
 
-//change this to sendGameState and send everything at once
-//normalise data before sending
-export function sendPaddleUpdate() {
-	const leftPadel = document.getElementById('lPlayer');
-	const rightPadel = document.getElementById('rPlayer');
-	if (Game.socket.connected) //what is this for?
-		return ;
-	if (leftPadel && rightPadel) {
-
-		Game.socket.send({
-			action: 'game',
-			subaction: 'padelUpdate',
-			lHeight: leftPadel.offsetTop,
-			rHeight: rightPadel.offsetTop,
-			matchID: Game.match.ID
-		});
-
-	} else {
-		console.log('No lP ot rP');
-	}
-}
-
-export function sendBallUpdate() {
-	Game.socket.send({ 
+export function sendGameState() {
+	Game.socket.send({
 		action: 'game',
-		subaction: 'ballUpdate',
-		ballY: ball.pos.y,
-		ballX: ball.pos.x,
-		matchID: Game.match.ID 
+		subaction: 'gameStateUpdate',
+		matchID: Game.match.ID,
+		gameState: Game.match.gameState
 	});
-	// Send also ballVY/X 
 }
 
 export function sendScoreUpdate(id: number) {
@@ -99,9 +82,6 @@ export function sendScoreUpdate(id: number) {
 	});
 }
 
-
-
-
 export function actionGame(data: any) {
 	if (!data.subaction) {
 		log('no subaction');
@@ -109,6 +89,8 @@ export function actionGame(data: any) {
 	}
 
 	switch(data.subaction) {
+		case 'gameStateUpdate':
+			applyGameStateUpdate(data);
 		case 'ballUpdate':
 			//applyBallUpdate(data);
 			break ;

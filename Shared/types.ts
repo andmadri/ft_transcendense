@@ -2,7 +2,7 @@ import { OT, MF, state} from "./enums.js"
 
 export type pos = { x: number, y: number };
 export type velocity = { vx: number, vy: number };
-export type movement = { speed: number, angle: number };
+export type movement = { speed: number};
 export type size = { width: number, height: number};
 
 export type entity = {
@@ -20,7 +20,8 @@ export type player = {
 		pressUP: boolean,
 		pressDOWN: boolean
 	},
-	score: number
+	score: number,
+	Twofa: boolean
 }
 
 export type gameState = {

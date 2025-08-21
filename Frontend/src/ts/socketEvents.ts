@@ -5,7 +5,6 @@ import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
-import { applyBallUpdate, applyPaddleUpdate } from './Game/gameStateSync.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import * as S from './structs.js'
 

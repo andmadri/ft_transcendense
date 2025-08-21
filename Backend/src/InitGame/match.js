@@ -1,6 +1,6 @@
 import { handleMatchStartDB } from '../Services/matchService.js';
 import { getUserByID } from "../Database/users.js";
-import { OT, state } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js'
 
 export const 	matches = new Map();
 export const	waitlist = new Map();
@@ -34,41 +34,52 @@ async function newMatch(db, matchnr, id, id2, mode) {
 		}
 		console.log(`Creating match with ID: ${matchnr}, mode: ${mode}, player1: ${name} (${id}), player2: ${name2} (${id2})`);
 		matches.set(matchnr, {
-			mode: mode,
-			intervalId : null,
+			state: state.Start,
 			matchID: matchnr,
-			stage: state.Start,
+			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+			mode: mode,
 			player1: {
-				id: id,
+				ID: id,
 				name: name,
-				score: 0,
-				paddleY: 0,
-				paddleVY: 0,
-				pressUp: false,
-				pressDown: false,
 				ready: false,
+				input: { pressUP: false, pressDOWN: false },
+				score: 0,
+				Twofa: false
 			},
 			player2: {
-				id: id2,
+				ID: id2,
 				name: name2,
-				score: 0,
-				paddleY: 0,
-				paddleVY: 0,
-				pressUp: false,
-				pressDown: false,
 				ready: false,
+				input: { pressUP: false, pressDOWN: false },
+				score: 0,
+				Twofa: false
 			},
-			ball: {
-				vX: 10,
-				vY: 10,
-				x: 0,
-				y: 0,
+			gameState: {
+				time: 0,
+				field: { size: {width: 1, height: 0.75}},
+				ball: { 
+					size: { width: 0.05, height: 0.05 },
+					pos: { x: 0.5, y: 0.75 / 2 },
+					velocity: { vx: 0, vy: 0 },
+					movement: { speed: 0.01 },
+					},
+				paddle1: { 
+					size: { width: 0.02, height: 0.14},
+					pos: { x: 0.02, y: (0.75 / 2) },
+					velocity: { vx: 0, vy: 0 },
+					movement: { speed: 0.015 },
+					},
+				paddle2: { 
+					size: { width: 0.02, height: 0.14 },
+					pos: { x: 0.98, y: (0.75 / 2) },
+					velocity: { vx: 0, vy: 0 },
+					movement: { speed: 0.015 },
+					},
 			}
 		});
 	} catch (err) {	
 		console.error(`Error creating match: ${err}`);
 		return;
-	
 	}
 }
 
@@ -119,5 +130,4 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 		console.error(`Error creating match: ${err}`);
 		return (-1);
 	}
-	
 }

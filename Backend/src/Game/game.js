@@ -1,4 +1,4 @@
-import { sendBallUpdate, sendPaddleUpdate, updateScore } from "./gameStateSync.js";
+import { applyGameStateUpdate, updateScore, applyKeyPressUpdate } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
 
@@ -16,24 +16,21 @@ export function handleGame(db, msg, socket, io) {
 
 	// Updates that are comming into the backend (Maybe better to update all in once)
 	switch (msg.subaction) {
-		case 'ballUpdate':
-			sendBallUpdate(match, msg, socket, io);
+		case 'gameStateUpdate':
+			applyGameStateUpdate(match, msg);
 			break;
 		case 'scoreUpdate':
 			updateScore(match, msg, io);
 			break;
 		case 'keyPressUpdate':
-			applyKeyPress(match, msg, socket);
-			break;;
-		case 'padelUpdate':
-			sendPaddleUpdate(match, msg, socket, io);
-			break ;
+			applyKeyPressUpdate(match, msg, socket);
+			break;
 		case 'save':
 			saveMatch(db, match, msg, socket);
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket);
-			break ;
+			break;
 		default:
 			console.log("subaction not found: " + msg.subaction);
 	}

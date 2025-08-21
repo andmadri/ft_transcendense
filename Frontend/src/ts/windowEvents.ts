@@ -10,32 +10,45 @@ const paddle2 = Game.match.gameState.paddle2;
 
 export function releaseButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle1.velocity.vy = 0;
 		return ;
 	}
-	if (Game.match.mode == OT.Online && (e.key === 'w' || e.key === 's')) {
+	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		//set velocity to 0 but how do i know what paddle i am?
+
+		sendKeyPressUpdate(e.key);
 		return ;
 	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		S.Keys[e.key].pressed = false;
-		if (Game.match.mode == OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle2.velocity.vy = 0;
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'w' || e.key === 's')) {
+		paddle1.velocity.vy = 0;
+		return;
 	}
 }
 
 export function pressButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		return ;
+		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
+		return;
 	}
-	if (Game.match.mode == OT.Online && (e.key === 'w' || e.key === 's')) {
-		return ;
-	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		console.log(`Key pressed ${e.key}`);
-		S.Keys[e.key].pressed = true;
+	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		//change paddle velocity, but how do we know which player i am?
+
 		if (Game.match.mode == OT.Online) {
 			sendKeyPressUpdate(e.key);
 		}
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle2.velocity.vy = S.Keys[e.key].dir * paddle2.movement.speed;
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'w' || e.key === 's')) {
+		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
+		return;
 	}
 }
 

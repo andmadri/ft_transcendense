@@ -3,40 +3,17 @@ import * as S from '../structs.js'
 import { OT, state } from '@shared/enums'
 import { entity } from '@shared/types'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
-import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
+import { sendGameState, sendScoreUpdate} from './gameStateSync.js'
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
 const paddle1 = Game.match.gameState.paddle1;
 const paddle2 = Game.match.gameState.paddle2;
 
-function handlePaddleMovement(paddle: entity, dir: number) {
-	const paddleHalfHeight = paddle1.size.height / 2;
-	const nextPos = paddle.pos.y + (dir * paddle.movement.speed);
+function handlePaddleMovement(paddle: entity) {
+	const paddleHalfHeight = paddle.size.height / 2;
+	const nextPos = paddle.pos.y + paddle.velocity.vy;
 	paddle.pos.y = Math.max(paddleHalfHeight, Math.min(nextPos, field.size.height - paddleHalfHeight));
-}
-
-export function movePadel(key: string) {
-	if (key === 'w' || key === 's') {
-		handlePaddleMovement(paddle1, S.Keys[key].dir);
-		
-	} else if (key === 'ArrowUp' || key === 'ArrowDown') {
-		handlePaddleMovement(paddle2, S.Keys[key].dir);
-	}
-}
-
-function checkPaddleMovement(): boolean {
-	let moved = false;
-	if (Game.match.mode == OT.ONEvsCOM) {
-		moved = aiAlgorithm();
-	}
-	for (let key in S.Keys) {
-		if (S.Keys[key].pressed === true) {
-			movePadel(key);
-			moved = true;
-		}
-	}
-	return (moved);
 }
 
 export function updateBallPos() {
@@ -193,7 +170,7 @@ export function pauseBallTemporarily(duration: number) {
 export function game() {
 	if (Game.match.mode == OT.Online) {
 		//update own paddle immediately in frontend
-		checkPaddleMovement();
+		handlePaddleMovement(paddle2); // what paddle???
 		updateDOMElements();
 	}
 	else {
@@ -203,14 +180,17 @@ export function game() {
 			Game.match.state = state.End;
 			return ;
 		}
+		if (Game.match.mode == OT.ONEvsCOM) {
+			aiAlgorithm();
+		}
 		handleWallBounce();
 		handlePaddleBounce();
 		if (Game.match.state == state.Playing) {
 			updateBallPos();
-			sendBallUpdate();
 		}
-		if (checkPaddleMovement())
-			sendPaddleUpdate();
+		handlePaddleMovement(paddle1);
+		handlePaddleMovement(paddle2);
+		sendGameState();
 	}
 	updateDOMElements();
 }
