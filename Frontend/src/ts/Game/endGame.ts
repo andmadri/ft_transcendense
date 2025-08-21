@@ -71,10 +71,10 @@ function handleGameOver() {
 	// 	return ;
 	// })
 
-	const body = document.getElementById('body');
-	if (!body)
+	const app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.appendChild(gameOver);
+	app.appendChild(gameOver);
 	UI.state = S.stateUI.Menu
 }
 

@@ -34,7 +34,6 @@ let lastSpeedIncreaseTime = 0;
 function gameLoop() {
 	switch (Game.match.state) {
 		case state.Pending: {
-			// waiting for opponement
 			log("...pending...");
 			break ;
 		}
@@ -88,6 +87,9 @@ function mainLoop() {
 			}
 			default:
 		}
+	} else {
+		log("Socket not connected, trying to reconnect...");
+		Game.socket.connect();
 	}
 	window.requestAnimationFrame(mainLoop);
 }

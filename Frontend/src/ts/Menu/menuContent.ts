@@ -222,7 +222,8 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 
 		formDiv.appendChild(form);
 		overlay.appendChild(formDiv);
-		document.body.appendChild(overlay);
+		const app = document.getElementById('app');
+		app?.appendChild(overlay);
 	});
 	return twofaDisableBtn;
 }
@@ -370,7 +371,8 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 
 		qrDiv.appendChild(form);
 		overlay.appendChild(qrDiv);
-		document.body.appendChild(overlay);
+		const app = document.getElementById('app')
+		app?.appendChild(overlay);
 	});
 	return (twoFABtn);
 }
@@ -534,6 +536,7 @@ export function getMenu() {
 	const app = document.getElementById('app');
 	if (!app)
 		return ;
+	app.removeAttribute('style');
 	app.innerHTML = '';
 	app.appendChild(menu);
 }

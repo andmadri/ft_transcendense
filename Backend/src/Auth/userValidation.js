@@ -1,4 +1,4 @@
-import { addUserToDB, getUserByEmail } from '../Database/users.js';
+import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
@@ -55,7 +55,7 @@ export async function addUser(msg) {
 		return (errorMsg);
 	try {
 		const userId = await addUserToDB(db, msg);
-		return (1); // Should we not return the userId?
+		return (''); // Should we not return the userId?
 	}
 	catch(err) {
 		if (err.code === 'SQLITE_CONSTRAINT') {
@@ -67,7 +67,7 @@ export async function addUser(msg) {
 			}
 		}
 		console.error('addUser:', err);
-		return (0);
+		return ('Unknown error occurred while adding user.');
 	}
 }
 
@@ -87,6 +87,18 @@ export async function validateLogin(msg, fastify) {
 	if (!isValidPassword)
 		return ({ error: 'Incorrect password' });
 
+	try {
+		const onlineUsers = await getOnlineUsers(db);
+		for (const onlineUser of onlineUsers) {
+			if (onlineUser.id === user.id) {
+				return ({ error: 'You are already logged in!' });
+			}
+		}
+	} catch (err) {
+		console.error('Error with getting online users');
+		return ({ error: 'Database error' });
+	}
+	
 	try {
 		await onUserLogin(db, user.id);
 	} catch(err) {

@@ -132,7 +132,7 @@ fastify.ready().then(() => {
 			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
-			console.log(`Action: ${msg.action} + ${msg.subaction}`);
+			// console.log(`Action: ${msg.action} + ${msg.subaction}`);
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
