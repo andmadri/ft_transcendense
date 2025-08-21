@@ -8,11 +8,25 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	card.style.borderRadius = '16px';
 	card.style.display = 'flex';
 	card.style.background = '#363430';
-	card.style.flex = '1 1 50%';
+	card.style.flex = '1 1 25%';
 	card.style.flexDirection = 'column';
 	card.style.gap = '1rem'
 	card.style.alignItems = 'center';  // Center contents horizontally
 	card.style.justifyContent = 'center';
+
+	const title = document.createElement('div');
+	title.id = 'playingTimeTitle';
+	title.textContent = 'Playing Time';
+	title.style.fontFamily = '"Horizon", monospace';
+	title.style.color = 'transparent';
+	title.style.webkitTextStroke = '0.1rem #ffffff';
+	title.style.whiteSpace = 'nowrap';
+	title.style.display = 'inline-block';
+	title.style.background = '#363430';;
+	title.style.borderRadius = '16px';
+	title.style.padding = '0.5rem';
+	title.style.boxSizing = 'border-box';
+	card.appendChild(title);
 
 	Object.assign(card.style, {
 		position: 'relative',
@@ -160,22 +174,22 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 
 	square.appendChild(hole);
 
-	// --- Chart title (top-left overlay)
-	const chartTitle = document.createElement('div');
-	chartTitle.textContent = 'Playing time';
-	Object.assign(chartTitle.style, {
-		position: 'absolute',
-		top: '10px',
-		left: '12px',
-		color: '#fff',
-		fontFamily: 'system-ui, sans-serif',
-		fontSize: '12px',
-		fontWeight: '700',
-		letterSpacing: '0.02em',
-		textShadow: '0 1px 1px rgba(0,0,0,0.25)',
-		opacity: '0.9',
-	});
-	square.appendChild(chartTitle);
+	// // --- Chart title (top-left overlay)
+	// const chartTitle = document.createElement('div');
+	// chartTitle.textContent = 'Playing time';
+	// Object.assign(chartTitle.style, {
+	// 	position: 'absolute',
+	// 	top: '10px',
+	// 	left: '12px',
+	// 	color: '#fff',
+	// 	fontFamily: 'system-ui, sans-serif',
+	// 	fontSize: '12px',
+	// 	fontWeight: '700',
+	// 	letterSpacing: '0.02em',
+	// 	textShadow: '0 1px 1px rgba(0,0,0,0.25)',
+	// 	opacity: '0.9',
+	// });
+	// square.appendChild(chartTitle);
 
 	// --- Legend with value labels (Game → Lobby → Menu)
 	const slices = [

@@ -2,6 +2,7 @@ import { Game } from '../script.js'
 import * as S from '../structs.js'
 // import { renderPie } from './pie'
 import { renderPlayingTimeCard } from './playingTime'
+import { renderUserStatsCard } from './userStats'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -43,7 +44,7 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.borderRadius = '16px';
 	card.style.display = 'flex';
 	card.style.background = '#363430';
-	card.style.flex = '1 1 50%';
+	card.style.flex = '1 1 25%';
 	card.style.flexDirection = 'column';
 	card.style.gap = '1rem'
 	card.style.alignItems = 'center';  // Center contents horizontally
@@ -79,27 +80,7 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	infoCardsContainer.appendChild(card);
 }
 
-function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
-{
-	const card = document.createElement('div');
-	card.id = 'statsCard';
-	// card.style.aspectRatio = '4 / 3';
-	card.style.borderRadius = '16px';
-	card.style.background = '#363430';
-	card.style.flex = '1 1 50%';
 
-	const cardTitle = document.createElement('div');
-	cardTitle.textContent = 'User Stats';
-	cardTitle.style.display = 'inline-flex';
-	cardTitle.style.alignItems = 'center';
-	cardTitle.style.justifyContent = 'center';
-	cardTitle.style.fontSize = 'min(2vw, 2.5vh)';
-	cardTitle.style.webkitTextStroke = '0.1rem #ffffff';
-	cardTitle.style.whiteSpace = 'nowrap';
-
-	card.appendChild(cardTitle);
-	infoCardsContainer.appendChild(card);
-}
 
 // function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
 // {
