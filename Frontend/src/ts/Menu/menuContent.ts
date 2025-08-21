@@ -60,6 +60,8 @@ function getPlayBtn(): HTMLButtonElement {
 }
 
 function getLoginBtn(playerNr: number): HTMLButtonElement {
+	if (playerNr == 1 || Game.match.player2.ID != 1)
+		return (getLogoutBtn(playerNr));
 	const loginBtn = document.createElement('button');
 	loginBtn.textContent = 'login';
 	styleElement(loginBtn, {
@@ -78,7 +80,7 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 		document.getElementById('menu')?.remove();
 		if (playerNr == 2)
 			UI.state = S.stateUI.LoginP2;
-		else 
+		else
 			UI.state = S.stateUI.LoginP1;
 	});
 	return (loginBtn);
@@ -104,8 +106,6 @@ function getLogoutBtn(playerNr: number): HTMLButtonElement {
 
 function get2faBtn(playerNr: number): HTMLButtonElement {
 	if (Game.match.player1.Twofa && playerNr == 1)
-		return (get2faDisableBtn(playerNr));
-	if (Game.match.player2.Twofa && playerNr == 2)
 		return (get2faDisableBtn(playerNr));
 	return (get2faSetupBtn(playerNr));
 }
@@ -298,7 +298,10 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 				body: JSON.stringify({ playerNr })
 			});
 			const data = await res.json();
-			if (data.qrCodeDataURL) {
+			if (data.success === false) {
+				alert(data.message || 'Failed to generate QR code.');
+				return;
+			} else if (data.qrCodeDataURL) {
 				qrImg.src = data.qrCodeDataURL;
 			} else {
 				qrLabel.textContent = 'Failed to load QR code.';
@@ -472,9 +475,9 @@ export function getRightSideMenu(playerNr: number) {
 		marginLeft: 'auto'
 	});
 	if (playerNr == 1)
-		buttons.append(getLoginBtn(playerNr), getLogoutBtn(playerNr), get2faBtn(playerNr), getAvatarBtn(playerNr));
+		buttons.append(getLoginBtn(playerNr), get2faBtn(playerNr), getAvatarBtn(playerNr));
 	else
-		buttons.append(getLoginBtn(playerNr), getLogoutBtn(playerNr), getAvatarBtn(playerNr));
+		buttons.append(getLoginBtn(playerNr), getAvatarBtn(playerNr));
 
 	playernameAndButtons.append(playername, buttons);
 	player.append(avatarDiv, playernameAndButtons);

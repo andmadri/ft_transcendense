@@ -20,9 +20,9 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 		player2 = await userDB.getUserByID(db, userId2);
 	}
 	// console.log('Player 2:', player2);
-	returnMsg.name2 = player2?.name || 'unknown';
-	returnMsg.id2 = player2?.id || -1;
-	returnMsg.player2Login = player2?.online || false;
+	returnMsg.name2 = player2?.name || 'Guest';
+	returnMsg.id2 = player2?.id || 1;
+	returnMsg.player2Login = player2?.online || true;
 	returnMsg.score2 = player2?.score || 0;
 	// console.log('Sending player data:', returnMsg);
 	socket.send(returnMsg);

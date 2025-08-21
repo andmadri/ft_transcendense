@@ -87,14 +87,6 @@ export async function validateLogin(msg, fastify) {
 	if (!isValidPassword)
 		return ({ error: 'Incorrect password' });
 
-	try {
-		await onUserLogin(db, user.id);
-	} catch(err) {
-		console.error(err.msg);
-		return ({ error: 'Database error' });
-	}
 	return { user: user };
-	// const jwtToken = signFastifyJWT(user, fastify);
-	// return { token: jwtToken, user: user, player: msg.player };
 }
 

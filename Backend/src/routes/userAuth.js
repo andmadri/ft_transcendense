@@ -4,6 +4,7 @@ import { addUserSessionToDB } from '../Database/sessions.js';
 import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import { db } from '../index.js' // DELETE THIS LATER
+import { onUserLogin } from '../Services/sessionsService.js';
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -40,7 +41,7 @@ export default async function userAuthRoutes(fastify) {
 			player: playerNr
 		};
 		const answer = await validateLogin(msg, fastify);
-		console.log('Login answer:', answer.user);
+		// console.log('Login answer:', answer.user);
 		if (answer.error) {
 			reply.status(401).send({ success: false, message: answer.error });
 			return;
@@ -57,8 +58,15 @@ export default async function userAuthRoutes(fastify) {
 				maxAge: 60 * 10      // 10 minutes
 			}).send({ success: true, ok: true, message: 'Two-factor authentication required', playerNr: playerNr, userId: answer.user.id, name: answer.user.name, twofaPending: true });
 		} else {
+
+			try {
+				await onUserLogin(db, answer.user.id);
+			} catch(err) {
+				console.error(err.msg);
+			}
+
 			const jwtToken = signFastifyJWT(answer.user, fastify);
-			console.log('JWT Token:', jwtToken);
+			// console.log('JWT Token:', jwtToken);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
@@ -88,6 +96,7 @@ export default async function userAuthRoutes(fastify) {
 		try {
 			// MAYBE CHANGE THIS LATER: Marty edited this, but is not sure if this is correct
 			const decoded = fastify.jwt.verify(unsigned.value);
+
 			const user = await getUserByID(db, decoded.userId);
 			await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
 			reply.clearCookie('jwtAuthToken' + playerNr, {

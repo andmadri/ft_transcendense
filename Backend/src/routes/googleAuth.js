@@ -3,6 +3,8 @@ import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js'
+import { addUser2faSecretToDB, getUserSecretDB } from '../Services/twofa.js';
+import { onUserLogin } from '../Services/sessionsService.js';
 
 /**
  * Handles the Google authentication process.
@@ -33,12 +35,11 @@ async function handleGoogleAuth(user) {
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
 				console.log('Updating user: ', user.name, ' in DB!');
-				await userDB.updateUserInDB(db, {
-					name: user.name,
-					avatar_url: user.picture,
-				});
+				exists.name = user.name;
+				exists.avatar_url = user.picture;
+				await userDB.updateUserInDB(db, exists);
 			}
-			const dbUserObj = await userDB.getUserByEmail(user.email);
+			const dbUserObj = await userDB.getUserByEmail(db, user.email);
 			return dbUserObj;
 		} else {
 			await userDB.addUserToDB(db, {
@@ -127,6 +128,23 @@ export default async function googleAuthRoutes(fastify, opts) {
 				return;
 			}
 
+			try {
+				await addUser2faSecretToDB(db, dbUserObj.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
+				const test = await getUserSecretDB(db, dbUserObj.id);
+				console.log(`getUserSecretDB returned: ${test}`);
+			} catch (err) {
+				console.error('Error adding 2FA secret for Google user:', err);
+				reply.code(500).send('OAuth login failed.');
+				return;
+			}
+
+			try {
+				await onUserLogin(db, dbUserObj.id);
+			} catch(err) {
+				console.error(err.msg);
+				return ({ error: 'Database error' });
+			}
+
 			const jwtToken = signFastifyJWT(dbUserObj, fastify);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
@@ -137,7 +155,6 @@ export default async function googleAuthRoutes(fastify, opts) {
 				path: '/',
 				maxAge: 60 * 60      // 1 hour
 			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
-
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);
 			reply.code(500).send('OAuth login failed.');

@@ -1,12 +1,14 @@
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
-import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Services/twofs.js';
+import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Services/twofa.js';
 import { encryptSecret, decryptSecret } from '../utils/encryption.js';
 import { verifyAuthCookie, verifyPendingTwofaCookie } from '../Auth/authToken.js';
 import { signFastifyJWT } from "../utils/jwt.js";
 import { getUserByID } from '../Database/users.js';
+import { onUserLogin } from '../Services/sessionsService.js';
 
 import { db } from '../index.js' // DELETE THIS LATER
+import { get } from 'http';
 
 /**
  * Handles the Two-Factor Authentication (2FA) routes.
@@ -33,6 +35,15 @@ export default async function twoFactor(fastify, opts) {
 				name: `Penguins (${request.user.email})`,
 				length: 20,
 			});
+
+			const userSecretStr = await getUserSecretDB(db, userId);
+			if (userSecretStr) {
+				const userSecret = JSON.parse(userSecretStr);
+				console.log(`User secret: ${userSecret}`);
+				if (userSecret.google == "true") {
+					return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+				}
+			}
 
 			const encryptedSecret = encryptSecret(secret.base32);
 			await addUser2faSecretToDB(db, userId, encryptedSecret);
@@ -126,6 +137,13 @@ export default async function twoFactor(fastify, opts) {
 		const user = await getUserByID(db, userId);
 		if (!user) {
 			return reply.status(404).send({ success: false, message: 'User not found' });
+		}
+
+		try {
+			await onUserLogin(db, user.id);
+		} catch(err) {
+			console.error(err.msg);
+			return ({ error: 'Database error' });
 		}
 
 		reply.clearCookie('pendingTwofaToken' + playerNr, { path: '/' });
