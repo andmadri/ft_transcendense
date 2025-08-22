@@ -39,5 +39,5 @@ export type matchInfo = {
 	mode: OT,
 	player1: player,
 	player2: player,
-	gameState?: gameState
+	gameState: gameState
 }

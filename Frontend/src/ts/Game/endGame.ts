@@ -82,11 +82,11 @@ export function saveGame() {
 	if (Game.match.ID == -1)
 		return ;
 
+	const game = document.getElementById('game');
+	if (game)
+		game.remove(); //when game ends game is not removed
 	if (!document.getElementById('gameOver'))
 	{
-		const game = document.getElementById('game');
-		if (game)
-			game.remove();
 		handleGameOver();
 	}
 

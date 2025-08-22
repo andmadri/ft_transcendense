@@ -2,8 +2,8 @@ import * as S from '../structs'
 import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
+import { randomizeBallAngle } from '@shared/gameLogic';
 import { getGameField } from './gameContent.js';
-import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
@@ -179,7 +179,7 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
-	randomizeBallAngle();
+	randomizeBallAngle(Game.match.gameState.ball);
 	// updateNamesMenu();
 	// resetScoreMenu();
 }

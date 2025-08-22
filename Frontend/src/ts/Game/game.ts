@@ -2,7 +2,7 @@ import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
-import { OT, Stage } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
@@ -29,7 +29,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	UI.state = S.stateUI.Menu;
+	Game.match.state = state.End; //maybe do something here with state.Interrupt to save the winner? 
 	log(data.reason);
 }
 
