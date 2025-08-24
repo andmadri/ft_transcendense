@@ -2,6 +2,7 @@ import { submitAuthForm } from './userAuth.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { movePadel } from '../Game/gameLogic.js';
+import { navigateTo } from '../history.js';
 
 export let authenticationMode = 'Sign Up';
 
@@ -90,6 +91,8 @@ export function getLoginFields(player: number) {
 		window.location.href = `https://${S.host}/api/auth/google?player=` + player;
 	});
 
-	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
-	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
+	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => {
+		navigateTo('LoginP' + (player === 1 ? 2 : 1));
+		changeAuthMode(player);
+	});
 }

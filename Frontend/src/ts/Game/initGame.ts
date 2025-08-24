@@ -7,6 +7,7 @@ import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
+import { navigateTo } from "../history.js";
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
@@ -32,22 +33,23 @@ export function startGame() {
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
 			if (Game.match.player2.ID != -1) {
-				UI.state = S.stateUI.Game;
+				navigateTo('Game');
 				Game.match.state = state.Init;
 			}
-			else
-				UI.state = S.stateUI.LoginP2;
+			else {
+				navigateTo('LoginP2');
+			}
 			break ;
 		}
 		case OT.ONEvsCOM: {
 			Game.match.player2.ID = 2; // Is not getting used - only for visability
 			Game.match.player2.name = "AI"; // Is not getting used - only for visability
-			UI.state = S.stateUI.Game;
+			navigateTo('Game');
 			Game.match.state = state.Init;
 			break ;
 		}
 		case OT.Online: {
-			UI.state = S.stateUI.Game;
+			navigateTo('Game');
 			Game.match.state = state.Pending;
 			console.log("Send online request to backend");
 			Game.socket.send({
@@ -189,7 +191,8 @@ export function actionInitOnlineGame(data: any) {
 
 	if (match == null) { // something went wrong
 		alert('Could not start a new game');
-		UI.state = S.stateUI.Menu;
+		navigateTo('Menu');
+		return ;	
 	}
 	getGameField();
 
@@ -201,6 +204,6 @@ export function actionInitOnlineGame(data: any) {
 
 	// Function to set all data sync with match in game...
 
-	UI.state = S.stateUI.Game;
+	navigateTo('Game');
 	console.log("Start online game...");
 }

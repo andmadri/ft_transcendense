@@ -4,6 +4,7 @@ import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, Stage } from '@shared/enums'
+import { navigateTo } from "../history.js";
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
@@ -18,7 +19,7 @@ function processMatch(data: any) {
 	}
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
-	UI.state = S.stateUI.Game;
+	navigateTo('Game');
 	log("ProcessMatch");
 }
 
@@ -30,7 +31,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	UI.state = S.stateUI.Menu;
+	navigateTo('Menu');
 	log(data.reason);
 }
 

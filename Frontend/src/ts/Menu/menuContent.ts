@@ -10,6 +10,7 @@ import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
+import { navigateTo } from "../history.js";
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 
@@ -76,10 +77,13 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 	loginBtn.addEventListener('click', () => {
 		log('Login button clicked for player ' + playerNr);
 		document.getElementById('menu')?.remove();
-		if (playerNr == 2)
-			UI.state = S.stateUI.LoginP2;
-		else 
-			UI.state = S.stateUI.LoginP1;
+		if (playerNr == 2) {
+			// UI.state = S.stateUI.LoginP2;
+			navigateTo('LoginP2');
+		} else { 
+			// UI.state = S.stateUI.LoginP1;
+			navigateTo('LoginP1');
+		}
 	});
 	return (loginBtn);
 }

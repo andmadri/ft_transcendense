@@ -12,8 +12,10 @@ import { createLog, log } from './logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
+import { navigateTo, controlBackAndForward } from './history.js'
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+import { historyState } from './history.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
 
 // getLoadingPage();
@@ -28,6 +30,11 @@ startSocketListeners();
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
+
+navigateTo('LoginP1');
+window.addEventListener('popstate', (event: PopStateEvent) => {
+	controlBackAndForward(event);
+});
 
 let lastSpeedIncreaseTime = 0;
 
@@ -55,7 +62,7 @@ function gameLoop() {
 		}
 		case state.End:
 			saveGame();
-			UI.state = S.stateUI.Menu; //gameOver doesn't work correctly
+			navigateTo('Menu');
 			break ;
 		default:
 	}

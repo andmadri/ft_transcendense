@@ -1,6 +1,7 @@
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
+import { navigateTo } from '../history.js';
 
 function styleElement(
 	element: HTMLElement,
@@ -48,7 +49,7 @@ function getQuitBtn() {
 			player: Game.match.player1.ID,
 			name: Game.match.player1.name
 		});
-		UI.state = S.stateUI.Menu;
+		navigateTo('Menu');
 	})
 	return (quitButton);
 }

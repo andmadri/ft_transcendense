@@ -9,6 +9,16 @@ async function addToWaitinglist(socket, userID) {
 	waitlist.set(waitlist.size, { socket, userID });
 }
 
+export async function removeFromWaitinglist(userID) {
+	for (const [nr, userInfo] of waitlist) {
+		if (userInfo.userID == userID) {
+			waitlist.delete(nr);
+			console.log(`Removed ${userID} from waiting list`);
+			return ;
+		}
+	}
+}
+
 function findOpenMatch() {
 	if (waitlist.size === 0)
 		return ([null, null]);

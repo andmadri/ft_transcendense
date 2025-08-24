@@ -5,6 +5,7 @@ import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { game } from './gameLogic.js';
+import { navigateTo } from "../history.js";
 
 function handleGameOver() {
 	log("Game Over!");
@@ -75,7 +76,7 @@ function handleGameOver() {
 	if (!app)
 		return ;
 	app.appendChild(gameOver);
-	UI.state = S.stateUI.Menu
+	navigateTo('Menu');
 }
 
 export function saveGame() {
