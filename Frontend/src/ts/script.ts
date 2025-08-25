@@ -15,7 +15,6 @@ import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
-import { historyState } from './history.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
 
 // getLoadingPage();
@@ -31,7 +30,7 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
-navigateTo('LoginP1');
+// navigateTo('LoginP1');
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
@@ -84,7 +83,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
+				if (!document.getElementById('menu') && !document.getElementById('settingPage'))
 					getMenu();
 				break ;
 			}

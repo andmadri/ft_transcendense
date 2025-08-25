@@ -1,5 +1,6 @@
-import { Game, UI } from './gameData';
-import { showCreditsPage } from './Menu/credits';
+import { Game, UI } from './gameData.js';
+import { showCreditsPage } from './Menu/credits.js';
+import { showSettingsPage } from './SettingMenu/settings.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
 
@@ -15,6 +16,10 @@ import { state } from '@shared/enums'
  */
 export let currentState: string = 'LoginP1';
 
+/**
+ * @brief change state or shows new page
+ * @param state new state
+ */
 export function renderPage(state: string) {
 	switch (state) {
 		case 'LoginP1':
@@ -25,6 +30,8 @@ export function renderPage(state: string) {
 			break;
 		case 'Menu':
 			document.getElementById("creditDiv")?.remove();
+			// document.getElementById("statsDiv")?.remove();
+			document.getElementById("settingPage")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Stats':
@@ -34,7 +41,7 @@ export function renderPage(state: string) {
 			showCreditsPage();
 			break ;
 		case 'Settings':
-			// showSettingsPage();
+			showSettingsPage();
 			break ;
 		case 'Game':
 			UI.state = S.stateUI.Game;
@@ -47,7 +54,7 @@ export function renderPage(state: string) {
 }
 
 /**
- * Saves current state in history and navigates to page
+ * @brief Saves current state in history and navigates to page
  * @param page UI.stateUI as string
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
@@ -81,6 +88,12 @@ function stopCurrentGame() {
 	});
 }
 
+
+/**
+ * @brief checks certain conditions if dir is possible and if page name is allowed
+ * @param state asked page name
+ * @returns de (new) state, is changed if conditions where right
+ */
 function getValidState(state: string): string {
 	// Is already logged in
     if (state != 'LoginP1' && Game.match.player1.ID == -1)
@@ -106,22 +119,23 @@ function getValidState(state: string): string {
     return ('Menu');
 }
 
+/**
+ * @brief activate when back/forward btn is pushed. Checks if valid and renders page
+ * @param event PopStateEvent
+ */
 export function controlBackAndForward(event: PopStateEvent) {
 	const state = event.state as string;
-
-	console.log(`Btn pushed: Current: ${currentState} and state: ${state}`);
 	
 	const validState = getValidState(state);
 	history.replaceState(validState, '', `#${validState}`);
 
-	if (currentState == 'Game' && validState == 'Menu') {
+	// Always go back to menu and stop game
+	if (currentState == 'Game') {
 			cancelOnlineMatch();
 			stopCurrentGame();
-			renderPage('Menu'); // Always go back to menu
+			renderPage('Menu');
 			return ;
 	}
-
-	console.log(`renderPage: ${validState}`);
 
 	if (validState) {
 		renderPage(validState);

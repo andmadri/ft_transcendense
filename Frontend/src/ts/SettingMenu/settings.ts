@@ -133,10 +133,13 @@ const optionRight = document.createElement('div');
 	return (optionRight);
 }
 
-export function getOptionMenu() {
-	const optionMenu = document.createElement('div');
-	optionMenu.id = 'optionMenu';
-	styleElement(optionMenu, {
+export function showSettingsPage() {
+	if (document.getElementById('settingPage'))
+		return ;
+
+	const settingPage = document.createElement('div');
+	settingPage.id = 'settingPage';
+	styleElement(settingPage, {
 		display: 'flex',
 		flexDirection: 'column',
 		backgroundColor: '#ffd400',
@@ -156,11 +159,11 @@ export function getOptionMenu() {
 	})
 
 	optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
-	optionMenu.appendChild(optionLeftRight);
+	settingPage.appendChild(optionLeftRight);
 
 	const app = document.getElementById('app');
 	if (!app)
 		return ;
 	app.innerHTML = '';
-	app.append(optionMenu);
+	app.append(settingPage);
 }

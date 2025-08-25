@@ -4,7 +4,7 @@ import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
 import { getStatsList } from './stats.js';
 import { getHighscores } from './highscore.js'
-import { getOptionMenu  } from '../OptionMenu/options.js';
+import { showSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';
@@ -53,10 +53,7 @@ function getPlayBtn(): HTMLButtonElement {
 		borderRadius: '10px',
 		width: '60%',
 	});
-	playBtn.addEventListener('click', () => {
-		getOptionMenu();
-	});
-
+	playBtn.addEventListener('click', () => { navigateTo('Settings'); });
 	return (playBtn);
 }
 
@@ -78,10 +75,8 @@ function getLoginBtn(playerNr: number): HTMLButtonElement {
 		log('Login button clicked for player ' + playerNr);
 		document.getElementById('menu')?.remove();
 		if (playerNr == 2) {
-			// UI.state = S.stateUI.LoginP2;
 			navigateTo('LoginP2');
 		} else { 
-			// UI.state = S.stateUI.LoginP1;
 			navigateTo('LoginP1');
 		}
 	});

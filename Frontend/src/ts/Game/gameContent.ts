@@ -56,12 +56,12 @@ function getQuitBtn() {
 
 
 export function getGameField() {
-	const optionMenu = document.getElementById('optionMenu');
-	if (optionMenu) {
+	const settingPage = document.getElementById('settingPage');
+	if (settingPage) {
 		const	app = document.getElementById("app");
 		if (!app)
 			return ;
-		app.removeChild(optionMenu);
+		app.removeChild(settingPage);
 	}
 	const app = document.getElementById('app');
 	if (!app)
