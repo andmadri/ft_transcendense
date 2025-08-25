@@ -4,7 +4,7 @@ import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
 import { getStatsList } from './stats.js';
 import { getHighscores } from './highscore.js'
-import { showSettingsPage  } from '../SettingMenu/settings.js';
+import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
 import { getRightSideMenuWithTabs } from './menuPlayercards.js';

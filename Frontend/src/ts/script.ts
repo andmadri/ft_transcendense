@@ -8,6 +8,7 @@ import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
+import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { getMenu } from './Menu/menuContent.js'
@@ -15,6 +16,8 @@ import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
 // import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
+import { getCreditBtn, getCreditsPage } from './Menu/credits.js'
+import { getSettingsPage } from './SettingMenu/settings.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
 
 // getLoadingPage();
@@ -30,7 +33,7 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
-// navigateTo('LoginP1');
+navigateTo('LoginP1');
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
@@ -58,10 +61,9 @@ function gameLoop() {
 			document.getElementById('auth2')?.remove();
 			game();
 			break ;
-		}
+		} 
 		case state.End:
 			saveGame();
-			navigateTo('Menu');
 			break ;
 		default:
 	}
@@ -87,8 +89,28 @@ function mainLoop() {
 					getMenu();
 				break ;
 			}
+			case S.stateUI.Dashboard: {
+				if (!document.getElementById('dashboard'))
+					// getDashboard();
+				break;
+			}
+			case S.stateUI.Credits: {
+				if (!document.getElementById('Credits'))
+					getCreditsPage();
+				break ;
+			}
+			case S.stateUI.Settings: {
+				if (!document.getElementById('settingPage'))
+					getSettingsPage();
+				break ;
+			}
 			case S.stateUI.Game: {
 				gameLoop();
+				break ;
+			}
+			case S.stateUI.GameOver: {
+				if (!document.getElementById('gameOver'))
+					getGameOver();
 				break ;
 			}
 			default:

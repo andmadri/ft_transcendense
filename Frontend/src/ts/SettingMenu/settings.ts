@@ -133,7 +133,7 @@ const optionRight = document.createElement('div');
 	return (optionRight);
 }
 
-export function showSettingsPage() {
+export function getSettingsPage() {
 	if (document.getElementById('settingPage'))
 		return ;
 

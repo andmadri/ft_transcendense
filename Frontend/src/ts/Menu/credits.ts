@@ -1,7 +1,7 @@
 import { navigateTo } from "../history.js";
 import { styleElement } from "./menuContent.js";
 
-export function showCreditsPage() {
+export function getCreditsPage() {
 	if (document.getElementById('creditDiv'))
 		return ;
 

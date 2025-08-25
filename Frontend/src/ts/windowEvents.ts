@@ -1,7 +1,7 @@
 import * as S from './structs.js'
 import { Game } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
-import { OT } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
@@ -40,6 +40,9 @@ export function pressButton(e: KeyboardEvent) {
 }
 
 export function initAfterResize() {
+	if (Game.match.state != state.Playing)
+		return ;
+
 	const ballRadius = ball.size.height / 2;
 	const paddleHalfWidth = paddle1.size.width / 2;
 	const paddleHalfHeight = paddle1.size.height / 2;
@@ -60,7 +63,5 @@ export function initAfterResize() {
 		rPlayer.style.left = `${paddle2.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
 		rPlayer.style.top = `${paddle2.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
 
-	} else {
-		console.log('Something went wrong (initAfterResizing), close game?');
 	}
 }

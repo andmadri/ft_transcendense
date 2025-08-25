@@ -28,7 +28,6 @@ function receivePlayerData(data: any) {
 		Game.match.player2.score = data.score2 || 0;
 	}
 	if (Game.match.player1.ID != -1) {
-		// UI.state = S.stateUI.Menu;
 		navigateTo('Menu');
 	}
 	const app = document.getElementById('app');

@@ -200,7 +200,6 @@ export function game() {
 	else {
 		Game.match.time = performance.now();
 		if (Game.match.player1.score == 5 || Game.match.player2.score == 5) {
-			navigateTo('Menu');
 			Game.match.state = state.End;
 			return ;
 		}

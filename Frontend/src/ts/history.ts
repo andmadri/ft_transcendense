@@ -1,6 +1,4 @@
 import { Game, UI } from './gameData.js';
-import { showCreditsPage } from './Menu/credits.js';
-import { showSettingsPage } from './SettingMenu/settings.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
 
@@ -30,21 +28,25 @@ export function renderPage(state: string) {
 			break;
 		case 'Menu':
 			document.getElementById("creditDiv")?.remove();
-			// document.getElementById("statsDiv")?.remove();
+			document.getElementById("containerDashboard")?.remove();
 			document.getElementById("settingPage")?.remove();
+			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Stats':
-			// showStatsPage();
+			// getDashboard();
 			break ;
 		case 'Credits':
-			showCreditsPage();
+			UI.state = S.stateUI.Credits;
 			break ;
 		case 'Settings':
-			showSettingsPage();
+			UI.state = S.stateUI.Settings;
 			break ;
 		case 'Game':
 			UI.state = S.stateUI.Game;
+			break ;
+		case 'GameOver':
+			UI.state = S.stateUI.GameOver;
 			break ;
 		default:
 			console.log(`Page does not exist: ${state}`);
@@ -100,14 +102,14 @@ function getValidState(state: string): string {
 		return ('Menu');
 
 	// No match is started
-    if (state === 'Game' && Game.match.matchID == -1)
+    if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1)
 		return ('Menu');
 
 	// When logged in not back to loginpage	
 	if (currentState == 'Menu' && state == 'LoginP1')
 		return ('Menu');
 
-	if (currentState == 'Menu' && state == 'Game')
+	if (currentState == 'Menu' && (state === 'Game' || state === 'GameOver'))
 		return ('Menu');
 
     const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
@@ -129,6 +131,7 @@ export function controlBackAndForward(event: PopStateEvent) {
 	const validState = getValidState(state);
 	history.replaceState(validState, '', `#${validState}`);
 
+	console.log(`State: ${state} -> validState: ${validState}, currentState: ${currentState}`)
 	// Always go back to menu and stop game
 	if (currentState == 'Game') {
 			cancelOnlineMatch();
