@@ -1,6 +1,7 @@
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
+import { navigateTo } from '../history.js'
 
 export async function submitLogout(e: Event | null, playerNr: number) {
 	log(`Submitting logout for playerNr ${playerNr}`);
@@ -26,7 +27,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			if (playerNr == 1) {
 				Game.match.player1.ID = -1;
 				Game.match.player1.name = "";
-				UI.state = S.stateUI.LoginP1;
+				navigateTo('LoginP1');
 			} else {
 				Game.match.player2.ID = 1;
 				Game.match.player2.name = "Guest";

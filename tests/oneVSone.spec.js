@@ -13,13 +13,13 @@ export async function StartOneVsOne(page) {
 
 export async function oneVsOne(page, name2, email2, password2) {
 	await Menu.switchPlayerTab(page, 2);
-	await page.getByRole('button', { name: 'login', exact: true }).filter({ hasText: 'login', visible: true }).click();
+	// await page.getByRole('button', { name: 'login', exact: true }).filter({ hasText: 'login', visible: true }).click();
 	
 	// BUG
-	await page.getByText('Sign Up').click();
-	await page.getByText('Sign Up').click();
+	// await page.getByText('Sign Up').click();
+	// await page.getByText('Sign Up').click();
 
-	await Login.signup_login_byPlayer(page, 2, name2, email2, password2);
+	// await Login.signup_login_byPlayer(page, 2, name2, email2, password2);
 	
 	await StartOneVsOne(page);
 	await page.waitForTimeout(10000);

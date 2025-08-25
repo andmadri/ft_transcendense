@@ -7,7 +7,10 @@ export enum stateUI {
 	Menu,
 	LoginP1,
 	LoginP2,
-	Game
+	Game,
+	Settings,
+	Dashboard,
+	Credits,
 }
 
 export type update = {

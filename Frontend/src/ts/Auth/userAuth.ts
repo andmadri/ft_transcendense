@@ -3,6 +3,7 @@ import { UI, Game } from '../gameData.js'
 import { log } from '../logging.js'
 // import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
+import { navigateTo } from '../history.js';
 
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
@@ -72,7 +73,7 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		Game.match.player2.name = name;
 		Game.match.player2.Twofa = twofa;
 	}
-	UI.state = S.stateUI.Menu;
+	navigateTo('Menu');
 	document.getElementById('menu')?.remove();
 	log("playerNr 1 logged in: " + Game.match.player1.Login + "\n playerNr 2 logged in: " + Game.match.player2.Login);
 }

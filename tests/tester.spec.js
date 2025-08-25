@@ -6,6 +6,7 @@ import * as Menu from './menu.spec.js';
 import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
+import * as Navigation from './navigation.spec.js'
 import { sign } from 'crypto';
 
 const URL = 'https://localhost:8443';
@@ -17,7 +18,12 @@ const name2 = `User${Math.floor(Math.random() * 1000000)}`;
 const email2 = `${name2}@codam.com`;
 const password2 = `Hallo123`;
 
+// To execute the test in serie instead of all together
 test.describe.configure({ mode: 'serial' });
+
+// *************************************************************************** //
+//               TESTS TO ACCESS WITH ALL AND SINGLE TEST                      //
+// *************************************************************************** // 
 
 async function TestSignupAndLogin(page) {
 	await page.goto(URL);
@@ -78,6 +84,18 @@ async function TestRemotePlayer(page, browser, allTests) {
 	await Menu.isInMenu(page);
 }
 
+async function TestNavigation(page, allTests) {
+	if (!allTests) {
+		await page.goto(URL);
+		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await Menu.isInMenu(page);
+	}
+	await Navigation.navigation(page);
+}
+
+// *************************************************************************** //
+//                          SINGLE TESTS 			                           //
+// *************************************************************************** // 
 test('Sign Up and Login', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
 	await TestSignupAndLogin(page);
@@ -103,6 +121,15 @@ test('Remote Player', async ({ browser }) => {
 	await TestRemotePlayer(page, browser, false);
 });
 
+test('Navigation', async ({browser}) => {
+	const page = await U.createNewPage(browser);
+	await TestNavigation(page, false);
+});
+
+
+// *************************************************************************** //
+//                             ALL TESTS 			                           //
+// *************************************************************************** // 
 test('All tests', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
 	await TestSignupAndLogin(page, true);
@@ -110,4 +137,5 @@ test('All tests', async ({ browser }) => {
 	await TestOneVSone(page, true);
 	await TestOneVSai(page, true);
 	await TestRemotePlayer(page, browser, true);
+	await TestNavigation(page, true)
 });

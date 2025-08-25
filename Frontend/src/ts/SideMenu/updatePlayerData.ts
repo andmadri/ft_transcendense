@@ -1,5 +1,6 @@
 import { log } from '../logging.js';
 import { UI, Game } from "../gameData.js"
+import { navigateTo } from '../history.js';
 import * as S from '../structs.js'
 
 
@@ -26,8 +27,9 @@ function receivePlayerData(data: any) {
 		Game.match.player2.ID = data.id2 || 1;
 		Game.match.player2.score = data.score2 || 0;
 	}
-	if (Game.match.player1.ID != -1)
-		UI.state = S.stateUI.Menu;
+	if (Game.match.player1.ID != -1) {
+		navigateTo('Menu');
+	}
 	const app = document.getElementById('app');
 	if (!app) return ;
 	const menu = document.createElement('div');

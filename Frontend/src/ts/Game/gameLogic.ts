@@ -3,6 +3,7 @@ import * as S from '../structs.js'
 import { OT, state } from '@shared/enums'
 import { entity } from '@shared/types'
 import { aiAlgorithm, resetAI } from './aiLogic.js'
+import { navigateTo } from "../history.js"
 import { sendBallUpdate, sendPaddleUpdate, sendScoreUpdate} from './gameStateSync.js'
 
 const field = Game.match.gameState.field;
@@ -199,7 +200,6 @@ export function game() {
 	else {
 		Game.match.time = performance.now();
 		if (Game.match.player1.score == 5 || Game.match.player2.score == 5) {
-			UI.state = S.stateUI.Menu;
 			Game.match.state = state.End;
 			return ;
 		}

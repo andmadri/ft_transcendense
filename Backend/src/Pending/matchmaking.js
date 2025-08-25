@@ -1,5 +1,6 @@
-import { handleOnlineMatch } from "./onlinematch.js";
+import { handleOnlineMatch, removeFromWaitinglist } from "./onlinematch.js";
 import { addUserToRoom } from "../rooms.js";
+
 
 // STEP 2: receiving invitation and send back to all the online players.
 function challengeFriend(socket, challenger, responder) {
@@ -46,6 +47,9 @@ export function handleMatchmaking(db, msg, socket, userID, io) {
 			break ;
 		case 'createOnlineMatch':
 			handleOnlineMatch(db, socket, userID, io);
+			break ;
+		case 'cancelOnlineMatch':
+			removeFromWaitinglist(userID);
 			break ;
 		default:
 			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);

@@ -5,9 +5,13 @@ import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { game } from './gameLogic.js';
+import { navigateTo } from "../history.js";
 
-function handleGameOver() {
+export function getGameOver() {
 	log("Game Over!");
+	const game = document.getElementById('game');
+	if (game)
+		game.remove();
 
 	const gameOver = document.createElement('div');
 	gameOver.id = 'gameOver';
@@ -59,36 +63,32 @@ function handleGameOver() {
 	gameOver.appendChild(txtInnerGameOver);
 	gameOver.appendChild(ball);
 
-		// ball.style.transform = 'translate(-50%, -50%)';
-
-	// const	backToMenu = document.createElement('button');
-	// backToMenu.id = 'menuBtn';
-	// backToMenu.textContent = 'Back to menu';
-
-	// backToMenu.addEventListener('click', () => {
-	// 	log("pushed back to menu button");
-	// 	UI.state = S.stateUI.Menu;
-	// 	return ;
-	// })
+	const backToMenu = document.createElement('button');
+	backToMenu.id = 'menuBtn';
+	backToMenu.textContent = 'Back to menu';
+	backToMenu.style.fontFamily = '"Horizon", monospace';
+	backToMenu.style.padding = '0.6rem 2rem';
+	backToMenu.style.fontSize = '1.5rem';
+	backToMenu.style.borderRadius = '0.8rem';
+	backToMenu.style.border = '0.15rem solid black';
+	backToMenu.style.backgroundColor = '#ededeb';
+	backToMenu.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
+	backToMenu.style.cursor = 'pointer';
+	backToMenu.style.transition = 'all 0.2s ease-in-out';
+	backToMenu.addEventListener('click', () => { navigateTo('Menu'); })
+	gameOver.appendChild(backToMenu);
 
 	const app = document.getElementById('app');
 	if (!app)
 		return ;
 	app.appendChild(gameOver);
-	UI.state = S.stateUI.Menu
 }
 
 export function saveGame() {
 	if (Game.match.ID == -1)
 		return ;
 
-	if (!document.getElementById('gameOver'))
-	{
-		const game = document.getElementById('game');
-		if (game)
-			game.remove();
-		handleGameOver();
-	}
+	navigateTo('GameOver');
 
 	// MARTY HERE!!! - Is this the place where we can change the data of the message?
 	// No the last message when the game is finished.. ;)

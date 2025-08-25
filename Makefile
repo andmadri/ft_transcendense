@@ -76,5 +76,6 @@ prune: clean clean_volumes
 
 
 # TESTER:
+# npm install --save-dev @playwright/test
 # npx playwright install
 # npx playwright test --ui (IN VSC)
