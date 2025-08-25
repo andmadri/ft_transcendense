@@ -109,7 +109,7 @@ function checkPaddleSides(match: matchInfo) {
 
 export function updateGameState(match: matchInfo) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
-
+	
 	handleWallBounce(ball, field);
 	checkPaddleSides(match);
 	updateBallPos(ball, field);

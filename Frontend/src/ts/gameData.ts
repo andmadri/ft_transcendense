@@ -29,6 +29,7 @@ export const Game : S.Game = {
 		state: state.Pending,
 		matchID: -1,
 		matchFormat: MF.Empty,
+		pauseTimeOutID: null,
 		mode: OT.Empty,
 		player1: {
 			ID: -1,

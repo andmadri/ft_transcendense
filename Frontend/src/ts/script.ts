@@ -50,7 +50,9 @@ function gameLoop() {
 		case state.Paused: {
 			//maybe start with pause instead of immediately playing
 			//maybe send score here in local mode, cause ball is paused when point is scored ?? 
-			pauseBallTemporarily(3000);
+			if (Game.match.pauseTimeOutID === null) {
+				pauseBallTemporarily(3000);
+			}
 			break ;
 		}
 		case state.Playing: {

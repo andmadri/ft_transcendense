@@ -3,6 +3,8 @@ import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, state } from '@shared/enums'
+import { applyGameStateUpdate } from './gameStateSync.js'
+
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
@@ -15,9 +17,11 @@ function processMatch(data: any) {
 	if (Game.match.mode == OT.Online) {
 		getGameField();
 	}
+
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
 	UI.state = S.stateUI.Game;
+	Game.match.state = state.Init;
 	log("ProcessMatch");
 }
 
@@ -48,11 +52,8 @@ export function actionGame(data: any) {
 		case 'start':
 			UI.state = S.stateUI.Game;
 			break ;
-		case 'ballUpdate':
- 			//applyBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			//applyPaddleUpdate(data);
+		case 'gameStateUpdate':
+			applyGameStateUpdate(data);
 			break ;
 		case 'save':
 			processSavingMatch(data);

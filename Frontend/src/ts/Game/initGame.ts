@@ -206,7 +206,7 @@ export function actionInitOnlineGame(data: any) {
 	Game.match.gameState = match.gameState;
 
 	// Function to set all data sync with match in game...
-
 	UI.state = S.stateUI.Game;
+	match.state == state.Playing;
 	console.log("Start online game...");
 }

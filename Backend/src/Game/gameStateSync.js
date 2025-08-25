@@ -20,6 +20,14 @@ export function sendBallUpdate(match, msg, socket, io) {
 	io.to(match.matchID).emit('message', msg);
 }
 
+export function sendGameStateUpdate(match) {
+	io.to(match.matchID).emit('message', {
+		action: 'game',
+		subaction: 'gameStateUpdate',
+		match: match
+	});
+}
+
 export function sendPaddleUpdate(match, msg, socket, io) {
 	if (match.state != state.Playing)
 		return ;
@@ -40,19 +48,9 @@ export function sendPaddleUpdate(match, msg, socket, io) {
 }
 
 export function applyKeyPressUpdate(match, msg) {
-	let playerObj
-	if (match.player1.ID == msg.id) {
-		playerObj = match.player1;
-	}
-	else if (match.player2.ID == msg.id) {
-		playerObj = match.player2;
-	}
-	if (msg.key == 'ArrowUp') {
-		playerObj.pressUp = msg.pressed;
-	}
-	else if (msg.key =='ArrowDown') {
-		playerObj.pressDown = msg.pressed;
-	}
+	let paddle = match.player1.ID == msg.id ? match.paddle1 : match.paddle2;
+	if (msg.key == 'ArrowDown') paddle.vy = msg.pressed ? -paddle.movement.speed : 0;
+	if (msg.key == 'ArrowUp') paddle.vy = msg.pressed ? paddle.movement.speed : 0;
 }
 
 export async function updateScore(match, msg, io) {

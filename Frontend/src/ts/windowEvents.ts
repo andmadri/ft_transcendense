@@ -1,5 +1,5 @@
 import * as S from './structs.js'
-import { Game } from "./gameData.js"
+import { Game, UI } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
 import { OT } from '@shared/enums'
 
@@ -14,8 +14,8 @@ export function releaseButton(e: KeyboardEvent) {
 		return ;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		//set velocity to 0 but how do i know what paddle i am?
-
+		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
+		myPaddle.velocity.vy = 0;
 		sendKeyPressUpdate(e.key);
 		return ;
 	}
@@ -35,11 +35,9 @@ export function pressButton(e: KeyboardEvent) {
 		return;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		//change paddle velocity, but how do we know which player i am?
-
-		if (Game.match.mode == OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
+		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
+		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
+		sendKeyPressUpdate(e.key);
 		return;
 	}
 	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {

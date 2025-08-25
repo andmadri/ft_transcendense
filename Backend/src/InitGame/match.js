@@ -37,6 +37,8 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			state: state.Start,
 			matchID: matchnr,
 			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+			intervalID: null,
+			pauseTimeOutID: null,
 			mode: mode,
 			player1: {
 				ID: id,
@@ -123,7 +125,7 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 
 		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
-			matches.get(matchID).stage = state.Playing;
+			matches.get(matchID).state = state.Playing;
 		}
 		return (matchID);
 	} catch (err) {

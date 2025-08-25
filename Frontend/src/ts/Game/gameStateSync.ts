@@ -1,5 +1,5 @@
 import * as S from '../structs.js'
-import { Game } from "../gameData.js"
+import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT } from '@shared/enums'
 import { renderGameInterpolated } from './renderSnapshots.js';
@@ -45,8 +45,9 @@ import { renderGameInterpolated } from './renderSnapshots.js';
 // 	}
 // }
 
-function applyGameStateUpdate(data : any) {
+export function applyGameStateUpdate(data : any) {
 	if (Game.match.mode == OT.Online) {
+		Game.match.state = data.match.state;
 		renderGameInterpolated(data);
 		return ;
 	}
@@ -58,7 +59,7 @@ export function sendKeyPressUpdate(key : string) {
 		subaction: 'keyPressUpdate',
 		key: key,
 		pressed: S.Keys[key].pressed,
-		id: Game.match.player1.ID, //user check
+		id: UI.user1.ID, //user check
 		matchID: Game.match.ID };
 	Game.socket.send(JSON.stringify(msg));
 	// Send also ballX/Y ballVX/Y and paddleVy

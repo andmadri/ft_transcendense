@@ -1,4 +1,5 @@
 import { gameState } from '@shared/types'
+import { UI } from '../gameData.js'
 
 const INTERPOLATION_DELAY = 100;
 const MAX_SNAPSHOT_AGE = 2000;
@@ -24,8 +25,8 @@ function makeSnapshot(data: any, player: number) {
 	snapshots.push({
 		ballX: data.gameState.ball.pos.x,
 		ballY: data.gameState.ball.pos.y,
-		ballVX: data.gameState.velocity.pos.vx,
-		ballVY: data.gameState.velocity.pos.vy,
+		ballVX: data.gameState.velocity.vx,
+		ballVY: data.gameState.velocity.vy,
 		paddleY: player == 1 ? data.gamestate.paddle2.pos.y : data.gamestate.paddle1.pos.y,
 		paddleVY: player == 1 ? data.gamestate.paddle1.velocity.vx : data.gamestate.paddle1.velocity.vy,
 		timestamp: Date.now(),
@@ -129,10 +130,10 @@ function deleteOldSnapshots(renderTime: number) {
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
 export function renderGameInterpolated(data: any) {
-	if ( data.ballY !== undefined && data.ballX !== undefined && data.playerNr !== undefined &&
-		data.paddleTwoY !== undefined && data.paddleOneY !== undefined && 
-		data.paddleOneVY !== undefined && data.paddleTwoVY !== undefined)
-		makeSnapshot(data, data.playerNr);
+	if (data.match) {
+		const playerNr = data.match.player1.ID == UI.user1.ID ? 1 : 2;
+		makeSnapshot(data, playerNr);
+	}
 	else {
 		console.log("Data is missing in applyUpdatesGameServer");
 		return;

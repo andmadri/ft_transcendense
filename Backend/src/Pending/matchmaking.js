@@ -36,7 +36,8 @@ function receiveResponseChallenge(socket, msg) {
 export function handleMatchmaking(db, msg, socket, userID, io) {
 	if (!msg.subaction)
 		return ;
-
+	
+	console.log(`handlematchmaking() -> UserID = ${userID}`);
 	switch(msg.subaction) {
 		case 'challengeFriend':
 			challengeFriend(socket, msg.challenger, msg.responder);
@@ -49,7 +50,5 @@ export function handleMatchmaking(db, msg, socket, userID, io) {
 			break ;
 		default:
 			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);
-		
 	}
-
 }

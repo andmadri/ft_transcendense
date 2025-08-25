@@ -35,7 +35,8 @@ export type gameState = {
 export type matchInfo = {
 	state: state,
 	matchID: number,
-	matchFormat: MF
+	matchFormat: MF,
+	pauseTimeOutID: number | null,
 	mode: OT,
 	player1: player,
 	player2: player,
