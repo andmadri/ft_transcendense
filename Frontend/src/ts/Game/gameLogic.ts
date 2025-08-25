@@ -25,11 +25,6 @@ function updateDOMElements() {
 		leftScore.textContent = Game.match.player1.score.toString();
 		rightScore.textContent = Game.match.player2.score.toString();
 
-		console.log(`paddle1.style.left = ${paddle1Div.style.left}`);
-		console.log(`paddle2.style.left = ${paddle2Div.style.left}`);
-		console.log(`fieldWidth = ${fieldDiv.clientWidth}`);
-		console.log(`fieldHeight = ${fieldDiv.clientHeight}`);
-
 		ballDiv.style.left = `${(ball.pos.x * fieldDiv.clientWidth)}px`; // i dont understand why i shouldn't subtract radius but it only works like this
 		ballDiv.style.top = `${(ball.pos.y * fieldDiv.clientWidth)}px`;
 		

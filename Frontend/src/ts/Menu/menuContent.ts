@@ -103,9 +103,9 @@ function getLogoutBtn(playerNr: number): HTMLButtonElement {
 }
 
 function get2faBtn(playerNr: number): HTMLButtonElement {
-	if (Game.match.player1.Twofa && playerNr == 1)
+	if (UI.user1.Twofa && playerNr == 1)
 		return (get2faDisableBtn(playerNr));
-	if (Game.match.player2.Twofa && playerNr == 2)
+	if (UI.user2.Twofa && playerNr == 2)
 		return (get2faDisableBtn(playerNr));
 	return (get2faSetupBtn(playerNr));
 }
@@ -207,9 +207,9 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 					label.textContent = '2FA disabled successfully!';
 					form.remove();
 					if (data.playerNr == 1)
-						Game.match.player1.Twofa = false;
+						UI.user1.Twofa = false;
 					else
-						Game.match.player2.Twofa = false;
+						UI.user2.Twofa = false;
 					setTimeout(() => overlay.remove(), 1000);
 					document.getElementById('menu')?.remove();
 				} else {
@@ -436,7 +436,7 @@ export function getRightSideMenu(playerNr: number) {
 	})
 
 	const avatarImg = document.createElement('img');
-	const userId = playerNr === 1 ? Game.match.player1.ID : Game.match.player2.ID;
+	const userId = playerNr === 1 ? UI.user1.ID : UI.user2.ID;
 	avatarImg.src = `/api/avatar/${userId}`;
 	styleElement(avatarImg, {
 		maxWidth: '120px',
@@ -458,9 +458,9 @@ export function getRightSideMenu(playerNr: number) {
 	const playername = document.createElement('div');
 	playername.id = "playerNameMenu" + playerNr;
 	if (playerNr == 1)
-		playername.textContent = Game.match.player1.name;
+		playername.textContent = UI.user1.name;
 	else
-		playername.textContent = Game.match.player2.name;
+		playername.textContent = UI.user2.name;
 	playername.style.fontSize = '1.5em';
 
 	const buttons = document.createElement('div');

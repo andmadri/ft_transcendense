@@ -8,7 +8,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		e.preventDefault();
 
 	const payload = { playerNr };
-	if (playerNr == 1 && Game.match.player2.ID != 1) {  // Ensure player 2 is logged out too
+	if (playerNr == 1 && UI.user2.ID != 1) {  // Ensure player 2 is logged out too
 		log(`Player 2 is logged in, logging out player 2 as well.`);
 		submitLogout(null, 2);
 	}
@@ -24,12 +24,12 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			const data = await response.json();
 			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
 			if (playerNr == 1) {
-				Game.match.player1.ID = -1;
-				Game.match.player1.name = "";
+				UI.user1.ID = -1;
+				UI.user1.name = "";
 				UI.state = S.stateUI.LoginP1;
 			} else {
-				Game.match.player2.ID = 1;
-				Game.match.player2.name = "Guest";
+				UI.user2.ID = 1;
+				UI.user2.name = "Guest";
 			}
 			document.getElementById('menu')?.remove();
 		} else {

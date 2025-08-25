@@ -45,8 +45,8 @@ function getQuitBtn() {
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.match.ID,
-			player: Game.match.player1.ID,
-			name: Game.match.player1.name
+			player: UI.user1.ID,
+			name: UI.user1.name
 		});
 		UI.state = S.stateUI.Menu;
 	})

@@ -45,7 +45,6 @@ function gameLoop() {
 				getGameField();
 				initGame();
 				Game.match.state = state.Playing;
-				console.log(`player one = ${Game.match.gameState.paddle1.pos.y} , player two = ${Game.match.gameState.paddle2.pos.y} , ballX = ${Game.match.gameState.ball.pos.x} , ballY = ${Game.match.gameState.ball.pos.y}`);
 			}
 			break ;
 		case state.Paused: {

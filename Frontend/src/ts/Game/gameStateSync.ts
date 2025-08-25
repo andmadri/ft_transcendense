@@ -58,7 +58,7 @@ export function sendKeyPressUpdate(key : string) {
 		subaction: 'keyPressUpdate',
 		key: key,
 		pressed: S.Keys[key].pressed,
-		id: Game.match.player1.ID,
+		id: Game.match.player1.ID, //user check
 		matchID: Game.match.ID };
 	Game.socket.send(JSON.stringify(msg));
 	// Send also ballX/Y ballVX/Y and paddleVy
