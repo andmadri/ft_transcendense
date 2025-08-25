@@ -18,7 +18,12 @@ const name2 = `User${Math.floor(Math.random() * 1000000)}`;
 const email2 = `${name2}@codam.com`;
 const password2 = `Hallo123`;
 
+// To execute the test in serie instead of all together
 test.describe.configure({ mode: 'serial' });
+
+// *************************************************************************** //
+//               TESTS TO ACCESS WITH ALL AND SINGLE TEST                      //
+// *************************************************************************** // 
 
 async function TestSignupAndLogin(page) {
 	await page.goto(URL);
@@ -88,6 +93,9 @@ async function TestNavigation(page, allTests) {
 	await Navigation.navigation(page);
 }
 
+// *************************************************************************** //
+//                          SINGLE TESTS 			                           //
+// *************************************************************************** // 
 test('Sign Up and Login', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
 	await TestSignupAndLogin(page);
@@ -118,6 +126,10 @@ test('Navigation', async ({browser}) => {
 	await TestNavigation(page, false);
 });
 
+
+// *************************************************************************** //
+//                             ALL TESTS 			                           //
+// *************************************************************************** // 
 test('All tests', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
 	await TestSignupAndLogin(page, true);

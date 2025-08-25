@@ -6,5 +6,8 @@ import * as Menu from './menu.spec.js';
 export async function quitGame(page) {
 	await U.pressBtn(page, "QUIT");
 	await page.waitForTimeout(1000);
+
+	// GO TO GAME OVER PAGE OR MENU?
 	// await expect(page.locator('div', { hasText: 'Game Over' })).toBeVisible();
+	// await Menu.isInMenu(page);
 }
