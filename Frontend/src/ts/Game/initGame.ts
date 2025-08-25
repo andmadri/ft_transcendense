@@ -25,7 +25,7 @@ export function startGame() {
 			break ;
 		}
 		default: {
-			log('No match format choosen');
+			alert("Please select single game or tournament");
 			return ;
 		}
 	}
@@ -59,7 +59,7 @@ export function startGame() {
 			break ;
 		}
 		default: {
-			alert('No opponent type choosen');
+			alert('Please select an opponent');
 			return ;
 		}
 	}
@@ -76,6 +76,8 @@ export function changeOpponentType(option: string) {
 		case 'Online':
 			Game.match.mode = OT.Online;
 			break ;
+		case 'empty':
+			Game.match.mode = OT.Empty;
 		default:
 			log(`unknown opponent type? ${option}`);
 	}
@@ -89,6 +91,8 @@ export function changeMatchFormat(option: string) {
 		case 'tournament':
 			Game.match.matchFormat = MF.Tournament;
 			break ;
+		case 'empty':
+			Game.match.matchFormat = MF.Empty;
 		default:
 			log(`unknown match format? ${option}`);
 	}

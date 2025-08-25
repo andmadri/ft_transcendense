@@ -102,11 +102,7 @@ export function saveGame() {
 	Game.match.player2.score = 0;
 	Game.match.ID = -1;
 
-	// LOGOUT PLAYER 2 after game ONE vs ONE
-	// if (Game.match.opponentType == S.OT.ONEvsONE && Game.match.player2.ID != 0) {
-	// 	submitLogout(null, 2);
-	// } else {
-	// 	Game.match.player2.ID = -1;
-	// 	Game.match.player2.name = 'unknown';
-	// }
+	// Change AI to GUEST before going back to menu
+	if (Game.match.opponentType == OT.ONEvsCOM)
+		Game.match.player2.ID = 1;
 }

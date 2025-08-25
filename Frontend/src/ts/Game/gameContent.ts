@@ -49,6 +49,10 @@ function getQuitBtn() {
 			player: Game.match.player1.ID,
 			name: Game.match.player1.name
 		});
+		if (Game.match.player2.ID == 2) {
+			Game.match.player2.ID = 1
+			Game.match.player2.name = 'Guest';
+		}
 		navigateTo('Menu');
 	})
 	return (quitButton);

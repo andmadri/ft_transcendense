@@ -92,7 +92,7 @@ export function getLoginFields(player: number) {
 	});
 
 	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => {
-		navigateTo('LoginP' + (player === 1 ? 2 : 1));
+		navigateTo('LoginP' + (player === 1 ? 1 : 2));
 		changeAuthMode(player);
 	});
 }

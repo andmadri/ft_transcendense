@@ -137,6 +137,8 @@ export function getSettingsPage() {
 	if (document.getElementById('settingPage'))
 		return ;
 
+	changeMatchFormat('empty');
+	changeOpponentType('empty')
 	const settingPage = document.createElement('div');
 	settingPage.id = 'settingPage';
 	styleElement(settingPage, {
