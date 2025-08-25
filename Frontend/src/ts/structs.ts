@@ -11,7 +11,6 @@ export enum stateUI {
 	Settings,
 	Dashboard,
 	Credits,
-	GameOver
 }
 
 export type update = {

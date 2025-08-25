@@ -1,4 +1,5 @@
 import { Game, UI } from './gameData.js';
+import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
 
@@ -18,8 +19,8 @@ export let currentState: string = 'LoginP1';
  * @brief change state or shows new page
  * @param state new state
  */
-export function renderPage(state: string) {
-	switch (state) {
+export function renderPage(newState: string) {
+	switch (newState) {
 		case 'LoginP1':
 			UI.state = S.stateUI.LoginP1;
 			break ;
@@ -42,17 +43,21 @@ export function renderPage(state: string) {
 		case 'Settings':
 			UI.state = S.stateUI.Settings;
 			break ;
+		case 'Pending':
+			Game.match.state = state.Pending;
+			break ;
 		case 'Game':
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'GameOver':
-			UI.state = S.stateUI.GameOver;
+			Game.match.state = state.End;
+			// UI.state = S.stateUI.GameOver;
 			break ;
 		default:
-			console.log(`Page does not exist: ${state}`);
+			console.log(`Page does not exist: ${newState}`);
 			UI.state = S.stateUI.Menu;
 	}
-	currentState = state;
+	currentState = newState;
 }
 
 /**
@@ -70,14 +75,6 @@ export function navigateTo(state: string) {
 		history.pushState(state, '', `#${state}`);
 		renderPage(state);
 	}
-}
-
-function cancelOnlineMatch() {
-	Game.socket.send({ 
-		action: 'matchmaking',
-		subaction: 'cancelOnlineMatch',
-		matchID: Game.match.ID
-	});
 }
 
 function stopCurrentGame() {

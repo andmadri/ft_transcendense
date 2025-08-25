@@ -10,6 +10,7 @@ import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
+import { getPending } from './Game/pendingContent.js'
 import { OT, state, MF } from '@shared/enums'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
@@ -43,7 +44,8 @@ let lastSpeedIncreaseTime = 0;
 function gameLoop() {
 	switch (Game.match.state) {
 		case state.Pending: {
-			log("...pending...");
+			if (!document.getElementById('Pending'))
+				getPending();
 			break ;
 		}
 		case state.Init:
@@ -63,7 +65,10 @@ function gameLoop() {
 			break ;
 		} 
 		case state.End:
-			saveGame();
+			if (!document.getElementById('gameOver')) {
+				getGameOver();
+				saveGame();
+			}
 			break ;
 		default:
 	}
@@ -106,11 +111,6 @@ function mainLoop() {
 			}
 			case S.stateUI.Game: {
 				gameLoop();
-				break ;
-			}
-			case S.stateUI.GameOver: {
-				if (!document.getElementById('gameOver'))
-					getGameOver();
 				break ;
 			}
 			default:
