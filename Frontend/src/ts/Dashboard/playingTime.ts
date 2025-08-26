@@ -22,40 +22,9 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	title.style.borderRadius = '16px';
 	title.style.padding = '0.5rem';
 	title.style.boxSizing = 'border-box';
-	title.style.fontSize = 'min(2.5vw, 2.5vh)';
+	title.style.fontSize = 'clamp(18px, 2.5vw, 30px)';
 	// title.style.position = 'relative';
 	card.appendChild(title);
-
-	// const wrapperDonut = document.createElement('div');     // fills the middle area
-	// wrapperDonut.id = 'wrapperDonut';
-	// Object.assign(wrapperDonut.style, {
-	// 	width: '100%',
-	// 	height: '100%',
-	// 	position: 'relative',
-	// 	display: 'flex',
-	// 	justifyContent: 'center',
-	// 	alignItems: 'center',
-	// 	overflow: 'hidden',                  // belt-and-suspenders
-	// } as CSSStyleDeclaration);
-	// card.appendChild(wrapperDonut);
-	
-	// // the visible square we’ll later replace with an <svg>
-	// const square = document.createElement('div');
-	// square.id = 'square';
-	// Object.assign(square.style, {
-	// 	position: 'relative',
-	// 	boxSizing: 'border-box',
-	// 	border: '2px solid rgba(9, 255, 0, 1)',
-		
-	// 	// borderRadius: '14px',
-	// 	width: '80%',									// responsive
-	// 	aspectRatio: '1 / 1',							// keep it perfectly square
-	// 	// border: '2px solid rgba(9, 255, 0, 1)',
-	// 	borderRadius: '50%',
-	// 	// background: 'radial-gradient(50% 50% at 50% 50%, #f59e0b 0%, #f97316 60%, #fb923c 100%)',
-	// } as CSSStyleDeclaration);
-	// wrapperDonut.appendChild(square);
-
 
 	// ===== Stage (middle row) keeps donut centered ============================
 	const stage = document.createElement('div');
@@ -89,7 +58,6 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 		borderRadius: '50%',
 		inlineSize: 'var(--size, 0px)',   // width from ResizeObserver
 		blockSize: 'var(--size, 0px)',    // height from ResizeObserver
-		border: '2px solid rgba(9, 255, 0, 1)',
 	} as CSSStyleDeclaration);
 	wrapper.appendChild(square);
 
@@ -314,7 +282,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	const labelWrap = document.createElement('div');
 	Object.assign(labelWrap.style, {
 		color: '#fff',
-		fontFamily: 'system-ui, sans-serif',
+		fontFamily: 'RobotoCondensed, sans-serif',
 		lineHeight: '1.1',
 	} as CSSStyleDeclaration);
 
@@ -336,8 +304,10 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	footer.textContent = `Total time: ${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
 	Object.assign(footer.style, {
 		color: '#ddd',
-		fontFamily: 'system-ui, sans-serif',
+		fontFamily: 'RobotoCondensed-ui, sans-serif',
 		fontSize: '12px',
+		marginBottom: '1vw',
+		textAlign: 'center'
 	} as CSSStyleDeclaration);
 	card.appendChild(footer);
 
