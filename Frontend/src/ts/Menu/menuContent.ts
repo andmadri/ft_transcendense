@@ -541,4 +541,5 @@ export function getMenu() {
 	app.removeAttribute('style');
 	app.innerHTML = '';
 	app.appendChild(menu);
+	Game.socket.send({action: 'friends', subaction: 'openFriendRequests', id: Game.match.player1.id});
 }

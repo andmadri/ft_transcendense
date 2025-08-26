@@ -139,7 +139,7 @@ fastify.ready().then(() => {
 				case 'online':
 					return handleOnlinePlayers(msg, socket);
 				case 'friends':
-					return handleFriends(msg, socket);
+					return handleFriends(msg, socket, fastify.io);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
 				case 'init':

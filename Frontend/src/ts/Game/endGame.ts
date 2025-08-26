@@ -103,6 +103,8 @@ export function saveGame() {
 	Game.match.ID = -1;
 
 	// Change AI to GUEST before going back to menu
-	if (Game.match.opponentType == OT.ONEvsCOM)
-		Game.match.player2.ID = 1;
+	if (Game.match.player2.ID == 2) {
+		Game.match.player2.ID = 1
+		Game.match.player2.name = 'Guest';
+	}
 }

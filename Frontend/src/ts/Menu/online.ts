@@ -58,13 +58,25 @@ function insertOnlinePlayers(online_players: any) {
 	}
 	html_list.className = 'playerOfOnlineList';
 
-	// json online_players mapping to array with names
-	const playerNames: string[] = online_players.map((player: { name: string, avatar_url: string }) => player.name);
-	for (const curr_player of playerNames) {
-		log(`Adding player ${curr_player} to online list`);
+	for (const curr_player of online_players) {
 		const html_list_element = document.createElement('li');
 		
-		html_list_element.textContent = curr_player;
+		html_list_element.textContent = curr_player.name;
+		html_list_element.dataset.userId = String(curr_player.user_id);
+		html_list_element.style.cursor = "pointer";
+		html_list_element.style.color = 'black';
+
+		html_list_element.addEventListener("mouseenter", () => {
+			html_list_element.textContent = "Send friend request";
+		});
+		html_list_element.addEventListener("mouseleave", () => {
+			html_list_element.textContent = curr_player.name;
+		});
+		html_list_element.addEventListener("click", () => {
+			alert(`Send ${curr_player.name} a friend request`);
+			Game.socket.send({action: "friends", subaction: 'friendRequest', friend: curr_player.user_id, id: Game.match.player1.ID});
+		});
+
 		html_list.appendChild(html_list_element);
 	}
 }
