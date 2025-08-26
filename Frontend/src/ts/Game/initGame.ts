@@ -198,15 +198,8 @@ export function actionInitOnlineGame(data: any) {
 	}
 	getGameField();
 
-	Game.match.player1.ID = match.player1.ID;
-	Game.match.player2.ID = match.player2.ID;
-	Game.match.player1.name = match.player1.name;
-	Game.match.player2.name = match.player2.name;
-	Game.match.ID = match.matchID;
-	Game.match.gameState = match.gameState;
-
+	Game.match = match;
 	// Function to set all data sync with match in game...
 	UI.state = S.stateUI.Game;
-	match.state == state.Playing;
 	console.log("Start online game...");
 }

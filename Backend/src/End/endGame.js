@@ -11,7 +11,7 @@ export async function quitMatch(match, msg, socket) {
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.state = state.Finish;
+	match.state = state.End;
 }
 
 export async function saveMatch(db, match, msg, socket) {

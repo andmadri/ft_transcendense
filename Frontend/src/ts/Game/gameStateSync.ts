@@ -46,22 +46,23 @@ import { renderGameInterpolated } from './renderSnapshots.js';
 // }
 
 export function applyGameStateUpdate(data : any) {
+	console.log(`applyGameStateUpdate()`);
 	if (Game.match.mode == OT.Online) {
-		Game.match.state = data.match.state;
+		Game.match.state = data.state;
 		renderGameInterpolated(data);
 		return ;
 	}
 }
 
 export function sendKeyPressUpdate(key : string) {
-	const msg = {
+	Game.socket.send({
 		action: 'game',
 		subaction: 'keyPressUpdate',
 		key: key,
 		pressed: S.Keys[key].pressed,
 		id: UI.user1.ID, //user check
-		matchID: Game.match.ID };
-	Game.socket.send(JSON.stringify(msg));
+		matchID: Game.match.ID 
+	});
 	// Send also ballX/Y ballVX/Y and paddleVy
 }
 
@@ -81,24 +82,4 @@ export function sendScoreUpdate(id: number) {
 		player: id,
 		matchID: Game.match.ID
 	});
-}
-
-export function actionGame(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
-
-	switch(data.subaction) {
-		case 'gameStateUpdate':
-			applyGameStateUpdate(data);
-		case 'ballUpdate':
-			//applyBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			//applyPaddleUpdate(data);
-			break ;
-		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
-	}
 }

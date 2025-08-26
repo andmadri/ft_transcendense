@@ -20,11 +20,13 @@ export function sendBallUpdate(match, msg, socket, io) {
 	io.to(match.matchID).emit('message', msg);
 }
 
-export function sendGameStateUpdate(match) {
+export function sendGameStateUpdate(match, io) {
+	console.log(`sendGameStateUpdate()`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'gameStateUpdate',
-		match: match
+		gameState: match.gameState,
+		state: match.state
 	});
 }
 
@@ -48,7 +50,7 @@ export function sendPaddleUpdate(match, msg, socket, io) {
 }
 
 export function applyKeyPressUpdate(match, msg) {
-	let paddle = match.player1.ID == msg.id ? match.paddle1 : match.paddle2;
+	let paddle = match.player1.ID == msg.id ? match.gameState.paddle1 : match.gameState.paddle2;
 	if (msg.key == 'ArrowDown') paddle.vy = msg.pressed ? -paddle.movement.speed : 0;
 	if (msg.key == 'ArrowUp') paddle.vy = msg.pressed ? paddle.movement.speed : 0;
 }

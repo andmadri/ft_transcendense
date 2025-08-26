@@ -15,6 +15,8 @@ export function releaseButton(e: KeyboardEvent) {
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
+		const paddleNUM = UI.user1.ID == Game.match.player1.ID ? 1 : 2;
+		console.log(`MY PADDLENUM = ${paddleNUM}`);
 		myPaddle.velocity.vy = 0;
 		sendKeyPressUpdate(e.key);
 		return ;
@@ -37,6 +39,8 @@ export function pressButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
+		const paddleNUM = UI.user1.ID == Game.match.player1.ID ? 1 : 2;
+		console.log(`MY PADDLENUM = ${paddleNUM}`);
 		sendKeyPressUpdate(e.key);
 		return;
 	}

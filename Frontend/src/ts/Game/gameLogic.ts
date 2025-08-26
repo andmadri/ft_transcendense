@@ -48,8 +48,10 @@ export function pauseBallTemporarily(duration: number) {
 export function game() {
 	if (Game.match.mode == OT.Online) {
 		//update own paddle immediately in frontend
-		updatePaddlePos(paddle2, Game.match.gameState.field); // what paddle???
+		const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle1;
+		updatePaddlePos(paddle, Game.match.gameState.field);
 		updateDOMElements();
+		return ;
 	}
 	else {
 		Game.match.time = performance.now();

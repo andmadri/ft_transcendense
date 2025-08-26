@@ -4,6 +4,7 @@ import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 import { randomizeBallAngle, updateGameState } from "../SharedBuild/gameLogic.js";
+import { sendGameStateUpdate } from "../Game/gameStateSync.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -22,12 +23,14 @@ function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
-function matchInterval(match) {
+function matchInterval(match, io) {
 	match.intervalId = setInterval(() => {
+		console.log(`matchInterval() -> matchState = ${match.state}`);
 		switch (match.state) {
 			case (state.Init) : {
 				randomizeBallAngle(match.gameState.ball)
 				match.state = state.Playing;
+				break;
 			}
 			case (state.Playing) : {
 				updateGameState(match)
@@ -40,9 +43,14 @@ function matchInterval(match) {
 						match.pauseTimeOutID = null
 					}, 3000)
 				}
+				break;
+			}
+			case (state.End) : {
+				clearInterval(match.intervalId);
+				break;
 			}
 		}
-		sendGameStateUpdate(match);
+		sendGameStateUpdate(match, io);
 	}, 100)
 }
 
@@ -97,7 +105,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 
 		//set interval for online gamelogic
 		match.state = state.Init;
-		matchInterval(match);
+		matchInterval(match, io);
 	} else {
 		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID);
