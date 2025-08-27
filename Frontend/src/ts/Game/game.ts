@@ -3,7 +3,7 @@ import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, state } from '@shared/enums'
-import { applyGameStateUpdate } from './gameStateSync.js'
+import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
 
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
@@ -55,6 +55,9 @@ export function actionGame(data: any) {
 		case 'gameStateUpdate':
 			applyGameStateUpdate(data);
 			break ;
+		case 'scoreUpdate':
+			applyScoreUpdate(data);
+			break;
 		case 'save':
 			processSavingMatch(data);
 			break ;

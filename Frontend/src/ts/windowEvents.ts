@@ -3,20 +3,16 @@ import { Game, UI } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
 import { OT } from '@shared/enums'
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
-
 export function releaseButton(e: KeyboardEvent) {
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = 0;
 		return ;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
-		const paddleNUM = UI.user1.ID == Game.match.player1.ID ? 1 : 2;
-		console.log(`MY PADDLENUM = ${paddleNUM}`);
 		myPaddle.velocity.vy = 0;
 		sendKeyPressUpdate(e.key);
 		return ;
@@ -32,6 +28,9 @@ export function releaseButton(e: KeyboardEvent) {
 }
 
 export function pressButton(e: KeyboardEvent) {
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
 		return;
@@ -41,6 +40,7 @@ export function pressButton(e: KeyboardEvent) {
 		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
 		const paddleNUM = UI.user1.ID == Game.match.player1.ID ? 1 : 2;
 		console.log(`MY PADDLENUM = ${paddleNUM}`);
+		console.log(`MYUSERID = ${ UI.user1.ID }`);
 		sendKeyPressUpdate(e.key);
 		return;
 	}
@@ -55,6 +55,10 @@ export function pressButton(e: KeyboardEvent) {
 }
 
 export function initAfterResize() {
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+	const ball = Game.match.gameState.ball;
+
 	const ballRadius = ball.size.height / 2;
 	const paddleHalfWidth = paddle1.size.width / 2;
 	const paddleHalfHeight = paddle1.size.height / 2;

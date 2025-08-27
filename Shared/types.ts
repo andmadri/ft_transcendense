@@ -38,6 +38,7 @@ export type matchInfo = {
 	matchFormat: MF,
 	pauseTimeOutID: number | null,
 	mode: OT,
+	lastScoreID: number,
 	player1: player,
 	player2: player,
 	gameState: gameState

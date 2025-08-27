@@ -1,19 +1,17 @@
 import { UI, Game } from "../gameData.js"
-import * as S from '../structs.js'
 import { OT, state } from '@shared/enums'
-import { entity, player } from '@shared/types'
+import { matchInfo} from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
-import { aiAlgorithm, resetAI } from './aiLogic.js'
-import { sendGameState, sendScoreUpdate} from './gameStateSync.js'
+import { aiAlgorithm } from './aiLogic.js'
+import { sendGameState} from './gameStateSync.js'
+import { renderGameInterpolated } from "./renderSnapshots.js"
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
+export function updateDOMElements(match : matchInfo) {
+	const gameState = match.gameState;
+	//const ballRadius = gameState.ball.size.height / 2;
+	const paddleHalfHeight = gameState.paddle1.size.height / 2;
 
-function updateDOMElements() {
-	const ballRadius = ball.size.height / 2;
-	const paddleHalfHeight = paddle1.size.height / 2;
+	//divElements
 	const paddle1Div = document.getElementById('lPlayer');
 	const paddle2Div = document.getElementById('rPlayer');
 	const ballDiv = document.getElementById('ball');
@@ -22,14 +20,15 @@ function updateDOMElements() {
 	const fieldDiv = document.getElementById('field');
 
 	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore && fieldDiv) {
-		leftScore.textContent = Game.match.player1.score.toString();
-		rightScore.textContent = Game.match.player2.score.toString();
+		console.log("UpdateDOMElements()");
+		leftScore.textContent = match.player1.score.toString();
+		rightScore.textContent = match.player2.score.toString();
 
-		ballDiv.style.left = `${(ball.pos.x * fieldDiv.clientWidth)}px`; // i dont understand why i shouldn't subtract radius but it only works like this
-		ballDiv.style.top = `${(ball.pos.y * fieldDiv.clientWidth)}px`;
+		ballDiv.style.left = `${(gameState.ball.pos.x * fieldDiv.clientWidth)}px`; // i dont understand why i shouldn't subtract radius but it only works like this
+		ballDiv.style.top = `${(gameState.ball.pos.y * fieldDiv.clientWidth)}px`;
 		
-		paddle1Div.style.top = `${(paddle1.pos.y * fieldDiv.clientWidth) - (paddleHalfHeight * fieldDiv.clientWidth)}px`;
-		paddle2Div.style.top = `${(paddle2.pos.y * fieldDiv.clientWidth) - (paddleHalfHeight * fieldDiv.clientWidth)}px`;
+		paddle1Div.style.top = `${(gameState.paddle1.pos.y * fieldDiv.clientWidth) - (paddleHalfHeight * fieldDiv.clientWidth)}px`;
+		paddle2Div.style.top = `${(gameState.paddle2.pos.y * fieldDiv.clientWidth) - (paddleHalfHeight * fieldDiv.clientWidth)}px`;
 	}
 }
 
@@ -45,25 +44,26 @@ export function pauseBallTemporarily(duration: number) {
 	}, duration);
 }
 
-export function game() {
-	if (Game.match.mode == OT.Online) {
+export function game(match : matchInfo) {
+	if (match.mode == OT.Online) {
 		//update own paddle immediately in frontend
-		const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle1;
-		updatePaddlePos(paddle, Game.match.gameState.field);
-		updateDOMElements();
+		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+		renderGameInterpolated();
+		updatePaddlePos(paddle, match.gameState.field);
+		updateDOMElements(match);
 		return ;
 	}
 	else {
-		Game.match.time = performance.now();
-		if (Game.match.player1.score == 5 || Game.match.player2.score == 5) {
-			Game.match.state = state.End;
+		match.time = performance.now();
+		if (match.player1.score == 5 || match.player2.score == 5) {
+			match.state = state.End;
 			return ;
 		}
-		if (Game.match.mode == OT.ONEvsCOM) {
+		if (match.mode == OT.ONEvsCOM) {
 			aiAlgorithm();
 		}
-		updateGameState(Game.match);
+		updateGameState(match);
 		sendGameState();
 	}
-	updateDOMElements();
+	updateDOMElements(match);
 }

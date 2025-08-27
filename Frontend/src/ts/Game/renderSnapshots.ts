@@ -21,7 +21,7 @@ const snapshots: Snapshot[] = [];
  * @param match must contain: ballY + X, ballVY + X, paddleOneY, paddleTwoY
  * @param player 1 or 2, dependce on left/right correction
  */
-function makeSnapshot(gameState: any, player: number) {
+export function makeSnapshot(gameState: any, player: number) {
 	snapshots.push({
 		ballX: gameState.ball.pos.x,
 		ballY: gameState.ball.pos.y,
@@ -97,7 +97,7 @@ function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: numbe
 		return;
 	}
 
-	const t = (Date.now() - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
+	const t = (renderTime - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
 	const fraction = Math.min(Math.max(t, 0), 1);
 
 	const ballX = snap1.ballX + (snap2.ballX - snap1.ballX) * fraction;
@@ -137,30 +137,22 @@ function deleteOldSnapshots(renderTime: number) {
  * @brief calculates the right time (interpolation) between two snapshots with a delay of INTERPOLATION_DELAY
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
-export function renderGameInterpolated(data: any) {
-	if (data.gameState) {
-		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
-		makeSnapshot(data.gameState, playerNr);
-	}
-	else {
-		console.log("Data is missing in applyUpdatesGameServer");
-		return;
-	}
+export function renderGameInterpolated() {
+	const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 
 	const now = Date.now();
 	const renderTime = now - INTERPOLATION_DELAY;
 
 	const [snap1, snap2] = getBoundingSnapshots(renderTime);
 	if (snap1 && snap2) {
-		interpolateSnapshot(snap1, snap2, renderTime, data.playerNr);
+		interpolateSnapshot(snap1, snap2, renderTime, playerNr);
 		deleteOldSnapshots(renderTime);
 	} 
-	else if (snap1) {
-		if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
-			extrapolateFromSnapshot(snap1, data.playerNr);
-		} else {
-			console.error("snap1 is too old for extrapolation");
-		}
-	}
-	
+	// else if (snap1) {
+	// 	if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
+	// 		extrapolateFromSnapshot(snap1, playerNr);
+	// 	} else {
+	// 		console.error("snap1 is too old for extrapolation");
+	// 	}
+	// }
 }

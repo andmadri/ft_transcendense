@@ -4,7 +4,7 @@ import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 import { randomizeBallAngle, updateGameState } from "../SharedBuild/gameLogic.js";
-import { sendGameStateUpdate } from "../Game/gameStateSync.js";
+import { sendGameStateUpdate, sendScoreUpdate } from "../Game/gameStateSync.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -24,8 +24,7 @@ function findOpenMatch() {
 }
 
 function matchInterval(match, io) {
-	match.intervalId = setInterval(() => {
-		console.log(`matchInterval() -> matchState = ${match.state}`);
+	match.intervalID = setInterval(() => {
 		switch (match.state) {
 			case (state.Init) : {
 				randomizeBallAngle(match.gameState.ball)
@@ -45,8 +44,13 @@ function matchInterval(match, io) {
 				}
 				break;
 			}
+			case (state.Score) : {
+				sendScoreUpdate(match, io);
+				match.state = state.Paused;
+				break;
+			}
 			case (state.End) : {
-				clearInterval(match.intervalId);
+				clearInterval(match.intervalID);
 				break;
 			}
 		}

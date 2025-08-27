@@ -1,23 +1,10 @@
 import { state } from "../SharedBuild/enums.js"
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
+import { updatePaddlePos } from "../SharedBuild/gameLogic.js"
 
 export function applyGameStateUpdate(match, msg) {
 	match.gameState = msg.gameState;
-}
-
-export function sendBallUpdate(match, msg, socket, io) {
-	if (match.state != state.Playing)
-		return ;
-	// console.log("THIS ONLY HAPPENS ON A HIT!!");
-	match.ball.angle = msg.ballAngle; // this not
-	match.ball.x = msg.ballX;
-	match.ball.y = msg.ballY;
-	// match.ball.vX = msg.ballVX;
-	// match.ball.vY = msg.ballVY;
-
-	// update msg
-	io.to(match.matchID).emit('message', msg);
 }
 
 export function sendGameStateUpdate(match, io) {
@@ -30,35 +17,17 @@ export function sendGameStateUpdate(match, io) {
 	});
 }
 
-export function sendPaddleUpdate(match, msg, socket, io) {
-	if (match.state != state.Playing)
-		return ;
-
-	msg.player1Score = match.player1.score;
-	msg.player1Paddle = match.player1.paddleY;
-	msg.player1paddleVY = match.player1.paddleVY;
-	msg.player1Up = match.player1.pressUp;
-	msg.player1Down = match.player1.pressDown;
-	msg.player2Score = match.player2.score;
-	msg.player2Paddle = match.player2.paddleY;
-	msg.player2Up = match.player2.pressUp;
-	msg.player2Down = match.player2.pressDown;
-
-	// msg.paddle1VY
-	// msg.paddle2VY
-	io.to(match.matchID).emit('message', msg);
-}
-
 export function applyKeyPressUpdate(match, msg) {
 	let paddle = match.player1.ID == msg.id ? match.gameState.paddle1 : match.gameState.paddle2;
-	if (msg.key == 'ArrowDown') paddle.vy = msg.pressed ? -paddle.movement.speed : 0;
-	if (msg.key == 'ArrowUp') paddle.vy = msg.pressed ? paddle.movement.speed : 0;
+	console.log(`player1ID = ${match.player1.ID} -- player2ID = ${match.player2.ID}`)
+	if (msg.key == 'ArrowDown') paddle.velocity.vy = msg.pressed ? -paddle.movement.speed : 0;
+	if (msg.key == 'ArrowUp') paddle.velocity.vy = msg.pressed ? paddle.movement.speed : 0;
+	if (msg.pressed) {
+		updatePaddlePos(paddle, match.gameState.field);
+	}
 }
 
 export async function updateScore(match, msg, io) {
-	if (match.state != state.Playing)
-		return ;
-
 	console.log("updateScore -> handleMatchEventDB")
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
@@ -79,4 +48,12 @@ export async function updateScore(match, msg, io) {
 	// io.to(match.matchID).emit('message', msg);
 
 	return eventID;
+}
+
+export function sendScoreUpdate(match, io) {
+	io.to(match.matchID).emit('message', {
+		action: 'game',
+		subaction: 'scoreUpdate',
+		match: match,
+	})
 }

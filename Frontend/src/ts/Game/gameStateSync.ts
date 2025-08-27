@@ -2,55 +2,29 @@ import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT } from '@shared/enums'
-import { renderGameInterpolated } from './renderSnapshots.js';
-
-// const field = Game.match.gameState.field;
-// const ball = Game.match.gameState.ball;
-// const paddle1 = Game.match.gameState.paddle1;
-// const paddle2 = Game.match.gameState.paddle2;
-
-// export function applyBallUpdate(data: any) {
-// 	if (Game.match.mode == OT.Online) {
-// 		renderGameInterpolated(data);
-// 		return ;
-// 	}
-
-// 	if ('ballX' in data) {
-// 		if (typeof data.ballX === 'number')
-// 			ball.pos.x = data.ballX;
-// 		if (ball && typeof data.ballY === 'number')
-// 			ball.pos.y = data.ballY;
-// 	}
-// }
-
-// export function applyPaddleUpdate(data: any) {
-// 	if (Game.match.mode == OT.Online) {
-// 		renderGameInterpolated(data);
-// 		return ;
-// 	}
-
-// 	if ('rPlayerX' in data) {
-// 		const rPlayer = document.getElementById('rPlayer');
-// 		if (rPlayer && typeof data.playerOneX === 'number') //is right or left player player1???
-// 			paddle2.pos.x = data.playerOneX;
-// 		if (rPlayer && typeof data.playerOneY === 'number')
-// 			paddle2.pos.y = data.playerOneY;		
-// 	}
-// 	if ('lPlayerX' in data) {
-// 		const lPlayer = document.getElementById('lPlayer');
-// 		if (lPlayer && typeof data.playerTwoX === 'number')
-// 			paddle1.pos.x = data.playerTwoX;
-// 		if (lPlayer && typeof data.playerTwoY === 'number')
-// 			paddle1.pos.y = data.playerTwoY;
-// 	}
-// }
+import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 
 export function applyGameStateUpdate(data : any) {
 	console.log(`applyGameStateUpdate()`);
 	if (Game.match.mode == OT.Online) {
 		Game.match.state = data.state;
-		renderGameInterpolated(data);
-		return ;
+		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
+		if (data.gameState) {
+			makeSnapshot(data.gameState, playerNr);
+		}
+		else {
+			console.log("Data is missing in applyUpdatesGameServer");
+		}
+	}
+}
+
+export function applyScoreUpdate(data: any) {
+	console.log(`applyScoreUpdate`);
+	if (Game.match.mode == OT.Online) {
+		Game.match.state = data.match.state;
+		Game.match.gameState = Game.match.gameState;
+		const player = UI.user1.ID == data.match.lastScoreID ? Game.match.player1 : Game.match.player2;
+		player.score++;
 	}
 }
 
@@ -60,10 +34,9 @@ export function sendKeyPressUpdate(key : string) {
 		subaction: 'keyPressUpdate',
 		key: key,
 		pressed: S.Keys[key].pressed,
-		id: UI.user1.ID, //user check
-		matchID: Game.match.ID 
+		id: UI.user1.ID,
+		matchID: Game.match.ID
 	});
-	// Send also ballX/Y ballVX/Y and paddleVy
 }
 
 export function sendGameState() {
@@ -75,11 +48,11 @@ export function sendGameState() {
 	});
 }
 
-export function sendScoreUpdate(id: number) {
+export function sendScoreUpdate() {
 	Game.socket.send({
 		action: 'game',
 		subaction: 'scoreUpdate',
-		player: id,
+		player: Game.match.lastScoreID,
 		matchID: Game.match.ID
 	});
 }

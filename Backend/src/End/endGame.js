@@ -3,9 +3,9 @@ import { handleMatchEndedDB } from "../Services/matchService.js";
 import { matches } from "../InitGame/match.js";
 import { state } from "../SharedBuild/enums.js"
 
-export async function quitMatch(match, msg, socket) {
+export async function quitMatch(match, msg, socket, io) {
 	const name = msg.name ? msg.name : 'unknown player';
-	socket.send({
+	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,

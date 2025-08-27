@@ -73,9 +73,9 @@ function changeVelocityOnPaddleBounce(ball: entity, player : entity) {
 }
 
 function handleScore(match: matchInfo, field: any, ball: entity, player: player) {
-	match.state = state.Paused;
+	match.state = state.Score;
 	player.score++;
-	//sendScoreUpdate(player.ID); //when to do this now?? -> maybe with state??
+	match.lastScoreID = player.ID;
 	resetBall(ball, field);
 }
 

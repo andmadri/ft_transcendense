@@ -1,7 +1,7 @@
 //Initialize the game by setting up the WebSocket connection, the login system, the game state
 //importing functionality from different files
 
-import { game, pauseBallTemporarily } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
+import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
@@ -9,7 +9,8 @@ import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
-import { OT, state, MF } from '@shared/enums'
+import { OT, state} from '@shared/enums'
+import { sendScoreUpdate } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 // import { getLoadingPage } from './Loading/loadContent.js'
@@ -58,13 +59,22 @@ function gameLoop() {
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
 			document.getElementById('auth2')?.remove();
-			game();
+			game(Game.match);
 			break ;
 		}
-		case state.End:
+		case state.Score: {
+			updateDOMElements(Game.match);
+			Game.match.state = state.Paused;
+			if (Game.match.OT != OT.Online) {
+				sendScoreUpdate();
+			}
+			break;
+		}
+		case state.End: {
 			saveGame();
 			UI.state = S.stateUI.Menu; //gameOver doesn't work correctly
 			break ;
+		}
 		default:
 	}
 }

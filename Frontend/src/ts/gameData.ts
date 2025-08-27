@@ -31,6 +31,7 @@ export const Game : S.Game = {
 		matchFormat: MF.Empty,
 		pauseTimeOutID: null,
 		mode: OT.Empty,
+		lastScoreID: -1,
 		player1: {
 			ID: -1,
 			name: 'unknown',
