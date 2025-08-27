@@ -79,6 +79,18 @@ export async function addFriendRequest(socket, userId1, data, playerNr) {
 	}
 }
 
+async function deleteFriend(socket, userID1, msg) {
+	try {
+		console.log('Try to delete friend', userID1, msg.friendID);
+		// IMPROVE FUNCTION DELETEFRIENDDB TO DO THIS
+		friendsDB.deleteFriendDB(db, userID1, msg.friendID);
+		friendsDB.deleteFriendDB(db, msg.friendID, userID1);
+	} catch (err) {
+		socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
+		console.error(err);
+	}
+}
+
 export async function handleFriends(msg, socket, userId1, io) {
 	console.log("handleFriends function...", msg.action + " " + msg.subaction);
 	const playerNr = msg.playerNr ? msg.playerNr : 1;
@@ -96,6 +108,9 @@ export async function handleFriends(msg, socket, userId1, io) {
 			break ;
 		case 'denyFriendRequest':
 			denyFriendRequest(socket, msg, playerNr);
+			break ;
+		case 'unfriend':
+			deleteFriend(socket, userId1, msg);
 			break ;
 		default:
 			console.log(`Unknown subaction ${msg.subaction}`);

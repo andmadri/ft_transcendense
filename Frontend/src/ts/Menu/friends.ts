@@ -68,8 +68,19 @@ function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 		log(`Adding player ${friend.name} to Friends list`);
 		const html_list_element = document.createElement('li');
 		const status = friend.online_status == 0 ? '(offline)' : '(online)';
+		const deleteFriendBtn = document.createElement('button');
+		deleteFriendBtn.textContent = "Unfriend";
+		deleteFriendBtn.addEventListener("click", () => {
+			Game.socket.send({
+				action: 'friends',
+				subaction: 'unfriend',
+				userID: Game.match.player1.id,
+				friendID: friend.id
+			})
+			console.log("Unfriend player: " + friend.name);
+		});
 		html_list_element.textContent = `${friend.name} ${status}`;
-		html_list.appendChild(html_list_element);
+		html_list.append(html_list_element, deleteFriendBtn);
 	}
 }
 
