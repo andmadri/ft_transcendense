@@ -2,7 +2,7 @@ import * as friendsDB from '../Database/friends.js';
 import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content, nr) {
-	socket.send({
+	socket.emit('message', {
 		action: actionable,
 		subaction: sub,
 		access: accessible,
@@ -11,35 +11,35 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content, nr)
 	});
 }
 
-async function acceptFriendRequest(socket, data) {
+async function acceptFriendRequest(socket, data, playerNr) {
 	try {
 		await friendsDB.acceptFriendRequestDB(db, data.requestId);
 	} catch (err) {
 		if (err.message.includes('No pending')) {
-			socket.send({action: 'friends', subaction: 'error', msg: err.message})
+			sendContentToFrontend('friends', 'error', 'no', err.message, playerNr);
 		} else {
-			socket.send({action: 'error', msg: 'Database error'});
+			socket.emit('message', {action: 'error', msg: 'Database error'});
 			console.error(err);			
 		}
 	}
 }
 
-async function denyFriendRequest(socket, data) {
+async function denyFriendRequest(socket, data, playerNr) {
 	try {
 		await friendsDB.acceptFriendRequestDB(db, data.requestId);
 	} catch (err) {
 		if (err.message.includes('No pending')) {
-			socket.send({action: 'friends', subaction: 'error', msg: err.message})
+			sendContentToFrontend('friends', 'error', socket, 'no', err.message, playerNr);
 		} else {
-			socket.send({action: 'error', msg: 'Database error'});
+			socket.emit('message', {action: 'error', msg: 'Database error'});
 			console.error(err);			
 		}
 	}
 }
 
-async function getFriends(playerNr, socket) {
+async function getFriends(playerNr, userId1, socket) {
 	try {
-		const friends = await friendsDB.getFriendsDB(db, playerNr);
+		const friends = await friendsDB.getFriendsDB(db, userId1);
 		if (!friends || friends.length === 0) {
 			return sendContentToFrontend('friends', 'retFriends', socket, "no", "No friends found", playerNr);
 		}
@@ -50,51 +50,55 @@ async function getFriends(playerNr, socket) {
 	}
 }
 
-export async function openFriendRequest(playerNr, socket) {
+export async function openFriendRequest(userId1, socket, playerNr) {
+	console.log("check open friend request for userid: ", userId1);
 	try {
-		const requests = await friendsDB.getOpenFriendRequestsDB(db, playerNr);
-		if (!requests || requests.length === 0)
+		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
+		if (!requests || requests.length === 0) {
+			console.log("no open requests");
 			return ;
-		return sendContentToFrontend('friends', 'openRequests', socket, "yes", requests, playerNr);
+		}
+		console.log(`Send back requests:`, requests);
+		sendContentToFrontend('friends', 'openRequests', socket, "yes", requests, playerNr);
 	} catch (err) {
-		console.error(err);
-		return sendContentToFrontend('error', '', socket, "no", "Error while fetching open requests", playerNr);
+		console.error("DB error: ", err);
+		sendContentToFrontend('error', '', socket, "no", "Error while fetching open requests", playerNr);
 	}
 }
 
-export async function addFriendRequest(socket, data) {
+export async function addFriendRequest(socket, userId1, data, playerNr) {
 	try {
-		await friendsDB.addFriendRequestDB(db, data.id, data.friend);
-		socket.send({action: '', subaction: '', msg: 'request sent'});
+		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
 		if (err.message.includes('already exists')) {
-			socket.send({action: 'friends', subaction: '', msg: 'request already sent'});
+			sendContentToFrontend('friends', 'error', socket, "no", err.message, playerNr);
 		} else {
-			socket.send({action: '', subaction: '', msg: 'Database error'});
+			socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 			console.error(err);
 		}
 	}
 }
 
-export async function handleFriends(msg, socket, io) {
-	console.log("handleFriends function...", msg.action);
+export async function handleFriends(msg, socket, userId1, io) {
+	console.log("handleFriends function...", msg.action + " " + msg.subaction);
+	const playerNr = msg.playerNr ? msg.playerNr : 1;
 	switch (msg.subaction) {
 		case "getFriends":
-			const playerNr = msg.player;
-			return getFriends(playerNr, socket);
+			return getFriends(playerNr, userId1, socket);
 		case 'friendRequest':
-			addFriendRequest(socket, msg);
+			addFriendRequest(socket, userId1, msg, playerNr);
 			break ;
-		case 'openFriendRequest':
-			openFriendRequest(playerNr, socket);
+		case 'openFriendRequests':
+			openFriendRequest(userId1, socket, playerNr);
 			break ;
 		case 'acceptFriendRequest':
-			acceptFriendRequest(socket, msg);
+			acceptFriendRequest(socket, msg, playerNr);
 			break ;
 		case 'denyFriendRequest':
-			denyFriendRequest(msg, socket);
+			denyFriendRequest(socket, msg, playerNr);
 			break ;
 		default:
+			console.log(`Unknown subaction ${msg.subaction}`);
 			sendContentToFrontend('error', '', socket, "no", "Unkown action");
 	}
 }

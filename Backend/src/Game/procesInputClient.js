@@ -1,7 +1,7 @@
 // import { GameStats, d } from "../structs.js";
 
 // export function processInputClient(match, data) {
-// 	const player = match.player1.id == data.id ? match.player1 : match.player2;
+// 	const player = match.player1.ID == data.id ? match.player1 : match.player2;
 
 // 	const steps = data.steps;
 // 	for (const step of steps) {
@@ -23,8 +23,8 @@
 // 		action: 'game',
 // 		subaction: 'update',
 // 		time: time(),
-// 		p1: [match.player1.id, match.player1.paddle],
-// 		p2: [match.player2.id, match.player2.paddle],
+// 		p1: [match.player1.ID, match.player1.paddle],
+// 		p2: [match.player2.ID, match.player2.paddle],
 // 		b:	[match.ball.x, match.ball.y, match.ball.angle, match.ball.speed],
 // 		score: [match.player1.score, match.player2.score]				
 // 	}

@@ -57,25 +57,30 @@ function insertOnlinePlayers(online_players: any) {
 		return;
 	}
 	html_list.className = 'playerOfOnlineList';
-
+	console.log(online_players); 
 	for (const curr_player of online_players) {
+		console.log(curr_player); 
 		const html_list_element = document.createElement('li');
 		
 		html_list_element.textContent = curr_player.name;
-		html_list_element.dataset.userId = String(curr_player.user_id);
+		html_list_element.dataset.userId = String(curr_player.id);
 		html_list_element.style.cursor = "pointer";
 		html_list_element.style.color = 'black';
 
-		html_list_element.addEventListener("mouseenter", () => {
-			html_list_element.textContent = "Send friend request";
-		});
-		html_list_element.addEventListener("mouseleave", () => {
-			html_list_element.textContent = curr_player.name;
-		});
-		html_list_element.addEventListener("click", () => {
-			alert(`Send ${curr_player.name} a friend request`);
-			Game.socket.send({action: "friends", subaction: 'friendRequest', friend: curr_player.user_id, id: Game.match.player1.ID});
-		});
+		if (curr_player.id >= 2 && curr_player.id != Game.match.player1.id) {
+			html_list_element.addEventListener("mouseenter", () => {
+				html_list_element.textContent = "Send friend request";
+			});
+			html_list_element.addEventListener("mouseleave", () => {
+				html_list_element.textContent = curr_player.name;
+			});
+			html_list_element.addEventListener("click", () => {
+				alert(`Send ${curr_player.name} a friend request`);
+				const id = Game.match.player1.id;
+				const friendID = curr_player.id;
+				Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
+			});
+		}
 
 		html_list.appendChild(html_list_element);
 	}

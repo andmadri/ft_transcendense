@@ -33,7 +33,7 @@ function findOpenMatch() {
 
 function matchInterval(match) {
 	match.intervalId = setInterval(() => {
-		// if (match.stage == state.Init) {
+		// if (match.state == state.Init) {
 		// 	initGame();
 		// }
 	}, 100)
@@ -78,7 +78,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			return ;
 		}
 		console.log(`handleOnlineMatch: ${matchID}:
-			${match.player1.id} and ${match.player2.id}`)
+			${match.player1.ID} and ${match.player2.ID}`)
 
 		io.to(matchID).emit('message', {
 			action: 'initOnlineGame',

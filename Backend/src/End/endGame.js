@@ -5,13 +5,13 @@ import { state } from "../SharedBuild/enums.js"
 
 export async function quitMatch(match, msg, socket) {
 	const name = msg.name ? msg.name : 'unknown player';
-	socket.send({
+	socket.emit('message', {
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.stage = state.Finish;
+	match.state = state.Finish;
 }
 
 export async function saveMatch(db, match, msg, socket) {
@@ -28,7 +28,7 @@ export async function saveMatch(db, match, msg, socket) {
 	matches.delete(match.matchID);
 
 	// Send a message to the frontend
-	socket.send({
+	socket.emit('message', {
 		action: 'game',
 		subaction: 'save',
 		matchID: match.matchID,

@@ -1,3 +1,4 @@
+import { entity } from '@shared/types'
 import { OT, state, MF } from '@shared/enums'
 import * as S from './structs.js'
 
@@ -16,21 +17,21 @@ export const Game : S.Game = {
 		secure: true,
 	}),
 	match: {
-		state: state.Pending,
-		matchID: -1,
-		matchFormat: MF.Empty,
-		mode: OT.Empty,
+		state: state.Start,
+		matchID: matchnr,
+		matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+		mode: mode,
 		player1: {
-			ID: -1,
-			name: 'unknown',
+			ID: id,
+			name: name,
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,
 			Twofa: false
 		},
 		player2: {
-			ID: 1,
-			name: 'Guest',
+			ID: id2,
+			name: name2,
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,

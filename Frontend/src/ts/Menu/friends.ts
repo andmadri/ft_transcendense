@@ -44,7 +44,7 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 	Game.socket.send({ 
 		action: 'friends', 
 		subaction: 'getFriends', 
-		player: playerNr });
+		playerNr });
 	return (friends);
 }
 
@@ -95,7 +95,7 @@ export function actionFriends(data: any) {
 			processFriends(data);
 			break ;
 		case 'openRequests':
-			showFriendRequests(data.requests);
+			showFriendRequests(data.content);
 			break ;
 		case 'error':
 			alert(data.msg);

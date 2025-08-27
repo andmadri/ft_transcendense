@@ -1,3 +1,5 @@
+import { gameState } from '@shared/types'
+
 const INTERPOLATION_DELAY = 100;
 const MAX_SNAPSHOT_AGE = 2000;
 
@@ -20,12 +22,12 @@ const snapshots: Snapshot[] = [];
  */
 function makeSnapshot(data: any, player: number) {
 	snapshots.push({
-		ballX: data.ballX,
-		ballY: data.ballY,
-		ballVX: data.ballVX,
-		ballVY: data.ballVY,
-		paddleY: player == 1 ? data.paddleTwoY : data.paddleOneY,
-		paddleVY: player == 1 ? data.paddleTwoVY : data.paddleOneVY,
+		ballX: data.gameState.ball.pos.x,
+		ballY: data.gameState.ball.pos.y,
+		ballVX: data.gameState.velocity.pos.vx,
+		ballVY: data.gameState.velocity.pos.vy,
+		paddleY: player == 1 ? data.gamestate.paddle2.pos.y : data.gamestate.paddle1.pos.y,
+		paddleVY: player == 1 ? data.gamestate.paddle1.velocity.vx : data.gamestate.paddle1.velocity.vy,
 		timestamp: Date.now(),
 	});
 }
@@ -60,15 +62,16 @@ function getBoundingSnapshots(renderTime: number) {
 function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
 	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
 	const ballDiv = document.getElementById('ball');
+	const fieldDiv = document.getElementById('field');
 
-	if (!ballDiv || !playerDiv) {
+	if (!ballDiv || !playerDiv || !fieldDiv) {
 		console.error("Div elements are missing applyUpdatesGameServer");
 		return;
 	}
 	// Change values in div elements
-	playerDiv.style.top = `${paddleY}px`;
-	ballDiv.style.left = `${ballX}px`;
-	ballDiv.style.top = `${ballY}px`;
+	playerDiv.style.top = `${(paddleY * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
+	ballDiv.style.left = `${ballX * fieldDiv.clientWidth}px`;
+	ballDiv.style.top = `${ballY * fieldDiv.clientWidth}px`;
 }
 
 /**

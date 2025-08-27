@@ -25,7 +25,7 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	returnMsg.player2Login = player2?.online || true;
 	returnMsg.score2 = player2?.score || 0;
 	// console.log('Sending player data:', returnMsg);
-	socket.send(returnMsg);
+	socket.emit('message', returnMsg);
 }
 
 
@@ -33,7 +33,7 @@ export function handlePlayerInfo(msg, socket, userId1, userId2) {
 	if (!msg || !msg.action || msg.action !== 'playerInfo' || !msg.subaction) {
 		const returnMsg = { action: "Error", message: "Invalid message format" };
 		console.log('Invalid message format:', msg);
-		socket.send(returnMsg);
+		socket.emit('message', returnMsg);
 		return false;
 	}
 	if (msg.subaction == 'getPlayerData') {
@@ -43,7 +43,7 @@ export function handlePlayerInfo(msg, socket, userId1, userId2) {
 	} else {
 		const returnMsg = { action: "Error", message: "Unknown subaction" };
 		console.log('Unknown subaction:', msg.subaction);
-		socket.send(returnMsg);
+		socket.emit('message', returnMsg);
 		return false;
 	}
 }

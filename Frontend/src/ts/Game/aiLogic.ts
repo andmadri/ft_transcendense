@@ -1,6 +1,5 @@
 import * as S from '../structs.js'
 import { Game } from "../gameData.js"
-import { movePadel } from './gameLogic.js'
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
@@ -12,11 +11,13 @@ export const AI: S.AIInfo = {
 		x : paddle2.pos.x, 
 		y : paddle2.pos.y, 
 		dx : 0, 
-		dy : 0 },
+		dy : 0 
+	},
 	reactionTime : 1000, //ms
 	lastView : 0,
-	targetDirection : 'ArrowUp'
-};
+	tick : 0
+}
+
 
 export function resetAI() {
 	AI.lastView = 0;
@@ -53,7 +54,7 @@ function	predictBall(dx : number, dy : number) {
 	}
 	
 	//add error margin
-	let errorMargin = 0.06;
+	let errorMargin = 0.15;
 	const errorOffset = Math.random() * field.size.height * errorMargin;
 	const sign = Math.random() < 0.5 ? -1 : 1;
 	const Offset = errorOffset * sign;
@@ -81,21 +82,30 @@ function	predictAction() {
 	}
 }
 
-export function aiAlgorithm() : boolean {
+export function aiAlgorithm(){
 
 	const paddleCenter = paddle2.pos.y + paddle2.size.height / 2;
-
 	if (Game.match.time - AI.lastView > AI.reactionTime) {
 		AI.lastView = Game.match.time;
 		predictAction()
 	}
 	if (AI.prediction.y > paddleCenter + paddle2.size.height * 0.1) {
-		movePadel('ArrowDown');
-		return true;
+		paddle2.velocity.vy = 1 * paddle2.movement.speed;
 	}
 	else if (AI.prediction.y < paddleCenter - paddle2.size.height * 0.1) {
-		movePadel('ArrowUp');
-		return true;
+		paddle2.velocity.vy = -1 * paddle2.movement.speed;
 	}
-	return false;
+	else {
+		paddle2.velocity.vy = 0;
+	}
+	// test needs work
+	// const hesitationChance = 0.1;
+	// const wrongDirChance = 0.1;
+	// if (Math.random() < hesitationChance) {
+	// 	paddle2.velocity.vy = 0;
+	// }
+	// else if (Math.random() < wrongDirChance) {
+	// 	paddle2.velocity.vy *= -1;
+	// }
+
 }

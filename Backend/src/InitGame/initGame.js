@@ -14,9 +14,9 @@ function sendStartMsgToPlayers(matchID) {
  * @returns true if nobody is waiting, else false
  */
 function handleStartOnlineMatch(msg, match) {
-	if (msg.userID == match.player1.id)
+	if (msg.userID == match.player1.ID)
 		match.player1.ready = true;
-	else if (msg.userID == match.player2.id)
+	else if (msg.userID == match.player2.ID)
 		match.player2.ready = true;
 	console.log(`Player ${msg.userID} is ready..`);
 

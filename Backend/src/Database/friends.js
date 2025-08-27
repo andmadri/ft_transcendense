@@ -61,8 +61,10 @@ export async function getOpenFriendRequestsDB(db, player_id) {
 			WHERE f.friend_id = ? AND f.accepted = 0
 		`;
 		db.all(sql, [player_id], (err, rows) => {
-			if (err) return reject(err);
-			resolve(rows);
+			if (err)
+				return reject(err);
+			else
+				resolve(rows);
 		});
 	});
 }

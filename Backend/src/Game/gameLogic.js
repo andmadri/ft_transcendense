@@ -3,7 +3,7 @@ import { db } from '../index.js';
 import { state } from "../SharedBuild/enums.js"
 
 export function updateBall(match, msg, socket) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
@@ -11,33 +11,33 @@ export function updateBall(match, msg, socket) {
 	match.ball.y = msg.ballY;
 
 	// NOW the msg is just send back instead of updated (online if online)
-	socket.send(msg);
+	socket.emit('message', msg);
 }
 
 export function updatePadel(match, msg, socket) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 	msg.player1Score = match.player1.score;
 	msg.player1Paddle = match.player1.paddle;
-	msg.player1Up = match.player1.pressUp;
-	msg.player1Down = match.player1.pressDown;
+	msg.player1Up = match.player1.input.pressUP;
+	msg.player1Down = match.player1.input.pressDOWN;
 	msg.player2Score = match.player2.score;
 	msg.player2Paddle = match.player2.paddle;
-	msg.player2Up = match.player2.pressUp;
-	msg.player2Down = match.player2.pressDown;
+	msg.player2Up = match.player2.input.pressUP;
+	msg.player2Down = match.player2.input.pressDOWN;
 	
 	// NOW the msg is just send back instead of updated (online if online)
-	socket.send(msg);
+	socket.emit('message', msg);
 }
 
 export async function updateScore(match, msg, socket) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 
 	console.log("updateScore -> handleMatchEventDB")
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
-		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think
+		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player
 		event_type: 'goal'
 		// ball_x: ,
 		// ball_y: ,

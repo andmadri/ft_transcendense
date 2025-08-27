@@ -1,7 +1,7 @@
 //Initialize the game by setting up the WebSocket connection, the login system, the game state
 //importing functionality from different files
 
-import { game } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
+import { game, pauseBallTemporarily } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
@@ -58,6 +58,12 @@ function gameLoop() {
 				console.log(`player one = ${Game.match.gameState.paddle1.pos.y} , player two = ${Game.match.gameState.paddle2.pos.y} , ballX = ${Game.match.gameState.ball.pos.x} , ballY = ${Game.match.gameState.ball.pos.y}`);
 			}
 			break ;
+		case state.Paused: {
+			//maybe start with pause instead of immediately playing
+			//maybe send score here in local mode, cause ball is paused when point is scored ?? 
+			pauseBallTemporarily(3000);
+			break ;
+		}
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
 			document.getElementById('auth2')?.remove();

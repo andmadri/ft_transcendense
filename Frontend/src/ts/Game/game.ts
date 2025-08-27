@@ -1,4 +1,3 @@
-import { applyBallUpdate, applyPaddleUpdate } from "./gameStateSync.js"
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
@@ -51,10 +50,10 @@ export function actionGame(data: any) {
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'ballUpdate':
- 			applyBallUpdate(data);
+ 			//applyBallUpdate(data);
 			break ;
 		case 'padelUpdate':
-			applyPaddleUpdate(data);
+			//applyPaddleUpdate(data);
 			break ;
 		case 'save':
 			processSavingMatch(data);

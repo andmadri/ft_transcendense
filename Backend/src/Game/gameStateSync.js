@@ -2,8 +2,12 @@ import { state } from "../SharedBuild/enums.js"
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
 
+export function applyGameStateUpdate(match, msg) {
+	match.gameState = msg.gameState;
+}
+
 export function sendBallUpdate(match, msg, socket, io) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle; // this not
@@ -17,7 +21,7 @@ export function sendBallUpdate(match, msg, socket, io) {
 }
 
 export function sendPaddleUpdate(match, msg, socket, io) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 
 	msg.player1Score = match.player1.score;
@@ -35,12 +39,12 @@ export function sendPaddleUpdate(match, msg, socket, io) {
 	io.to(match.matchID).emit('message', msg);
 }
 
-export function applyKeyPress(match, msg) {
+export function applyKeyPressUpdate(match, msg) {
 	let playerObj
-	if (match.player1.id == msg.id) {
+	if (match.player1.ID == msg.id) {
 		playerObj = match.player1;
 	}
-	else if (match.player2.id == msg.id) {
+	else if (match.player2.ID == msg.id) {
 		playerObj = match.player2;
 	}
 	if (msg.key == 'ArrowUp') {
@@ -52,13 +56,13 @@ export function applyKeyPress(match, msg) {
 }
 
 export async function updateScore(match, msg, io) {
-	if (match.stage != state.Playing)
+	if (match.state != state.Playing)
 		return ;
 
 	console.log("updateScore -> handleMatchEventDB")
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
-		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think
+		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
 		event_type: 'goal'
 		// ball_x: ,
 		// ball_y: ,

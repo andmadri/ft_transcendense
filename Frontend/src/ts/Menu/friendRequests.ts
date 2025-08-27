@@ -1,48 +1,57 @@
 import { Game } from "../gameData.js";
 
-interface FriendRequest {
-	id: number;
-	requester_id: number;
-	requester_name: string;
-}
-
-let friendRequestsContainer: HTMLDivElement | null = null;
+let friendRequestsDiv: HTMLDivElement | null = null;
 
 export function initFriendRequestsContainer() {
-	if (friendRequestsContainer)
+	if (friendRequestsDiv)
 		return;
 
-	friendRequestsContainer = document.createElement('div');
-	friendRequestsContainer.style.position = 'fixed';
-	friendRequestsContainer.style.bottom = '1rem';
-	friendRequestsContainer.style.right = '1rem';
-	friendRequestsContainer.style.width = '250px';
-	friendRequestsContainer.style.zIndex = '1000';
-	friendRequestsContainer.style.display = 'flex';
-	friendRequestsContainer.style.flexDirection = 'column';
-	friendRequestsContainer.style.gap = '0.3rem';
+	friendRequestsDiv = document.createElement('div');
+	friendRequestsDiv.style.position = 'fixed';
+	friendRequestsDiv.style.top = '1rem';
+	friendRequestsDiv.style.right = '1rem';
+	friendRequestsDiv.style.width = '300px';
+	friendRequestsDiv.style.zIndex = '1000';
+	friendRequestsDiv.style.display = 'flex';
+	friendRequestsDiv.style.flexDirection = 'column';
+	friendRequestsDiv.style.gap = '0.5rem';
+	friendRequestsDiv.style.fontSize = '1rem';
+	friendRequestsDiv.style.backgroundColor = 'white';
+	friendRequestsDiv.style.border = '2px solid black'
+	friendRequestsDiv.style.borderRadius = '5px'
 
-	document.body.appendChild(friendRequestsContainer);
+	const app = document.getElementById('app');
+	if (!app) return;
+	app.appendChild(friendRequestsDiv);
 }
 
-export function showFriendRequests(requests: FriendRequest[]) {
-	if (!friendRequestsContainer)
+export function showFriendRequests(requests: any) {
+	if (!friendRequestsDiv)
 		initFriendRequestsContainer();
-	if (!friendRequestsContainer)
+	if (!friendRequestsDiv)
 		return;
 
-	friendRequestsContainer.innerHTML = '';
+	friendRequestsDiv.innerHTML = '';
 
-	requests.forEach(req => {
+	const title = document.createElement('div');
+	title.textContent = "Friend Requests";
+	title.style.fontWeight = 'bold';
+	title.style.fontSize = '1.2rem';
+	title.style.marginBottom = '0.5rem';
+	friendRequestsDiv.appendChild(title);
+
+	for (const req of requests) {
 		const div = document.createElement('div');
 		div.style.background = '#fff';
-		div.style.padding = '0.5rem';
-		div.style.borderRadius = '5px';
-		div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-		div.style.fontSize = '0.9rem';
+		div.style.padding = '0.6rem';
+		div.style.borderRadius = '6px';
+		div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.25)';
 		div.style.display = 'flex';
 		div.style.justifyContent = 'space-between';
 		div.style.alignItems = 'center';
+		div.style.fontSize = '1rem';
+		div.classList.add('friend-request-item');
+		div.dataset.requestId = req.id.toString();
 
 		const nameSpan = document.createElement('span');
 		nameSpan.textContent = req.requester_name;
@@ -52,19 +61,21 @@ export function showFriendRequests(requests: FriendRequest[]) {
 
 		const acceptBtn = document.createElement('button');
 		acceptBtn.textContent = '✓';
-		acceptBtn.style.marginRight = '0.2rem';
+		acceptBtn.style.marginRight = '0.3rem';
+		acceptBtn.style.fontSize = '0.9rem';
 		acceptBtn.onclick = () => handleFriendRequest(req.id, 'accept');
 
 		const denyBtn = document.createElement('button');
 		denyBtn.textContent = '✗';
+		denyBtn.style.fontSize = '0.9rem';
 		denyBtn.onclick = () => handleFriendRequest(req.id, 'deny');
 
 		buttonContainer.appendChild(acceptBtn);
 		buttonContainer.appendChild(denyBtn);
 		div.appendChild(buttonContainer);
 
-		friendRequestsContainer?.appendChild(div);
-	});
+		friendRequestsDiv.appendChild(div);
+	};
 }
 
 function handleFriendRequest(requestId: number, acceptOrDeny: string) {
@@ -72,6 +83,19 @@ function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 	Game.socket.send({
 		action: 'friends',
 		subaction: acceptOrDeny + 'FriendRequest',
-		requestId			
+		requestId,
+		playerNr: 1	
 	})
+	if (!friendRequestsDiv)
+		return;
+
+	const requestDiv = friendRequestsDiv.querySelector<HTMLDivElement>(
+		`div[data-request-id='${requestId}']`);
+	requestDiv?.remove();
+
+	const remaining = document.querySelectorAll('div.friend-request-item');
+	if (remaining.length === 0) {
+		const container = document.getElementById('friendRequestsDiv');
+		container?.remove();
+	}
 }

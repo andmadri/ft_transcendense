@@ -2,8 +2,8 @@ import * as S from '../structs'
 import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
+import { randomizeBallAngle } from '@shared/gameLogic';
 import { getGameField } from './gameContent.js';
-import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
@@ -185,7 +185,7 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
-	randomizeBallAngle();
+	randomizeBallAngle(Game.match.gameState.ball);
 	// updateNamesMenu();
 	// resetScoreMenu();
 }
@@ -200,11 +200,11 @@ export function actionInitOnlineGame(data: any) {
 	}
 	getGameField();
 
-	Game.match.player1.ID = match.player1.id;
-	Game.match.player2.ID = match.player2.id;
+	Game.match.player1.ID = match.player1.ID;
+	Game.match.player2.ID = match.player2.ID;
 	Game.match.player1.name = match.player1.name;
 	Game.match.player2.name = match.player2.name;
-	Game.match.ID = data.matchID;
+	Game.match.ID = match.matchID;
 
 	// Function to set all data sync with match in game...
 
