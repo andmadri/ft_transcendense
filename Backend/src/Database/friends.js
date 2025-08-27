@@ -73,7 +73,7 @@ export async function getOpenFriendRequestsDB(db, player_id) {
 //                          DELETE ROW FROM SQL TABLE                          //
 // *************************************************************************** //
 
-export function deleteFriendDB(db, user_id, friend_id) {
+export function deleteFriendDBfromUser(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
 		db.run(
 			`DELETE FROM Friends WHERE user_id = ? AND friend_id = ?`,
@@ -88,6 +88,22 @@ export function deleteFriendDB(db, user_id, friend_id) {
 	})
 }
 
+export function deleteFriendDBfromID(db, request_id) {
+	return new Promise((resolve, reject) => {
+		db.run(
+			`DELETE FROM Friends WHERE id = ?`,
+			[request_id],
+			function (err) {
+				if (err)
+					reject(err);
+				else
+					resolve();
+			}
+		)
+	})
+}
+
+
 export async function getFriendsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `
@@ -99,6 +115,21 @@ export async function getFriendsDB(db, player_id) {
 		db.all(sql, [player_id, player_id], (err, rows) => {
 			if (err) return reject(err);
 			resolve(rows);
+		});
+	});
+}
+
+export async function getFriendsOnlyIdDB(db, player_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `
+			SELECT u.id
+			FROM Friends f
+			JOIN Users u ON (u.id = f.friend_id OR u.id = f.user_id)
+			WHERE f.accepted = 1 AND ? IN (f.user_id, f.friend_id) AND u.id != ?
+		`;
+		db.all(sql, [player_id, player_id], (err, rows) => {
+			if (err) return reject(err);
+			resolve(rows.map(r => r.id));
 		});
 	});
 }

@@ -137,7 +137,7 @@ fastify.ready().then(() => {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
 				case 'online':
-					return handleOnlinePlayers(msg, socket);
+					return handleOnlinePlayers(msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'matchmaking':

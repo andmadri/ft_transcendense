@@ -42,7 +42,8 @@ export function getOnlineList(): HTMLDivElement {
 	}
 	Game.socket.send({
 		action: 'online', 
-		subaction: 'getOnlinePlayers'
+		// subaction: 'getOnlinePlayers'
+		subaction: 'getAllPlayers'
 	});
 	return (online);
 }
@@ -65,17 +66,20 @@ function insertOnlinePlayers(online_players: any) {
 			html_list_element.style.cursor = "pointer";
 			html_list_element.style.color = 'black';
 
-			const addFriendBtn = document.createElement('button');
-			addFriendBtn.textContent = 'Add friend';
+			if (curr_player.name != Game.match.player1.name && !curr_player.isFriend) {
+				const addFriendBtn = document.createElement('button');
+				addFriendBtn.textContent = 'Add friend';
 
-			// ADD NOT ADD YOURSELF
-			addFriendBtn.addEventListener("click", () => {
-				alert(`Send ${curr_player.name} a friend request`);
-				const id = Game.match.player1.id;
-				const friendID = curr_player.id;
-				Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
-			});
-			html_list.append(html_list_element, addFriendBtn);
+				addFriendBtn.addEventListener("click", () => {
+					alert(`Send ${curr_player.name} a friend request`);
+					const id = Game.match.player1.id;
+					const friendID = curr_player.id;
+					Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
+				});
+				html_list.append(html_list_element, addFriendBtn);
+			} else
+				html_list.append(html_list_element);
+			
 		}
 	}
 }

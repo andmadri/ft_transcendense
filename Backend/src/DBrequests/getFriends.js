@@ -1,22 +1,22 @@
 import * as friendsDB from '../Database/friends.js';
 import { db } from '../index.js';
 
-function sendContentToFrontend(actionable, sub, socket, accessible, content, nr) {
+function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 	socket.emit('message', {
 		action: actionable,
 		subaction: sub,
 		access: accessible,
 		content: content,
-		playerNr: nr
+		playerNr: 1
 	});
 }
 
-async function acceptFriendRequest(socket, data, playerNr) {
+async function acceptFriendRequest(socket, data) {
 	try {
 		await friendsDB.acceptFriendRequestDB(db, data.requestId);
 	} catch (err) {
 		if (err.message.includes('No pending')) {
-			sendContentToFrontend('friends', 'error', 'no', err.message, playerNr);
+			sendContentToFrontend('friends', 'error', 'no', err.message);
 		} else {
 			socket.emit('message', {action: 'error', msg: 'Database error'});
 			console.error(err);			
@@ -24,12 +24,12 @@ async function acceptFriendRequest(socket, data, playerNr) {
 	}
 }
 
-async function denyFriendRequest(socket, data, playerNr) {
+async function denyFriendRequest(socket, userID1, data) {
 	try {
-		await friendsDB.acceptFriendRequestDB(db, data.requestId);
+		friendsDB.deleteFriendDBfromID(db, data.requestId);
 	} catch (err) {
 		if (err.message.includes('No pending')) {
-			sendContentToFrontend('friends', 'error', socket, 'no', err.message, playerNr);
+			sendContentToFrontend('friends', 'error', socket, 'no', err.message);
 		} else {
 			socket.emit('message', {action: 'error', msg: 'Database error'});
 			console.error(err);			
@@ -37,20 +37,20 @@ async function denyFriendRequest(socket, data, playerNr) {
 	}
 }
 
-async function getFriends(playerNr, userId1, socket) {
+async function getFriends(userId1, socket) {
 	try {
 		const friends = await friendsDB.getFriendsDB(db, userId1);
 		if (!friends || friends.length === 0) {
-			return sendContentToFrontend('friends', 'retFriends', socket, "no", "No friends found", playerNr);
+			return sendContentToFrontend('friends', 'retFriends', socket, "no", "No friends found");
 		}
-		return sendContentToFrontend('friends', 'retFriends', socket, "yes", friends, playerNr);
+		return sendContentToFrontend('friends', 'retFriends', socket, "yes", friends);
 	} catch (err) {
 		console.error(err);
-		return sendContentToFrontend('error', '', socket, "no", "Error while requesting friends", playerNr);
+		return sendContentToFrontend('error', '', socket, "no", "Error while requesting friends");
 	}
 }
 
-export async function openFriendRequest(userId1, socket, playerNr) {
+export async function openFriendRequest(userId1, socket) {
 	console.log("check open friend request for userid: ", userId1);
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
@@ -59,19 +59,19 @@ export async function openFriendRequest(userId1, socket, playerNr) {
 			return ;
 		}
 		console.log(`Send back requests:`, requests);
-		sendContentToFrontend('friends', 'openRequests', socket, "yes", requests, playerNr);
+		sendContentToFrontend('friends', 'openRequests', socket, "yes", requests);
 	} catch (err) {
 		console.error("DB error: ", err);
-		sendContentToFrontend('error', '', socket, "no", "Error while fetching open requests", playerNr);
+		sendContentToFrontend('error', '', socket, "no", "Error while fetching open requests");
 	}
 }
 
-export async function addFriendRequest(socket, userId1, data, playerNr) {
+export async function addFriendRequest(socket, userId1, data) {
 	try {
 		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
 		if (err.message.includes('already exists')) {
-			sendContentToFrontend('friends', 'error', socket, "no", err.message, playerNr);
+			sendContentToFrontend('friends', 'error', socket, "no", err.message);
 		} else {
 			socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 			console.error(err);
@@ -83,8 +83,8 @@ async function deleteFriend(socket, userID1, msg) {
 	try {
 		console.log('Try to delete friend', userID1, msg.friendID);
 		// IMPROVE FUNCTION DELETEFRIENDDB TO DO THIS
-		friendsDB.deleteFriendDB(db, userID1, msg.friendID);
-		friendsDB.deleteFriendDB(db, msg.friendID, userID1);
+		friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
+		friendsDB.deleteFriendDBfromUser(db, msg.friendID, userID1);
 	} catch (err) {
 		socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 		console.error(err);
@@ -93,21 +93,20 @@ async function deleteFriend(socket, userID1, msg) {
 
 export async function handleFriends(msg, socket, userId1, io) {
 	console.log("handleFriends function...", msg.action + " " + msg.subaction);
-	const playerNr = msg.playerNr ? msg.playerNr : 1;
 	switch (msg.subaction) {
 		case "getFriends":
-			return getFriends(playerNr, userId1, socket);
+			return getFriends(userId1, socket);
 		case 'friendRequest':
-			addFriendRequest(socket, userId1, msg, playerNr);
+			addFriendRequest(socket, userId1, msg);
 			break ;
 		case 'openFriendRequests':
-			openFriendRequest(userId1, socket, playerNr);
+			openFriendRequest(userId1, socket);
 			break ;
 		case 'acceptFriendRequest':
-			acceptFriendRequest(socket, msg, playerNr);
+			acceptFriendRequest(socket, msg);
 			break ;
 		case 'denyFriendRequest':
-			denyFriendRequest(socket, msg, playerNr);
+			denyFriendRequest(socket, userId1, msg);
 			break ;
 		case 'unfriend':
 			deleteFriend(socket, userId1, msg);

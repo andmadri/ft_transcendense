@@ -1,4 +1,5 @@
 import * as userDB from '../Database/users.js';
+import * as friendDB from '../Database/friends.js'
 import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
@@ -27,9 +28,30 @@ async function getOnlinePlayers(msg, socket) {
 	}
 }
 
-export async function handleOnlinePlayers(msg, socket) {
+export async function getAllPlayerInclFriends(db, userID, socket) {
+	try {
+		const players = await userDB.getAllPlayers(db);
+		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
+		const friendsIdsSet = new Set(friendsIds);
+		console.log("players: ", players);
+		console.log('friendIDs: ', friendsIds);
+
+		for (const player of players) {
+    		player.isFriend = friendsIdsSet.has(player.id);
+		}
+		return sendContentToFrontend('online', 'retOnlinePlayers', socket, "yes", players);
+	} catch (err) {
+		console.error(err);
+		sendContentToFrontend('error', '', socket, "no", "Error while requesting players");
+	}
+}
+
+export async function handleOnlinePlayers(msg, socket, userId) {
 	console.log("handleOnlinePlayers function...", msg.action);
 	if (msg.subaction == "getOnlinePlayers")
 		return getOnlinePlayers(msg, socket);
-	return sendContentToFrontend('error', '', socket, "no", "Unkown action");
+	else if (msg.subaction == 'getAllPlayers')
+		return getAllPlayerInclFriends(db, userId, socket);
+	sendContentToFrontend('error', '', socket, "no", "Unkown action");
 }
+

@@ -55,6 +55,7 @@ function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 		log('HTML list for friends not found');
 		return;
 	}
+	html_list.innerHTML = "";
 	html_list.className = 'friendsList';
 
 	if (noFriends) {
@@ -65,22 +66,31 @@ function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 		return ;
 	}
 	for (const friend of friends) {
-		log(`Adding player ${friend.name} to Friends list`);
-		const html_list_element = document.createElement('li');
-		const status = friend.online_status == 0 ? '(offline)' : '(online)';
-		const deleteFriendBtn = document.createElement('button');
-		deleteFriendBtn.textContent = "Unfriend";
-		deleteFriendBtn.addEventListener("click", () => {
-			Game.socket.send({
-				action: 'friends',
-				subaction: 'unfriend',
-				userID: Game.match.player1.id,
-				friendID: friend.id
-			})
-			console.log("Unfriend player: " + friend.name);
-		});
-		html_list_element.textContent = `${friend.name} ${status}`;
-		html_list.append(html_list_element, deleteFriendBtn);
+	    log(`Adding player ${friend.name} to Friends list`);
+
+	    const html_list_element = document.createElement('li');
+	    html_list_element.style.display = 'flex';
+	    html_list_element.style.justifyContent = 'space-between';
+	    html_list_element.style.alignItems = 'center';
+
+	    const status = friend.online_status == 0 ? '(offline)' : '(online)';
+	    html_list_element.textContent = `${friend.name} ${status}`;
+
+	    const deleteFriendBtn = document.createElement('button');
+	    deleteFriendBtn.textContent = "Unfriend";
+
+	    deleteFriendBtn.addEventListener("click", () => {
+	        Game.socket.send({
+	            action: 'friends',
+	            subaction: 'unfriend',
+	            userID: Game.match.player1.id,
+	            friendID: friend.id
+	        });
+	        console.log("Unfriend player: " + friend.name);
+	        html_list_element.remove();
+	    });
+	    html_list_element.appendChild(deleteFriendBtn);
+	    html_list.appendChild(html_list_element);
 	}
 }
 
