@@ -10,10 +10,11 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	card.style.flex = '1 1 25%';
 	card.style.flexDirection = 'column';
 	card.style.gap = '1rem';
+	card.style.padding = '1rem';
 
 	const title = document.createElement('div');
 	title.id = 'playingTimeTitle';
-	title.textContent = 'Playing Time';
+	title.textContent = 'Game Time';
 	title.style.fontFamily = '"Horizon", monospace';
 	title.style.color = 'transparent';
 	title.style.webkitTextStroke = '0.1rem #ffffff';
@@ -22,7 +23,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	title.style.borderRadius = '16px';
 	title.style.padding = '0.5rem';
 	title.style.boxSizing = 'border-box';
-	title.style.fontSize = 'clamp(18px, 2.5vw, 30px)';
+	title.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
 	card.appendChild(title);
 
 	// ===== Block where the donut will be placed ============================
@@ -142,7 +143,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	legend.style.alignItems = 'center';
 	legend.style.gap = '0.5rem';
 	legend.style.flexWrap = 'wrap';
-	legend.style.padding = '0px 0px 8px';
+	// legend.style.padding = '0px 0px 8px';
 	legend.style.color = 'white';
 	legend.style.fontFamily = 'RobotoCondensed-ui, sans-serif';
 	legend.style.fontSize = 'clamp(8px, 1vw, 12px)';

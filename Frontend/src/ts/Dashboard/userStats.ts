@@ -22,7 +22,7 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	// title.style.borderRadius = '16px';
 	title.style.padding = '0.5rem';
 	// title.style.boxSizing = 'border-box';
-	title.style.fontSize = 'clamp(18px, 2.5vw, 30px)';
+	title.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
 
 	const titleContainer = document.createElement('div');
 	titleContainer.style.display = 'grid';
