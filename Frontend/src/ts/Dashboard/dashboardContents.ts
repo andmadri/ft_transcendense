@@ -102,13 +102,13 @@ export function getDashboard()
 	if (optionMenu)
 		optionMenu.remove();
 
-	const body = document.getElementById('body');
-	if (!body)
+	const app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	app.style.margin = '0';
+	app.style.width = '100vw';
+	app.style.height = '100vh';
+	app.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 
 	const containerDashboard = document.createElement('div');
 	containerDashboard.style.display = 'flex';
@@ -209,7 +209,7 @@ export function getDashboard()
 	containerDashboard.appendChild(infoCardsContainer);
 	containerDashboard.appendChild(title);
 	containerDashboard.appendChild(dashboard);
-	body.append(containerDashboard);
+	app.append(containerDashboard);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
 	Game.socket.send(JSON.stringify(msg));
 }

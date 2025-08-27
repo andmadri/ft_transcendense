@@ -23,293 +23,153 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	title.style.padding = '0.5rem';
 	title.style.boxSizing = 'border-box';
 	title.style.fontSize = 'clamp(18px, 2.5vw, 30px)';
-	// title.style.position = 'relative';
 	card.appendChild(title);
 
-	// ===== Stage (middle row) keeps donut centered ============================
+	// ===== Block where the donut will be placed ============================
 	const stage = document.createElement('div');
-	Object.assign(stage.style, {
-		width: '100%',
-		height: '100%',
-		position: 'relative',
-		display: 'grid',
-		placeItems: 'center',
-		overflow: 'hidden', // never let children overflow the card
-	} as CSSStyleDeclaration);
+	stage.id = "stage";
+	stage.style.width = '100%';
+	stage.style.height = '100%';
+	stage.style.position = 'relative';
+	stage.style.display = 'grid';
+	stage.style.placeItems = 'center';
+	stage.style.overflow = 'hidden';
 	card.appendChild(stage);
 
-	// Wrapper + square (the donut background)
+	// ===== Wrapper for the donut, keeps donut centered ============================
 	const wrapper = document.createElement('div');
-	Object.assign(wrapper.style, {
-		position: 'relative',
-		display: 'grid',
-		placeItems: 'center',
-		width: '100%',
-		height: '100%',
-		overflow: 'hidden',
-	} as CSSStyleDeclaration);
+	wrapper.id = "wrapper";
+	wrapper.style.width = '100%';
+	wrapper.style.height = '100%';
+	wrapper.style.position = 'relative';
+	wrapper.style.display = 'grid';
+	wrapper.style.placeItems = 'center';
+	wrapper.style.overflow = 'hidden';
 	stage.appendChild(wrapper);
 
+	// ===== Square, the pie chart itself ============================
 	const square = document.createElement('div');
 	square.id = 'donutSquare';
-	Object.assign(square.style, {
-		position: 'relative',
-		boxSizing: 'border-box',
-		borderRadius: '50%',
-		inlineSize: 'var(--size, 0px)',   // width from ResizeObserver
-		blockSize: 'var(--size, 0px)',    // height from ResizeObserver
-	} as CSSStyleDeclaration);
+	square.style.position = 'relative';
+	square.style.boxSizing = 'border-box';
+	square.style.borderRadius = '50%';
+	square.style.inlineSize = 'var(--size, 0px)'; // width from ResizeObserver
+	square.style.blockSize = 'var(--size, 0px)'; // width from ResizeObserver
 	wrapper.appendChild(square);
 
-	// const { game_secs, lobby_secs, menu_secs } = user_playing_time;
+	// Calculate the data for the pie chart
+	const total = Math.max(
+		0,
+		Number(user_playing_time.game_secs) +
+		Number(user_playing_time.lobby_secs) +
+		Number(user_playing_time.menu_secs)
+	);
+	const pct = (n: number) => (total ? (n / total) * 100 : 0);
 
-	// const total = Math.max(0, Number(game_secs) + Number(lobby_secs) + Number(menu_secs));
-	// const toPct = (n: number) => (total > 0 ? (n / total) * 100 : 0); // Round this to 0 decimals!
+	const gamePct = pct(user_playing_time.game_secs);
+	const lobbyPct = pct(user_playing_time.lobby_secs);
+	const menuPct = Math.max(0, 100 - gamePct - lobbyPct);
+	const gameColor = '#f96216ff';
+	const lobbyColor = '#f99716ff';
+	const menuColor = '#f9d716ff';
+	const stop1 = gamePct;
+	const stop2 = gamePct + lobbyPct;
 
-	// const GAME_PCT  = toPct(game_secs);
-	// const LOBBY_PCT = toPct(lobby_secs);
-	// const MENU_PCT  = Math.max(0, 100 - GAME_PCT - LOBBY_PCT);
+	// Game -> Lobby -> Menu, start at 12 o’clock
+	square.style.background = `conic-gradient(
+		${gameColor} 0% ${stop1}%,
+		${lobbyColor} ${stop1}% ${stop2}%,
+		${menuColor} ${stop2}% 100%
+	)`;
 
-
-	// console.table({ GAME_PCT, LOBBY_PCT, MENU_PCT, total });
-
-	// // --- hardcoded percentages (must add up to 100)
-	// // const GAME_PCT  = 75;  // 75%
-	// // const LOBBY_PCT = 0;   // 0% (invisible slice)
-	// // const MENU_PCT  = 25;  // 25%
-
-	// // cumulative stops
-	// const stop1 = GAME_PCT;                 // end of Game
-	// const stop2 = GAME_PCT + LOBBY_PCT;     // end of Lobby
-	// // Menu runs from stop2 to 100%
-
-	// square.style.background = `conic-gradient(
-	// 	#ff0400ff 0% ${stop1}% ,		/* Game  // OPTIMIZE THIS!*/
-	// 	#fb923c ${stop1}% ${stop2}% ,	/* Lobby (0% here, so it vanishes)  // OPTIMIZE THIS!*/
-	// 	#0031f3ff ${stop2}% 100%		/* Menu  // OPTIMIZE THIS!*/
-	// )`;
-
-	// /*
-	// conic-gradient(
-	// 	rgb(255, 4, 0) 65%,
-	// 	rgb(251, 146, 60) 0 85%,
-	// 	rgb(0, 49, 243) 0,
-	// */
-
-	// // --- Donut hole overlay
-	// square.style.position = 'relative';
-
-	// // thickness of the ring as % of the square’s width
-	// const donutThicknessPct = 18;                     // tweak 12–24 to taste
-	// const innerSize = `${100 - 2 * donutThicknessPct}%`;
-
-	// // // match the card background so it looks cut out
-	// // const cardBg = getComputedStyle(infoCardsContainer).backgroundColor || '#363430';
-
-	// const hole = document.createElement('div');
-	// hole.id = 'hole';
-	// Object.assign(hole.style, {
-	// 	position: 'absolute',
-	// 	left: '50%',
-	// 	top: '50%',
-	// 	transform: 'translate(-50%, -50%)',
-	// 	width: innerSize,
-	// 	aspectRatio: '1 / 1',
-	// 	borderRadius: '50%',
-	// 	background: '#363430', // cardBg,
-	// 	// subtle inner edge so the ring reads crisply
-	// 	boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
-	// } as CSSStyleDeclaration);
-
-
-	// // Function to show the total time in the donut
-	// function formatDuration(secs: number): string {
-	// 	const mins = Math.round(secs / 60);
-	// 	if (mins < 60)
-	// 		return `${mins}m`;
-	// 	const h = Math.floor(mins / 60);
-	// 	const m = mins % 60;
-	// 	return `${h}h ${m}m`;
-	// }
-
-	// // make the hole a centering container
-	// Object.assign(hole.style, {
-	// 	display: 'flex',
-	// 	placeItems: 'center',
-	// 	textAlign: 'center',
-	// });
-
-	// // wrapper for the two lines
-	// const centerLabel = document.createElement('div');
-	// centerLabel.id = 'centerLabel';
-	// Object.assign(centerLabel.style, {
-	// 	color: '#fff',
-	// 	lineHeight: '1.1',
-	// 	fontFamily: 'system-ui, sans-serif',
-	// 	pointerEvents: 'none', // don’t block hover on the donut
-	// } as CSSStyleDeclaration);
-
-	// const line1 = document.createElement('div');
-	// line1.id = 'line1';
-	// line1.textContent = 'Total';
-	// Object.assign(line1.style, {
-	// 	fontSize: '10px',
-	// 	opacity: '0.8',
-	// } as CSSStyleDeclaration);
-
-	// const line2 = document.createElement('div');
-	// line2.id = 'line2';
-	// line2.textContent = formatDuration(user_playing_time.login_secs);
-	// Object.assign(line2.style, {
-	// 	fontSize: '16px',
-	// 	fontWeight: '700',
-	// } as CSSStyleDeclaration);
-
-	// centerLabel.appendChild(line1);
-	// centerLabel.appendChild(line2);
-	// hole.appendChild(centerLabel);
-
-	// square.appendChild(hole);
-
-	// // // --- Chart title (top-left overlay)
-	// // const chartTitle = document.createElement('div');
-	// // chartTitle.textContent = 'Playing time';
-	// // Object.assign(chartTitle.style, {
-	// // 	position: 'absolute',
-	// // 	top: '10px',
-	// // 	left: '12px',
-	// // 	color: '#fff',
-	// // 	fontFamily: 'system-ui, sans-serif',
-	// // 	fontSize: '12px',
-	// // 	fontWeight: '700',
-	// // 	letterSpacing: '0.02em',
-	// // 	textShadow: '0 1px 1px rgba(0,0,0,0.25)',
-	// // 	opacity: '0.9',
-	// // });
-	// // square.appendChild(chartTitle);
-
-	// // --- Legend with value labels (Game → Lobby → Menu)
-	// const slices = [
-	// 	{ name: 'Game',  color: '#f97316', pct: GAME_PCT }, // OPTIMIZE THIS!
-	// 	{ name: 'Lobby', color: '#fb923c', pct: LOBBY_PCT }, // OPTIMIZE THIS!
-	// 	{ name: 'Menu',  color: '#f59e0b', pct: MENU_PCT }, // OPTIMIZE THIS!
-	// ].filter(s => s.pct > 0.0001); // hide zero slces
-
-	// // container under the square
-	// const legend = document.createElement('div');
-	// Object.assign(legend.style, {
-	// 	marginTop: '12px',
-	// 	display: 'flex',
-	// 	// gridAutoFlow: 'column',
-	// 	// gridAutoColumns: '1fr',
-	// 	gap: '8px',
-	// 	alignItems: 'center',
-	// 	color: '#eee',
-	// 	fontFamily: 'system-ui, sans-serif',
-	// 	fontSize: '12px',
-	// } as CSSStyleDeclaration);
-
-	// // one item per slice
-	// slices.forEach(s => {
-	// const item = document.createElement('div');
-	// Object.assign(item.style, { display: 'flex', alignItems: 'center', gap: '8px' });
-
-	// const dot = document.createElement('span');
-	// Object.assign(dot.style, {
-	// 	width: '10px',
-	// 	height: '10px',
-	// 	borderRadius: '50%',
-	// 	background: s.color,
-	// 	display: 'inline-block'
-	// });
-
-	// const label = document.createElement('span');
-	// // round to whole %; tweak toFixed(1) if you want 1 decimal
-	// label.textContent = `${s.name} ${Math.round(s.pct)}%`;
-
-	// item.appendChild(dot);
-	// item.appendChild(label);
-	// legend.appendChild(item);
-	// });
-
-	// card.appendChild(square);
-
-	// place legend BELOW the square (append to the card, after the stage)
-	// card.appendChild(legend);
-
-
-	  // ===== Data → conic gradient =============================================
-  const total = Math.max(
-    0,
-    Number(user_playing_time.game_secs) +
-      Number(user_playing_time.lobby_secs) +
-      Number(user_playing_time.menu_secs)
-  );
-  const pct = (n: number) => (total ? (n / total) * 100 : 0);
-
-  const gamePct = pct(user_playing_time.game_secs);
-  const lobbyPct = pct(user_playing_time.lobby_secs);
-  const stop1 = gamePct;
-  const stop2 = gamePct + lobbyPct;
-
-  // Game → Lobby → Menu, start at 12 o’clock
-  square.style.background = `conic-gradient(
-    from -90deg,
-    #f97316 0% ${stop1}%,
-    #fb923c ${stop1}% ${stop2}%,
-    #f59e0b ${stop2}% 100%
-  )`;
-
-	// ===== Donut hole + center label =========================================
+	// ===== Donut hole =========================================
 	const hole = document.createElement('div');
-	const innerSize = `${100 - 2 * 18}%`; // ring thickness = 18%; tweak as you like
-	Object.assign(hole.style, {
-		position: 'absolute',
-		left: '50%',
-		top: '50%',
-		transform: 'translate(-50%, -50%)',
-		width: innerSize,
-		aspectRatio: '1 / 1',
-		borderRadius: '50%',
-		background: getComputedStyle(card).backgroundColor || '#363430',
-		boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.06)',
-		display: 'grid',
-		placeItems: 'center',
-		textAlign: 'center',
-		pointerEvents: 'none',
-	} as CSSStyleDeclaration);
+	hole.id = 'donutHole';
+	hole.style.position = 'relative';
+	hole.style.boxSizing = 'border-box';
+	hole.style.borderRadius = '50%';
+	hole.style.inlineSize = '65%';
+	hole.style.blockSize = '65%';
+	hole.style.left = '50%';
+	hole.style.top = '50%';
+	hole.style.transform = 'translate(-50%, -50%)';
+	hole.style.aspectRatio = '1 / 1';
+	hole.style.background = getComputedStyle(card).backgroundColor || '#363430';
+	hole.style.boxShadow = 'inset 0 0 0 1px rgba(255,255,255,0.06)';
+	hole.style.display = 'grid';
+	hole.style.placeItems = 'center';
+	hole.style.textAlign = 'center';
+	hole.style.pointerEvents = 'none';
+	square.appendChild(hole);
 
+	// ===== Wrapper for text in the middle of the donut =========================================
 	const labelWrap = document.createElement('div');
-	Object.assign(labelWrap.style, {
-		color: '#fff',
-		fontFamily: 'RobotoCondensed, sans-serif',
-		lineHeight: '1.1',
-	} as CSSStyleDeclaration);
+	labelWrap.id = 'labelWrap';
+	labelWrap.style.color = '#ffffff';
+	labelWrap.style.fontFamily = 'RobotoCondensed, sans-serif';
+	labelWrap.style.lineHeight = '1.1';
 
-	const small = document.createElement('div');
-	small.textContent = 'Total';
-	Object.assign(small.style, { fontSize: '10px', opacity: '0.8' } as CSSStyleDeclaration);
+	// ===== "Total" text in the middle of the donut =========================================
+	const smallTotal = document.createElement('div');
+	smallTotal.id = 'smallTotal';
+	smallTotal.textContent = 'Total';
+	smallTotal.style.fontSize = '10px';
+	smallTotal.style.opacity = '0.8';
 
-	const big = document.createElement('div');
-	big.textContent = `${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
-	Object.assign(big.style, { fontSize: '16px', fontWeight: '800' } as CSSStyleDeclaration);
+	// ===== "'x'm" text in the middle of the donut =========================================
+	const bigGameTime = document.createElement('div');
+	bigGameTime.id = 'bigGameTime';
+	bigGameTime.textContent = `${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
+	bigGameTime.style.fontSize = '16px';
+	bigGameTime.style.fontWeight = '800';
 
-	labelWrap.appendChild(small);
-	labelWrap.appendChild(big);
+	labelWrap.appendChild(smallTotal);
+	labelWrap.appendChild(bigGameTime);
 	hole.appendChild(labelWrap);
 	square.appendChild(hole);
 
-	// ===== Footer (bottom row) ===============================================
-	const footer = document.createElement('div');
-	footer.textContent = `Total time: ${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
-	Object.assign(footer.style, {
-		color: '#ddd',
-		fontFamily: 'RobotoCondensed-ui, sans-serif',
-		fontSize: '12px',
-		marginBottom: '1vw',
-		textAlign: 'center'
-	} as CSSStyleDeclaration);
-	card.appendChild(footer);
+	// ===== Legend ===============================================
+	const slices = [
+		{ name: 'Game',  color: gameColor, pct: gamePct  },
+		{ name: 'Lobby', color: lobbyColor, pct: lobbyPct },
+		{ name: 'Menu',  color: menuColor, pct: menuPct  },
+	].filter(s => s.pct > 0.001);
+
+	const legend = document.createElement('div');
+	legend.id = 'legend';
+	legend.style.display = 'flex';
+	legend.style.justifyContent = 'center';
+	legend.style.alignItems = 'center';
+	legend.style.gap = '0.5rem';
+	legend.style.flexWrap = 'wrap';
+	legend.style.padding = '0px 0px 8px';
+	legend.style.color = 'white';
+	legend.style.fontFamily = 'RobotoCondensed-ui, sans-serif';
+	legend.style.fontSize = 'clamp(8px, 1vw, 12px)';
+	legend.style.textAlign = 'center';
+
+	slices.forEach(s => {
+		const item = document.createElement('div');
+		Object.assign(item.style, { display: 'flex', alignItems: 'center', gap: '6px' } as CSSStyleDeclaration);
+
+		const dot = document.createElement('span');
+		Object.assign(dot.style, {
+			width: '10px',
+			height: '10px',
+			borderRadius: '50%',
+			background: s.color,
+			display: 'inline-block',
+		} as CSSStyleDeclaration);
+
+		const label = document.createElement('span');
+		label.textContent = `${s.name} ${Math.round(s.pct)}%`;
+
+		item.appendChild(dot);
+		item.appendChild(label);
+		legend.appendChild(item);
+	});
+
+	card.appendChild(legend);
 
 	// ===== Keep the donut perfectly inside the stage =========================
 	const MARGIN = 8; // px gap from the stage edges
@@ -322,24 +182,6 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	ro.observe(stage);
 	layoutSquare();
 
-	// Mount the card
+	// ===== Mount it in the dashboard =========================
 	infoCardsContainer.appendChild(card);
-
-
-	// infoCardsContainer.appendChild(card);
 }
-
-
-// const wrapper = document.getElementById('wrapperDonut') as HTMLElement;
-// const square  = document.getElementById('square') as HTMLElement;
-// function layoutDonut() {
-
-// const MARGIN = 8;
-// const r = wrapper.getBoundingClientRect();
-// const size = Math.max(0, Math.min(r.width, r.height) - MARGIN * 2);
-// square.style.width = size + 'px';
-// square.style.height = size + 'px';
-// }
-// const ro = new ResizeObserver(layoutDonut);
-// ro.observe(wrapper);
-// layoutDonut();
