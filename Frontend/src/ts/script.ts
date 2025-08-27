@@ -14,6 +14,7 @@ import { getMenu } from './Menu/menuContent.js'
 import { saveGame } from './Game/endGame.js';
 import { searchMatch } from './Matchmaking/onlineMatch.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
+import { getOptionMenu } from './OptionMenu/options.js'
 
 // getLoadingPage();
 createLog();
@@ -74,14 +75,16 @@ function mainLoop() {
 				break ;
 			}
 			case S.State.Menu: {
-				// document.getElementById('auth1')?.remove();
-				// document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu') && !document.getElementById('optionMenu'))
+				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
 			}
+			case S.State.OptionMenu: {
+				if(!document.getElementById('optionMenu'))
+					getOptionMenu();
+				break;
+			}
 			case S.State.Pending: {
-				// waiting for opponement
 				log("...pending...");
 				break ;
 			}

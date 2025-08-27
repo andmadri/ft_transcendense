@@ -95,20 +95,14 @@ export function populateDashboard(msg: any)
 
 export function getDashboard()
 {
-	const menu = document.getElementById('menu');
-	if(menu)
-		menu.remove();
-	const optionMenu = document.getElementById('optionMenu');
-	if (optionMenu)
-		optionMenu.remove();
-
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.style.margin = '0';
-	app.style.width = '100vw';
-	app.style.height = '100vh';
-	app.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	body.innerHTML = '';
 
 	const containerDashboard = document.createElement('div');
 	containerDashboard.style.display = 'flex';
@@ -204,12 +198,34 @@ export function getDashboard()
 	infoCardsContainer.style.gap = '1rem';
 	infoCardsContainer.style.aspectRatio = '3/4';
 
+	const exitButton = document.createElement('button');
+	exitButton.id = 'exitButton';
+	exitButton.textContent = 'X';
+	exitButton.style.color = 'black';
+	exitButton.style.fontSize = 'clamp(10px, 1.5vw, 15px)';
+	exitButton.style.position = 'fixed';
+	exitButton.style.top = '1rem';
+	exitButton.style.right = '1rem';
+	exitButton.style.background = 'transparent';
+	exitButton.style.border = 'transparent';
+	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	exitButton.style.fontFamily = '"Horizon", sans-serif';
+
+	exitButton.addEventListener('click', () => {
+		const dashboard = document.getElementById('dashboard');
+		if (dashboard) {
+			dashboard.remove();
+		}
+		Game.state = S.State.Menu;
+	});
+
 	dashboard.appendChild(headers);
 	dashboard.appendChild(matchList);
 	containerDashboard.appendChild(infoCardsContainer);
 	containerDashboard.appendChild(title);
 	containerDashboard.appendChild(dashboard);
-	app.append(containerDashboard);
+	body.append(containerDashboard);
+	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
 	Game.socket.send(JSON.stringify(msg));
 }

@@ -55,13 +55,6 @@ function getQuitBtn() {
 
 
 export function getGameField() {
-	const optionMenu = document.getElementById('optionMenu');
-	if (optionMenu) {
-		const	app = document.getElementById("app");
-		if (!app)
-			return ;
-		app.removeChild(optionMenu);
-	}
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
@@ -70,6 +63,7 @@ export function getGameField() {
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.overflow = 'hidden';
+	body.innerHTML = '';
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';

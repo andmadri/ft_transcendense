@@ -50,12 +50,12 @@ function getPlayBtn(): HTMLButtonElement {
 		fontSize: '1em',
 		cursor: 'pointer',
 		borderRadius: '10px',
-		width: '60%',
+		// width: '60%',
 	});
 	playBtn.addEventListener('click', () => {
-		getOptionMenu();
+		console.log("The Game state is now option Menu");
+		Game.state = S.State.OptionMenu;
 	});
-
 	return (playBtn);
 }
 
@@ -69,7 +69,7 @@ function getDashboardBtn(): HTMLButtonElement {
 		fontSize: '1em',
 		cursor: 'pointer',
 		borderRadius: '10px',
-		width: '60%',
+		// width: '60%',
 	});
 	dashboardBtn.addEventListener('click', () => {
 		Game.state = S.State.Dashboard;
@@ -273,9 +273,9 @@ export function getMenu() {
 	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.innerHTML = '';
-	app.appendChild(menu);
+	body.innerHTML = '';
+	body.appendChild(menu);
 }

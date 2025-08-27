@@ -3,6 +3,7 @@ type Socket = any;
 export enum State {
 	LoginP1,
 	Menu,
+	OptionMenu,
 	LoginP2,
 	Pending,
 	Init,

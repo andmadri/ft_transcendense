@@ -9,15 +9,15 @@ export function getCreditBtn(): HTMLDivElement {
 		padding: '15px',
 		fontSize: '1em',
 		cursor: 'pointer',
-		marginRight: '15px',
+		// marginRight: '15px',
 		borderRadius: '10px',
 		textAlign: 'center',
-		width: '40%',
+		// width: '40%',
 	});
 
 	creditsBtn.addEventListener('click', () => {
-		const app = document.getElementById('app');
-		if (!app)
+		const body = document.getElementById('body');
+		if (!body)
 			return ;
 
 		const creditDiv = document.createElement('div');
@@ -52,10 +52,10 @@ export function getCreditBtn(): HTMLDivElement {
 
 		creditDiv.appendChild(creditImg);
 		creditDiv.appendChild(closeBtn);
-		app.appendChild(creditDiv);
+		body.appendChild(creditDiv);
 
 		closeBtn.addEventListener('click', () => {
-			app.removeChild(creditDiv);
+			body.removeChild(creditDiv);
 		})
 	})
 	return (creditsBtn);

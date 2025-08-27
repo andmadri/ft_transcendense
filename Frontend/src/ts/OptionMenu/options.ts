@@ -158,9 +158,9 @@ export function getOptionMenu() {
 	optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	optionMenu.appendChild(optionLeftRight);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.innerHTML = '';
-	app.append(optionMenu);
+	body.innerHTML = '';
+	body.append(optionMenu);
 }

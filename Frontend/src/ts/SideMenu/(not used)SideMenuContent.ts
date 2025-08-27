@@ -27,8 +27,8 @@ function getPlayer(nr: number) {
 }
 
 export async function getSideMenu() {
-	const app = document.getElementById('app');
-	if (!app) return ;
+	const body = document.getElementById('body');
+	if (!body) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
 
@@ -43,7 +43,7 @@ export async function getSideMenu() {
 	menu.style.gridTemplateColumns = '1fr 1fr';
 	menu.style.gap = '1rem';
 	menu.append(getPlayer(1), getPlayer(2));
-	app.appendChild(menu);
+	body.appendChild(menu);
 	updatePlayerData(0);
 }
 

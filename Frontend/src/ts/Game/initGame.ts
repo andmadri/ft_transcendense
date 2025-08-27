@@ -191,20 +191,19 @@ export function initGameServer() {
 function readyStart(txt: HTMLDivElement) {
 	log("Start button clicked");
 	if (document.getElementById('startScreen')) {
-		const app = document.getElementById('app');
+		const body = document.getElementById('body');
 		const startScreen = document.getElementById('startScreen')
-		if (app && startScreen)
-			app.removeChild(startScreen);
+		if (body && startScreen)
+			body.removeChild(startScreen);
 		Game.playMode = true ;
 	}
 }
 
-// WHO VS WHO
 function getStartScreenBeforeGame() {
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.innerHTML = "";
+	body.innerHTML = "";
 	const startScreen = document.createElement('div');
 		startScreen.id = 'startScreen';
 	styleElement(startScreen, {
@@ -235,7 +234,7 @@ function getStartScreenBeforeGame() {
 	startBtn.textContent = "START";
 	startBtn.addEventListener('click', (e) => readyStart(txt));
 	startScreen.append(player1, player2, txt, startBtn);
-	app.append(startScreen);
+	body.append(startScreen);
 }
 
 export function initGame() {
