@@ -110,9 +110,15 @@ function checkPaddleSides(match: matchInfo) {
 export function updateGameState(match: matchInfo) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
 	
-	handleWallBounce(ball, field);
-	checkPaddleSides(match);
-	updateBallPos(ball, field);
-	updatePaddlePos(paddle1, field);
-	updatePaddlePos(paddle2, field);
+	if (match.player1.score == 5 || match.player2.score == 5) {
+		match.state = state.End;
+		return ;
+	}
+	if (match.state == state.Playing) {
+		updateBallPos(ball, field);
+		updatePaddlePos(paddle1, field);
+		updatePaddlePos(paddle2, field);
+		handleWallBounce(ball, field);
+		checkPaddleSides(match);
+	}
 }

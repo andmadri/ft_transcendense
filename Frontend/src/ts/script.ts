@@ -33,24 +33,26 @@ window.addEventListener('keyup', releaseButton);
 let lastSpeedIncreaseTime = 0;
 
 function gameLoop() {
+	console.log(` match.state = ${Game.match.state}`);
 	switch (Game.match.state) {
 		case state.Pending: {
 			// waiting for opponement
 			log("...pending...");
 			break ;
 		}
-		case state.Init:
+		case state.Init: {
+			Game.match.state = state.Playing;
 			if (!document.getElementById('game'))
 			{
 				log('Init game');
-				getGameField();
-				initGame();
-				Game.match.state = state.Playing;
+				getGameField(); 
 			}
+			initGame();
 			break ;
+		}
 		case state.Paused: {
 			//maybe start with pause instead of immediately playing
-			//maybe send score here in local mode, cause ball is paused when point is scored ?? 
+			console.log(`state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.pauseTimeOutID === null) {
 				pauseBallTemporarily(3000);
 			}
@@ -63,6 +65,7 @@ function gameLoop() {
 			break ;
 		}
 		case state.Score: {
+			console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			updateDOMElements(Game.match);
 			Game.match.state = state.Paused;
 			if (Game.match.OT != OT.Online) {
@@ -72,7 +75,10 @@ function gameLoop() {
 		}
 		case state.End: {
 			saveGame();
-			UI.state = S.stateUI.Menu; //gameOver doesn't work correctly
+			setTimeout(() => {
+				document.getElementById('gameOver')?.remove();
+				UI.state = S.stateUI.Menu;
+			}, 3000);
 			break ;
 		}
 		default:

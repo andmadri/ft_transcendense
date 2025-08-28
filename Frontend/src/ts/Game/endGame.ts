@@ -75,7 +75,7 @@ function handleGameOver() {
 	if (!body)
 		return ;
 	body.appendChild(gameOver);
-	UI.state = S.stateUI.Menu
+	//UI.state = S.stateUI.Menu
 }
 
 export function saveGame() {
@@ -84,7 +84,7 @@ export function saveGame() {
 
 	const game = document.getElementById('game');
 	if (game)
-		game.remove(); //when game ends game is not removed
+		game.remove();
 	if (!document.getElementById('gameOver'))
 	{
 		handleGameOver();

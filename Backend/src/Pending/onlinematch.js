@@ -29,10 +29,10 @@ function matchInterval(match, io) {
 			case (state.Init) : {
 				randomizeBallAngle(match.gameState.ball)
 				match.state = state.Playing;
-				break;
 			}
 			case (state.Playing) : {
 				updateGameState(match)
+				sendGameStateUpdate(match, io);
 				break;
 			}
 			case (state.Paused) : {
@@ -50,12 +50,12 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.End) : {
+				console.log(`interval cleared`);
 				clearInterval(match.intervalID);
 				break;
 			}
 		}
-		sendGameStateUpdate(match, io);
-	}, 100)
+	}, 40)
 }
 
 // checks if there is already someone waiting
@@ -74,7 +74,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 				match: null
 				// more info about the game
 			});
-		return ;
+			return ;
 		}
 	
 		const matchID = await createMatch(db, OT.Online, socket, userID, userID2);

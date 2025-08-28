@@ -161,6 +161,7 @@ function getStartScreenBeforeGame() {
 
 export function initGame() {
 	if (Game.match.mode != OT.Online) {
+		//do we need to set the ID's here
 		Game.match.player1.ID = UI.user1.ID;
 		Game.match.player2.ID = UI.user2.ID;
 		Game.match.player1.name = UI.user1.name;
@@ -195,11 +196,13 @@ export function actionInitOnlineGame(data: any) {
 	if (match == null) { // something went wrong
 		alert('Could not start a new game');
 		UI.state = S.stateUI.Menu;
+		return;
 	}
 	getGameField();
 
 	Game.match = match;
 	// Function to set all data sync with match in game...
 	UI.state = S.stateUI.Game;
+	Game.match.state = state.Playing;
 	console.log("Start online game...");
 }

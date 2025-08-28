@@ -45,6 +45,9 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game(match : matchInfo) {
+	if (Game.match.state !== state.Playing) {
+		return;
+	}
 	if (match.mode == OT.Online) {
 		//update own paddle immediately in frontend
 		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
@@ -55,10 +58,6 @@ export function game(match : matchInfo) {
 	}
 	else {
 		match.time = performance.now();
-		if (match.player1.score == 5 || match.player2.score == 5) {
-			match.state = state.End;
-			return ;
-		}
 		if (match.mode == OT.ONEvsCOM) {
 			aiAlgorithm();
 		}

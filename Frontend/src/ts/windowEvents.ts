@@ -1,12 +1,14 @@
 import * as S from './structs.js'
 import { Game, UI } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
-import { OT } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 
 export function releaseButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;
 	const paddle2 = Game.match.gameState.paddle2;
-
+	if (Game.match.state != state.Playing) {
+		return ;
+	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = 0;
 		return ;
@@ -14,6 +16,7 @@ export function releaseButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = 0;
+		S.Keys[e.key].pressed = false;
 		sendKeyPressUpdate(e.key);
 		return ;
 	}
@@ -30,7 +33,9 @@ export function releaseButton(e: KeyboardEvent) {
 export function pressButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;
 	const paddle2 = Game.match.gameState.paddle2;
-
+	if (Game.match.state != state.Playing) {
+		return ;
+	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
 		return;
@@ -38,9 +43,7 @@ export function pressButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
-		const paddleNUM = UI.user1.ID == Game.match.player1.ID ? 1 : 2;
-		console.log(`MY PADDLENUM = ${paddleNUM}`);
-		console.log(`MYUSERID = ${ UI.user1.ID }`);
+		S.Keys[e.key].pressed = true;
 		sendKeyPressUpdate(e.key);
 		return;
 	}

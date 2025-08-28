@@ -14,14 +14,9 @@ function processMatch(data: any) {
 	Game.match.player1.ID = data.player1ID;
 	Game.match.player2.ID = data.player2ID;
 
-	if (Game.match.mode == OT.Online) {
-		getGameField();
-	}
-
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
 	UI.state = S.stateUI.Game;
-	Game.match.state = state.Init;
 	log("ProcessMatch");
 }
 

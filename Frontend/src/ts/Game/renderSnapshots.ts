@@ -1,4 +1,5 @@
 import { gameState } from '@shared/types'
+import { state } from '@shared/enums'
 import { UI, Game } from '../gameData.js'
 
 const INTERPOLATION_DELAY = 100;
@@ -138,6 +139,10 @@ function deleteOldSnapshots(renderTime: number) {
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
 export function renderGameInterpolated() {
+	if (Game.match.state != state.Playing) { //clear snapshots on score/pause when ball is reset
+		snapshots.length = 0;
+		return ;
+	}
 	const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 
 	const now = Date.now();

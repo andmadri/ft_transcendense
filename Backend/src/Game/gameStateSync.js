@@ -8,7 +8,7 @@ export function applyGameStateUpdate(match, msg) {
 }
 
 export function sendGameStateUpdate(match, io) {
-	console.log(`sendGameStateUpdate()`);
+	//console.log(`sendGameStateUpdate()`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'gameStateUpdate',
@@ -20,11 +20,9 @@ export function sendGameStateUpdate(match, io) {
 export function applyKeyPressUpdate(match, msg) {
 	let paddle = match.player1.ID == msg.id ? match.gameState.paddle1 : match.gameState.paddle2;
 	console.log(`player1ID = ${match.player1.ID} -- player2ID = ${match.player2.ID}`)
-	if (msg.key == 'ArrowDown') paddle.velocity.vy = msg.pressed ? -paddle.movement.speed : 0;
-	if (msg.key == 'ArrowUp') paddle.velocity.vy = msg.pressed ? paddle.movement.speed : 0;
-	if (msg.pressed) {
-		updatePaddlePos(paddle, match.gameState.field);
-	}
+	if (msg.key == 'ArrowDown') paddle.velocity.vy = msg.pressed ? paddle.movement.speed : 0;
+	if (msg.key == 'ArrowUp') paddle.velocity.vy = msg.pressed ? -paddle.movement.speed : 0;
+	console.log(`paddleVY = ${paddle.velocity.vy} -- paddleSpeed = ${paddle.movement.speed}`);
 }
 
 export async function updateScore(match, msg, io) {
