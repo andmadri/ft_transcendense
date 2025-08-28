@@ -129,7 +129,6 @@ export function getGameField() {
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';
 	ball.style.borderRadius = '50%';
-	ball.style.transform = 'translate(-50%, -50%)';
 
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';
