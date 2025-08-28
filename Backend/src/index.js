@@ -17,6 +17,9 @@ import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 // import { testDB }   from './testDB.js';
 
+// ADDED FOR CREATING IMAGE IN THE BACKEND - this one line
+import chartRoutes from './routes/charts.js';
+
 // FASTIFY => API SERVER
 const fastify = Fastify({ logger: true });
 
@@ -56,8 +59,11 @@ await fastify.register(googleAuthRoutes);
 // POST /api/upload-avatar
 await fastify.register(avatarRoutes);
 
+// ADDED FOR CREATING IMAGE IN THE BACKEND - this one line
+await fastify.register(chartRoutes);
+
 fastify.setNotFoundHandler(function (request, reply) {
-  reply.status(404).send({ error: 'Not Found' });
+	reply.status(404).send({ error: 'Not Found' });
 });
 
 // const httpServer = createServer(fastify.server);

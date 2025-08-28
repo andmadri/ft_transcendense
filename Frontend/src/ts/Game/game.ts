@@ -22,6 +22,15 @@ function processMatch(data: any) {
 }
 
 function processSavingMatch(data: any) {
+	// ADDED FOR CREATING IMAGE IN THE BACKEND - this if statement
+	if (data.chartUrl) {
+		log("Has data.chartUrl");
+		const img = document.getElementById('statsChart') as HTMLImageElement;
+		if (img) {
+			log("Has img to show");
+			img.src = data.chartUrl;
+		}
+	}
 	if (data.success)
 		log("Save match successful");
 	else

@@ -19,7 +19,10 @@ function handleGameOver() {
 	gameOver.style.fontFamily = '"Horizon", monospace';
 	gameOver.style.textAlign = 'center';
 	gameOver.style.width = '100%';
-	gameOver.style.height = '100%';
+
+	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
+	// gameOver.style.height = '100%';
+
 	// gameOver.style.gap = '5%'
 
 	const txtGameOver = document.createElement('div');

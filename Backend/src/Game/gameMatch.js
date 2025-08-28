@@ -4,6 +4,9 @@ import { getMatchHistoryDB } from '../Database/dashboard.js';
 import { db } from '../index.js';
 import { OT } from '../structs.js'
 
+import { renderUserStateDurationsSVG } from '../Database/test.js';
+import path from 'path';
+
 export const matches = new Map();
 export const waitlist = new Map();
 
@@ -114,14 +117,30 @@ export async function saveMatch(match, msg, socket) {
 	console.table(await getMatchHistoryDB(db, matchID.player_1_id));
 	console.table(await getMatchHistoryDB(db, matchID.player_2_id));
 
+	// ADDED FOR CREATING IMAGE IN THE BACKEND - start
+	const idForName = String(
+		msg?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now()
+	);
+	const svgPath = await renderUserStateDurationsSVG(db, {
+		outDir: path.join(process.cwd(), 'uploads', 'charts', idForName),
+		fileName: `user_state_durations_match_${idForName}.svg`,
+		width: 1000,
+		barHeight: 26
+	});
+	console.log('Chart saved at:', svgPath);
+
 	// Delete the data in the backend
 	matches.delete(match.matchID);
+
+	const chartUrl = `/api/charts/user-state-durations/${idForName}`;
+	// ADDED FOR CREATING IMAGE IN THE BACKEND - stop
 
 	// Send a message to the frontend
 	socket.send(JSON.stringify({
 		action: 'game',
 		subaction: 'save',
 		matchID: match.matchID,
-		success: true
+		success: true,
+		chartUrl
 	}));
 }
