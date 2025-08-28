@@ -47,19 +47,24 @@ export async function updateScore(match, msg, socket) {
 	if (match.stage != Stage.Playing)
 		return ;
 
-	console.log("updateScore -> handleMatchEventDB")
+	console.log("updateScore -> handleMatchEventDB");
+	console.log(match);
+	console.log("msg");
+	console.log(msg);
+	// console.log("socket");
+	// console.log(socket);
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.id ? match.player2.id : match.player1.id, // Should be the other player, I think
-		event_type: 'goal'
-		// ball_x: ,
-		// ball_y: ,
+		event_type: 'goal',
+		ball_x: match.ball.x,
+		ball_y: match.ball.y,
 		// ball_angle: ,
 		// ball_result_x: ,
 		// ball_result_y: ,
-		// paddle_x_player_1: ,
+		paddle_x_player_1: match.player1.paddle,
 		// paddle_y_player_1: ,
-		// paddle_x_player_2: ,
+		paddle_x_player_2: match.player2.paddle
 		// paddle_y_player_2: ,
 	})
 	return eventID;

@@ -1,6 +1,5 @@
 import { handleMatchStartDB, handleMatchEndedDB } from '../Services/matchService.js';
-import { getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/sessions.js';
-import { getMatchHistoryDB } from '../Database/dashboard.js';
+import { getMatchHistoryDB, getUserMatchStatsDB, getAllUserStateDurationsDB } from '../Database/dashboard.js';
 import { db } from '../index.js';
 import { OT } from '../structs.js'
 
