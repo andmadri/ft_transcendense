@@ -1,18 +1,18 @@
-import { styleElement } from "./menuContent.js";
+// import { styleElement } from "./menuContent.js";
 import { Game } from '../script.js'
 import { log } from "../logging.js";
 
 function createFriendsList(playerNr: number) : HTMLDivElement {
 	const friends = document.createElement('div');
 	friends.id = 'friends' + playerNr;
-	styleElement(friends, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		textAlign: 'center',
-		borderRadius: '10px',
-		flex: '1'
-	});
+	// styleElement(friends, {
+	// 	backgroundColor: '#d9f0ff',
+	// 	border: '2px solid #d9f0ff',
+	// 	padding: '15px',
+	// 	textAlign: 'center',
+	// 	borderRadius: '10px',
+	// 	flex: '1'
+	// });
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';
 	title.textContent = 'Friends';

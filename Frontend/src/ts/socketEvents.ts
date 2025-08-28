@@ -3,7 +3,7 @@ import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from './script.js'
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
-import { actionFriends } from './Menu/friends.js'
+// import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 
@@ -62,9 +62,9 @@ export function receiveFromWS(msg: any) {
 		case 'online':
 			actionOnline(data);
 			break ;
-		case 'friends':
-			actionFriends(data);
-			break ;
+		// case 'friends':
+		// 	actionFriends(data);
+		// 	break ;
 		case 'matchmaking':
 			actionMatchmaking(msg);
 			break ;

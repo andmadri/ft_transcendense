@@ -5,7 +5,7 @@ import { log } from '../logging.js'
 import { getGameField } from './gameContent.js';
 import { randomizeBallAngle } from './gameLogic.js';
 import { submitLogout } from '../Auth/logout.js';
-import { styleElement } from '../Menu/menuContent.js';
+// import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 
 const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
@@ -199,43 +199,43 @@ function readyStart(txt: HTMLDivElement) {
 	}
 }
 
-function getStartScreenBeforeGame() {
-	const body = document.getElementById('body');
-	if (!body)
-		return ;
-	body.innerHTML = "";
-	const startScreen = document.createElement('div');
-		startScreen.id = 'startScreen';
-	styleElement(startScreen, {
+// function getStartScreenBeforeGame() {
+// 	const body = document.getElementById('body');
+// 	if (!body)
+// 		return ;
+// 	body.innerHTML = "";
+// 	const startScreen = document.createElement('div');
+// 		startScreen.id = 'startScreen';
+// 	styleElement(startScreen, {
 
-	})
-	const player1 = document.createElement('div');
-	const player2 = document.createElement('div');
-	const name1 = document.createElement('div');
-	const name2 = document.createElement('div');
-	const avatar1 = document.createElement('img');
-	const avatar2 = document.createElement('img');
-	const txt = document.createElement('div');
-	const startBtn = document.createElement('button');
+// 	})
+// 	const player1 = document.createElement('div');
+// 	const player2 = document.createElement('div');
+// 	const name1 = document.createElement('div');
+// 	const name2 = document.createElement('div');
+// 	const avatar1 = document.createElement('img');
+// 	const avatar2 = document.createElement('img');
+// 	const txt = document.createElement('div');
+// 	const startBtn = document.createElement('button');
 
-	name1.textContent = Game.player1Name;
-	name2.textContent = Game.player2Name;
-	avatar1.src = "./../images/avatar.png";
-	styleElement(avatar1, {
-		objectFit: 'contain',
-	})
-	avatar2.src = "./../images/avatar.png";
-	styleElement(avatar2, {
-		objectFit: 'contain',
-	})
-	player1.append(name1, avatar1);
-	player2.append(name2, avatar2);
-	txt.textContent = "Ready...?";
-	startBtn.textContent = "START";
-	startBtn.addEventListener('click', (e) => readyStart(txt));
-	startScreen.append(player1, player2, txt, startBtn);
-	body.append(startScreen);
-}
+// 	name1.textContent = Game.player1Name;
+// 	name2.textContent = Game.player2Name;
+// 	avatar1.src = "./../images/avatar.png";
+// 	styleElement(avatar1, {
+// 		objectFit: 'contain',
+// 	})
+// 	avatar2.src = "./../images/avatar.png";
+// 	styleElement(avatar2, {
+// 		objectFit: 'contain',
+// 	})
+// 	player1.append(name1, avatar1);
+// 	player2.append(name2, avatar2);
+// 	txt.textContent = "Ready...?";
+// 	startBtn.textContent = "START";
+// 	startBtn.addEventListener('click', (e) => readyStart(txt));
+// 	startScreen.append(player1, player2, txt, startBtn);
+// 	body.append(startScreen);
+// }
 
 export function initGame() {
 	// if (document.getElementById('startScreen'))

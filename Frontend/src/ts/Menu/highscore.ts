@@ -1,16 +1,16 @@
-import { styleElement } from "./menuContent.js";
+// import { styleElement } from "./menuContent.js";
 import { Game } from '../script.js'
 
 function createHighscores(): HTMLDivElement {
 	const highscores = document.createElement('div');
 	highscores.id = 'online';
-		styleElement(highscores, {
-		backgroundColor: 'white',
-		padding: '20px',
-		textAlign: 'center',
-		flex: '1',
-		borderRadius: '10px'
-	});
+	// 	styleElement(highscores, {
+	// 	backgroundColor: 'white',
+	// 	padding: '20px',
+	// 	textAlign: 'center',
+	// 	flex: '1',
+	// 	borderRadius: '10px'
+	// });
 
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';

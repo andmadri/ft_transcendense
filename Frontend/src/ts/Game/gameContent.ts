@@ -2,31 +2,31 @@ import { log } from '../logging.js'
 import { Game } from '../script.js'
 import * as S from '../structs.js'
 
-function styleElement(
-	element: HTMLElement,
-	width?: string,
-	height?: string,
-	position?: string,
-	top?: string,
-	right?: string,
-	left?: string,
-	backgroundColor?: string
-) {
-	if (width)
-		element.style.width = width;
-	if (height)
-		element.style.height = height;
-	if (position)
-		element.style.position = position;
-	if (top)
-		element.style.top = top;
-	if (right)
-		element.style.right = right;
-	if (left)
-		element.style.left = left;
-	if (backgroundColor)
-		element.style.backgroundColor = backgroundColor;
-}
+// function styleElement(
+// 	element: HTMLElement,
+// 	width?: string,
+// 	height?: string,
+// 	position?: string,
+// 	top?: string,
+// 	right?: string,
+// 	left?: string,
+// 	backgroundColor?: string
+// ) {
+// 	if (width)
+// 		element.style.width = width;
+// 	if (height)
+// 		element.style.height = height;
+// 	if (position)
+// 		element.style.position = position;
+// 	if (top)
+// 		element.style.top = top;
+// 	if (right)
+// 		element.style.right = right;
+// 	if (left)
+// 		element.style.left = left;
+// 	if (backgroundColor)
+// 		element.style.backgroundColor = backgroundColor;
+// }
 
 function getQuitBtn() {
 	const	quitButton = document.createElement('button');

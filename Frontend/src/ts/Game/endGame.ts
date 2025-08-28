@@ -2,7 +2,6 @@ import { Game } from '../script.js'
 import * as S from '../structs.js'
 import { submitLogout } from '../Auth/logout.js';
 import { log } from '../logging.js';
-import { styleElement } from '../Menu/menuContent.js';
 import { game } from './gameLogic.js';
 
 function handleGameOver() {
