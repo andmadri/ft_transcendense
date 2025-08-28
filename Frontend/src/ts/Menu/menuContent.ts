@@ -233,49 +233,64 @@ export function getRightSideMenu(playerNr: number) {
 }
 
 export function getMenu() {
-	const menu = document.createElement('div');
-	menu.id = 'menu';
-	styleElement(menu, {
-		display: 'flex',
-		flexDirection: 'column',
-		backgroundColor: '#ffd400',
-		padding: '20px',
-		height: '100%',
-		width: '100%',
-		boxSizing: 'border-box'
-	});
-	const titleMenu = document.createElement('h2');
-	titleMenu.textContent = 'Menu';
-	titleMenu.style.marginTop = '10px';
-
-	const leftRight = document.createElement('div');
-	styleElement(leftRight, {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		gap: '20px',
-		flex: '1'
-	})
-
-	leftRight.append(getLeftSideMenu(), getRightSideMenuWithTabs());
-	menu.append(titleMenu, leftRight);
-
-	// Add Play button under the right menu, styled like the Credit button
-	const bottomButtonDiv = document.createElement('div');
-	styleElement(bottomButtonDiv, {
-		display: 'flex',
-		justifyContent: 'space-between',
-		width: '100%',
-		marginTop: '10px',
-	});
-	bottomButtonDiv.appendChild(getCreditBtn());
-	bottomButtonDiv.appendChild(getPlayBtn());
-	bottomButtonDiv.appendChild(getDashboardBtn());
-	menu.appendChild(bottomButtonDiv);
-
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
-	body.appendChild(menu);
+
+	const menuContainer = document.createElement('div');
+	menuContainer.id = 'menuContainer';
+	menuContainer.style.position = 'relative';
+	menuContainer.style.alignItems = 'center';
+	menuContainer.style.justifyContent = 'center';
+
+	const menuBlocks = document.createElement('div');
+	menuBlocks.id = 'menuBlocks';
+
+	const menuButtons = document.createElement('div');
+	menuButtons.id = 'menuButtons';
+	menuButtons.appendChild(getCreditBtn());
+	menuButtons.appendChild(getPlayBtn());
+	menuButtons.appendChild(getDashboardBtn());
+
+
+
+	menuContainer.appendChild(menuBlocks);
+	menuContainer.appendChild(menuButtons);
+	body.appendChild(menuContainer);
+
+	// const titleMenu = document.createElement('h2');
+	// titleMenu.textContent = 'Menu';
+	// titleMenu.style.marginTop = '10px';
+
+	// const leftRight = document.createElement('div');
+	// styleElement(leftRight, {
+	// 	display: 'flex',
+	// 	flexDirection: 'row',
+	// 	justifyContent: 'space-between',
+	// 	gap: '20px',
+	// 	flex: '1'
+	// })
+
+	// leftRight.append(getLeftSideMenu(), getRightSideMenuWithTabs());
+	// menu.append(titleMenu, leftRight);
+
+	// // Add Play button under the right menu, styled like the Credit button
+	// const bottomButtonDiv = document.createElement('div');
+	// styleElement(bottomButtonDiv, {
+	// 	display: 'flex',
+	// 	justifyContent: 'space-between',
+	// 	width: '100%',
+	// 	marginTop: '10px',
+	// });
+	// bottomButtonDiv.appendChild(getCreditBtn());
+	// bottomButtonDiv.appendChild(getPlayBtn());
+	// bottomButtonDiv.appendChild(getDashboardBtn());
+	menu.appendChild(bottomButtonDiv);
+
+	
 }
