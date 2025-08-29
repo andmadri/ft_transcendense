@@ -1,15 +1,16 @@
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
-import { getOnlineList } from './online.js';
-import { getStatsList } from './stats.js';
+// import { getOnlineList } from './online.js';
+// import { getStatsList } from './stats.js';
 // import { getHighscores } from './highscore.js'
-import { getOptionMenu  } from '../OptionMenu/options.js';
+// import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
 // import { getCreditBtn } from './credits.js';
 // import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
+import { navigateTo } from "../history.js";
 
 function styleBtn(button: HTMLButtonElement, text: string)
 {
@@ -85,7 +86,7 @@ function getDashboardBtn(): HTMLButtonElement {
 	dashboardBtn.style.flex = '1 1 50%'
 	styleBtn(dashboardBtn, "Dashboard");
 	dashboardBtn.addEventListener('click', () => {
-		Game.state = S.State.Dashboard;
+		navigateTo('Dashboard');
 	});
 	return (dashboardBtn);
 }

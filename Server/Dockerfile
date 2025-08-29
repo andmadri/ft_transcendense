@@ -3,9 +3,10 @@ FROM node:18 AS frontend
 WORKDIR /app
 
 # copies all the frontend files and jsons to the docker
-COPY package.json tsconfig.json ./
-COPY src/ ./src/
-COPY build.js ./
+COPY Server/package.json Server/tsconfig.json ./
+COPY Server/src/ ./src/
+COPY Shared ./src/Shared
+COPY Server/build.js ./
 
 ENV NODE_ENV=development
 
@@ -28,12 +29,11 @@ FROM nginx:alpine
 # Copies from first stage the whole folder to the nginx docker
 COPY --from=frontend /app/build /usr/share/nginx/html/
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY Server/conf/nginx.conf /etc/nginx/nginx.conf
 
-COPY tools /etc/nginx/ssl
+COPY Server/tools /etc/nginx/ssl
  
-RUN chmod +x /etc/nginx/nginx.conf && \
-	chmod 600 /etc/nginx/ssl
+RUN chmod 600 /etc/nginx/ssl
 
 EXPOSE 8080
 

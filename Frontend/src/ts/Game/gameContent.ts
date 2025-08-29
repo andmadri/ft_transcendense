@@ -1,6 +1,7 @@
 import { log } from '../logging.js'
-import { Game } from '../script.js'
+import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
+import { navigateTo } from '../history.js';
 
 // function styleElement(
 // 	element: HTMLElement,
@@ -41,29 +42,33 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
-		Game.socket.send(JSON.stringify( {
+		Game.socket.send({
 			action: 'game',
 			subaction: 'quit',
-			matchID: Game.matchID,
-			player: Game.player1Id,
-			name: Game.player1Name
-		}));
-		Game.state = S.State.End;
+			matchID: Game.match.ID,
+			player: Game.match.player1.ID,
+			name: Game.match.player1.name
+		});
+		if (Game.match.player2.ID == 2) {
+			Game.match.player2.ID = 1
+			Game.match.player2.name = 'Guest';
+		}
+		navigateTo('Menu');
 	})
 	return (quitButton);
 }
 
 
 export function getGameField() {
-	const body = document.getElementById('body');
+	const body = document.getElementById('body')
 	if (!body)
-		return ;
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		return;
+	body.innerHTML = "";
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
 	body.style.margin = '0';
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.overflow = 'hidden';
-	body.innerHTML = '';
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';
@@ -104,7 +109,7 @@ export function getGameField() {
 	const	field = document.createElement('div');
 	field.id = 'field';
 	field.style.aspectRatio = '4 / 3'
-	field.style.width = 'calc(min(100vw, 100vh) - 2vw)'; //this will cause issues for remote games since 
+	field.style.width = 'calc(min(100vw, 100vh) - 2vw)';
 	field.style.maxHeight = '80vh';
 	field.style.backgroundColor = 'black';
 	field.style.borderRadius = '16px';
@@ -115,8 +120,8 @@ export function getGameField() {
 	const	ball = document.createElement('div');
 	ball.id = 'ball';
 	ball.style.position = 'absolute';
-	ball.style.top = '50%';
-	ball.style.left = '50%';
+	ball.style.top = '47.5%';
+	ball.style.left = '47.5%';
 	ball.style.width = '5%';
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';

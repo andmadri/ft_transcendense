@@ -4,7 +4,7 @@ VOLUME	= "./Database"
 
 all:	up
 
-up:		
+up:
 	rm -rf Server/src
 	mkdir -p Database
 	cp -r Frontend/* Server/
@@ -34,6 +34,20 @@ server: Frontend/*
 backend:
 	docker compose up -d --build --force-recreate backend
 
+update-host-env:
+	@HOST_IP=$$(hostname -I | awk '{print $$1}'); \
+	if grep -q '^HOST_IP=' .env; then \
+		sed -i "s/^HOST_IP=.*/HOST_IP=$$HOST_IP/" .env; \
+	else \
+		echo "HOST_IP=$$HOST_IP" >> .env; \
+	fi
+	@HOST_DOMAIN=$$(hostname); \
+	if grep -q '^HOST_DOMAIN=' .env; then \
+		sed -i "s/^HOST_DOMAIN=.*/HOST_DOMAIN=$$HOST_DOMAIN/" .env; \
+	else \
+		echo "HOST_DOMAIN=$$HOST_DOMAIN" >> .env; \
+	fi
+
 build_volumes:
 	mkdir -p $(VOLUME)
 	chmod -R 777 $(VOLUME)
@@ -62,5 +76,6 @@ prune: clean clean_volumes
 
 
 # TESTER:
+# npm install --save-dev @playwright/test
 # npx playwright install
 # npx playwright test --ui (IN VSC)

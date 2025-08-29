@@ -8,13 +8,17 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types", "./src/ts/types"],
-    "lib": ["ES2019", "DOM", "DOM.Iterable"], // maybe not needed
+    "lib": ["ES2019", "DOM", "DOM.Iterable"], // maybe not needed //"ES2019", 
     "module": "ES2020",
+	"baseUrl":".",
+	"paths": {
+		"@shared/*":["src/Shared/*"]
+	}
     // "typeRoots": ["./node_modules/@types"], not needed I think
     // "module": "commonjs",
     // "noImplicitAny": "any",
     // "strictNullChecks": false,
 
   },
-  "include": ["src/**/*"] // everything in src folder
+  "include": ["src/**/*", "src/Shared/**/*"] // everything in src folder
 }

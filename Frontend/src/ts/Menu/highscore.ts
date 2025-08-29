@@ -1,5 +1,5 @@
 // import { styleElement } from "./menuContent.js";
-import { Game } from '../script.js'
+import { Game } from "../gameData.js"
 
 function createHighscores(): HTMLDivElement {
 	const highscores = document.createElement('div');
@@ -40,8 +40,10 @@ export function getHighscores(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = {action: 'highscores', subaction: 'getHighscores'};
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({
+		action: 'highscores', 
+		subaction: 'getHighscores'
+	});
 
 	return (highscores);
 }

@@ -19,24 +19,25 @@ async function getDashboardInfo(msg, socket, userId1) {
 		stats,
 		log_time
 	};
-	socket.send(JSON.stringify(returnMsg));
+	socket.emit('message', returnMsg);
+	// socket.send(JSON.stringify(returnMsg));
 }
 
 export function handleDashboardMaking(msg, socket, userId1) {
-if (!msg || !msg.action || msg.action !== 'dashboard' || !msg.subaction) {
-		const returnMsg = { action: "Error", message: "Invalid message format" };
+	if (!msg || msg.action !== 'dashboard' || !msg.subaction) {
+		const returnMsg = { action: "error", reason: "Invalid message format" };
 		console.log('Invalid message format:', msg);
-		socket.send(JSON.stringify(returnMsg));
+		socket.emit('error', returnMsg);
 		return false;
 	}
-	if (msg.subaction == 'getFullDataDashboard') {
-		console.log('Received request for match data:', msg, userId1);
+	if (msg.subaction === 'getFullDataDashboard') {
+		console.log('Received request for dashboard data:', msg, userId1);
 		getDashboardInfo(msg, socket, userId1);
 		return true;
 	} else {
-		const returnMsg = { action: "Error", message: "Unknown subaction" };
+		const returnMsg = { action: "error", reason: "Unknown subaction" };
 		console.log('Unknown subaction:', msg.subaction);
-		socket.send(JSON.stringify(returnMsg));
+		socket.emit('error', returnMsg);
 		return false;
 	}
 }

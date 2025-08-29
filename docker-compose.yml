@@ -3,8 +3,8 @@ services:
 
   backend:
     build:
-      context: ./Backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Backend/Dockerfile
     restart: always
     volumes:
       - database_volume:/Database
@@ -17,8 +17,8 @@ services:
 
   server:
     build:
-      context: ./Server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Server/Dockerfile
     restart: always
     env_file:
       - .env
