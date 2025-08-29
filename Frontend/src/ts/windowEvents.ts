@@ -6,7 +6,7 @@ import { OT, state } from '@shared/enums'
 export function releaseButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;
 	const paddle2 = Game.match.gameState.paddle2;
-	if (Game.match.state != state.Playing) {
+	if (UI.state != S.stateUI.Game) {
 		return ;
 	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
@@ -33,7 +33,7 @@ export function releaseButton(e: KeyboardEvent) {
 export function pressButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;
 	const paddle2 = Game.match.gameState.paddle2;
-	if (Game.match.state != state.Playing) {
+	if (UI.state != S.stateUI.Game) {
 		return ;
 	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
