@@ -60,22 +60,15 @@ function getQuitBtn() {
 
 
 export function getGameField() {
-	const settingPage = document.getElementById('settingPage');
-	if (settingPage) {
-		const	app = document.getElementById("app");
-		if (!app)
-			return ;
-		app.removeChild(settingPage);
-	}
-	const app = document.getElementById('app');
-	if (!app)
-		return ;
-	app.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
-	app.style.margin = '0';
-	app.style.width = '100vw';
-	app.style.height = '100vh';
-	app.style.overflow = 'hidden';
-	// app.innerHTML = '';
+	const body = document.getElementById('body')
+	if (!body)
+		return;
+	body.innerHTML = "";
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.overflow = 'hidden';
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';
@@ -194,5 +187,5 @@ export function getGameField() {
 	game.appendChild(scrollContainer);
 	game.appendChild(field);
 	game.appendChild(getQuitBtn())
-	app.append(game);
+	body.append(game);
 }
