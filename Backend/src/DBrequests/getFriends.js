@@ -55,7 +55,7 @@ export async function openFriendRequest(userId1, socket) {
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
 		if (!requests || requests.length === 0) {
-			console.log("no open requests");
+			// console.log("no open requests");
 			return ;
 		}
 		sendContentToFrontend('friends', 'openRequests', socket, "yes", requests);

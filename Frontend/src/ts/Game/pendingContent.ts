@@ -55,14 +55,14 @@ export function getPending() {
 	})
 	Pending.appendChild(backToMenu);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.innerHTML = "";
-	app.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
-	app.style.margin = '0';
-	app.style.width = '100vw';
-	app.style.height = '100vh';
-	app.style.overflow = 'hidden';
-	app.appendChild(Pending);
+	body.innerHTML = "";
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.overflow = 'hidden';
+	body.appendChild(Pending);
 }

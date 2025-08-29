@@ -181,6 +181,6 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 
 	formDiv.appendChild(form);
 	overlay.appendChild(formDiv);
-	const app = document.getElementById('app');
-	app?.appendChild(overlay);
+	const body = document.getElementById('body');
+	body?.appendChild(overlay);
 }

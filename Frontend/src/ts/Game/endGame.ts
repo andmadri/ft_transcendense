@@ -78,10 +78,10 @@ export function getGameOver() {
 	backToMenu.addEventListener('click', () => { navigateTo('Menu'); })
 	gameOver.appendChild(backToMenu);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.appendChild(gameOver);
+	body.appendChild(gameOver);
 }
 
 export function saveGame() {

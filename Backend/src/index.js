@@ -72,22 +72,22 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-	console.log('🔌 A user connected:', socket.id);
+	// console.log('🔌 A user connected:', socket.id);
 	// Check if the request has a valid JWT token in cookies
 	// const cookies = req.headers.cookie;
 	const cookies = socket.handshake.headers.cookie || '';
-	console.log('Cookies from handshake:', cookies);
+	// console.log('Cookies from handshake:', cookies);
 	const authTokens = parseAuthTokenFromCookies(cookies);
-	console.log('Auth tokens from cookies:', authTokens);
+	// console.log('Auth tokens from cookies:', authTokens);
 
 	let decoded;
 	let userId1 = null;
 	let userId2 = null;
 	if (authTokens && authTokens.jwtAuthToken1) {
-		console.log('signed:', authTokens.jwtAuthToken1);
+		// console.log('signed:', authTokens.jwtAuthToken1);
 		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
-		console.log('unsigned:', unsigned.value);
-		console.log('Unsigned JWT1:', unsigned);
+		// console.log('unsigned:', unsigned.value);
+		// console.log('Unsigned JWT1:', unsigned);
 		if (unsigned.valid) {
 			try {
 				decoded = fastify.jwt.verify(unsigned.value);
@@ -114,7 +114,7 @@ fastify.ready().then(() => {
 			console.error('JWT2 verification failed: Invalid cookie');
 		}
 	}
-	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
 	if (!userId1) {
 		console.error('No valid auth tokens found in cookies');
 		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
@@ -133,19 +133,19 @@ fastify.ready().then(() => {
 			}
 			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
 			
-			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
-			// console.log(`Action: ${msg.action} + ${msg.subaction}`);
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
-				case 'matchInfo':
-					return handleMatchInfo(msg, socket, userId1);
+				// case 'matchInfo':
+				// 	return handleMatchInfo(msg, socket, userId1);
 				case 'online':
 					return handleOnlinePlayers(msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
-				case 'dashboard':
-					return handleDashboardMaking(db, msg, socket, userId1, fastify.io);
+				case 'dashboard': {
+					console.log("Trying to fetch handleDashboardMaking");
+					return handleDashboardMaking(msg, socket, userId1);
+				}
 				case 'init':
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':

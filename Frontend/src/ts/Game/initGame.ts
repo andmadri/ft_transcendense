@@ -119,10 +119,10 @@ export function initGameServer() {
 function readyStart(txt: HTMLDivElement) {
 	log("Start button clicked");
 	if (document.getElementById('startScreen')) {
-		const app = document.getElementById('app');
+		const body = document.getElementById('body');
 		const startScreen = document.getElementById('startScreen')
-		if (app && startScreen)
-			app.removeChild(startScreen);
+		if (body && startScreen)
+			body.removeChild(startScreen);
 	}
 }
 

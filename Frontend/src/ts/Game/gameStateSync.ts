@@ -60,7 +60,7 @@ export function sendKeyPressUpdate(key : string) {
 		pressed: S.Keys[key].pressed,
 		id: Game.match.player1.ID,
 		matchID: Game.match.ID };
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send(JSON.stringify(msg)); // DELETE: JSON.stringify(msg)?? -> Game.socket.send(msg);?
 	// Send also ballX/Y ballVX/Y and paddleVy
 }
 

@@ -163,9 +163,9 @@ export function getSettingsPage() {
 	optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	settingPage.appendChild(optionLeftRight);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.innerHTML = '';
-	app.append(settingPage);
+	body.innerHTML = '';
+	body.append(settingPage);
 }

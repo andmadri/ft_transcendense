@@ -5,8 +5,8 @@ export function getCreditsPage() {
 	if (document.getElementById('creditDiv'))
 		return ;
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
 
 	const creditDiv = document.createElement('div');
@@ -41,7 +41,7 @@ export function getCreditsPage() {
 
 	creditDiv.appendChild(creditImg);
 	creditDiv.appendChild(closeBtn);
-	app.appendChild(creditDiv);
+	body.appendChild(creditDiv);
 
 	closeBtn.addEventListener('click', () => {
 		document.getElementById("creditDiv")?.remove();

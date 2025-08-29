@@ -239,8 +239,8 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 
 		formDiv.appendChild(form);
 		overlay.appendChild(formDiv);
-		const app = document.getElementById('app');
-		app?.appendChild(overlay);
+		const body = document.getElementById('body');
+		body?.appendChild(overlay);
 	});
 	return twofaDisableBtn;
 }
@@ -391,8 +391,8 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 
 		qrDiv.appendChild(form);
 		overlay.appendChild(qrDiv);
-		const app = document.getElementById('app')
-		app?.appendChild(overlay);
+		const body = document.getElementById('body')
+		body?.appendChild(overlay);
 	});
 	return (twoFABtn);
 }
@@ -554,11 +554,11 @@ export function getMenu() {
 	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return ;
-	app.removeAttribute('style');
-	app.innerHTML = '';
-	app.appendChild(menu);
+	body.removeAttribute('style');
+	body.innerHTML = '';
+	body.appendChild(menu);
 	Game.socket.send({action: 'friends', subaction: 'openFriendRequests', id: Game.match.player1.id, playerNr: 1});
 }

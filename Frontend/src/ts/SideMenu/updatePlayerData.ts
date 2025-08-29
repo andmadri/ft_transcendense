@@ -30,8 +30,8 @@ function receivePlayerData(data: any) {
 	if (Game.match.player1.ID != -1) {
 		navigateTo('Menu');
 	}
-	const app = document.getElementById('app');
-	if (!app) return ;
+	const body = document.getElementById('body');
+	if (!body) return ;
 	const menu = document.createElement('div');
 	if (!menu) return ;
 }

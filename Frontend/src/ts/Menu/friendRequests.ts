@@ -20,9 +20,9 @@ export function initFriendRequestsContainer() {
 	friendRequestsDiv.style.border = '2px solid black'
 	friendRequestsDiv.style.borderRadius = '5px'
 
-	const app = document.getElementById('app');
-	if (!app) return;
-	app.appendChild(friendRequestsDiv);
+	const body = document.getElementById('body');
+	if (!body) return;
+	body.appendChild(friendRequestsDiv);
 }
 
 export function showFriendRequests(requests: any) {

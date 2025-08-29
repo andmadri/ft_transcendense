@@ -2,6 +2,7 @@ import { Game, UI } from '../gameData'
 import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
+import { log } from '../logging.js'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -87,9 +88,17 @@ export function populateDashboard(msg: any)
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
 	if (!infoCardsContainer || !matchList)
 		return ;
+	console.log("Going to: renderMatchInfo");
+	console.log(msg.matches);
 	renderMatchInfo(msg.matches, matchList);
+	console.log("Going to: renderUserInfoCard");
+	console.log(msg.player);
 	renderUserInfoCard(msg.player, infoCardsContainer);
+	console.log("Going to: renderUserStatsCard");
+	console.log(msg.stats);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
+	console.log("Going to: renderPlayingTimeCard");
+	console.log(msg.log_time);
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
@@ -227,5 +236,9 @@ export function getDashboard()
 	body.append(containerDashboard);
 	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
-	Game.socket.send(JSON.stringify(msg));
+	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
+	// Game.socket.send(JSON.stringify(msg));
+	// Game.socket.send(msg);
+	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
+
 }

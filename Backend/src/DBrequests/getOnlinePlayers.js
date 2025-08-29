@@ -32,8 +32,8 @@ export async function getAllPlayerInclFriends(db, userID, socket) {
 		const players = await userDB.getAllPlayers(db);
 		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
 		const friendsIdsSet = new Set(friendsIds);
-		console.log("players: ", players);
-		console.log('friendIDs: ', friendsIds);
+		// console.log("players: ", players);
+		// console.log('friendIDs: ', friendsIds);
 
 		for (const player of players) {
     		player.isFriend = friendsIdsSet.has(player.id);
@@ -46,7 +46,7 @@ export async function getAllPlayerInclFriends(db, userID, socket) {
 }
 
 export async function handleOnlinePlayers(msg, socket, userId) {
-	console.log("handleOnlinePlayers function...", msg.action);
+	// console.log("handleOnlinePlayers function...", msg.action);
 	if (msg.subaction == "getOnlinePlayers")
 		return getOnlinePlayers(msg, socket);
 	else if (msg.subaction == 'getAllPlayers')
