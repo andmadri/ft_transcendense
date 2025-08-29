@@ -19,7 +19,6 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
-// import { testDB }   from './testDB.js';
 
 // FASTIFY => API SERVER
 const fastify = Fastify({ logger: true });
@@ -136,16 +135,14 @@ fastify.ready().then(() => {
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
-				// case 'matchInfo':
-				// 	return handleMatchInfo(msg, socket, userId1);
+				case 'matchmaking':
+					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
 				case 'online':
 					return handleOnlinePlayers(msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
-				case 'dashboard': {
-					console.log("Trying to fetch handleDashboardMaking");
+				case 'dashboard':
 					return handleDashboardMaking(msg, socket, userId1);
-				}
 				case 'init':
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':

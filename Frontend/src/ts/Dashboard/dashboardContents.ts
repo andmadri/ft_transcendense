@@ -238,8 +238,6 @@ export function getDashboard()
 	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	// Game.socket.send(JSON.stringify(msg));
-	// Game.socket.send(msg);
 	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
 
 }
