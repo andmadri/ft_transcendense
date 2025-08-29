@@ -14,11 +14,7 @@ function processMatch(data: any) {
 	Game.match.ID = data.id;
 	Game.match.player1.ID = data.player1ID;
 	Game.match.player2.ID = data.player2ID;
-
-	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
-	// the game field as well
 	navigateTo('Game');
-	log("ProcessMatch");
 }
 
 function processSavingMatch(data: any) {

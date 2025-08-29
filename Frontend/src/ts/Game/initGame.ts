@@ -32,7 +32,7 @@ export function startGame() {
 	
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
-			if (Game.match.player2.ID != -1) {
+			if (Game.match.player2.ID != -1) { // Check this!
 				navigateTo('Game');
 				Game.match.state = state.Init;
 			}
@@ -41,7 +41,7 @@ export function startGame() {
 			}
 			break ;
 		}
-		case OT.ONEvsCOM: {
+		case OT.ONEvsCOM: { // Check this!
 			Game.match.player2.ID = 2; // Is not getting used - only for visability
 			Game.match.player2.name = "AI"; // Is not getting used - only for visability
 			navigateTo('Game');

@@ -25,7 +25,6 @@ export function applyScoreUpdate(data: any) {
 		Game.match.lastScoreID = data.match.lastScoreID;
 		Game.match.player1.score = data.match.player1.score;
 		Game.match.player2.score = data.match.player2.score;
-		//const player = Game.match.player1.ID == data.match.lastScoreID ? Game.match.player1 : Game.match.player2;
 	}
 }
 

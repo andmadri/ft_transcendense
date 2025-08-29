@@ -75,7 +75,6 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 	}
 	navigateTo('Menu');
 	document.getElementById('menu')?.remove();
-	//log("playerNr 1 logged in: " + Game.match.player1.Login + "\n playerNr 2 logged in: " + Game.match.player2.Login);
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {

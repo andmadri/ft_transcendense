@@ -66,7 +66,7 @@ function insertOnlinePlayers(online_players: any) {
 			html_list_element.style.cursor = "pointer";
 			html_list_element.style.color = 'black';
 
-			if (curr_player.name != Game.match.player1.name && !curr_player.isFriend) {
+			if (curr_player.name != UI.user1.name && !curr_player.isFriend) {
 				const addFriendBtn = document.createElement('button');
 				addFriendBtn.textContent = 'Add friend';
 

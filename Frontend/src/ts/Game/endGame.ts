@@ -90,8 +90,6 @@ export function saveGame() {
 
 	navigateTo('GameOver');
 
-	// MARTY HERE!!! - Is this the place where we can change the data of the message?
-	// No the last message when the game is finished.. ;)
 	Game.socket.send({
 		action: 'game',
 		subaction: 'save',
@@ -101,10 +99,4 @@ export function saveGame() {
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
 	Game.match.ID = -1;
-
-	// // Change AI to GUEST before going back to menu
-	// if (Game.match.player2.ID == 2) {
-	// 	UI.user2.ID = 1
-	// 	UI.user2.name = 'Guest';
-	// }
 }
