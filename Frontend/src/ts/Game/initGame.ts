@@ -168,9 +168,11 @@ export function initGame() {
 	if (Game.match.mode != OT.Online) {
 		//do we need to set the ID's here
 		Game.match.player1.ID = UI.user1.ID;
-		Game.match.player2.ID = UI.user2.ID;
 		Game.match.player1.name = UI.user1.name;
-		Game.match.player2.name = UI.user2.name;
+		if (Game.match.mode != OT.ONEvsCOM) {
+			Game.match.player2.ID = UI.user2.ID;
+			Game.match.player2.name = UI.user2.name;
+		}
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
 	}

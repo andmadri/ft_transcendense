@@ -27,7 +27,7 @@ function receivePlayerData(data: any) {
 		UI.user2.ID = data.id2 || -1;
 		Game.match.player2.score = data.score2 || 0;
 	}
-	if (Game.match.player1.ID != -1) {
+	if (UI.user1.ID != -1) {
 		navigateTo('Menu');
 	}
 	const body = document.getElementById('body');

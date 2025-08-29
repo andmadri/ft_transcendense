@@ -1,5 +1,5 @@
 import { styleElement } from './menuContent.js';
-import { Game } from '../gameData.js'
+import { Game, UI } from '../gameData.js'
 import { log } from '../logging.js';
 import { showFriendRequests } from './friendRequests.js';
 
@@ -83,7 +83,7 @@ function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 	        Game.socket.send({
 	            action: 'friends',
 	            subaction: 'unfriend',
-	            userID: Game.match.player1.id,
+	            userID: UI.user1.ID,
 	            friendID: friend.id
 	        });
 	        console.log("Unfriend player: " + friend.name);

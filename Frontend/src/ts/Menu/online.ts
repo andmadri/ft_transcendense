@@ -1,5 +1,5 @@
 import { log } from '../logging.js'
-import { Game } from "../gameData.js"
+import { Game, UI } from "../gameData.js"
 import { styleElement } from './menuContent.js'
 
 function createOnlineList(): HTMLDivElement {
@@ -72,7 +72,7 @@ function insertOnlinePlayers(online_players: any) {
 
 				addFriendBtn.addEventListener("click", () => {
 					alert(`Send ${curr_player.name} a friend request`);
-					const id = Game.match.player1.id;
+					const id = UI.user1.ID;
 					const friendID = curr_player.id;
 					Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
 				});

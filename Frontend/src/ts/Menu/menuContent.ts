@@ -76,7 +76,7 @@ function getDashboardBtn(): HTMLButtonElement {
 }
 
 function getLoginBtn(playerNr: number): HTMLButtonElement {
-	if (playerNr == 1 || Game.match.player2.ID != 1)
+	if (playerNr == 1 || UI.user2.ID != 1)
 		return (getLogoutBtn(playerNr));
 	const loginBtn = document.createElement('button');
 	loginBtn.textContent = 'login';
@@ -562,5 +562,5 @@ export function getMenu() {
 	body.removeAttribute('style');
 	body.innerHTML = '';
 	body.appendChild(menu);
-	Game.socket.send({action: 'friends', subaction: 'openFriendRequests', id: Game.match.player1.id, playerNr: 1});
+	Game.socket.send({action: 'friends', subaction: 'openFriendRequests', id: UI.user1.ID, playerNr: 1});
 }

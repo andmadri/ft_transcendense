@@ -102,9 +102,9 @@ export function saveGame() {
 	Game.match.player2.score = 0;
 	Game.match.ID = -1;
 
-	// Change AI to GUEST before going back to menu
-	if (Game.match.player2.ID == 2) {
-		Game.match.player2.ID = 1
-		Game.match.player2.name = 'Guest';
-	}
+	// // Change AI to GUEST before going back to menu
+	// if (Game.match.player2.ID == 2) {
+	// 	UI.user2.ID = 1
+	// 	UI.user2.name = 'Guest';
+	// }
 }
