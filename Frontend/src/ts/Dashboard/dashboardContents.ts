@@ -5,7 +5,7 @@ import { renderUserStatsCard } from './userStats'
 import { log } from '../logging.js'
 import { navigateTo } from '../history'
 
-function renderMatchInfo(matches: any, matchList: HTMLElement)
+function renderMatchInfo(matches: any, matchHistoryList: HTMLElement)
 {
 	for (let match of matches) {
 		const row = document.createElement('div');
@@ -32,7 +32,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.addEventListener('click', () => {
 		alert(`Match vs ${match.opponent} on ${match.date}`);
 		});
-		matchList.appendChild(row);
+		matchHistoryList.appendChild(row);
 	}
 }
 
@@ -85,16 +85,16 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 
 export function populateDashboard(msg: any)
 {
-	const matchList = document.getElementById('matchList');
+	const matchHistoryList = document.getElementById('matchHistoryList');
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
-	if (!infoCardsContainer || !matchList)
+	if (!infoCardsContainer || !matchHistoryList)
 		return ;
 	console.log(`populateDashboard`);
 	console.log(`populateDashboard: ${msg}, ${msg.matches}, ${msg.player}, ${msg.stats}, ${msg.log_time}`);
 	
 	log(`populateDashboard`);
 	log(`populateDashboard: ${msg}, ${msg.matches}, ${msg.player}, ${msg.stats}, ${msg.log_time}`);
-	renderMatchInfo(msg.matches, matchList);
+	renderMatchInfo(msg.matches, matchHistoryList);
 	renderUserInfoCard(msg.player, infoCardsContainer);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);

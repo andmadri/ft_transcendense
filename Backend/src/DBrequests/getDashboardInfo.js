@@ -9,7 +9,7 @@ async function getDashboardInfo(msg, socket, userId1) {
 	let stats = await getUserMatchStatsDB(db, userId1);
 	let matches = await getMatchHistoryDB(db, userId1);
 	let log_time = await getUserStateDurationsDB(db, userId1);
-	console.log("Recieved DB content: ", matches);
+	console.log("Recieved DB content: ", player, stats, matches,log_time);
 
 	let returnMsg = {
 		action: "dashboardInfo",
