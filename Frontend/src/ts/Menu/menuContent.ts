@@ -562,5 +562,5 @@ export function getMenu() {
 	body.removeAttribute('style');
 	body.innerHTML = '';
 	body.appendChild(menu);
-	Game.socket.send({action: 'friends', subaction: 'openFriendRequests', id: UI.user1.ID, playerNr: 1});
+	Game.socket.emit('message',{action: 'friends', subaction: 'openFriendRequests', id: UI.user1.ID, playerNr: 1});
 }

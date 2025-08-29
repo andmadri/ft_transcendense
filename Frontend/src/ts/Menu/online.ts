@@ -40,7 +40,7 @@ export function getOnlineList(): HTMLDivElement {
 		if (list instanceof HTMLUListElement)
 			list.innerHTML = '';
 	}
-	Game.socket.send({
+	Game.socket.emit('message',{
 		action: 'online', 
 		// subaction: 'getOnlinePlayers'
 		subaction: 'getAllPlayers'
@@ -74,7 +74,7 @@ function insertOnlinePlayers(online_players: any) {
 					alert(`Send ${curr_player.name} a friend request`);
 					const id = UI.user1.ID;
 					const friendID = curr_player.id;
-					Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
+					Game.socket.emit('message',{action: "friends", subaction: 'friendRequest', id, friendID});
 				});
 				html_list.append(html_list_element, addFriendBtn);
 			} else

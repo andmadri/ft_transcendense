@@ -78,7 +78,7 @@ export function navigateTo(state: string) {
 }
 
 function stopCurrentGame() {
-	Game.socket.send( { 
+	Game.socket.emit('message', { 
 		action: 'game',
 		subaction: 'quit',
 		matchID: Game.match.ID,

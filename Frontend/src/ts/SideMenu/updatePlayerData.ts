@@ -37,7 +37,7 @@ function receivePlayerData(data: any) {
 }
 
 export function getPlayerData() {
-	Game.socket.send({
+	Game.socket.emit('message',{
 		action: 'playerInfo',
 		subaction: 'getPlayerData'});
 }
