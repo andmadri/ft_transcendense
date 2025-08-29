@@ -1,5 +1,6 @@
 import { log } from '../logging.js';
-import { Game } from '../script.js';
+import { UI, Game } from "../gameData.js"
+import { navigateTo } from '../history.js';
 import * as S from '../structs.js'
 
 
@@ -19,17 +20,16 @@ function receivePlayerData(data: any) {
 		console.error('Error receiving player data:', data.msg);
 		return ;
 	} else {
-		Game.player1Name = data.name || 'unknown';
-		Game.player1Id = data.id || -1;
-		Game.player1Login = data.player1Login || false;
-		Game.scoreLeft = data.score || 0;
-		Game.player2Name = data.name2 || 'unknown';
-		Game.player2Id = data.id2 || -1;
-		Game.player2Login = data.player2Login || false;
-		Game.scoreRight = data.score2 || 0;
+		Game.match.player1.name = data.name || 'unknown';
+		Game.match.player1.ID = data.id || -1;
+		Game.match.player1.score = data.score || 0;
+		Game.match.player2.name = data.name2 || 'Guest';
+		Game.match.player2.ID = data.id2 || 1;
+		Game.match.player2.score = data.score2 || 0;
 	}
-	if (Game.player1Id != -1)
-		Game.state = S.State.Menu;
+	if (Game.match.player1.ID != -1) {
+		navigateTo('Menu');
+	}
 	const app = document.getElementById('app');
 	if (!app) return ;
 	const menu = document.createElement('div');
@@ -37,8 +37,9 @@ function receivePlayerData(data: any) {
 }
 
 export function getPlayerData() {
-	const msg = {action: 'playerInfo', subaction: 'getPlayerData'};
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({
+		action: 'playerInfo',
+		subaction: 'getPlayerData'});
 }
 
 export function updatePlayerData(player: number) {

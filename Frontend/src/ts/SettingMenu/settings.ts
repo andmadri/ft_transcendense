@@ -134,8 +134,8 @@
 // }
 
 export function getOptionMenu() {
-	const optionMenu = document.createElement('div');
-	optionMenu.id = 'optionMenu';
+	const settingPage = document.createElement('div');
+	settingPage.id = 'settingPage';
 	// styleElement(optionMenu, {
 	// 	display: 'flex',
 	// 	flexDirection: 'column',
@@ -162,5 +162,5 @@ export function getOptionMenu() {
 	if (!body)
 		return ;
 	body.innerHTML = '';
-	body.append(optionMenu);
+	body.append(settingPage);
 }

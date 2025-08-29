@@ -1,4 +1,4 @@
-import { Game } from './script.js'
+import { UI } from "./gameData.js"
 
 // Create div element for logging
 export function createLog() {
@@ -15,9 +15,9 @@ export function createLog() {
 
 // print msg in element on top (zIndex)
 export function log(msg: string) {
-	Game.logDiv.innerHTML = '';
-	const p = document.createElement('p');
-	p.textContent = msg;
+	// UI.logDiv.innerHTML = '';
+	// const p = document.createElement('p');
+	// p.textContent = msg;
 	// Game.logDiv.appendChild(p);
-	// console.log(msg);
+	console.log(msg);
 }

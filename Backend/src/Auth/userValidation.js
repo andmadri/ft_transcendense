@@ -1,6 +1,6 @@
-import { addUserToDB, getUserByEmail } from '../Database/users.js';
+import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { signFastifyJWT } from "../utils/jwt.js";
+import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
 import { onUserLogin } from '../Services/sessionsService.js';
 
@@ -55,7 +55,7 @@ export async function addUser(msg) {
 		return (errorMsg);
 	try {
 		const userId = await addUserToDB(db, msg);
-		return (1); // Should we not return the userId?
+		return (''); // Should we not return the userId?
 	}
 	catch(err) {
 		if (err.code === 'SQLITE_CONSTRAINT') {
@@ -67,7 +67,7 @@ export async function addUser(msg) {
 			}
 		}
 		console.error('addUser:', err);
-		return (0);
+		return ('Unknown error occurred while adding user.');
 	}
 }
 
@@ -88,12 +88,17 @@ export async function validateLogin(msg, fastify) {
 		return ({ error: 'Incorrect password' });
 
 	try {
-		await onUserLogin(db, user.id);
-	} catch(err) {
-		console.error(err.msg);
+		const onlineUsers = await getOnlineUsers(db);
+		for (const onlineUser of onlineUsers) {
+			if (onlineUser.id === user.id) {
+				return ({ error: 'You are already logged in!' });
+			}
+		}
+	} catch (err) {
+		console.error('Error with getting online users');
 		return ({ error: 'Database error' });
 	}
-	const jwtToken = signFastifyJWT(user, fastify);
-	return { token: jwtToken, user: user, player: msg.player };
+
+	return { user: user };
 }
 

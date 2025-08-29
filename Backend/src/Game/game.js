@@ -1,74 +1,36 @@
-import { sendBallUpdate, sendPaddleUpdate, updateScore, applyKeyPress } from "./gameStateSync.js";
-import { createMatch, saveMatch, quitMatch } from './gameMatch.js';
-import { matches } from './gameMatch.js';
-import { OT } from '../structs.js'
+import { applyGameStateUpdate, updateScore, applyKeyPressUpdate } from "./gameStateSync.js";
+import { saveMatch, quitMatch } from "../End/endGame.js";
+import { matches } from '../InitGame/match.js';
 
-function handleStartOnlineMatch(msg, match) {
-	if (msg.userID == match.player1.id)
-		match.player1.ready = true;
-	else if (msg.userID == match.player2.id)
-		match.player2.ready = true;
-	console.log(`Player ${msg.userID} is ready..`);
+export function handleGame(db, msg, socket, io) {
+	if (!msg.subaction)
+		return console.log('no subaction in handleGame');
 
-	if (match.player1.ready && match.player2.ready) {
-		console.log("both players are ready to play! START");
-		const startMsg = {
-			action: 'game',
-			subaction: 'start',
-		}
-		io.to(match.roomID).emit('message', startMsg);
-	} else {
-		console.log("waiting till the opponent is ready");
-		return true;
-	}
-	return false
-}
-
-export function handleGame(msg, socket, userId1, userId2) {
-	if (!msg.subaction) {
-		console.log('no subaction');
-		return ;
-	}
-
-	if (msg.subaction == 'init') {
-		if (msg.opponentMode != OT.Online)
-			return createMatch(msg, socket, userId1, userId2);
-	}
-
-	if (!msg.matchID) {
-		console.log("No matchID found in msg from frontend");
-		console.log(`msg: ${msg.subaction}`);
-		return ;
-	}
+	// we need to have a matchID by now
+	if (!msg.matchID)
+		return console.log("No matchID found in msg from frontend");
 
 	const match = matches.get(msg.matchID);
-	if (!match) {
-		return ;
-	}
+	if (!match)
+		return console.error(`No match found with ${msg.matchID}`);
 
-	if (msg.subaction == 'start') {
-		if (handleStartOnlineMatch(msg, match))
-			return ;
-	}
-
-	if (msg.subaction)
-
+	// Updates that are comming into the backend (Maybe better to update all in once)
 	switch (msg.subaction) {
-		case 'ballUpdate':
-			sendBallUpdate(match, msg, socket);
+		case 'gameStateUpdate':
+			applyGameStateUpdate(match, msg);
 			break;
 		case 'scoreUpdate':
-			updateScore(match, msg, socket);
+			updateScore(match, msg, io);
 			break;
 		case 'keyPressUpdate':
-			applyKeyPress(match, msg, socket);
+			applyKeyPressUpdate(match, msg, socket);
 			break;
-		case 'padelUpdate':
-			sendPaddleUpdate(match, msg, socket); // Maybe add return / break
 		case 'save':
-			return saveMatch(match, msg, socket);
+			saveMatch(db, match, msg, socket);
+			break ;
 		case 'quit':
-			return quitMatch(match, msg, socket);
+			quitMatch(match, msg, socket);
+			break;
 		default:
 			console.log("subaction not found: " + msg.subaction);
 	}

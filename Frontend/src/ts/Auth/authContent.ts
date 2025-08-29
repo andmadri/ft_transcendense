@@ -1,8 +1,8 @@
 import { submitAuthForm } from './userAuth.js'
 import { log } from '../logging.js'
-import { Game } from '../script.js'
 import * as S from '../structs.js'
 import { movePadel } from '../Game/gameLogic.js';
+import { navigateTo } from '../history.js';
 
 export let authenticationMode = 'Sign Up';
 
@@ -14,7 +14,7 @@ export function changeAuthMode(player: number) {
 		authContainer.replaceWith(newAuth);
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
 	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
-		window.location.href = 'https://localhost:8443/api/auth/google?player=' + player;
+		window.location.href = `https://${S.host}/api/auth/google?player=` + player;
 	});
 	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
 	}
@@ -77,13 +77,13 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 }
 
 export function getLoginFields(player: number) {
-	const	body = document.getElementById('body');
-	if (!body)
+	const	app = document.getElementById('app');
+	if (!app)
 		return ;
-	body.style.height = "100vh";
-	body.style.backgroundColor = "#ededeb";
-	body.style.justifyContent = "center";
-	body.appendChild(getAuthField(player, true));
+	app.style.height = "100vh";
+	app.style.backgroundColor = "#ededeb";
+	app.style.justifyContent = "center";
+	app.appendChild(getAuthField(player, true));
 
 	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
@@ -91,6 +91,8 @@ export function getLoginFields(player: number) {
 		window.location.href = `https://${S.host}/api/auth/google?player=` + player;
 	});
 
-	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
-	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => changeAuthMode(player));
+	document.querySelector(`#auth${player} .loginSignUpLink`)?.addEventListener('click', (e) => {
+		navigateTo('LoginP' + (player === 1 ? 1 : 2));
+		changeAuthMode(player);
+	});
 }

@@ -8,13 +8,17 @@ import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
+import { getUserByID } from './Database/users.js';
 import { handleGame } from './Game/game.js'
+import { handleInitGame } from './InitGame/initGame.js'
+import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
-// import { getUserByID, updateOnlineStatus } from './Database/users.js';
-import { addUserToRoom, handleMatchmaking } from './Matchmaking/matchmaking.js';
+import { addUserToRoom } from './rooms.js';
+import { addUserSessionToDB } from './Database/sessions.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
+import  twoFactor  from './routes/twofa.js';
 // import { testDB }   from './testDB.js';
 
 // FASTIFY => API SERVER
@@ -34,9 +38,8 @@ export const db = await createDatabase();
 // RUN THE TEST DATABASE FUNCTION (testDB.js)
 // await testDB(db);
 
-// Register the cookie plugin
+// Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-
 // Register the JWT plugin
 fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
 
@@ -50,6 +53,11 @@ await fastify.register(fastifyMultipart, {
 // POST /api/login - Log in an existing user
 // POST /api/logout - Log out a user
 await fastify.register(userAuthRoutes);
+// POST /2fa/generate - Generate a 2FA secret and QR code
+// POST /2fa/activate - Activate 2FA for a user
+// POST /2fa/disable - Disable 2FA for a user
+// GET /2fa/status - Check if 2FA is enabled for a user
+await fastify.register(twoFactor);
 // GET /api/auth/google - Redirect to Google OAuth
 // GET /api/auth/google/callback - Handle Google OAuth callback
 await fastify.register(googleAuthRoutes);
@@ -64,73 +72,84 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-		console.log('🔌 A user connected:', socket.id);
-		// Check if the request has a valid JWT token in cookies
-		// const cookies = req.headers.cookie;
-		const cookies = socket.handshake.headers.cookie || '';
-		const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('🔌 A user connected:', socket.id);
+	// Check if the request has a valid JWT token in cookies
+	// const cookies = req.headers.cookie;
+	const cookies = socket.handshake.headers.cookie || '';
+	console.log('Cookies from handshake:', cookies);
+	const authTokens = parseAuthTokenFromCookies(cookies);
+	console.log('Auth tokens from cookies:', authTokens);
 
-		let decoded;
-		let userId1 = null;
-		let userId2 = null;
-		if (authTokens && authTokens.jwtAuthToken1) {
+	let decoded;
+	let userId1 = null;
+	let userId2 = null;
+	if (authTokens && authTokens.jwtAuthToken1) {
+		console.log('signed:', authTokens.jwtAuthToken1);
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+		console.log('unsigned:', unsigned.value);
+		console.log('Unsigned JWT1:', unsigned);
+		if (unsigned.valid) {
 			try {
-				decoded = fastify.jwt.verify(authTokens.jwtAuthToken1);
+				decoded = fastify.jwt.verify(unsigned.value);
 				userId1 = decoded.userId;
 				// Use userId or decoded as needed for player 1
 			} catch (err) {
 				console.error('JWT1 verification failed:', err);
 			}
+		} else {
+			console.error('JWT1 verification failed: Invalid cookie');
 		}
-		if (authTokens && authTokens.jwtAuthToken2) {
+	}
+	if (authTokens && authTokens.jwtAuthToken2) {
+		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
+		if (unsigned.valid) {
 			try {
-				decoded = fastify.jwt.verify(authTokens.jwtAuthToken2);
+				decoded = fastify.jwt.verify(unsigned.value);
 				userId2 = decoded.userId;
 				// Use userId or decoded as needed for player 2
 			} catch (err) {
 				console.error('JWT2 verification failed:', err);
 			}
+		} else {
+			console.error('JWT2 verification failed: Invalid cookie');
 		}
-		console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
-		if (!userId1) {
-			console.error('No valid auth tokens found in cookies');
-			socket.emit('error', { reason: 'Unauthorized: No valid tokens' });
-			return ;
-		}
-		console.log('✅ Authenticated user(s):', userId1, userId2);
+	}
+	console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+	if (!userId1) {
+		console.error('No valid auth tokens found in cookies');
+		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+		return ;
+	}
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
 
-		socket.on('message', (messageStr) => {
-			let msg;
-			try {
-				msg = typeof messageStr === 'string' ? JSON.parse(messageStr) : messageStr;
-			} catch (err) {
-				return socket.emit('error', { action: 'error', reason: 'Invalid JSON' });
-			}
+		// Socket that listens to incomming msg from frontend
+		socket.on('message', (msg) => {
 			const action = msg.action;
 			if (!action) {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
 			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
+			
 			// ADD HERE FUNCTIONS THAT MATCH WITH THE RIGHT ACTION
+			// console.log(`Action: ${msg.action} + ${msg.subaction}`);
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
 				case 'matchInfo':
 					return handleMatchInfo(msg, socket, userId1);
 				case 'online':
-					return handleOnlinePlayers(msg, socket);
+					return handleOnlinePlayers(msg, socket, userId1);
 				case 'friends':
-					return handleFriends(msg, socket);
+					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard':
-					handleDashboardMaking(msg, socket, userId1, fastify.io);
-					break ;
+					return handleDashboardMaking(db, msg, socket, userId1, fastify.io);
+				case 'init':
+					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':
-					handleGame(msg, socket, userId1, userId2);
-					break ;
+					return handleGame(db, msg, socket, fastify.io);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);
@@ -140,13 +159,14 @@ fastify.ready().then(() => {
 		});
 
 		socket.on('disconnect', () => {
-			console.log(`User disconnected: ${socket.id}`);
-			// try {
-			// 	const user = getUserByID(db, userId1);
-			// 	if (user?.email) updateOnlineStatus(user.email, 'offline');
-			// } catch (err) {
-			// 	console.error('Failed logout cleanup', err);
-			// }
+			console.log(`User disconnected: ${userId1}`);
+			try {
+				// not sure if this is the good function but I want to remove
+				// the player from the online list
+				addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
+			} catch (err) {
+				console.error('Failed logout cleanup', err);
+			}
 		});
 	});
 });

@@ -36,6 +36,7 @@ export async function createTables(db)
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER NOT NULL,
 		friend_id INTEGER NOT NULL,
+		accepted INTEGER DEFAULT 0,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(user_id) REFERENCES Users(id),
 		FOREIGN KEY(friend_id) REFERENCES Users(id),

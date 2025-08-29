@@ -1,11 +1,11 @@
-// import * as S from '../structs.js'
+// import * as S from "../gameData.js"
 // import { Game } from '../script.js';
 
 // function updateServer() {
 // 	const updates = {
 // 		action: 'game',
 // 		subaction: 'update',
-// 		match: Game.matchID,
+// 		match: Game.match.ID,
 // 		// id: Game.id,
 // 		steps: Game.colletedSteps
 // 	}
@@ -40,7 +40,7 @@
 // 	S.Objects['ball'].y = data.b[1];
 // 	S.Objects['ball'].angle = data.b[2];
 // 	S.Objects['ball'].speed = data.b[3];
-// 	Game.scoreLeft = data.score[0];
-// 	Game.scoreRight = data.score[0];
+// 	Game.match.player1.score = data.score[0];
+// 	Game.match.player2.score = data.score[0];
 // }
 

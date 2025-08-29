@@ -1,6 +1,6 @@
-// import { log } from '../logging.js'
-// import { Game } from '../script.js'
-// import { styleElement } from './menuContent.js'
+import { log } from '../logging.js'
+import { Game } from "../gameData.js"
+import { styleElement } from './menuContent.js'
 
 // function createOnlineList(): HTMLDivElement {
 // 	const online = document.createElement('div');
@@ -13,10 +13,10 @@
 // 		borderRadius: '10px'
 // 	});
 
-// 	const title = document.createElement('h2');
-// 	title.className = 'sectionTitle';
-// 	title.textContent = 'Online';
-// 	title.style.textAlign = 'center';
+	const title = document.createElement('h2');
+	title.className = 'sectionTitle';
+	title.textContent = 'Players';
+	title.style.textAlign = 'center';
 
 // 	const list = document.createElement('div');
 // 	list.id = 'listOnlinePlayers';
@@ -33,40 +33,56 @@
 // export function getOnlineList(): HTMLDivElement {
 // 	let online = document.getElementById('online') as HTMLDivElement;
 	
-// 	if (!online)
-// 		online = createOnlineList();
-// 	else {
-// 		const list = document.getElementById('htmllistOnlinePlayers');
-// 		if (list instanceof HTMLUListElement)
-// 			list.innerHTML = '';
-// 	}
+	if (!online)
+		online = createOnlineList();
+	else {
+		const list = document.getElementById('htmllistOnlinePlayers');
+		if (list instanceof HTMLUListElement)
+			list.innerHTML = '';
+	}
+	Game.socket.send({
+		action: 'online', 
+		// subaction: 'getOnlinePlayers'
+		subaction: 'getAllPlayers'
+	});
+	return (online);
+}
 
-// 	// backend request to the DB for all online players
-// 	// const online_players = ['Player1', 'Player2', 'Player3']; // This should be replaced with actual data from the backend
-// 	const msg = {action: 'online', subaction: 'getOnlinePlayers'};
-// 	Game.socket.send(JSON.stringify(msg));
+function insertOnlinePlayers(online_players: any) {
+	const html_list = document.getElementById('htmllistOnlinePlayers') as HTMLUListElement;
+	if (!html_list) {
+		log("HTML list for online players not found");
+		return;
+	}
+	html_list.className = 'playerOfOnlineList';
+	console.log(online_players); 
+	for (const curr_player of online_players) {
+		if (curr_player.id > 2) {
+			console.log(curr_player); 
+			const html_list_element = document.createElement('li');
+			
+			html_list_element.textContent = curr_player.name;
+			html_list_element.dataset.userId = String(curr_player.id);
+			html_list_element.style.cursor = "pointer";
+			html_list_element.style.color = 'black';
 
-// 	return (online);
-// }
+			if (curr_player.name != Game.match.player1.name && !curr_player.isFriend) {
+				const addFriendBtn = document.createElement('button');
+				addFriendBtn.textContent = 'Add friend';
 
-// function insertOnlinePlayers(online_players: any) {
-// 	const html_list = document.getElementById('htmllistOnlinePlayers') as HTMLUListElement;
-// 	if (!html_list) {
-// 		log("HTML list for online players not found");
-// 		return;
-// 	}
-// 	html_list.className = 'playerOfOnlineList';
-
-// 	// json online_players mapping to array with names
-// 	const playerNames: string[] = online_players.map((player: { name: string, avatar_url: string }) => player.name);
-// 	for (const curr_player of playerNames) {
-// 		log(`Adding player ${curr_player} to online list`);
-// 		const html_list_element = document.createElement('li');
-		
-// 		html_list_element.textContent = curr_player;
-// 		html_list.appendChild(html_list_element);
-// 	}
-// }
+				addFriendBtn.addEventListener("click", () => {
+					alert(`Send ${curr_player.name} a friend request`);
+					const id = Game.match.player1.id;
+					const friendID = curr_player.id;
+					Game.socket.send({action: "friends", subaction: 'friendRequest', id, friendID});
+				});
+				html_list.append(html_list_element, addFriendBtn);
+			} else
+				html_list.append(html_list_element);
+			
+		}
+	}
+}
 
 // function processOnlinePlayers(data: any) {
 // 	if (data.access && data.access == "yes")

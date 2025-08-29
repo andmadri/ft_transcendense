@@ -22,7 +22,6 @@ export default async function avatarRoutes(fastify) {
 			// Extract file extension
 			const ext = path.extname(data.filename) || '.png';
 
-
 			const uploadDir = path.join(process.cwd(), 'uploads', 'avatars', String(request.user.userId));
 			console.log('Upload directory:', uploadDir);
 			if (fs.existsSync(uploadDir))
@@ -53,11 +52,19 @@ export default async function avatarRoutes(fastify) {
 		const { userId } = request.params;
 		const avatarDir = path.join(process.cwd(), 'uploads', 'avatars', String(userId));
 		const exts = ['.png', '.jpg', '.jpeg', '.webp'];
-		for (const ext of exts) {
-			const filePath = path.join(avatarDir, `avatar${ext}`);
-			if (fs.existsSync(filePath)) {
-				reply.type(`image/${ext.replace('.', '')}`);
-				return fs.createReadStream(filePath);
+		if (!fs.existsSync(avatarDir))
+		{
+			const filePath = path.join(process.cwd(), 'uploads', 'avatars', '-1', `avatar.png`);
+			console.log('File not found:', filePath);
+			return fs.createReadStream(filePath);
+		} else {
+			for (const ext of exts) {
+				const filePath = path.join(avatarDir, `avatar${ext}`);
+				console.log('Checking file path:', filePath);
+				if (fs.existsSync(filePath)) {
+					reply.type(`image/${ext.replace('.', '')}`);
+					return fs.createReadStream(filePath);
+				}
 			}
 		}
 		reply.code(404).send({ error: 'Avatar not found' });

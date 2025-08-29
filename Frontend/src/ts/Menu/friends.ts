@@ -1,6 +1,7 @@
-// import { styleElement } from "./menuContent.js";
-import { Game } from '../script.js'
-import { log } from "../logging.js";
+// import { styleElement } from './menuContent.js';
+import { Game } from '../gameData.js'
+import { log } from '../logging.js';
+import { showFriendRequests } from './friendRequests.js';
 
 function createFriendsList(playerNr: number) : HTMLDivElement {
 	const friends = document.createElement('div');
@@ -40,8 +41,10 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	const msg = { action: 'friends', subaction: 'getFriends', player: playerNr };
-	Game.socket.send(JSON.stringify(msg));
+	Game.socket.send({ 
+		action: 'friends', 
+		subaction: 'getFriends', 
+		playerNr });
 	return (friends);
 }
 
@@ -49,36 +52,58 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 	const html_list = document.getElementById('htmllistFriends' + playerNr) as HTMLUListElement;
 	if (!html_list) {
-		log("HTML list for friends not found");
+		log('HTML list for friends not found');
 		return;
 	}
+	html_list.innerHTML = "";
 	html_list.className = 'friendsList';
 
 	if (noFriends) {
 		const html_list_element = document.createElement('li');
-		html_list_element.textContent = "No friends";
-		html_list_element.style.textAlign = "left";
+		html_list_element.textContent = 'No friends';
+		html_list_element.style.textAlign = 'left';
 		html_list.appendChild(html_list_element);
 		return ;
 	}
 	for (const friend of friends) {
-		log(`Adding player ${friend.name} to Friends list`);
-		const html_list_element = document.createElement('li');
-		const status = friend.online_status == 0 ? '(offline)' : '(online)';
-		html_list_element.textContent = `${friend.name} ${status}`;
-		html_list.appendChild(html_list_element);
+	    log(`Adding player ${friend.name} to Friends list`);
+
+	    const html_list_element = document.createElement('li');
+	    html_list_element.style.display = 'flex';
+	    html_list_element.style.justifyContent = 'space-between';
+	    html_list_element.style.alignItems = 'center';
+
+	    const status = friend.online_status == 0 ? '(offline)' : '(online)';
+	    html_list_element.textContent = `${friend.name} ${status}`;
+
+	    const deleteFriendBtn = document.createElement('button');
+	    deleteFriendBtn.textContent = "Unfriend";
+
+	    deleteFriendBtn.addEventListener("click", () => {
+	        Game.socket.send({
+	            action: 'friends',
+	            subaction: 'unfriend',
+	            userID: Game.match.player1.id,
+	            friendID: friend.id
+	        });
+	        console.log("Unfriend player: " + friend.name);
+	        html_list_element.remove();
+	    });
+	    html_list_element.appendChild(deleteFriendBtn);
+	    html_list.appendChild(html_list_element);
 	}
 }
 
 function processFriends(data: any) {
 	const playerNr = data.playerNr;
-	if (data.access && data.access == "yes")
+	if (data.access && data.access == 'yes')
 		insertFriends(data.content, playerNr, false);
 	else {
-		log("Access to DB: " + data.access + " " + data.content);
+		log('Access to DB: ' + data.access + ' ' + data.content);
 		insertFriends(data, playerNr, true);
 	}
 }
+
 
 export function actionFriends(data: any) {
 	if (!data.subaction) {
@@ -87,8 +112,14 @@ export function actionFriends(data: any) {
 	}
 
 	switch(data.subaction) {
-		case "retFriends":
+		case 'retFriends':
 			processFriends(data);
+			break ;
+		case 'openRequests':
+			showFriendRequests(data.content);
+			break ;
+		case 'error':
+			alert(data.msg);
 			break ;
 		default:
 			log(`(actionOnline) Unknown action: ${data.subaction}`);

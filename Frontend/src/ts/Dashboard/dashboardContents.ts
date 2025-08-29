@@ -1,4 +1,4 @@
-import { Game } from '../script.js'
+import { Game, UI } from '../gameData'
 import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
@@ -216,7 +216,7 @@ export function getDashboard()
 		if (dashboard) {
 			dashboard.remove();
 		}
-		Game.state = S.State.Menu;
+		UI.state = S.stateUI.Menu;
 	});
 
 	dashboard.appendChild(headers);

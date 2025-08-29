@@ -1,93 +1,80 @@
 import * as S from './structs.js'
-import { Game} from './script.js'
+import { Game } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
+import { OT, state } from '@shared/enums'
 
-const { field: fieldSize, ball: ballSize, lPlayer: lPlayerSize, rPlayer: rPlayerSize } = S.size;
-const { field : fieldPos, ball: ballPos, lPlayer: lPlayerPos, rPlayer: rPlayerPos} = S.pos;
-const { field : fieldMove, ball: ballMove, lPlayer: lPlayerMove, rPlayer: rPlayerMove } = S.movement;
+const field = Game.match.gameState.field;
+const ball = Game.match.gameState.ball;
+const paddle1 = Game.match.gameState.paddle1;
+const paddle2 = Game.match.gameState.paddle2;
 
 export function releaseButton(e: KeyboardEvent) {
-	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle1.velocity.vy = 0;
 		return ;
 	}
-	if (Game.opponentType == S.OT.Online && (e.key === 'w' || e.key === 's')) {
+	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		//set velocity to 0 but how do i know what paddle i am?
+
+		sendKeyPressUpdate(e.key);
 		return ;
 	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		S.Keys[e.key].pressed = false;
-		if (Game.opponentType == S.OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle2.velocity.vy = 0;
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'w' || e.key === 's')) {
+		paddle1.velocity.vy = 0;
+		return;
 	}
 }
 
 export function pressButton(e: KeyboardEvent) {
-	if (Game.opponentType == S.OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		return ;
+	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
+		return;
 	}
-	if (Game.opponentType == S.OT.Online && (e.key === 'w' || e.key === 's')) {
-		return ;
-	}
-	if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's') {
-		console.log(`Key pressed ${e.key}`);
-		S.Keys[e.key].pressed = true;
-		if (Game.opponentType == S.OT.Online) {
+	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		//change paddle velocity, but how do we know which player i am?
+
+		if (Game.match.mode == OT.Online) {
 			sendKeyPressUpdate(e.key);
 		}
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+		paddle2.velocity.vy = S.Keys[e.key].dir * paddle2.movement.speed;
+		return;
+	}
+	if (Game.match.mode == OT.ONEvsONE && (e.key === 'w' || e.key === 's')) {
+		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
+		return;
 	}
 }
 
 export function initAfterResize() {
-	const ball = document.getElementById('ball');
+	if (Game.match.state != state.Playing)
+		return ;
+
+	const ballRadius = ball.size.height / 2;
+	const paddleHalfWidth = paddle1.size.width / 2;
+	const paddleHalfHeight = paddle1.size.height / 2;
+	const ballDiv = document.getElementById('ball');
 	const rPlayer = document.getElementById('rPlayer');
 	const lPlayer = document.getElementById('lPlayer');
-	const field = document.getElementById('field');
+	const fieldDiv = document.getElementById('field');
 	const game = document.getElementById('game');
 
-	if (ball && rPlayer && lPlayer && field && game) {
-		const oldWidth = fieldSize.width;
-		const oldHeight = fieldSize.height;
-		const newWidth = field.clientWidth;
-		const newHeight = field.clientHeight;
+	if (ballDiv && rPlayer && lPlayer && fieldDiv && game) {
+		const newWidth = fieldDiv.clientWidth;
+		const newHeight = fieldDiv.clientHeight;
 
-		fieldSize.width = newWidth;
-		fieldSize.height = newHeight;
+		ballDiv.style.left = `${(ball.pos.x * newWidth) - (ballRadius * newWidth)}px`;
+		ballDiv.style.top = `${(ball.pos.y * newWidth) - (ballRadius * newWidth)}px`;
+		lPlayer.style.left = `${paddle1.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
+		lPlayer.style.top = `${paddle1.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
+		rPlayer.style.left = `${paddle2.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
+		rPlayer.style.top = `${paddle2.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
 
-		ballSize.width = ball.clientWidth;
-		ballSize.height = ball.clientHeight;
-
-		const relativeXball = ballPos.x / oldWidth;
-		const relativeYball = ballPos.y / oldHeight;
-
-		ballPos.x = relativeXball * newWidth;
-		ballPos.y = relativeYball * newHeight;
-		ball.style.left = `${ballPos.x}px`;
-		ball.style.top = `${ballPos.y}px`;
-		ballMove.speed = fieldSize.width * 0.01;
-		
-		const relativeXlPlayer = lPlayerPos.x / oldWidth;
-		const relativeYlPlayer = lPlayerPos.y / oldHeight;
-
-		lPlayerSize.width = lPlayer.clientWidth;
-		lPlayerSize.height = lPlayer.clientHeight;
-		lPlayerPos.x = relativeXlPlayer * newWidth;
-		lPlayerPos.y = relativeYlPlayer * newHeight;
-		lPlayer.style.left = `${lPlayerPos.x}px`;
-		lPlayer.style.top = `${lPlayerPos.y}px`;
-		lPlayerMove.speed = fieldSize.height * 0.015;
-
-		const relativeXrPlayer = rPlayerPos.x / oldWidth;
-		const relativeYrPlayer = rPlayerPos.y / oldHeight;
-
-		rPlayerSize.width = rPlayer.clientWidth;
-		rPlayerSize.height = rPlayer.clientHeight;
-		rPlayerPos.x = relativeXrPlayer * newWidth;
-		rPlayerPos.y = relativeYrPlayer * newHeight;
-		rPlayer.style.left = `${rPlayerPos.x}px`;
-		rPlayer.style.top = `${rPlayerPos.y}px`;
-		rPlayerMove.speed = fieldSize.height * 0.015;
-
-	} else {
-		console.log('Something went wrong (initAfterResizing), close game?');
 	}
 }

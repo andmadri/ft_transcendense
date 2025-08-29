@@ -1,11 +1,13 @@
 import { actionGame } from './Game/game.js'
 import { actionOnline } from './Menu/online.js'
 import { log } from './logging.js' 
-import { Game } from './script.js'
+import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 // import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
+import { actionInitOnlineGame } from './Game/initGame.js'
+import * as S from './structs.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -17,7 +19,7 @@ export function startSocketListeners() {
 
 	socket.on('message', (msg: any)=> {
 		receiveFromWS(msg)
-	}); 
+	});
 
 	socket.on('disconnect', (reason: any) => {
 		log('Disconnected: '+ reason);
@@ -43,14 +45,7 @@ FROM backend TO frontend
 • game => ballUpdate / padelUpdate / scoreUpdate
 • error => checkError / errorPage?
 */
-export function receiveFromWS(msg: any) {
-	let data;
-	try {
-        data = JSON.parse(msg);
-    } catch (e) {
-        data = msg;
-    }
-	console.log('Got message from backend:', data);
+export function receiveFromWS(data: any) {
 	const action = data.action;
 	if (!action)
 		log('no action');
@@ -66,7 +61,10 @@ export function receiveFromWS(msg: any) {
 		// 	actionFriends(data);
 		// 	break ;
 		case 'matchmaking':
-			actionMatchmaking(msg);
+			actionMatchmaking(data);
+			break ;
+		case 'initOnlineGame':
+			actionInitOnlineGame(data);
 			break ;
 		case 'game':
 			actionGame(data);

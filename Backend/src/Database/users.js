@@ -217,3 +217,17 @@ export async function createNewUserToDB(db, { name, email, password, avatar_url=
 	}
 	return await addUserToDB(db, { name, email, password, avatar_url });
 }
+
+export async function getAllPlayers(db) {
+	const sql = `SELECT * FROM Users ORDER BY name`;
+	return new Promise((resolve, reject) => {
+		db.all(sql, [], (err, rows) => {
+			if (err) {
+				sql_error(err, `getOnlineUsers`);
+				reject(err);
+			} else {
+				resolve(rows)
+			}
+		});
+	});
+}
