@@ -13,6 +13,7 @@ import { handleInitGame } from './InitGame/initGame.js'
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
+import { addUserSessionToDB } from './Database/sessions.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
@@ -157,8 +158,9 @@ fastify.ready().then(() => {
 		socket.on('disconnect', () => {
 			console.log(`User disconnected: ${userId1}`);
 			try {
-				// WHERE WENT THIS FUNCTION GO TO?
-				// updateOnlineStatus(userId1, 'offline');
+				// not sure if this is the good function but I want to remove
+				// the player from the online list
+				addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
 			} catch (err) {
 				console.error('Failed logout cleanup', err);
 			}

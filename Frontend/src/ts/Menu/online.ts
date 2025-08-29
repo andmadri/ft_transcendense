@@ -15,7 +15,7 @@ function createOnlineList(): HTMLDivElement {
 
 	const title = document.createElement('h2');
 	title.className = 'sectionTitle';
-	title.textContent = 'Online';
+	title.textContent = 'Players';
 	title.style.textAlign = 'center';
 
 	const list = document.createElement('div');
