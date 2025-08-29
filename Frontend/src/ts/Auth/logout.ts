@@ -27,8 +27,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			if (playerNr == 1) {
 				UI.user1.ID = -1;
 				UI.user1.name = "";
-				// UI.state = S.stateUI.LoginP1;
-				navigateTo('LoginP1'); //check this
+				navigateTo('LoginP1');
 			} else {
 				UI.user2.ID = 1;
 				UI.user2.name = "Guest";

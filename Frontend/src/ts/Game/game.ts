@@ -46,7 +46,7 @@ export function actionGame(data: any) {
 			processMatch(data);
 			break ;
 		case 'start':
-			UI.state = S.stateUI.Game;
+			navigateTo('Game');
 			break ;
 		case 'gameStateUpdate':
 			applyGameStateUpdate(data);

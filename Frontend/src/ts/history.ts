@@ -94,7 +94,7 @@ function stopCurrentGame() {
  */
 function getValidState(state: string): string {
 	// Is already logged in
-    if (state != 'LoginP1' && Game.match.player1.ID == -1)
+    if (state != 'LoginP1' && UI.user1.ID == -1)
 		return ('Menu');
 
 	// No match is started

@@ -3,6 +3,7 @@ import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
 import { log } from '../logging.js'
+import { navigateTo } from '../history'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -225,7 +226,7 @@ export function getDashboard()
 		if (dashboard) {
 			dashboard.remove();
 		}
-		UI.state = S.stateUI.Menu;
+		navigateTo('Menu');
 	});
 
 	dashboard.appendChild(headers);

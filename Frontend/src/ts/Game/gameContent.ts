@@ -50,11 +50,10 @@ function getQuitBtn() {
 			player: UI.user1.ID,
 			name: UI.user1.name
 		});
-		// if (Game.match.player2.ID == 2) {
-		// 	Game.match.player2.ID = 1
-		// 	Game.match.player2.name = 'Guest';
-		// } //maybe change to UI.user
-		Game.match.state = state.End; //check this
+		if (Game.match.player2.ID == 2) {
+			UI.user2.ID = 1
+			UI.user2.name = 'Guest';
+		} //check this
 		navigateTo('Menu');
 	})
 	return (quitButton);

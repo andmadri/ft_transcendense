@@ -85,10 +85,6 @@ function gameLoop() {
 		}
 		case state.End: {
 			saveGame();
-			setTimeout(() => {
-				document.getElementById('gameOver')?.remove();
-				UI.state = S.stateUI.Menu;
-			}, 3000);
 			break ;
 		}
 		default:
