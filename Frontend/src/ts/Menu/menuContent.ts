@@ -2,8 +2,6 @@ import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
 import { getOnlineList } from './online.js';
-import { getStatsList } from './stats.js';
-import { getHighscores } from './highscore.js'
 import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
@@ -37,9 +35,9 @@ function getLeftSideMenu() {
 		gap: '15px',
 		flexGrow: '1',
 	});
-	highScoreOnlineDiv.append(getHighscores(), getOnlineList());
+	highScoreOnlineDiv.append(getOnlineList());
 
-	menuLeft.append(highScoreOnlineDiv); // , getCreditBtn()
+	menuLeft.append(highScoreOnlineDiv);
 	return (menuLeft);
 }
 
@@ -511,9 +509,9 @@ export function getRightSideMenu(playerNr: number) {
 		gap: '20px',
 		alignItems: 'stretch'
 	});
-	statsFriendsDiv.append(getStatsList(playerNr), getFriendsList(playerNr));
+	statsFriendsDiv.append(getFriendsList(playerNr));
 
-	profile.append(player, statsFriendsDiv); // , getPlayBtn()
+	profile.append(player, statsFriendsDiv);
 	return (profile);
 }
 

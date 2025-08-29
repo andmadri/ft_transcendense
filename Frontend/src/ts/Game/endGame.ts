@@ -94,6 +94,11 @@ export function saveGame() {
 		subaction: 'save',
 		matchID: Game.match.ID
 	});
+
+	if (Game.match.pauseTimeOutID) {
+		clearTimeout(Game.match.pauseTimeOutID);
+		Game.match.pauseTimeOutID = null;
+	}
 	
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
