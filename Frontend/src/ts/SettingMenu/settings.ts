@@ -146,25 +146,25 @@ export function getOptionMenu() {
 	// 	width: '100%',
 	// 	boxSizing: 'border-box'
 	// });
+}
 
 export function getSettingsPage() {
 	if (document.getElementById('settingPage'))
 		return ;
 
-	changeMatchFormat('empty');
-	changeOpponentType('empty')
+	// changeMatchFormat('empty');
+	// changeOpponentType('empty')
 	const settingPage = document.createElement('div');
 	settingPage.id = 'settingPage';
-	styleElement(settingPage, {
-		display: 'flex',
-		flexDirection: 'column',
-		backgroundColor: '#ffd400',
-		padding: '20px',
-		height: '100%',
-		width: '100%',
-		boxSizing: 'border-box'
-	});
->>>>>>>>> Temporary merge branch 2:Frontend/src/ts/SettingMenu/settings.ts
+	// styleElement(settingPage, {
+	// 	display: 'flex',
+	// 	flexDirection: 'column',
+	// 	backgroundColor: '#ffd400',
+	// 	padding: '20px',
+	// 	height: '100%',
+	// 	width: '100%',
+	// 	boxSizing: 'border-box'
+	// });
 
 	const optionLeftRight = document.createElement('div');
 	// styleElement(optionLeftRight, {
@@ -177,7 +177,7 @@ export function getSettingsPage() {
 
 	// optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	// optionMenu.appendChild(optionLeftRight);
-	optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
+	// optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	settingPage.appendChild(optionLeftRight);
 
 	const body = document.getElementById('body');

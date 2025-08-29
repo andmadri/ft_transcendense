@@ -74,7 +74,7 @@ function getPlayBtn(): HTMLButtonElement {
 	styleBtn(playBtn, "Play Game")
 	playBtn.style.flex = '1 1 25%';
 	playBtn.addEventListener('click', () => {
-		Game.state = S.State.OptionMenu;
+		UI.state = S.stateUI.Settings;
 	});
 	return (playBtn);
 }
@@ -91,13 +91,10 @@ function getDashboardBtn(): HTMLButtonElement {
 
 function styleBlock(title_text: string, block: HTMLElement): HTMLDivElement {
 
-	//we have a block
-	// inside the block goes title and elements
 	block.style.background = '#363430'
 	block.style.display = 'flex';
 	block.style.flexDirection = 'column';
 	block.style.alignItems = 'center';
-	// block.style.justifyContent = 'center';
 	block.style.padding = '1rem';
 	block.style.borderRadius = '10px';
 
@@ -106,7 +103,7 @@ function styleBlock(title_text: string, block: HTMLElement): HTMLDivElement {
 	title.style.fontFamily = '"Horizon", sans-serif';
 	title.style.webkitTextStroke = '0.1rem #ffffff';
 	title.style.color = 'transparent';
-	title.style.fontSize = 'clamp(18px, 3vw, 36px)';
+	title.style.fontSize = 'clamp(15px, 2vw, 26px)';
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
 	title.style.textAlign = 'center';
@@ -125,11 +122,9 @@ function styleBlock(title_text: string, block: HTMLElement): HTMLDivElement {
 
 function addPlayersRow(list: HTMLDivElement, playerName: string)
 {
-	//if the name is bigger than certain characters crop it
 	const row = document.createElement('div');
 	row.textContent = "• " + (playerName ?? "");
 	row.style.padding = '0.5rem 1 rem';
-	// row.style.border = '1px solid #888';
 	row.style.borderRadius = '5px';
 	row.style.backgroundColor = '#2a2927';
 	row.style.color = 'white';
@@ -156,43 +151,55 @@ function styleUserTab(tab: HTMLDivElement, text: string) {
 	tab.style.marginBottom = '0.5rem';
 }
 
-function getUserBlock(): HTMLDivElement {
-	const users_block = document.createElement('div');
-	users_block.style.flex = '1 1 50%';
-	users_block.style.direction = 'column';
+function getUserTournamentBlock(): HTMLDivElement {
+	const users_tournament_block = document.createElement('div');
+	users_tournament_block.style.display = 'flex';
+	users_tournament_block.style.flex = '1 1 50%';
+	users_tournament_block.style.direction = 'column';
+	users_tournament_block.style.gap = '1rem';
+	users_tournament_block.style.height = '100%';
 
-	const user_tabs = document.createElement('div');
-	user_tabs.style.display = 'flex';
-	user_tabs.style.flexDirection = 'row';
-	user_tabs.style.width = '100%';
+	const user_block = document.createElement('div');
+	user_block.style.display = 'flex';
+	user_block.style.height = '50%'
+	styleBlock("Player Name", user_block);
 
-	const user1_tab = document.createElement('div');
-	user1_tab.style.flex = '1 1 50%';
-	styleUserTab(user1_tab, "1");
+	// user_tabs.style.display = 'flex';
+	// user_tabs.style.flexDirection = 'row';
+	// user_tabs.style.width = '100%';
 
-	const user2_tab = document.createElement('div');
-	user2_tab.style.flex = '1 1 50%';
-	styleUserTab(user1_tab, "1");
+	// const user1_tab = document.createElement('div');
+	// user1_tab.style.flex = '1 1 50%';
+	// styleUserTab(user1_tab, "1");
 
-	function activateTab(active: HTMLDivElement, inactive: HTMLDivElement) {
-		active.style.background = "#363430";
-		inactive.style.background = "rgba(54, 52, 48, 0.5)";
-	}
+	// const user2_tab = document.createElement('div');
+	// user2_tab.style.flex = '1 1 50%';
+	// styleUserTab(user1_tab, "1");
 
-	activateTab(user1_tab, user2_tab);
+	// function activateTab(active: HTMLDivElement, inactive: HTMLDivElement) {
+	// 	active.style.background = "#363430";
+	// 	inactive.style.background = "rgba(54, 52, 48, 0.5)";
+	// }
 
-	user1_tab.addEventListener("click", () => activateTab(user1_tab, user2_tab));
-	user2_tab.addEventListener("click", () => activateTab(user2_tab, user1_tab));
+	// activateTab(user1_tab, user2_tab);
 
-	const users_info = document.createElement('div');
-	styleBlock("Player", users_info);
+	// user1_tab.addEventListener("click", () => activateTab(user1_tab, user2_tab));
+	// user2_tab.addEventListener("click", () => activateTab(user2_tab, user1_tab));
 
-	user_tabs.appendChild(user1_tab)
-	user_tabs.appendChild(user2_tab)
+	// const users_info = document.createElement('div');
+	// styleBlock("Player", users_info);
 
-	users_block.appendChild(user_tabs);
-	users_block.appendChild(users_info);
-	return users_block;
+	// user_tabs.appendChild(user1_tab)
+	// user_tabs.appendChild(user2_tab)
+
+	const tournament_block = document.createElement('div');
+	tournament_block.style.display = 'flex';
+	tournament_block.style.height = '50%';
+	styleBlock("Tournaments", tournament_block);
+
+	users_tournament_block.appendChild(user_block);
+	users_tournament_block.appendChild(tournament_block);
+	return users_tournament_block;
 }
 
 function getFriendsBlock(): HTMLDivElement {
@@ -240,7 +247,7 @@ export function getMenu() {
 	menuBlocks.style.gap = '1rem';
 	menuBlocks.style.height = 'clamp(400px, 50vh, 800px)';
 	menuBlocks.style.width = 'clamp(1000px, 90vw, 1500px)';
-	menuBlocks.appendChild(getUserBlock());
+	menuBlocks.appendChild(getUserTournamentBlock());
 	menuBlocks.appendChild(getFriendsBlock());
 	menuBlocks.appendChild(getPlayersBlock());
 

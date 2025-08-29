@@ -1,9 +1,9 @@
 import { log } from '../logging.js'
 import { Game } from "../gameData.js"
-import { styleElement } from './menuContent.js'
+// import { styleElement } from './menuContent.js'
 
-// function createOnlineList(): HTMLDivElement {
-// 	const online = document.createElement('div');
+function createOnlineList(): HTMLDivElement {
+	const online = document.createElement('div');
 // 	online.id = 'online';
 // 		styleElement(online, {
 // 		backgroundColor: 'white',
@@ -18,20 +18,20 @@ import { styleElement } from './menuContent.js'
 	title.textContent = 'Players';
 	title.style.textAlign = 'center';
 
-// 	const list = document.createElement('div');
-// 	list.id = 'listOnlinePlayers';
+	const list = document.createElement('div');
+	list.id = 'listOnlinePlayers';
 
-// 	const html_list = document.createElement('ul');
-// 	html_list.id = 'htmllistOnlinePlayers';
-// 	html_list.className = 'online-markers';
+	const html_list = document.createElement('ul');
+	html_list.id = 'htmllistOnlinePlayers';
+	html_list.className = 'online-markers';
 
-// 	list.appendChild(html_list);
-// 	online.append(title, list);
-// 	return (online);
-// }
+	list.appendChild(html_list);
+	online.append(title, list);
+	return (online);
+}
 
-// export function getOnlineList(): HTMLDivElement {
-// 	let online = document.getElementById('online') as HTMLDivElement;
+export function getOnlineList(): HTMLDivElement {
+	let online = document.getElementById('online') as HTMLDivElement;
 	
 	if (!online)
 		online = createOnlineList();
@@ -84,24 +84,24 @@ function insertOnlinePlayers(online_players: any) {
 	}
 }
 
-// function processOnlinePlayers(data: any) {
-// 	if (data.access && data.access == "yes")
-// 		insertOnlinePlayers(data.content);
-// 	else
-// 		log("Access to DB: " + data.access + " " + data.content);
-// }
+function processOnlinePlayers(data: any) {
+	if (data.access && data.access == "yes")
+		insertOnlinePlayers(data.content);
+	else
+		log("Access to DB: " + data.access + " " + data.content);
+}
 
-// export function actionOnline(data: any) {
-// 	if (!data.subaction) {
-// 		log('no subaction online');
-// 		return ;
-// 	}
+export function actionOnline(data: any) {
+	if (!data.subaction) {
+		log('no subaction online');
+		return ;
+	}
 	
-// 	switch(data.subaction) {
-// 		case "retOnlinePlayers":
-// 			processOnlinePlayers(data);
-// 			break ;
-// 		default:
-// 			log(`(actionOnline) Unknown action: ${data.subaction}`);
-// 	}
-// }
+	switch(data.subaction) {
+		case "retOnlinePlayers":
+			processOnlinePlayers(data);
+			break ;
+		default:
+			log(`(actionOnline) Unknown action: ${data.subaction}`);
+	}
+}
