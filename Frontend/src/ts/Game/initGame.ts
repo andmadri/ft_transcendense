@@ -145,8 +145,8 @@ function getStartScreenBeforeGame() {
 	const txt = document.createElement('div');
 	const startBtn = document.createElement('button');
 
-	name1.textContent = Game.match.player1.name;
-	name2.textContent = Game.match.player2.name;
+	name1.textContent = UI.user1.name;
+	name2.textContent = UI.user2.name;
 	avatar1.src = "./../images/avatar.png";
 	styleElement(avatar1, {
 		objectFit: 'contain',
@@ -165,15 +165,22 @@ function getStartScreenBeforeGame() {
 }
 
 export function initGame() {
-	if (Game.match.mode != OT.Online)
+	if (Game.match.mode != OT.Online) {
+		//do we need to set the ID's here
+		Game.match.player1.ID = UI.user1.ID;
+		Game.match.player2.ID = UI.user2.ID;
+		Game.match.player1.name = UI.user1.name;
+		Game.match.player2.name = UI.user2.name;
+		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
+	}
 	else {
 		// Send server msg that player is ready with init game
 		const readyToPlay = {
 			action: 'init',
 			subaction: 'start',
 			matchID: Game.match.matchID,
-			userID: Game.match.player1.ID
+			userID: UI.user1.ID //user check
 		}
 		Game.socket.send(readyToPlay);
 	}
@@ -184,7 +191,6 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
-	randomizeBallAngle(Game.match.gameState.ball);
 	// updateNamesMenu();
 	// resetScoreMenu();
 }
@@ -195,18 +201,14 @@ export function actionInitOnlineGame(data: any) {
 	if (match == null) { // something went wrong
 		alert('Could not start a new game');
 		navigateTo('Menu');
-		return ;	
+		return ;
 	}
 	getGameField();
 
-	Game.match.player1.ID = match.player1.ID;
-	Game.match.player2.ID = match.player2.ID;
-	Game.match.player1.name = match.player1.name;
-	Game.match.player2.name = match.player2.name;
-	Game.match.ID = match.matchID;
-
+	Game.match = match;
 	// Function to set all data sync with match in game...
 
-	navigateTo('Game');
+	navigateTo('Game'); //check this ->  is state changed in navigate to
+	Game.match.state = state.Playing;
 	console.log("Start online game...");
 }

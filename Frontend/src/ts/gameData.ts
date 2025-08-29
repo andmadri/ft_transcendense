@@ -6,7 +6,17 @@ type Socket = any;
 
 export const UI : S.UI = {
 	state: S.stateUI.LoginP1,
-	logDiv : document.getElementById('log') as HTMLDivElement
+	logDiv : document.getElementById('log') as HTMLDivElement,
+	user1: {
+		ID: -1,
+		name: 'unknown',
+		Twofa: false
+	},
+	user2: {
+		ID: 1,
+		name: 'Guest',
+		Twofa: false
+	},
 }
 
 export const Game : S.Game = { 
@@ -19,7 +29,9 @@ export const Game : S.Game = {
 		state: state.Pending,
 		matchID: -1,
 		matchFormat: MF.Empty,
+		pauseTimeOutID: null,
 		mode: OT.Empty,
+		lastScoreID: -1,
 		player1: {
 			ID: -1,
 			name: 'unknown',

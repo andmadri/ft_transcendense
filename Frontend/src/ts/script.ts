@@ -1,7 +1,7 @@
 //Initialize the game by setting up the WebSocket connection, the login system, the game state
 //importing functionality from different files
 
-import { game, pauseBallTemporarily } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
+import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
@@ -11,7 +11,8 @@ import { getGameField } from './Game/gameContent.js'
 import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
-import { OT, state, MF } from '@shared/enums'
+import { OT, state} from '@shared/enums'
+import { sendScoreUpdate } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
@@ -42,40 +43,54 @@ window.addEventListener('popstate', (event: PopStateEvent) => {
 let lastSpeedIncreaseTime = 0;
 
 function gameLoop() {
+	console.log(` match.state = ${Game.match.state}`);
 	switch (Game.match.state) {
 		case state.Pending: {
 			if (!document.getElementById('Pending'))
 				getPending();
 			break ;
 		}
-		case state.Init:
+		case state.Init: {
+			Game.match.state = state.Playing;
 			if (!document.getElementById('game'))
 			{
 				log('Init game');
-				getGameField();
-				initGame();
-				Game.match.state = state.Playing;
-				console.log(`player one = ${Game.match.gameState.paddle1.pos.y} , player two = ${Game.match.gameState.paddle2.pos.y} , ballX = ${Game.match.gameState.ball.pos.x} , ballY = ${Game.match.gameState.ball.pos.y}`);
+				getGameField(); 
 			}
+			initGame();
 			break ;
+		}
 		case state.Paused: {
 			//maybe start with pause instead of immediately playing
-			//maybe send score here in local mode, cause ball is paused when point is scored ?? 
-			pauseBallTemporarily(3000);
+			console.log(`state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
+			if (Game.match.pauseTimeOutID === null) {
+				pauseBallTemporarily(3000);
+			}
 			break ;
 		}
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
 			document.getElementById('auth2')?.remove();
-			game();
+			game(Game.match);
 			break ;
-		} 
-		case state.End:
-			if (!document.getElementById('gameOver')) {
-				getGameOver();
-				saveGame();
+		}
+		case state.Score: {
+			console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
+			updateDOMElements(Game.match);
+			Game.match.state = state.Paused;
+			if (Game.match.OT != OT.Online) {
+				sendScoreUpdate();
 			}
+			break;
+		}
+		case state.End: {
+			saveGame();
+			setTimeout(() => {
+				document.getElementById('gameOver')?.remove();
+				UI.state = S.stateUI.Menu;
+			}, 3000);
 			break ;
+		}
 		default:
 	}
 }

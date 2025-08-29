@@ -3,15 +3,15 @@ import { handleMatchEndedDB } from "../Services/matchService.js";
 import { matches } from "../InitGame/match.js";
 import { state } from "../SharedBuild/enums.js"
 
-export async function quitMatch(match, msg, socket) {
+export async function quitMatch(match, msg, socket, io) {
 	const name = msg.name ? msg.name : 'unknown player';
-	socket.emit('message', {
+	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.state = state.Finish;
+	match.state = state.End;
 }
 
 export async function saveMatch(db, match, msg, socket) {

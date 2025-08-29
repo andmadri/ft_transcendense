@@ -3,6 +3,8 @@ import { waitlist, matches } from "../InitGame/match.js";
 import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
+import { randomizeBallAngle, updateGameState } from "../SharedBuild/gameLogic.js";
+import { sendGameStateUpdate, sendScoreUpdate } from "../Game/gameStateSync.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -31,12 +33,39 @@ function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
-function matchInterval(match) {
-	match.intervalId = setInterval(() => {
-		// if (match.state == state.Init) {
-		// 	initGame();
-		// }
-	}, 100)
+function matchInterval(match, io) {
+	match.intervalID = setInterval(() => {
+		switch (match.state) {
+			case (state.Init) : {
+				randomizeBallAngle(match.gameState.ball)
+				match.state = state.Playing;
+			}
+			case (state.Playing) : {
+				updateGameState(match)
+				sendGameStateUpdate(match, io);
+				break;
+			}
+			case (state.Paused) : {
+				if (match.pauseTimeOutID == null) {
+					match.pauseTimeOutID = setTimeout(() => {
+						match.state = state.Playing;
+						match.pauseTimeOutID = null
+					}, 3000)
+				}
+				break;
+			}
+			case (state.Score) : {
+				sendScoreUpdate(match, io);
+				match.state = state.Paused;
+				break;
+			}
+			case (state.End) : {
+				console.log(`interval cleared`);
+				clearInterval(match.intervalID);
+				break;
+			}
+		}
+	}, 40)
 }
 
 // checks if there is already someone waiting
@@ -45,6 +74,7 @@ function matchInterval(match) {
 export async function handleOnlineMatch(db, socket, userID, io) {
 	const [socket2, userID2] = findOpenMatch();
 
+	
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
 		if (userID2 && userID2 == userID) {
@@ -54,7 +84,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 				match: null
 				// more info about the game
 			});
-		return ;
+			return ;
 		}
 	
 		const matchID = await createMatch(db, OT.Online, socket, userID, userID2);
@@ -88,8 +118,8 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 		});
 
 		//set interval for online gamelogic
-		matchInterval(match);
-
+		match.state = state.Init;
+		matchInterval(match, io);
 	} else {
 		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID);

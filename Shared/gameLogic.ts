@@ -73,9 +73,9 @@ function changeVelocityOnPaddleBounce(ball: entity, player : entity) {
 }
 
 function handleScore(match: matchInfo, field: any, ball: entity, player: player) {
-	match.state = state.Paused;
+	match.state = state.Score;
 	player.score++;
-	//sendScoreUpdate(player.ID); //when to do this now?? -> maybe with state??
+	match.lastScoreID = player.ID;
 	resetBall(ball, field);
 }
 
@@ -109,10 +109,16 @@ function checkPaddleSides(match: matchInfo) {
 
 export function updateGameState(match: matchInfo) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
-
-	handleWallBounce(ball, field);
-	checkPaddleSides(match);
-	updateBallPos(ball, field);
-	updatePaddlePos(paddle1, field);
-	updatePaddlePos(paddle2, field);
+	
+	if (match.player1.score == 5 || match.player2.score == 5) {
+		match.state = state.End;
+		return ;
+	}
+	if (match.state == state.Playing) {
+		updateBallPos(ball, field);
+		updatePaddlePos(paddle1, field);
+		updatePaddlePos(paddle2, field);
+		handleWallBounce(ball, field);
+		checkPaddleSides(match);
+	}
 }

@@ -29,7 +29,7 @@ export function handleGame(db, msg, socket, io) {
 			saveMatch(db, match, msg, socket);
 			break ;
 		case 'quit':
-			quitMatch(match, msg, socket);
+			quitMatch(match, msg, socket, io);
 			break;
 		default:
 			console.log("subaction not found: " + msg.subaction);

@@ -18,11 +18,6 @@ export const AI: S.AIInfo = {
 	tick : 0
 }
 
-
-export function resetAI() {
-	AI.lastView = 0;
-}
-
 function	followBall(dx : number, dy : number) {
 
 	const threshold = field.size.height * 0.5;
@@ -83,6 +78,7 @@ function	predictAction() {
 }
 
 export function aiAlgorithm(){
+	console.log(`aiAlgorithm()`);
 
 	const paddleCenter = paddle2.pos.y + paddle2.size.height / 2;
 	if (Game.match.time - AI.lastView > AI.reactionTime) {

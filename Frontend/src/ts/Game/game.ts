@@ -2,8 +2,10 @@ import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
-import { OT, Stage } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 import { navigateTo } from "../history.js";
+import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
+
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
@@ -13,9 +15,6 @@ function processMatch(data: any) {
 	Game.match.player1.ID = data.player1ID;
 	Game.match.player2.ID = data.player2ID;
 
-	if (Game.match.mode == OT.Online) {
-		getGameField();
-	}
 	// init or game? Server has send msg that init backend is ready. Now we need the gameloop but with
 	// the game field as well
 	navigateTo('Game');
@@ -49,12 +48,12 @@ export function actionGame(data: any) {
 		case 'start':
 			UI.state = S.stateUI.Game;
 			break ;
-		case 'ballUpdate':
- 			//applyBallUpdate(data);
+		case 'gameStateUpdate':
+			applyGameStateUpdate(data);
 			break ;
-		case 'padelUpdate':
-			//applyPaddleUpdate(data);
-			break ;
+		case 'scoreUpdate':
+			applyScoreUpdate(data);
+			break;
 		case 'save':
 			processSavingMatch(data);
 			break ;

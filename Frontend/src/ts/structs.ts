@@ -20,10 +20,18 @@ export type update = {
 	ball: [number, number, number, number];
 }
 
+export type user = {
+	ID: number,
+	name: string,
+	Twofa: boolean
+}
+
 
 export type UI = {
 	state: stateUI,
 	logDiv: HTMLDivElement,
+	user1: user,
+	user2: user
 }
 
 export type Game = {

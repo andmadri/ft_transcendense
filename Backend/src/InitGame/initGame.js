@@ -43,5 +43,4 @@ export function handleInitGame(db, msg, socket, userId1, userId2) {
 		if (handleStartOnlineMatch(msg, match))
 			return ;
 	}
-	
 }
