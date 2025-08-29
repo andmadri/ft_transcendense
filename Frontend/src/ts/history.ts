@@ -34,8 +34,8 @@ export function renderPage(newState: string) {
 			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
-		case 'Stats':
-			// getDashboard();
+		case 'Dashboard':
+			UI.state = S.stateUI.Dashboard;
 			break ;
 		case 'Credits':
 			UI.state = S.stateUI.Credits;
@@ -51,7 +51,6 @@ export function renderPage(newState: string) {
 			break ;
 		case 'GameOver':
 			Game.match.state = state.End;
-			// UI.state = S.stateUI.GameOver;
 			break ;
 		default:
 			console.log(`Page does not exist: ${newState}`);

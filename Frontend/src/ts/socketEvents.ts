@@ -5,6 +5,7 @@ import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
+import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import * as S from './structs.js'
 
@@ -68,6 +69,9 @@ export function receiveFromWS(data: any) {
 		case 'game':
 			actionGame(data);
 			break ;
+		case 'dashboardInfo':
+			populateDashboard(data);
+			break;
 		case 'error':
 			if (data.reason)
 				log('error' + `${data.reason}`);

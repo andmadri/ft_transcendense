@@ -75,6 +75,7 @@ export function getGameField() {
 	app.style.width = '100vw';
 	app.style.height = '100vh';
 	app.style.overflow = 'hidden';
+	// app.innerHTML = '';
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';

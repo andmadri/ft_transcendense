@@ -43,7 +43,7 @@ export function actionGame(data: any) {
 
 	switch(data.subaction) {
 		case 'init':
-			log(`MatchID frontend: ${data.id}`)
+			log(`MatchID frontend: ${data.id}`); // MARTY: WHERE IS THIS LOG USED FOR?
 			processMatch(data);
 			break ;
 		case 'start':

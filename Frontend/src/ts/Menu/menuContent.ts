@@ -51,10 +51,28 @@ function getPlayBtn(): HTMLButtonElement {
 		fontSize: '1em',
 		cursor: 'pointer',
 		borderRadius: '10px',
-		width: '60%',
+		// width: '60%',
 	});
 	playBtn.addEventListener('click', () => { navigateTo('Settings'); });
 	return (playBtn);
+}
+
+function getDashboardBtn(): HTMLButtonElement {
+	const dashboardBtn = document.createElement('button');
+	dashboardBtn.textContent = 'Dashboard';
+	styleElement(dashboardBtn, {
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px',
+		// width: '60%',
+	});
+	dashboardBtn.addEventListener('click', () => {
+		navigateTo('Dashboard');
+	});
+	return (dashboardBtn);
 }
 
 function getLoginBtn(playerNr: number): HTMLButtonElement {
@@ -533,6 +551,7 @@ export function getMenu() {
 	});
 	bottomButtonDiv.appendChild(getCreditBtn());
 	bottomButtonDiv.appendChild(getPlayBtn());
+	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 
 	const app = document.getElementById('app');

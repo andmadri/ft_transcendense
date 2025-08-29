@@ -20,7 +20,7 @@ import { saveGame } from './Game/endGame.js';
 import { getCreditBtn, getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
-
+import { getDashboard } from './Dashboard/dashboardContents.js'
 // getLoadingPage();
 createLog();
 
@@ -96,13 +96,13 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu') && !document.getElementById('settingPage'))
+				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
 			}
-			case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard'))
-					// getDashboard();
+			case S.stateUI.Settings: {
+				if (!document.getElementById('settingPage'))
+					getSettingsPage();
 				break;
 			}
 			case S.stateUI.Credits: {
@@ -110,15 +110,20 @@ function mainLoop() {
 					getCreditsPage();
 				break ;
 			}
-			case S.stateUI.Settings: {
-				if (!document.getElementById('settingPage'))
-					getSettingsPage();
-				break ;
-			}
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
+			}case S.stateUI.Dashboard: {
+				if (!document.getElementById('dashboard'))
+				{
+					getDashboard();
+				}
+				break;
 			}
+			// case S.stateUI.Game: {
+			// 	gameLoop();
+			// 	break ;
+			// }
 			default:
 		}
 	} else {

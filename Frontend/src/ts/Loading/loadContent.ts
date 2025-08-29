@@ -1,8 +1,8 @@
 export function getLoadingPage() {
-	const app = document.getElementById('app');
-	if (!app)
+	const body = document.getElementById('body');
+	if (!body)
 		return;
-	app.innerHTML = '';
+	body.innerHTML = '';
 
 	const page = document.createElement('div');
 	page.id = "loadingpage";
@@ -42,5 +42,5 @@ export function getLoadingPage() {
 	}
 
 	page.appendChild(loading);
-	app.appendChild(page);
+	body.appendChild(page);
 }

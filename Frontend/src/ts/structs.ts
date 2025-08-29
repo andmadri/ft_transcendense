@@ -6,10 +6,11 @@ type Socket = any;
 export enum stateUI {
 	Menu,
 	LoginP1,
+	OptionMenu,
 	LoginP2,
 	Game,
-	Settings,
 	Dashboard,
+	Settings,
 	Credits,
 }
 
