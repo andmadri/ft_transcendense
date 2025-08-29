@@ -6,11 +6,9 @@ import { getFriendsList } from './friends.js';
 // import { getHighscores } from './highscore.js'
 // import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
-// import { getCreditBtn } from './credits.js';
-// import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
-import { navigateTo } from "../history.js";
+import { navigateTo } from "../history.js"; //USE THIS!!!
 
 function styleBtn(button: HTMLButtonElement, text: string)
 {

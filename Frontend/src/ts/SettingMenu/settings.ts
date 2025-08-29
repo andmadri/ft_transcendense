@@ -133,10 +133,10 @@
 // 	return (optionRight);
 // }
 
-<<<<<<< HEAD:Frontend/src/ts/OptionMenu/options.ts
+
 export function getOptionMenu() {
-	const optionMenu = document.createElement('div');
-	optionMenu.id = 'optionMenu';
+	const settingPage = document.createElement('div');
+	settingPage.id = 'settingPage';
 	// styleElement(optionMenu, {
 	// 	display: 'flex',
 	// 	flexDirection: 'column',
@@ -146,7 +146,7 @@ export function getOptionMenu() {
 	// 	width: '100%',
 	// 	boxSizing: 'border-box'
 	// });
-=======
+
 export function getSettingsPage() {
 	if (document.getElementById('settingPage'))
 		return ;
@@ -164,7 +164,7 @@ export function getSettingsPage() {
 		width: '100%',
 		boxSizing: 'border-box'
 	});
->>>>>>> origin/42-5-users-can-add-others-as-friends-and-view-their-online-status:Frontend/src/ts/SettingMenu/settings.ts
+>>>>>>>>> Temporary merge branch 2:Frontend/src/ts/SettingMenu/settings.ts
 
 	const optionLeftRight = document.createElement('div');
 	// styleElement(optionLeftRight, {
@@ -175,13 +175,10 @@ export function getSettingsPage() {
 	// 	flex: '1'
 	// })
 
-<<<<<<< HEAD:Frontend/src/ts/OptionMenu/options.ts
 	// optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	// optionMenu.appendChild(optionLeftRight);
-=======
 	optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
 	settingPage.appendChild(optionLeftRight);
->>>>>>> origin/42-5-users-can-add-others-as-friends-and-view-their-online-status:Frontend/src/ts/SettingMenu/settings.ts
 
 	const body = document.getElementById('body');
 	if (!body)
