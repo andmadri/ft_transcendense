@@ -76,7 +76,9 @@ export async function getOpenFriendRequestsDB(db, player_id) {
 export function deleteFriendDBfromUser(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
 		db.run(
-			`DELETE FROM Friends WHERE user_id = ? AND friend_id = ?`,
+			`DELETE FROM Friends 
+			WHERE (user_id = ? AND friend_id = ?) 
+			OR (user_id = ? AND friend_id = ?)`,
 			[user_id, friend_id],
 			function (err) {
 				if (err)

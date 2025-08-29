@@ -79,7 +79,7 @@ export async function addFriendRequest(socket, userId1, data) {
 	}
 }
 
-async function deleteFriend(socket, userID1, msg) {
+async function deleteFriendship(socket, userID1, msg) {
 	try {
 		console.log('Try to delete friend', userID1, msg.friendID);
 		// IMPROVE FUNCTION DELETEFRIENDDB TO DO THIS
@@ -109,7 +109,7 @@ export async function handleFriends(msg, socket, userId1, io) {
 			denyFriendRequest(socket, userId1, msg);
 			break ;
 		case 'unfriend':
-			deleteFriend(socket, userId1, msg);
+			deleteFriendship(socket, userId1, msg);
 			break ;
 		default:
 			console.log(`Unknown subaction ${msg.subaction}`);
