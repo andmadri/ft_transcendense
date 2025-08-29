@@ -29,7 +29,7 @@ export function applyScoreUpdate(data: any) {
 }
 
 export function sendKeyPressUpdate(key : string) {
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'game',
 		subaction: 'keyPressUpdate',
 		key: key,
@@ -40,7 +40,7 @@ export function sendKeyPressUpdate(key : string) {
 }
 
 export function sendGameState() {
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'game',
 		subaction: 'gameStateUpdate',
 		matchID: Game.match.ID,
@@ -49,7 +49,7 @@ export function sendGameState() {
 }
 
 export function sendScoreUpdate() {
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'game',
 		subaction: 'scoreUpdate',
 		player: Game.match.lastScoreID,

@@ -41,7 +41,7 @@ export function getFriendsList(playerNr: number): HTMLDivElement {
 			list.innerHTML = '';
 	}
 
-	Game.socket.send({ 
+	Game.socket.emit('message', { 
 		action: 'friends', 
 		subaction: 'getFriends', 
 		playerNr });
@@ -80,7 +80,7 @@ function insertFriends(friends: any, playerNr: number, noFriends: boolean) {
 	    deleteFriendBtn.textContent = "Unfriend";
 
 	    deleteFriendBtn.addEventListener("click", () => {
-	        Game.socket.send({
+	        Game.socket.emit('message', {
 	            action: 'friends',
 	            subaction: 'unfriend',
 	            userID: UI.user1.ID,

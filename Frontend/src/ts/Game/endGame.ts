@@ -89,7 +89,7 @@ export function saveGame() {
 		return ;
 
 	
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'game',
 		subaction: 'save',
 		matchID: Game.match.ID

@@ -52,7 +52,7 @@ export function startGame() {
 			navigateTo('Game');
 			Game.match.state = state.Pending;
 			console.log("Send online request to backend");
-			Game.socket.send({
+			Game.socket.emit('message', {
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
 			});
@@ -112,7 +112,7 @@ export function initGameServer() {
 		}
 		if (Game.match.mode == OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
-		Game.socket.send(initGame);
+		Game.socket.emit('message', initGame);
 	}
 }
 
@@ -184,7 +184,7 @@ export function initGame() {
 			matchID: Game.match.matchID,
 			userID: UI.user1.ID //user check
 		}
-		Game.socket.send(readyToPlay);
+		Game.socket.emit('message', readyToPlay);
 	}
 	const fieldDiv = document.getElementById('field');
 	if (fieldDiv) {

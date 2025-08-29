@@ -8,12 +8,6 @@ import { sql_log, sql_error } from './dblogger.js';
 const { Database } = sqlite3.verbose();
 const dbpath = './pong.db';
 
-// /**
-//  * Open sqlite database
-//  * 
-//  * @param {*} path 
-//  * @returns 
-//  */
 function openDatabase(path) {
 	return new Promise((resolve, reject) => {
 		const db = new Database(path, (err) => {
@@ -26,7 +20,6 @@ function openDatabase(path) {
 		});
 	});
 }
-
 
 function run(db, sql, params = []) {
 	return new Promise((resolve, reject) => {

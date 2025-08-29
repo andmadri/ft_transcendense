@@ -43,7 +43,7 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
-		Game.socket.send({
+		Game.socket.emit('message', {
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.match.matchID,

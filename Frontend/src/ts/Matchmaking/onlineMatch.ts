@@ -1,7 +1,7 @@
 import { Game } from "../gameData.js"
 
 export function cancelOnlineMatch() {
-	Game.socket.send({ 
+	Game.socket.emit('message', { 
 		action: 'matchmaking',
 		subaction: 'cancelOnlineMatch',
 		matchID: Game.match.ID
@@ -11,7 +11,7 @@ export function cancelOnlineMatch() {
 // send when player wants to play an online game
 export function searchMatch(userID: number) {
 	
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'matchmaking',
 		subaction: 'createOnlineMatch',
 		userID: userID

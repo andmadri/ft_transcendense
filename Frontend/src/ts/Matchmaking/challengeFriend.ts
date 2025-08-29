@@ -3,7 +3,7 @@ import { log } from "../logging.js";
 
 // STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'matchmaking',
 		subaction: 'challengeFriend',
 		challenger: UI.user1.ID,
@@ -19,7 +19,7 @@ function isChallenged(ID: number): boolean {
 
 // STEP: 4: send back response to server
 function responseChallenge(answer: boolean, roomname: string) {
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'matchmaking',
 		subaction: 'challengeFriendAnswer',
 		answer: answer,

@@ -80,7 +80,7 @@ export function showFriendRequests(requests: any) {
 
 function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 	console.log(`Friend request ${requestId} ${acceptOrDeny}`);
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'friends',
 		subaction: acceptOrDeny + 'FriendRequest',
 		requestId,

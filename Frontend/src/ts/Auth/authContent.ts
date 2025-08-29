@@ -1,7 +1,6 @@
 import { submitAuthForm } from './userAuth.js'
 import { log } from '../logging.js'
 import * as S from '../structs.js'
-import { movePadel } from '../Game/gameLogic.js';
 import { navigateTo } from '../history.js';
 
 export let authenticationMode = 'Sign Up';

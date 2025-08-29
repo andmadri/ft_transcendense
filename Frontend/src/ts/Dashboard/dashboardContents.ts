@@ -89,6 +89,11 @@ export function populateDashboard(msg: any)
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
 	if (!infoCardsContainer || !matchList)
 		return ;
+	console.log(`populateDashboard`);
+	console.log(`populateDashboard: ${msg}, ${msg.matches}, ${msg.player}, ${msg.stats}, ${msg.log_time}`);
+	
+	log(`populateDashboard`);
+	log(`populateDashboard: ${msg}, ${msg.matches}, ${msg.player}, ${msg.stats}, ${msg.log_time}`);
 	renderMatchInfo(msg.matches, matchList);
 	renderUserInfoCard(msg.player, infoCardsContainer);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
@@ -117,82 +122,73 @@ export function getDashboard()
 	containerDashboard.style.justifyContent = 'center';
 	containerDashboard.style.gap = '1.5%';
 
-	const dashboard = document.createElement('div');
-	dashboard.id = 'dashboard';
-	dashboard.style.background = '#363430';
-	dashboard.style.display = 'flex';
-	dashboard.style.flexDirection = 'column';
-	dashboard.style.aspectRatio = '4 / 3';
-	// dashboard.style.width = '80vw';
-	// dashboard.style.height = '50vh';
-	dashboard.style.width = 'clamp(500px, 80vw, 1200px)';
-	dashboard.style.height = 'clamp(300px, 50vh, 800px)';
-	dashboard.style.borderRadius = '16px';
-	dashboard.style.position = 'relative';
-	dashboard.style.boxSizing = 'border-box';
-	dashboard.style.alignItems = 'flex-start';
+	const matchHistoryRows = document.createElement('div');
+	matchHistoryRows.id = 'matchHistoryRows';
+	matchHistoryRows.style.background = '#363430';
+	matchHistoryRows.style.display = 'flex';
+	matchHistoryRows.style.flexDirection = 'column';
+	matchHistoryRows.style.aspectRatio = '4 / 3';
+	matchHistoryRows.style.width = 'clamp(500px, 80vw, 1200px)';
+	matchHistoryRows.style.height = 'clamp(300px, 50vh, 800px)';
+	matchHistoryRows.style.borderRadius = '16px';
+	matchHistoryRows.style.position = 'relative';
+	matchHistoryRows.style.boxSizing = 'border-box';
+	matchHistoryRows.style.alignItems = 'flex-start';
 
-	const title = document.createElement('div');
-	title.id = 'dashboardTitle';
-	title.textContent = 'Match History';
-	title.style.fontFamily = '"Horizon", monospace';
-	title.style.color = 'transparent';
-	// title.style.fontSize = 'min(3vw, 3vh)';
-	title.style.fontSize = 'clamp(18px, 3vw, 36px)';
-	title.style.webkitTextStroke = '0.1rem #ffffff';
-	title.style.whiteSpace = 'nowrap';
-	title.style.display = 'inline-block';
-	title.style.background = '#363430';;
-	title.style.borderRadius = '16px';
-	// title.style.width = '80vw';
-	title.style.width = 'clamp(500px, 80vw, 1200px)';
-	title.style.padding = '0.5rem';
-	title.style.boxSizing = 'border-box';
+	const matchHistoryTitle = document.createElement('div');
+	matchHistoryTitle.id = 'matchHistoryTitle';
+	matchHistoryTitle.textContent = 'Match History';
+	matchHistoryTitle.style.fontFamily = '"Horizon", monospace';
+	matchHistoryTitle.style.color = 'transparent';
+	matchHistoryTitle.style.fontSize = 'clamp(18px, 3vw, 36px)';
+	matchHistoryTitle.style.webkitTextStroke = '0.1rem #ffffff';
+	matchHistoryTitle.style.whiteSpace = 'nowrap';
+	matchHistoryTitle.style.display = 'inline-block';
+	matchHistoryTitle.style.background = '#363430';;
+	matchHistoryTitle.style.borderRadius = '16px';
+	matchHistoryTitle.style.width = 'clamp(500px, 80vw, 1200px)';
+	matchHistoryTitle.style.padding = '0.5rem';
+	matchHistoryTitle.style.boxSizing = 'border-box';
 
-	const headers = document.createElement('div');
-	headers.id = 'dashboardHeaders';
-	headers.style.display = 'flex';
-	headers.style.width = "100%";
-	headers.style.justifyContent = 'space-between';
-	headers.style.alignContent = 'center';
-	headers.style.alignItems = 'center';
-	//clamped
-	headers.style.fontSize = 'clamp(5px, 1.2vw, 15px)';
-	headers.style.fontFamily = '"Horizon", monospace';
-	headers.style.color = 'white';
-	headers.style.padding = '0.7% 0';
-	headers.style.whiteSpace = 'nowrap';
+	const matchHistoryHeaders = document.createElement('div');
+	matchHistoryHeaders.id = 'matchHistoryHeaders';
+	matchHistoryHeaders.style.display = 'flex';
+	matchHistoryHeaders.style.width = "100%";
+	matchHistoryHeaders.style.justifyContent = 'space-between';
+	matchHistoryHeaders.style.alignContent = 'center';
+	matchHistoryHeaders.style.alignItems = 'center';
+	matchHistoryHeaders.style.fontSize = 'clamp(5px, 1.2vw, 15px)';
+	matchHistoryHeaders.style.fontFamily = '"Horizon", monospace';
+	matchHistoryHeaders.style.color = 'white';
+	matchHistoryHeaders.style.padding = '0.7% 0';
+	matchHistoryHeaders.style.whiteSpace = 'nowrap';
 
 	const labels = ['Opponent', 'Date', 'Winner', 'Score', 'Duration', 'Total Hits'];
 	labels.forEach(text => {
 	const headerItem = document.createElement('div');
 		headerItem.textContent = text;
 		headerItem.style.flex = '1';
-		headers.style.textAlign = 'center';
-		headers.appendChild(headerItem);
+		matchHistoryHeaders.style.textAlign = 'center';
+		matchHistoryHeaders.appendChild(headerItem);
 	})
 
-	const matchList = document.createElement('div');
-	matchList.id = 'matchList';
-	matchList.style.display = 'flex';
-	matchList.style.flexDirection = 'column';
-	matchList.style.width = '95%';
-	matchList.style.gap = '1rem';
-	matchList.style.overflowY = 'auto';
-	matchList.style.flexGrow = '1';
-	matchList.style.paddingLeft = '2%';
-	matchList.style.fontFamily = '"RobotoCondensed", sans-serif';
-	// matchList.style.fontSize = 'min(2vw, 2vh)';
-	//clamped
-	matchList.style.fontSize = 'min(2vw, 2vh)';
-	matchList.style.textAlign = 'center';
+	const matchHistoryList = document.createElement('div');
+	matchHistoryList.id = 'matchHistoryList';
+	matchHistoryList.style.display = 'flex';
+	matchHistoryList.style.flexDirection = 'column';
+	matchHistoryList.style.width = '95%';
+	matchHistoryList.style.gap = '1rem';
+	matchHistoryList.style.overflowY = 'auto';
+	matchHistoryList.style.flexGrow = '1';
+	matchHistoryList.style.paddingLeft = '2%';
+	matchHistoryList.style.fontFamily = '"RobotoCondensed", sans-serif';
+	matchHistoryList.style.fontSize = 'min(2vw, 2vh)';
+	matchHistoryList.style.textAlign = 'center';
 
 	const infoCardsContainer = document.createElement('div');
 	infoCardsContainer.id = 'infoCardsContainer';
 	infoCardsContainer.style.display = 'flex';
 	infoCardsContainer.style.direction = 'row';
-	// infoCardsContainer.style.width = '80vw';
-	// infoCardsContainer.style.height = '25vh';
 	infoCardsContainer.style.width = 'clamp(500px, 80vw, 1200px)';
 	infoCardsContainer.style.height = 'clamp(200px, 25vh, 300px)';
 	infoCardsContainer.style.justifyContent = 'space-between';
@@ -214,22 +210,19 @@ export function getDashboard()
 	exitButton.style.fontFamily = '"Horizon", sans-serif';
 
 	exitButton.addEventListener('click', () => {
-		const dashboard = document.getElementById('dashboard');
-		if (dashboard) {
-			dashboard.remove();
+		const matchHistoryRows = document.getElementById('matchHistoryRows');
+		if (matchHistoryRows) {
+			matchHistoryRows.remove();
 		}
 		navigateTo('Menu');
 	});
 
-	dashboard.appendChild(headers);
-	dashboard.appendChild(matchList);
+	matchHistoryRows.appendChild(matchHistoryHeaders);
+	matchHistoryRows.appendChild(matchHistoryList);
 	containerDashboard.appendChild(infoCardsContainer);
-	containerDashboard.appendChild(title);
-	containerDashboard.appendChild(dashboard);
+	containerDashboard.appendChild(matchHistoryTitle);
+	containerDashboard.appendChild(matchHistoryRows);
 	body.append(containerDashboard);
 	body.append(exitButton);
-	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
-	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
 	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
-
 }
