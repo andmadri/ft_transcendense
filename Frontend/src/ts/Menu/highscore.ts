@@ -3,7 +3,7 @@ import { Game } from "../gameData.js"
 
 function createHighscores(): HTMLDivElement {
 	const highscores = document.createElement('div');
-	highscores.id = 'online';
+	highscores.id = 'highscore';
 		styleElement(highscores, {
 		backgroundColor: 'white',
 		padding: '20px',

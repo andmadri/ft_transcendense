@@ -50,7 +50,7 @@ function getQuitBtn() {
 			player: UI.user1.ID,
 			name: UI.user1.name
 		});
-		navigateTo('Menu');
+		Game.match.state = state.End;
 	})
 	return (quitButton);
 }

@@ -71,7 +71,6 @@ export function receiveFromWS(data: any) {
 			actionGame(data);
 			break ;
 		case 'dashboardInfo':
-			log('Going to: dashboardInfo');
 			populateDashboard(data);
 			break;
 		case 'error':

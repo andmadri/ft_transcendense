@@ -2,6 +2,7 @@ import { Game, UI } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
+import { getGameOver } from './Game/endGame.js';
 
 /**
  * NAVIGATION FOR
@@ -50,7 +51,7 @@ export function renderPage(newState: string) {
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'GameOver':
-			Game.match.state = state.End;
+			getGameOver();
 			break ;
 		default:
 			console.log(`Page does not exist: ${newState}`);

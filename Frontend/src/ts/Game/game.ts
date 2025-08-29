@@ -25,7 +25,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	navigateTo('Menu');
+	Game.match.state = state.End;
 	log(data.reason);
 }
 

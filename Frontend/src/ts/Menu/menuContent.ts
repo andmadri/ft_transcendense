@@ -19,6 +19,7 @@ export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration
 
 function getLeftSideMenu() {
 	const menuLeft = document.createElement('div');
+	menuLeft.id = "menuLeft";
 	styleElement(menuLeft, {
 		display: 'flex',
 		flexDirection: 'column',
@@ -30,6 +31,7 @@ function getLeftSideMenu() {
 	});
 
 	const highScoreOnlineDiv = document.createElement('div');
+	highScoreOnlineDiv.id = "highScoreOnlineDiv";
 	styleElement(highScoreOnlineDiv, {
 		display: 'flex',
 		gap: '15px',

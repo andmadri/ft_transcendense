@@ -88,15 +88,15 @@ export function saveGame() {
 	if (Game.match.ID == -1)
 		return ;
 
-	navigateTo('GameOver');
-
+	
 	Game.socket.send({
 		action: 'game',
 		subaction: 'save',
 		matchID: Game.match.ID
 	});
-
+	
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
 	Game.match.ID = -1;
+	navigateTo('GameOver');
 }

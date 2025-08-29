@@ -89,17 +89,9 @@ export function populateDashboard(msg: any)
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
 	if (!infoCardsContainer || !matchList)
 		return ;
-	console.log("Going to: renderMatchInfo");
-	console.log(msg.matches);
 	renderMatchInfo(msg.matches, matchList);
-	console.log("Going to: renderUserInfoCard");
-	console.log(msg.player);
 	renderUserInfoCard(msg.player, infoCardsContainer);
-	console.log("Going to: renderUserStatsCard");
-	console.log(msg.stats);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
-	console.log("Going to: renderPlayingTimeCard");
-	console.log(msg.log_time);
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
