@@ -58,7 +58,6 @@ export async function openFriendRequest(userId1, socket) {
 			console.log("no open requests");
 			return ;
 		}
-		console.log(`Send back requests:`, requests);
 		sendContentToFrontend('friends', 'openRequests', socket, "yes", requests);
 	} catch (err) {
 		console.error("DB error: ", err);
@@ -81,10 +80,7 @@ export async function addFriendRequest(socket, userId1, data) {
 
 async function deleteFriendship(socket, userID1, msg) {
 	try {
-		console.log('Try to delete friend', userID1, msg.friendID);
-		// IMPROVE FUNCTION DELETEFRIENDDB TO DO THIS
 		friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
-		friendsDB.deleteFriendDBfromUser(db, msg.friendID, userID1);
 	} catch (err) {
 		socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 		console.error(err);
@@ -92,7 +88,7 @@ async function deleteFriendship(socket, userID1, msg) {
 }
 
 export async function handleFriends(msg, socket, userId1, io) {
-	console.log("handleFriends function...", msg.action + " " + msg.subaction);
+	// console.log("handleFriends function...", msg.action + " " + msg.subaction);
 	switch (msg.subaction) {
 		case "getFriends":
 			return getFriends(userId1, socket);

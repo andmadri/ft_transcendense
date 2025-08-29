@@ -15,7 +15,6 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 async function getOnlinePlayers(msg, socket) {
 	try {
 		const onlineUsers = await userDB.getOnlineUsers(db);
-		console.log("Recieved DB content: ", onlineUsers);
 		if (!onlineUsers || onlineUsers.length === 0 || onlineUsers == "[]" || onlineUsers == "undefined") {
 			console.log("No online players found");
 			return sendContentToFrontend('online', 'retOnlinePlayers', socket, "no", "No online players found");
