@@ -13,7 +13,7 @@ import { handleInitGame } from './InitGame/initGame.js'
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB } from './Database/sessions.js';
+import { addUserSessionToDB, getLastUserSession } from './Database/sessions.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
@@ -156,13 +156,21 @@ fastify.ready().then(() => {
 
 		socket.on('disconnect', () => {
 			console.log(`User disconnected: ${userId1}`);
-			try {
-				// not sure if this is the good function but I want to remove
-				// the player from the list
-				addUserSessionToDB(db, {userId1, state: 'logout'});
-			} catch (err) {
-				console.error('Failed logout cleanup', err);
+
+			async function logoutUser(userId1) {
+				try {
+					const session = await getLastUserSession(db, userId1);
+
+					if (!session) {
+						console.error('No session found, Failed logout cleanup for user', userId1);
+						return;
+					}
+					await addUserSessionToDB(db, { session, state: 'logout' });
+				} catch(err) {
+					console.error('Failed logout cleanup for user', userId1);
+				}
 			}
+			logoutUser(userId1);
 		});
 	});
 });

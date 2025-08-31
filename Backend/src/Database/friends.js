@@ -7,12 +7,11 @@ async function isAlreadyAnInvite(db, user_id, friend_id) {
 		const checkSql = `
 			SELECT id FROM Friends
 			WHERE (user_id = ? AND friend_id = ?)
-			OR (user_id = ? AND friend_id = ?)
 			LIMIT 1
 		`;
 		db.get(
 			checkSql,
-			[user_id, friend_id, friend_id, user_id],	
+			[friend_id, user_id],	
 			(err, row) => {
 				if (err)
 					return reject(err);

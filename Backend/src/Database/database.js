@@ -73,14 +73,24 @@ export async function createDatabase() {
 		email: 'guest@guest.guest',
 		password: 'secretguest'
 	});
-	await onUserLogin(db, guest_id);
+
+	try {
+		await onUserLogin(db, guest_id);
+	} catch(err) {
+		console.log("onUserLogin failed: guest id");
+	}
 
 	const ai_id = await createNewUserToDB(db, {
 		name: 'AI',
 		email: 'ai@ai.ai',
 		password: 'secretai'
 	});
-	await onUserLogin(db, ai_id);
+
+	try {
+		await onUserLogin(db, ai_id);
+	} catch (err) {
+		console.log("onUserLogin failed: ai id");
+	}
 
 	sql_log(`Finished setting up database`, false, true);
 	return db;
