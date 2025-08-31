@@ -69,7 +69,7 @@ export async function addFriendRequest(socket, userId1, data) {
 	try {
 		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
-		if (err.message.includes('already exists')) {
+		if (err.message.includes('You already invited this player')) {
 			sendContentToFrontend('friends', 'error', socket, "no", err.message);
 		} else {
 			socket.emit('message', {action: '', subaction: '', msg: 'Database error'});

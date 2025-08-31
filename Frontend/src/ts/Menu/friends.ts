@@ -119,9 +119,9 @@ export function actionFriends(data: any) {
 			showFriendRequests(data.content);
 			break ;
 		case 'error':
-			alert(data.msg);
+			alert(data.content);
 			break ;
 		default:
-			log(`(actionOnline) Unknown action: ${data.subaction}`);
+			log(`(actionFriends) Unknown action: ${data.subaction}`);
 	}
 }

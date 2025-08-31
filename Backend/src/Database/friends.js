@@ -2,7 +2,43 @@
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
+async function isAlreadyAnInvite(db, user_id, friend_id) {
+	return new Promise((resolve, reject) => {
+		const checkSql = `
+			SELECT id FROM Friends
+			WHERE (user_id = ? AND friend_id = ?)
+			OR (user_id = ? AND friend_id = ?)
+			LIMIT 1
+		`;
+		db.get(
+			checkSql,
+			[user_id, friend_id, friend_id, user_id],	
+			(err, row) => {
+				if (err)
+					return reject(err);
+				if (row) {
+					resolve(row.id);
+				} else {
+					resolve(null);
+				}
+			}
+		);
+	});
+};
+
 export async function addFriendRequestDB(db, user_id, friend_id) {
+	try {
+		const requestID = await isAlreadyAnInvite(db, user_id, friend_id);
+		if (requestID) {
+			// friend already did a request;
+			acceptFriendRequestDB(db, requestID);
+			return ;
+		}
+	} catch (err) {
+		console.log(err);
+		return ;
+	}
+
 	return new Promise((resolve, reject) => {
 		db.run(
 			`INSERT INTO Friends (user_id, friend_id) VALUES (?, ?)`,
@@ -10,7 +46,7 @@ export async function addFriendRequestDB(db, user_id, friend_id) {
 			(err) => {
 				if (err) {
 					if (err.message.includes('UNIQUE')) {
-						reject(new Error('Friend request already exists'));
+						reject(new Error('You already invited this player'));
 					} else {
 						reject(err);
 					}
