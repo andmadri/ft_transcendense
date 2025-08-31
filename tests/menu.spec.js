@@ -24,7 +24,7 @@ export async function seeCredits(page) {
 
 export async function playerInOnlineMenu(page, playerName) {
 	await expect(
-		page.locator('#listOnlinePlayers', { hasText: playerName })
+		page.locator('#listPlayers', { hasText: playerName })
 	  ).toBeVisible();
 }
 

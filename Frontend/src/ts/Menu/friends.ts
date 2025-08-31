@@ -107,7 +107,7 @@ function processFriends(data: any) {
 
 export function actionFriends(data: any) {
 	if (!data.subaction) {
-		log('no subaction online');
+		log('no subaction Friends');
 		return ;
 	}
 

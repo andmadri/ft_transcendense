@@ -3,12 +3,11 @@ import fastifyIO from 'fastify-socket.io';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 import fastifyMultipart from '@fastify/multipart';
-import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
-import { getUserByID } from './Database/users.js';
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
 import { handleMatchmaking } from './Pending/matchmaking.js';
@@ -137,8 +136,8 @@ fastify.ready().then(() => {
 					return handlePlayerInfo(msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
-				case 'online':
-					return handleOnlinePlayers(msg, socket, userId1);
+				case 'players':
+					return handlePlayers(msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard':
@@ -159,8 +158,8 @@ fastify.ready().then(() => {
 			console.log(`User disconnected: ${userId1}`);
 			try {
 				// not sure if this is the good function but I want to remove
-				// the player from the online list
-				addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
+				// the player from the list
+				addUserSessionToDB(db, {userId1, state: 'logout'});
 			} catch (err) {
 				console.error('Failed logout cleanup', err);
 			}

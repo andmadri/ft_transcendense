@@ -6,7 +6,7 @@ FROM frontend TO backend
 • login => loginUpser / signUpUser / logout				
 • playerInfo => changeName / addAvatar / delAvatar		
 • chat => outgoing										
-• online => getOnlinePlayers / getOnlinePlayersWaiting	
+• players => getPlayers / getPlayersWaiting	
 • friends => getFriends / addFriend / deleteFriend		
 • pending => addToWaitlist / acceptGame					
 • game => init / ballUpdate / padelUpdate / scoreUpdate	
@@ -24,7 +24,7 @@ where to store avatars / how
 • login => loginCheck / signUpCheck / logout
 • playerInfo => getName / getAvatar
 • chat => incomming
-• online => retOnlinePlayers / retOnlinePlayersWaiting
+• players => retPlayers / retPlayersWaiting
 • friends => retFriends
 • pending => getWaitlist / createGame / startGame
 • game => ballUpdate / padelUpdate / scoreUpdate

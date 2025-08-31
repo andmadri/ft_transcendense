@@ -219,14 +219,34 @@ export async function createNewUserToDB(db, { name, email, password, avatar_url=
 }
 
 export async function getAllPlayers(db) {
-	const sql = `SELECT * FROM Users ORDER BY name`;
+	const sql = `        
+		SELECT 
+			u.*,
+			CASE 
+				WHEN us.state IS NULL OR us.state = 'logout' THEN 0
+				ELSE 1
+			END AS online_status
+		FROM Users u
+		LEFT JOIN (
+			SELECT us1.user_id, us1.state
+			FROM UserSessions us1
+			WHERE us1.id = (
+				SELECT us2.id
+				FROM UserSessions us2
+				WHERE us2.user_id = us1.user_id
+				ORDER BY us2.timestamp DESC
+				LIMIT 1
+			)
+		) us ON u.id = us.user_id
+		ORDER BY u.name;
+	`;
 	return new Promise((resolve, reject) => {
 		db.all(sql, [], (err, rows) => {
 			if (err) {
-				sql_error(err, `getOnlineUsers`);
+				sql_error(err, `getAllPlayers`);
 				reject(err);
 			} else {
-				resolve(rows)
+				resolve(rows);
 			}
 		});
 	});

@@ -1,5 +1,5 @@
 import { actionGame } from './Game/game.js'
-import { actionOnline } from './Menu/online.js'
+import { actionPlayers } from './Menu/players.js'
 import { log } from './logging.js' 
 import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
@@ -39,7 +39,7 @@ FROM backend TO frontend
 • playerInfo => getName / getAvatar / revicePlayerData
 • chat => incomming
 • friends => retFriends
-• online => retOnlinePlayers / retOnlinePlayersWaiting
+• players => retPlayers / retPlayersWaiting
 • friends => retFriends
 • matchMaking => getWaitlist / createGame / startGame
 • game => ballUpdate / padelUpdate / scoreUpdate
@@ -55,8 +55,8 @@ export function receiveFromWS(data: any) {
 		case 'playerInfo':
 			actionPlayerInfo(data);
 			break ;
-		case 'online':
-			actionOnline(data);
+		case 'players':
+			actionPlayers(data);
 			break ;
 		case 'friends':
 			actionFriends(data);

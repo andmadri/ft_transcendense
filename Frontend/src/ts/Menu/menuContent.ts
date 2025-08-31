@@ -1,7 +1,7 @@
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
 import { getFriendsList } from './friends.js';
-import { getOnlineList } from './online.js';
+import { getPlayerList } from './players.js';
 import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
 import { getCreditBtn } from './credits.js';
@@ -35,7 +35,7 @@ function getLeftSideMenu() {
 		gap: '15px',
 		flexGrow: '1',
 	});
-	highScoreOnlineDiv.append(getOnlineList());
+	highScoreOnlineDiv.append(getPlayerList());
 
 	menuLeft.append(highScoreOnlineDiv);
 	return (menuLeft);
