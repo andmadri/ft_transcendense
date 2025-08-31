@@ -14,7 +14,6 @@ import { getGameOver } from './Game/endGame.js';
  * Stats
  * Credits
  */
-export let currentState: string = 'LoginP1';
 
 /**
  * @brief change state or shows new page
@@ -57,7 +56,7 @@ export function renderPage(newState: string) {
 			console.log(`Page does not exist: ${newState}`);
 			UI.state = S.stateUI.Menu;
 	}
-	currentState = newState;
+	sessionStorage.setItem("currentState", newState);
 }
 
 /**
@@ -68,6 +67,9 @@ export function renderPage(newState: string) {
  */
 export function navigateTo(state: string) {
 	console.log(`Save navigation to: ${state}`);
+
+	// save last page for when refresh page
+	sessionStorage.setItem('history', state);
 	
 	if (history.state === state)
     	renderPage(state);
@@ -93,7 +95,9 @@ function stopCurrentGame() {
  * @param state asked page name
  * @returns de (new) state, is changed if conditions where right
  */
-function getValidState(state: string): string {
+export function getValidState(state: string): string {
+	const currentState = sessionStorage.getItem("currentState");
+
 	// Is already logged in
     if (state != 'LoginP1' && UI.user1.ID == -1)
 		return ('Menu');
@@ -110,7 +114,7 @@ function getValidState(state: string): string {
 		return ('Menu');
 
     const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Stats', 'Settings'];
+		'Settings', 'Dashboard'];
 	for (const page of allowedPages) {
 		if (page == state)
 			return (state);
@@ -124,6 +128,7 @@ function getValidState(state: string): string {
  */
 export function controlBackAndForward(event: PopStateEvent) {
 	const state = event.state as string;
+	const currentState = sessionStorage.getItem("currentState");
 	
 	const validState = getValidState(state);
 	history.replaceState(validState, '', `#${validState}`);

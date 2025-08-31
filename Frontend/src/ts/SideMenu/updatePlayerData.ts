@@ -1,6 +1,6 @@
 import { log } from '../logging.js';
 import { UI, Game } from "../gameData.js"
-import { navigateTo } from '../history.js';
+import { navigateTo, getValidState } from '../history.js';
 import * as S from '../structs.js'
 
 
@@ -28,8 +28,19 @@ function receivePlayerData(data: any) {
 		Game.match.player2.score = data.score2 || 0;
 	}
 	if (UI.user1.ID != -1) {
-		navigateTo('Menu');
+
+		// Check where to go and if there is a page in the history (refresh)
+		const historyPage = sessionStorage.getItem('history');
+		
+		if (historyPage) {
+			const validPage = getValidState(historyPage);
+
+			navigateTo(validPage);
+		} else {
+			navigateTo('Menu');
+		}
 	}
+
 	const body = document.getElementById('body');
 	if (!body) return ;
 	const menu = document.createElement('div');

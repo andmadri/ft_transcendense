@@ -35,12 +35,19 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
-navigateTo('LoginP1');
+UI.state = S.stateUI.LoginP1;
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
 
 let lastSpeedIncreaseTime = 0;
+
+UI.state = S.stateUI.LoginP1;
+
+const currentState = sessionStorage.getItem("currentState");
+if (!currentState) {
+    sessionStorage.setItem("currentState", "LoginP1");
+}
 
 function gameLoop() {
 	console.log(` match.state = ${Game.match.state}`);
