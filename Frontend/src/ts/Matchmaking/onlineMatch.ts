@@ -4,7 +4,7 @@ export function cancelOnlineMatch() {
 	Game.socket.emit('message',{ 
 		action: 'matchmaking',
 		subaction: 'cancelOnlineMatch',
-		matchID: Game.match.ID
+		matchID: Game.match.matchID
 	});
 }
 

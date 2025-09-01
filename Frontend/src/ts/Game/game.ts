@@ -11,7 +11,7 @@ import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
 function processMatch(data: any) {
 	console.log("inited game with id: " + data.id);
 	console.log("players: " + data.player1ID + " " + data.player2ID);
-	Game.match.ID = data.id;
+	Game.match.matchID = data.id;
 	Game.match.player1.ID = data.player1ID;
 	Game.match.player2.ID = data.player2ID;
 	navigateTo('Game');

@@ -85,14 +85,14 @@ export function getGameOver() {
 }
 
 export function saveGame() {
-	if (Game.match.ID == -1)
+	if (Game.match.matchID == -1)
 		return ;
 
 	
 	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'save',
-		matchID: Game.match.ID
+		matchID: Game.match.matchID
 	});
 
 	if (Game.match.pauseTimeOutID) {
@@ -102,6 +102,6 @@ export function saveGame() {
 	
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
-	Game.match.ID = -1;
+	Game.match.matchID = -1;
 	navigateTo('GameOver');
 }

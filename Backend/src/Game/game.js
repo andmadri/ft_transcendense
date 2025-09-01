@@ -7,8 +7,11 @@ export function handleGame(db, msg, socket, io) {
 		return console.log('no subaction in handleGame');
 
 	// we need to have a matchID by now
-	if (!msg.matchID)
-		return console.log("No matchID found in msg from frontend");
+	if (!msg.matchID) {
+		console.log("No matchID found in msg from frontend");
+		console.log(msg);
+		return ;
+	}
 
 	const match = matches.get(msg.matchID);
 	if (!match)

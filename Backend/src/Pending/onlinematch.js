@@ -46,6 +46,7 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.Paused) : {
+				match.state = state.Playing;
 				if (match.pauseTimeOutID == null) {
 					match.pauseTimeOutID = setTimeout(() => {
 						match.state = state.Playing;

@@ -43,7 +43,7 @@ export function sendGameState() {
 	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'gameStateUpdate',
-		matchID: Game.match.ID,
+		matchID: Game.match.matchID,
 		gameState: Game.match.gameState
 	});
 }
@@ -53,6 +53,6 @@ export function sendScoreUpdate() {
 		action: 'game',
 		subaction: 'scoreUpdate',
 		player: Game.match.lastScoreID,
-		matchID: Game.match.ID
+		matchID: Game.match.matchID
 	});
 }

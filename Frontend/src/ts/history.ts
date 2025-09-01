@@ -83,7 +83,7 @@ function stopCurrentGame() {
 	Game.socket.emit('message', { 
 		action: 'game',
 		subaction: 'quit',
-		matchID: Game.match.ID,
+		matchID: Game.match.matchID,
 		player: Game.match.player1.ID,
 		name: Game.match.player1.name
 	});

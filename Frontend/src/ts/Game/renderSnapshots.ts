@@ -23,6 +23,7 @@ const snapshots: Snapshot[] = [];
  * @param player 1 or 2, dependce on left/right correction
  */
 export function makeSnapshot(gameState: any, player: number) {
+	console.log("make snapshot");
 	snapshots.push({
 		ballX: gameState.ball.pos.x,
 		ballY: gameState.ball.pos.y,
@@ -61,7 +62,7 @@ function getBoundingSnapshots(renderTime: number) {
 /**
  * @brief updates the positions of the divElements in the frontend
  */
-// function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
+// function updateDivFromSnapshot(ball: any, paddle: any, playerNr: number) {
 // 	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
 // 	const ballDiv = document.getElementById('ball');
 // 	const fieldDiv = document.getElementById('field');
@@ -71,9 +72,9 @@ function getBoundingSnapshots(renderTime: number) {
 // 		return;
 // 	}
 // 	// Change values in div elements
-// 	playerDiv.style.top = `${(paddleY * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
-// 	ballDiv.style.left = `${ballX * fieldDiv.clientWidth}px`;
-// 	ballDiv.style.top = `${ballY * fieldDiv.clientWidth}px`;
+// 	playerDiv.style.top = `${(paddle.pos.y * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
+// 	ballDiv.style.left = `${ball.pos.x * fieldDiv.clientWidth}px`;
+// 	ballDiv.style.top = `${ball.pos.y * fieldDiv.clientWidth}px`;
 // }
 
 function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
@@ -82,6 +83,7 @@ function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number,
 	paddle.pos.y = paddleY;
 	ball.pos.y = ballY;
 	ball.pos.x = ballX;
+	// updateDivFromSnapshot(ball, paddle, playerNr);
 }
 
 /**

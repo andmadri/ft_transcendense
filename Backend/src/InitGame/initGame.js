@@ -6,6 +6,7 @@ function sendStartMsgToPlayers(matchID) {
 	io.to(matchID).emit('message', {
 		action: 'game',
 		subaction: 'start',
+		matchID: matchID
 	});
 }
 

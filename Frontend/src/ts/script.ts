@@ -50,7 +50,6 @@ if (!currentState) {
 }
 
 function gameLoop() {
-	console.log(` match.state = ${Game.match.state}`);
 	switch (Game.match.state) {
 		case state.Pending: {
 			if (!document.getElementById('Pending'))

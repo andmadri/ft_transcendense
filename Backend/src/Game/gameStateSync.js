@@ -8,10 +8,10 @@ export function applyGameStateUpdate(match, msg) {
 }
 
 export function sendGameStateUpdate(match, io) {
-	//console.log(`sendGameStateUpdate()`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'gameStateUpdate',
+		matchID: match.matchID,
 		gameState: match.gameState,
 		state: match.state
 	});
@@ -52,6 +52,7 @@ export function sendScoreUpdate(match, io) {
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'scoreUpdate',
+		matchID: match.matchID,
 		match: match,
 	})
 }
