@@ -13,7 +13,7 @@ import { handleInitGame } from './InitGame/initGame.js'
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB, getLastUserSession } from './Database/sessions.js';
+import { addUserSessionToDB } from './Database/sessions.js';
 import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
@@ -66,62 +66,66 @@ fastify.setNotFoundHandler(function (request, reply) {
   reply.status(404).send({ error: 'Not Found' });
 });
 
+const socketUserMap = new Map();
 // const httpServer = createServer(fastify.server);
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-	// console.log('🔌 A user connected:', socket.id);
-	// Check if the request has a valid JWT token in cookies
-	// const cookies = req.headers.cookie;
-	const cookies = socket.handshake.headers.cookie || '';
-	// console.log('Cookies from handshake:', cookies);
-	const authTokens = parseAuthTokenFromCookies(cookies);
-	// console.log('Auth tokens from cookies:', authTokens);
+		// console.log('🔌 A user connected:', socket.id);
+		// Check if the request has a valid JWT token in cookies
+		// const cookies = req.headers.cookie;
+		const cookies = socket.handshake.headers.cookie || '';
+		// console.log('Cookies from handshake:', cookies);
+		const authTokens = parseAuthTokenFromCookies(cookies);
+		// console.log('Auth tokens from cookies:', authTokens);
 
-	let decoded;
-	let userId1 = null;
-	let userId2 = null;
-	if (authTokens && authTokens.jwtAuthToken1) {
-		// console.log('signed:', authTokens.jwtAuthToken1);
-		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
-		// console.log('unsigned:', unsigned.value);
-		// console.log('Unsigned JWT1:', unsigned);
-		if (unsigned.valid) {
-			try {
-				decoded = fastify.jwt.verify(unsigned.value);
-				userId1 = decoded.userId;
-				// Use userId or decoded as needed for player 1
-			} catch (err) {
-				console.error('JWT1 verification failed:', err);
+		let decoded;
+		let userId1 = null;
+		let userId2 = null;
+		if (authTokens && authTokens.jwtAuthToken1) {
+			// console.log('signed:', authTokens.jwtAuthToken1);
+			const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+			// console.log('unsigned:', unsigned.value);
+			// console.log('Unsigned JWT1:', unsigned);
+			if (unsigned.valid) {
+				try {
+					decoded = fastify.jwt.verify(unsigned.value);
+					userId1 = decoded.userId;
+					// Use userId or decoded as needed for player 1
+				} catch (err) {
+					console.error('JWT1 verification failed:', err);
+				}
+			} else {
+				console.error('JWT1 verification failed: Invalid cookie');
 			}
-		} else {
-			console.error('JWT1 verification failed: Invalid cookie');
 		}
-	}
-	if (authTokens && authTokens.jwtAuthToken2) {
-		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
-		if (unsigned.valid) {
-			try {
-				decoded = fastify.jwt.verify(unsigned.value);
-				userId2 = decoded.userId;
-				// Use userId or decoded as needed for player 2
-			} catch (err) {
-				console.error('JWT2 verification failed:', err);
+		if (authTokens && authTokens.jwtAuthToken2) {
+			const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
+			if (unsigned.valid) {
+				try {
+					decoded = fastify.jwt.verify(unsigned.value);
+					userId2 = decoded.userId;
+					// Use userId or decoded as needed for player 2
+				} catch (err) {
+					console.error('JWT2 verification failed:', err);
+				}
+			} else {
+				console.error('JWT2 verification failed: Invalid cookie');
 			}
-		} else {
-			console.error('JWT2 verification failed: Invalid cookie');
 		}
-	}
-	// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
-	if (!userId1) {
-		console.error('No valid auth tokens found in cookies');
-		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
-		return ;
-	}
+		// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+		if (!userId1) {
+			console.error('No valid auth tokens found in cookies');
+			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+			return ;
+		}
+
+		// To save which user belongs to with socket.id (when disconnect)
+		socketUserMap.set(socket.id, userId1);
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-
+	
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;
@@ -154,23 +158,15 @@ fastify.ready().then(() => {
 			}
 		});
 
-		socket.on('disconnect', () => {
-			console.log(`User disconnected: ${userId1}`);
-
-			async function logoutUser(userId1) {
-				try {
-					const session = await getLastUserSession(db, userId1);
-
-					if (!session) {
-						console.error('No session found, Failed logout cleanup for user', userId1);
-						return;
-					}
-					await addUserSessionToDB(db, { session, state: 'logout' });
-				} catch(err) {
-					console.error('Failed logout cleanup for user', userId1);
-				}
+		socket.on('disconnect', async () => {
+			console.log(`User ${userId1} disconnected`);
+			try {
+				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
+				console.log(`User ${userId1} successfully logged out on disconnect`);
+			} catch (err) {
+				console.error(`Failed logout for user ${userId1}`, err);
 			}
-			logoutUser(userId1);
+			
 		});
 	});
 });

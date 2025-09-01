@@ -83,7 +83,6 @@ function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number,
 	paddle.pos.y = paddleY;
 	ball.pos.y = ballY;
 	ball.pos.x = ballX;
-	// updateDivFromSnapshot(ball, paddle, playerNr);
 }
 
 /**

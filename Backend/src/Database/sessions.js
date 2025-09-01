@@ -41,6 +41,7 @@ export async function addUserSessionToDB(db, session) {
 // *************************************************************************** //
 
 export async function getLastUserSession(db, user_id) {
+	console.log(`Userid last user session ${user_id}`);
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM UserSessions WHERE user_id = ? ORDER BY timestamp DESC LIMIT 1`;
 		db.get(sql, [user_id], (err, row) => {
