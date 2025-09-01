@@ -14,7 +14,8 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.style.height = '5%';
 		row.style.background = 'rgba(0, 0, 0, 0.18)';
 		row.style.cursor = 'point';
-		row.style.borderRadius = '10px';
+		row.style.borderRadius = '5px';
+		row.style.boxShadow = '2.6px 5.1px 5.1px hsl(0deg 0% 0% / 0.42)';
 		row.style.justifyContent = 'space-between';
 		row.style.alignItems = 'center';
 		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
@@ -40,7 +41,8 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	const card = document.createElement('div');
 	card.id = 'userInfoCard';
 	// card.style.aspectRatio = '4 / 3';
-	card.style.borderRadius = '16px';
+	card.style.borderRadius = '10px';
+	card.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	card.style.display = 'flex';
 	card.style.background = '#363430';
 	card.style.flex = '1 1 25%';
@@ -102,7 +104,7 @@ export function populateDashboard(msg: any)
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
-export function getDashboard()
+export function getDashboard(playerID?: number, playerNr?: number)
 {
 	const body = document.getElementById('body');
 	if (!body)
@@ -134,7 +136,8 @@ export function getDashboard()
 	// dashboard.style.height = '50vh';
 	dashboard.style.width = 'clamp(500px, 80vw, 1200px)';
 	dashboard.style.height = 'clamp(300px, 50vh, 800px)';
-	dashboard.style.borderRadius = '16px';
+	dashboard.style.borderRadius = '10px';
+	dashboard.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	dashboard.style.position = 'relative';
 	dashboard.style.boxSizing = 'border-box';
 	dashboard.style.alignItems = 'flex-start';
@@ -150,7 +153,8 @@ export function getDashboard()
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
 	title.style.background = '#363430';;
-	title.style.borderRadius = '16px';
+	title.style.borderRadius = '10px';
+	title.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	// title.style.width = '80vw';
 	title.style.width = 'clamp(500px, 80vw, 1200px)';
 	title.style.padding = '0.5rem';
@@ -235,10 +239,10 @@ export function getDashboard()
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
 	body.append(exitButton);
-	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
+	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerID: playerID, playerNr: playerNr};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
 	// Game.socket.send(JSON.stringify(msg));
 	// Game.socket.send(msg);
-	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
+	Game.socket.emit('message', msg);
 
 }

@@ -156,6 +156,22 @@ export function getSettingsPage() {
 	// changeOpponentType('empty')
 	const settingPage = document.createElement('div');
 	settingPage.id = 'settingPage';
+	settingPage.style.width = '100%';
+	settingPage.style.height = '100%';
+	settingPage.style.margin = '0';
+	settingPage.style.display = 'flex';
+	settingPage.style.justifyContent = 'center';
+	settingPage.style.alignItems = 'center';
+	settingPage.style.backdropFilter = 'blur(6px)';
+
+	const settingBox = document.createElement('div');
+	settingBox.style.aspectRatio = '5/4';
+	settingBox.style.width = 'clamp(250px, 30vh, 350px)';
+	settingBox.style.borderRadius = '10px';
+	settingBox.style.padding = '0.7rem';
+	settingBox.style.border
+
+
 	// styleElement(settingPage, {
 	// 	display: 'flex',
 	// 	flexDirection: 'column',
@@ -183,6 +199,6 @@ export function getSettingsPage() {
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
-	body.innerHTML = '';
+	// body.innerHTML = '';
 	body.append(settingPage);
 }

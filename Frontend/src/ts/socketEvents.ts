@@ -1,9 +1,9 @@
 import { actionGame } from './Game/game.js'
-import { actionOnline } from './Menu/online.js'
+import { actionPlayers } from './Menu/online.js'
 import { log } from './logging.js' 
 import { Game } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
-// import { actionFriends } from './Menu/friends.js'
+import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
@@ -56,11 +56,11 @@ export function receiveFromWS(data: any) {
 			actionPlayerInfo(data);
 			break ;
 		case 'online':
-			actionOnline(data);
+			actionPlayers(data);
 			break ;
-		// case 'friends':
-		// 	actionFriends(data);
-		// 	break ;
+		case 'friends':
+			actionFriends(data);
+			break ;
 		case 'matchmaking':
 			actionMatchmaking(data);
 			break ;

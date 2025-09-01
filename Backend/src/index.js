@@ -143,8 +143,12 @@ fastify.ready().then(() => {
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard': {
+				//if there is no player id it is specify whether to use userID1 or userID2
+					if (!msg.playerId) {
+						msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
+					}
 					console.log("Trying to fetch handleDashboardMaking");
-					return handleDashboardMaking(msg, socket, userId1);
+					return handleDashboardMaking(msg, socket, msg.playerId);
 				}
 				case 'init':
 					return handleInitGame(db, msg, socket, userId1, userId2);

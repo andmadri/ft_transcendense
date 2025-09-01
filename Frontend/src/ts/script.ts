@@ -116,7 +116,7 @@ function mainLoop() {
 			}
 			case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard'))
-					getDashboard();
+					getDashboard(undefined, 1);
 				break;
 			}
 			default:

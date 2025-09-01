@@ -9,8 +9,9 @@ import { submitLogout } from '../Auth/logout.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js"; //USE THIS!!!
+import { getDashboard } from "../Dashboard/dashboardContents.js";
 
-function styleBtn(button: HTMLButtonElement, text: string)
+function styleMainBtns(button: HTMLButtonElement, text: string)
 {
 	button.textContent = text;
 	button.style.fontFamily = '"RobotoCondensed", sans-serif'
@@ -24,10 +25,21 @@ function styleBtn(button: HTMLButtonElement, text: string)
 	button.style.border = 'none';
 }
 
-function getCreditBtn(): HTMLButtonElement {
+export function styleListBtns(button: HTMLButtonElement, img_url: string) {
+	button.style.width = 'clamp(8px, 0.5vw, 10px)';
+	button.style.aspectRatio = '1/1';
+	button.style.borderRadius = '50%';
+	button.style.backgroundImage = img_url;
+	button.style.backgroundSize = 'cover';
+	button.style.backgroundPosition = 'center';
+	button.style.border = 'none';
+	button.style.cursor = 'pointer';
+}
+
+export function getCreditBtn(): HTMLButtonElement {
 	const creditsBtn = document.createElement('button');
 	creditsBtn.style.flex = '1 1 25%';
-	styleBtn(creditsBtn, "Credits");
+	styleMainBtns(creditsBtn, "Credits");
 
 	creditsBtn.addEventListener('click', () => {
 		const body = document.getElementById('body');
@@ -69,27 +81,27 @@ function getCreditBtn(): HTMLButtonElement {
 	return (creditsBtn);
 }
 
-function getPlayBtn(): HTMLButtonElement {
+export function getPlayBtn(): HTMLButtonElement {
 	const playBtn = document.createElement('button');
-	styleBtn(playBtn, "Play Game")
+	styleMainBtns(playBtn, "Play Game")
 	playBtn.style.flex = '1 1 25%';
 	playBtn.addEventListener('click', () => {
-		UI.state = S.stateUI.Settings;
+		navigateTo('Settings')
 	});
 	return (playBtn);
 }
 
-function getDashboardBtn(): HTMLButtonElement {
+export function getDashboardBtn(): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
 	dashboardBtn.style.flex = '1 1 50%'
-	styleBtn(dashboardBtn, "Dashboard");
+	styleMainBtns(dashboardBtn, "Dashboard");
 	dashboardBtn.addEventListener('click', () => {
 		navigateTo('Dashboard');
 	});
 	return (dashboardBtn);
 }
 
-function styleBlock(title_text: string, block: HTMLElement): HTMLDivElement {
+export function styleBlock(title_text: string, block: HTMLElement, list_id?: string) {
 
 	block.style.background = '#363430'
 	block.style.display = 'flex';
@@ -109,31 +121,36 @@ function styleBlock(title_text: string, block: HTMLElement): HTMLDivElement {
 	title.style.textAlign = 'center';
 	title.style.marginBottom = '0.5rem';
 
-	const list = document.createElement('div');
-	list.style.display = 'flex';
-	list.style.flexDirection = 'column';
-	list.style.gap = '0.5rem';
-	list.style.width = '100%';
-
 	block.appendChild(title);
-	block.appendChild(list);
-	return list;
+	if (list_id) {
+		const list = document.createElement('ul');
+		list.id = list_id;
+		list.style.display = 'flex';
+		list.style.flexDirection = 'column';
+		list.style.gap = '0.5rem';
+		list.style.width = '100%';
+		list.style.padding = '0';
+		list.style.margin = '0';
+		block.appendChild(list);
+	}
 }
 
-function addPlayersRow(list: HTMLDivElement, playerName: string)
+export function styleRow(list: HTMLUListElement, playerName: string)
 {
-	const row = document.createElement('div');
-	row.textContent = "• " + (playerName ?? "");
-	row.style.padding = '0.5rem 1 rem';
+	const row = document.createElement('li');
+	row.textContent = playerName ?? "";
+	row.style.padding = '0.3rem 0.5rem';
 	row.style.borderRadius = '5px';
 	row.style.backgroundColor = '#2a2927';
 	row.style.color = 'white';
+	row.style.justifyItems = 'space-between';
 	row.style.fontFamily = '"RobotoCondensed", sans-serif';
 	row.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
 	row.style.cursor = 'pointer';
-	row.style.padding = '0.3rem 0.5rem';
+	row.style.display = 'flex';
+	row.style.listStyleType = 'none';
 	row.style.flex = '1';
-	list.appendChild(row);
+	return row;
 }
 
 function styleUserTab(tab: HTMLDivElement, text: string) {
@@ -151,17 +168,17 @@ function styleUserTab(tab: HTMLDivElement, text: string) {
 	tab.style.marginBottom = '0.5rem';
 }
 
-function getUserTournamentBlock(): HTMLDivElement {
+export function getUserTournamentBlock(): HTMLDivElement {
 	const users_tournament_block = document.createElement('div');
 	users_tournament_block.style.display = 'flex';
 	users_tournament_block.style.flex = '1 1 50%';
-	users_tournament_block.style.direction = 'column';
+	users_tournament_block.style.flexDirection = 'column';
 	users_tournament_block.style.gap = '1rem';
 	users_tournament_block.style.height = '100%';
 
 	const user_block = document.createElement('div');
 	user_block.style.display = 'flex';
-	user_block.style.height = '50%'
+	user_block.style.height = '50%';
 	styleBlock("Player Name", user_block);
 
 	// user_tabs.style.display = 'flex';
@@ -202,21 +219,110 @@ function getUserTournamentBlock(): HTMLDivElement {
 	return users_tournament_block;
 }
 
+// function insertFriends(friends: any) {
+// 	const html_list = document.getElementById('friends_list') as HTMLUListElement;
+// 	if (!html_list) {
+// 		console.log('HTML List for Friends Not Found');
+// 		return;
+// 	}
+// 	html_list.innerHTML = "";
+// 	for (const friend of friends)
+// 	{
+// 			const row = styleRow(html_list, friend.name);
+// 			const status = friend.online_status == 0 ? 'offline' : 'online';
+// 			row.style.color = status === 'online' ? 'green' : 'gray';
+
+// 			const btnContainer = document.createElement('div');
+// 			btnContainer.style.display = 'flex';
+// 			btnContainer.style.gap = '0.3rem';
+		
+// 			const deleteFriendBtn = document.createElement('button');
+// 			styleListBtns(deleteFriendBtn, 'url("../../images/delete_friend.png")');
+// 			deleteFriendBtn.addEventListener("click", () => {
+// 				Game.socket.send({
+// 					action: 'friends',
+// 					subaction: 'unfriend',
+// 					userID: Game.match.player1.id, //incorrect because what if you are player2
+// 					friendID: friend.id
+// 				})
+// 				console.log("Unfriend player: " + friend.name);
+// 				row.remove();
+// 			});
+
+// 			const dashboardBtn = document.createElement('button');
+// 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
+// 			dashboardBtn.addEventListener("click", () => {
+// 				navigateTo('Dashboard');
+// 				getDashboard(friend.id, undefined);
+// 			});
+// 			btnContainer.appendChild(deleteFriendBtn);
+// 			btnContainer.appendChild(dashboardBtn);
+// 			row.appendChild(btnContainer);
+// 	}
+// }
+
 function getFriendsBlock(): HTMLDivElement {
 	const friends_block = document.createElement('div');
 	friends_block.style.flex = '1 1 25%';
-	const list = styleBlock("Friends", friends_block);
-	const friends = ['Alice', 'Bob', 'Charlie'];
-	friends.forEach(friend  => addPlayersRow(list, friend));
+	styleBlock("Friends", friends_block, "friends_list");
+	Game.socket.send({
+		action: 'friends', 
+		subaction: 'getFriends'
+	});
 	return friends_block;
 }
+
+// export function insertPlayers(online_players: any) {
+// 	const html_list = document.getElementById('players_list') as HTMLUListElement;
+// 		if (!html_list) {
+// 		console.log('HTML List for Friends Not Found');
+// 		return;
+// 	}
+// 	html_list.innerHTML = "";
+// 	for (const player of online_players)
+// 	{
+// 			if (player.id > 2) {
+// 			const row = styleRow(html_list, player.name);
+// 			// const status = player.online_status == 0 ? 'offline' : 'online';
+// 			// row.style.color = status === 'online' ? 'green' : 'gray';
+
+// 			const btnContainer = document.createElement('div');
+// 			btnContainer.style.display = 'flex';
+// 			btnContainer.style.gap = '0.3rem';
+
+// 			//what about player2
+// 			if (player.name != Game.match.player1.name && !player.isFriend) {
+// 				const addFriendBtn = document.createElement('button');
+// 				styleListBtns(addFriendBtn, 'url("../../images/add_friend.png")');
+// 				addFriendBtn.addEventListener("click", () => {
+// 					alert(`Send ${player.name} a friend request`);
+// 					const id = Game.match.player1.id;
+// 					const friendID = player.id;
+// 					Game.socket.send({action: "friends", subaction: "friendRequest", id, friendID});
+// 				});
+// 				row.appendChild(addFriendBtn);
+// 			}
+
+// 			const dashboardBtn = document.createElement('button');
+// 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
+// 			dashboardBtn.addEventListener("click", () => {
+// 				navigateTo('Dashboard');
+// 				getDashboard(player.id, undefined);
+// 			});
+// 			btnContainer.appendChild(dashboardBtn);
+// 			row.appendChild(btnContainer);
+// 		}
+// 	}
+// }
 
 function getPlayersBlock(): HTMLDivElement {
 	const players_block = document.createElement('div');
 	players_block.style.flex = '1 1 25%';
-	const list = styleBlock("Players", players_block);
-	const players = ['Alice', 'Bob', 'Charlie', 'Maria', 'Carlos', 'Jack', 'Kevin', 'Martijn', 'Norika', 'Pablo'];
-	players.forEach(player => addPlayersRow(list, player));
+	styleBlock("Players", players_block, "players_list");
+	Game.socket.send({
+		action: 'online', 
+		subaction: 'getAllPlayers'
+	});
 	return players_block;
 }
 
@@ -231,7 +337,7 @@ export function getMenu() {
 	body.innerHTML = '';
 
 	const menuContainer = document.createElement('div');
-	menuContainer.id = 'menuContainer';
+	menuContainer.id = 'menu';
 	menuContainer.style.position = 'relative';
 	menuContainer.style.alignItems = 'center';
 	menuContainer.style.justifyContent = 'center';

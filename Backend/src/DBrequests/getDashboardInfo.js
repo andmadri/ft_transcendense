@@ -4,11 +4,11 @@ import { getUserMatchStatsDB } from '../Database/sessions.js';
 import { getUserStateDurationsDB } from '../Database/sessions.js';
 import { db } from '../index.js';
 
-async function getDashboardInfo(msg, socket, userId1) {
-	let player = await getUserByID(db, userId1);
-	let stats = await getUserMatchStatsDB(db, userId1);
-	let matches = await getMatchHistoryDB(db, userId1);
-	let log_time = await getUserStateDurationsDB(db, userId1);
+async function getDashboardInfo(msg, socket, playerID) {
+	let player = await getUserByID(db, playerID);
+	let stats = await getUserMatchStatsDB(db, playerID);
+	let matches = await getMatchHistoryDB(db, playerID);
+	let log_time = await getUserStateDurationsDB(db, playerID);
 	console.log("Recieved DB content: ", matches);
 
 	let returnMsg = {
@@ -23,7 +23,7 @@ async function getDashboardInfo(msg, socket, userId1) {
 	// socket.send(JSON.stringify(returnMsg));
 }
 
-export function handleDashboardMaking(msg, socket, userId1) {
+export function handleDashboardMaking(msg, socket, playerID) {
 	if (!msg || msg.action !== 'dashboard' || !msg.subaction) {
 		const returnMsg = { action: "error", reason: "Invalid message format" };
 		console.log('Invalid message format:', msg);
@@ -31,8 +31,8 @@ export function handleDashboardMaking(msg, socket, userId1) {
 		return false;
 	}
 	if (msg.subaction === 'getFullDataDashboard') {
-		console.log('Received request for dashboard data:', msg, userId1);
-		getDashboardInfo(msg, socket, userId1);
+		console.log('Received request for dashboard data:', msg, playerID);
+		getDashboardInfo(msg, socket, playerID);
 		return true;
 	} else {
 		const returnMsg = { action: "error", reason: "Unknown subaction" };
