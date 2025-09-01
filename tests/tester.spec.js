@@ -7,7 +7,7 @@ import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
 import * as Navigation from './navigation.spec.js'
-import { sign } from 'crypto';
+
 
 const URL = 'https://localhost:8443';
 
@@ -27,13 +27,16 @@ test.describe.configure({ mode: 'serial' });
 
 async function TestSignupAndLogin(page) {
 	await page.goto(URL);
-	await Login.signup_login_byPlayer(page, 1, name, email, password);
+
+	await Login.sign_in_tests(page, 1, name, email, password);
+	await Login.login_tests(page, 1, email, password);
+
 	await Menu.isInMenu(page);
 
 	// NAME PLAYER 1 IS VISIBLE IN MENU
 	await Menu.playerIsLoggedIn(page, 1, name);
 
-	// await page.waitForTimeout(1000);
+	await page.waitForTimeout(1000);
 	// await Menu.playerInOnlineMenu(page, name);
 }
 

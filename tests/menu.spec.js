@@ -33,8 +33,11 @@ export async function switchPlayerTab(page, player) {
 	await page.waitForTimeout(1000);
 }
 
+
 export async function isInMenu(page) {
 	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
+	// add more checks if all the elements are in the menu...
+	// ...
 }
 
 export async function playerIsLoggedIn(page, player, name) {
