@@ -4,6 +4,14 @@ import * as Game from './game.spec.js';
 import * as Menu from './menu.spec.js';
 import * as U from './utils.spec.js';
 
+/*
+Tests:
+- Check is ball is moving
+- Check if paddle can move with arrow up/down
+- Check if paddle can move with arrow w/s
+- ?
+*/
+
 export async function StartOneVsOne(page) {
 	await U.pressBtn(page, "Play game");
 	await U.pressBtn(page, "1 VS 1");

@@ -2,6 +2,15 @@ import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 import path from 'path';
 
+/*
+Tests:
+V credit page
+- dashboard page -> extra tests after match?
+- upload avatar
+- all elements there
+- ?
+*/
+
 const avatarPath = path.resolve('./Frontend/src/images/avatar.png');
 
 // DOES NOT WORK YET
