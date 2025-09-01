@@ -461,7 +461,8 @@ export function getRightSideMenu(playerNr: number) {
 
 	const avatarImg = document.createElement('img');
 	const userId = playerNr === 1 ? UI.user1.ID : UI.user2.ID;
-	avatarImg.src = `/api/avatar/${userId}`;
+	avatarImg.id = `avatar${playerNr}`;
+	avatarImg.src = `/api/avatar/${userId}?ts=${Date.now()}`
 	styleElement(avatarImg, {
 		maxWidth: '120px',
 		maxHeight: '120px',

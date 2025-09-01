@@ -1,4 +1,5 @@
 import { log } from "../logging.js";
+import { Game, UI } from "../gameData.js";
 
 export async function changeAvatar(file: File,  playerNr: number) {
 	log("File: " + file.name + " " + file.size);
@@ -13,7 +14,13 @@ export async function changeAvatar(file: File,  playerNr: number) {
 
 	if (response.ok) {
 		log("Upload succeeded!");
-		document.getElementById('menu')?.remove();
+		const avatar = document.getElementById(`avatar${playerNr}`) as HTMLImageElement | null;
+		if (!avatar) {
+			console.log("No avatar yet");
+			return ;
+		}
+		const user = playerNr == 1 ? UI.user1.ID : UI.user2.ID;
+		avatar.src = `/api/avatar/${user}?ts=${Date.now()}`
 	} else {
 		alert("Upload failed");
 		log("Error with upload avatar");

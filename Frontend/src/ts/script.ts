@@ -113,7 +113,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu'))
+				if (!document.getElementById('menu'))	
 					getMenu();
 				break ;
 			}
@@ -131,16 +131,11 @@ function mainLoop() {
 				gameLoop();
 				break ;
 			}case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard'))
-				{
+				if (!document.getElementById('dashboard')) {
 					getDashboard();
 				}
 				break;
 			}
-			// case S.stateUI.Game: {
-			// 	gameLoop();
-			// 	break ;
-			// }
 			default:
 		}
 	} else {

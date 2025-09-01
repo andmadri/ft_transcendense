@@ -40,10 +40,13 @@ export function getPlayerList(): HTMLDivElement {
 		if (list instanceof HTMLUListElement)
 			list.innerHTML = '';
 	}
-	Game.socket.emit('message',{
-		action: 'players', 
-		subaction: 'getAllPlayers'
-	});
+	setTimeout(() => {
+    	console.log("📤 Emit players request");
+    	Game.socket.emit('message',{
+			action: 'players', 
+			subaction: 'getAllPlayers'
+		});
+  	}, 100);
 	return (playerList);
 }
 
@@ -54,7 +57,7 @@ function insertPlayers(players: any) {
 		return;
 	}
 	html_list.className = 'playerOfList';
-	console.log("players:", players); 
+	// console.log("players:", players); 
 	for (const curr_player of players) {
 		if (curr_player.id > 2) {
 			console.log(curr_player); 

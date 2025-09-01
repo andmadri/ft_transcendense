@@ -15,7 +15,7 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 export async function getAllPlayerInclFriends(db, userID, socket) {
 	try {
 		const players = await userDB.getAllPlayers(db);
-		console.log("players: ", players);
+		// console.log("players: ", players);
 		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
 		const friendsIdsSet = new Set(friendsIds);
 
