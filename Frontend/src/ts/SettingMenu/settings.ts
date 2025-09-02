@@ -169,18 +169,24 @@ export function getSettingsPage() {
 	settingBox.style.width = 'clamp(250px, 30vh, 350px)';
 	settingBox.style.borderRadius = '10px';
 	settingBox.style.padding = '0.7rem';
-	settingBox.style.border
+	settingBox.style.border = '2px solid black';
+	settingBox.style.justifyContent = 'center';
+	settingBox.style.gap = '0.7rem';
+	settingBox.style.display = 'flex';
+	settingBox.style.flexDirection = 'column';
 
+	const settingTitle = document.createElement('div');
+	settingTitle.textContent = 'Game Settings';
+	settingTitle.style.whiteSpace = 'nowrap';
+	settingTitle.style.fontFamily = '"Horizon", sans-serif';
+	settingTitle.style.fontSize = 'clamp(16px 1.5vw 20px)';
+	settingTitle.style.textAlign = 'center';
 
-	// styleElement(settingPage, {
-	// 	display: 'flex',
-	// 	flexDirection: 'column',
-	// 	backgroundColor: '#ffd400',
-	// 	padding: '20px',
-	// 	height: '100%',
-	// 	width: '100%',
-	// 	boxSizing: 'border-box'
-	// });
+	const settingEnemyBtnBox = document.createElement('div');
+	settingEnemyBtnBox.style.width = '100%';
+	// settingEnemyBtnBox.
+	// settingBox.append(settingTitle);
+
 
 	const optionLeftRight = document.createElement('div');
 	// styleElement(optionLeftRight, {
