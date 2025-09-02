@@ -22,6 +22,7 @@ import { getCreditBtn, getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
 import { getDashboard } from './Dashboard/dashboardContents.js'
+import { startGameField } from './Game/startGameContent.js'
 // getLoadingPage();
 createLog();
 
@@ -57,17 +58,17 @@ function gameLoop() {
 			break ;
 		}
 		case state.Init: {
-			Game.match.state = state.Playing;
 			if (!document.getElementById('game'))
 			{
 				log('Init game');
-				getGameField(); 
+				getGameField();
+				initGame();
 			}
-			initGame();
+			if (!document.getElementById('startGame'))
+				startGameField();
 			break ;
 		}
 		case state.Paused: {
-			//maybe start with pause instead of immediately playing
 			console.log(`state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.pauseTimeOutID === null) {
 				pauseBallTemporarily(3000);

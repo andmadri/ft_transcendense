@@ -56,7 +56,6 @@ export function game(match : matchInfo) {
 		console.log("ball", match.gameState.ball);
 		renderGameInterpolated();
 		updatePaddlePos(paddle, match.gameState.field);
-		return ;
 	}
 	else {
 		match.time = performance.now();

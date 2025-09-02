@@ -8,6 +8,7 @@ import { submitLogout } from '../Auth/logout.js';
 import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
+import { startGameField } from './startGameContent.js';
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
@@ -116,54 +117,6 @@ export function initGameServer() {
 	}
 }
 
-function readyStart(txt: HTMLDivElement) {
-	log("Start button clicked");
-	if (document.getElementById('startScreen')) {
-		const body = document.getElementById('body');
-		const startScreen = document.getElementById('startScreen')
-		if (body && startScreen)
-			body.removeChild(startScreen);
-	}
-}
-
-function getStartScreenBeforeGame() {
-	const body = document.getElementById('body');
-	if (!body)
-		return ;
-	body.innerHTML = "";
-	const startScreen = document.createElement('div');
-		startScreen.id = 'startScreen';
-	styleElement(startScreen, {
-
-	})
-	const player1 = document.createElement('div');
-	const player2 = document.createElement('div');
-	const name1 = document.createElement('div');
-	const name2 = document.createElement('div');
-	const avatar1 = document.createElement('img');
-	const avatar2 = document.createElement('img');
-	const txt = document.createElement('div');
-	const startBtn = document.createElement('button');
-
-	name1.textContent = UI.user1.name;
-	name2.textContent = UI.user2.name;
-	avatar1.src = "./../images/avatar.png";
-	styleElement(avatar1, {
-		objectFit: 'contain',
-	})
-	avatar2.src = "./../images/avatar.png";
-	styleElement(avatar2, {
-		objectFit: 'contain',
-	})
-	player1.append(name1, avatar1);
-	player2.append(name2, avatar2);
-	txt.textContent = "Ready...?";
-	startBtn.textContent = "START";
-	startBtn.addEventListener('click', (e) => readyStart(txt));
-	startScreen.append(player1, player2, txt, startBtn);
-	body.append(startScreen);
-}
-
 export function initGame() {
 	if (Game.match.mode != OT.Online) {
 		//do we need to set the ID's here
@@ -211,6 +164,6 @@ export function actionInitOnlineGame(data: any) {
 	// Function to set all data sync with match in game...
 
 	navigateTo('Game'); //check this ->  is state changed in navigate to
-	Game.match.state = state.Playing;
+	startGameField();
 	console.log("Start online game...");
 }

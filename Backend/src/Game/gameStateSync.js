@@ -43,16 +43,27 @@ export async function updateScore(match, msg, io) {
 	})
 
 	// update msg -> not send to socket but to room.
-	// io.to(match.matchID).emit('message', msg);
-
 	return eventID;
 }
 
 export function sendScoreUpdate(match, io) {
+	if (match.player1.score >= 5 || match.player2.score >= 5)
+		match.state = state.End;
+
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'scoreUpdate',
 		matchID: match.matchID,
-		match: match,
-	})
+		match: {
+			state: match.state,
+			gameState: match.gameState,
+			lastScoreID: match.lastScoreID,
+			player1: {
+				score: match.player1.score
+			},
+			player2: {
+				score: match.player2.score
+			}
+		}
+	});
 }

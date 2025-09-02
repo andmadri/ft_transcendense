@@ -30,25 +30,26 @@ export function updatePadel(match, msg, socket) {
 	socket.emit('message', msg);
 }
 
-export async function updateScore(match, msg, socket) {
-	if (match.state != state.Playing)
-		return ;
+// WAS ALSO IN GAMESTATESYNC...
+// export async function updateScore(match, msg, socket) {
+// 	if (match.state != state.Playing)
+// 		return ;
 
-	console.log("updateScore -> handleMatchEventDB")
-	const eventID = await handleMatchEventDB(db, {
-		match_id: msg.matchID,
-		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player
-		event_type: 'goal'
-		// ball_x: ,
-		// ball_y: ,
-		// ball_angle: ,
-		// ball_result_x: ,
-		// ball_result_y: ,
-		// paddle_x_player_1: ,
-		// paddle_y_player_1: ,
-		// paddle_x_player_2: ,
-		// paddle_y_player_2: ,
-	})
-	return eventID;
-}
+// 	console.log("updateScore -> handleMatchEventDB")
+// 	const eventID = await handleMatchEventDB(db, {
+// 		match_id: msg.matchID,
+// 		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player
+// 		event_type: 'goal'
+// 		// ball_x: ,
+// 		// ball_y: ,
+// 		// ball_angle: ,
+// 		// ball_result_x: ,
+// 		// ball_result_y: ,
+// 		// paddle_x_player_1: ,
+// 		// paddle_y_player_1: ,
+// 		// paddle_x_player_2: ,
+// 		// paddle_y_player_2: ,
+// 	})
+// 	return eventID;
+// }
 

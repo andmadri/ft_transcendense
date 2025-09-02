@@ -16,7 +16,7 @@ export function releaseButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = 0;
-		S.Keys[e.key].pressed = false;
+		S.Keys[e.key].pressed = false; // DOES THIS DO ANYTHING RIGHT NOW?
 		sendKeyPressUpdate(e.key);
 		return ;
 	}

@@ -1,11 +1,11 @@
 import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
-import { OT } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 
 export function applyGameStateUpdate(data : any) {
-	console.log(`applyGameStateUpdate()`);
+	console.log(`applyGameStateUpdate() state: ${data.state}`);
 	if (Game.match.mode == OT.Online) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 		if (data.gameState) {
