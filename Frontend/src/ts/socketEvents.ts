@@ -7,7 +7,7 @@ import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
-import * as S from './structs.js'
+import { actionUserDataMenu } from './Menu/userDataMenu.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -51,9 +51,13 @@ export function receiveFromWS(data: any) {
 		log('no action');
 
 	// log(`action: ${action}`);
+	//when is this called: playerInfo?
 	switch(action) {
 		case 'playerInfo':
 			actionPlayerInfo(data);
+			break ;
+		case 'userDataMenu':
+			actionUserDataMenu(data);
 			break ;
 		case 'online':
 			actionPlayers(data);

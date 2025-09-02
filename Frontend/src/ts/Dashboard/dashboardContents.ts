@@ -193,8 +193,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	matchList.style.flexGrow = '1';
 	matchList.style.paddingLeft = '2%';
 	matchList.style.fontFamily = '"RobotoCondensed", sans-serif';
-	// matchList.style.fontSize = 'min(2vw, 2vh)';
-	//clamped
 	matchList.style.fontSize = 'min(2vw, 2vh)';
 	matchList.style.textAlign = 'center';
 
@@ -202,8 +200,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	infoCardsContainer.id = 'infoCardsContainer';
 	infoCardsContainer.style.display = 'flex';
 	infoCardsContainer.style.direction = 'row';
-	// infoCardsContainer.style.width = '80vw';
-	// infoCardsContainer.style.height = '25vh';
 	infoCardsContainer.style.width = 'clamp(500px, 80vw, 1200px)';
 	infoCardsContainer.style.height = 'clamp(200px, 25vh, 300px)';
 	infoCardsContainer.style.justifyContent = 'space-between';
@@ -241,8 +237,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerID: playerID, playerNr: playerNr};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	// Game.socket.send(JSON.stringify(msg));
-	// Game.socket.send(msg);
 	Game.socket.emit('message', msg);
 
 }

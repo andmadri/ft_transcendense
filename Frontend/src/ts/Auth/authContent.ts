@@ -80,6 +80,7 @@ export function getLoginFields(player: number) {
 	const	body = document.getElementById('body');
 	if (!body)
 		return ;
+	body.innerHTML = '';
 	body.style.height = "100vh";
 	body.style.backgroundColor = "#ededeb";
 	body.style.justifyContent = "center";

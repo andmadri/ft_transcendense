@@ -1,6 +1,6 @@
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
-import { getFriendsList } from './friends.js';
+// import { getFriendsList } from './friends.js';
 // import { getOnlineList } from './online.js';
 // import { getStatsList } from './stats.js';
 // import { getHighscores } from './highscore.js'
@@ -177,37 +177,20 @@ export function getUserTournamentBlock(): HTMLDivElement {
 	users_tournament_block.style.height = '100%';
 
 	const user_block = document.createElement('div');
+	user_block.id = 'user_block';
 	user_block.style.display = 'flex';
 	user_block.style.height = '50%';
-	styleBlock("Player Name", user_block);
+	user_block.style.background = '#363430'
+	user_block.style.display = 'flex';
+	user_block.style.flexDirection = 'column';
+	user_block.style.alignItems = 'center';
+	user_block.style.padding = '1rem';
+	user_block.style.borderRadius = '10px';
+	user_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
-	// user_tabs.style.display = 'flex';
-	// user_tabs.style.flexDirection = 'row';
-	// user_tabs.style.width = '100%';
-
-	// const user1_tab = document.createElement('div');
-	// user1_tab.style.flex = '1 1 50%';
-	// styleUserTab(user1_tab, "1");
-
-	// const user2_tab = document.createElement('div');
-	// user2_tab.style.flex = '1 1 50%';
-	// styleUserTab(user1_tab, "1");
-
-	// function activateTab(active: HTMLDivElement, inactive: HTMLDivElement) {
-	// 	active.style.background = "#363430";
-	// 	inactive.style.background = "rgba(54, 52, 48, 0.5)";
-	// }
-
-	// activateTab(user1_tab, user2_tab);
-
-	// user1_tab.addEventListener("click", () => activateTab(user1_tab, user2_tab));
-	// user2_tab.addEventListener("click", () => activateTab(user2_tab, user1_tab));
-
-	// const users_info = document.createElement('div');
-	// styleBlock("Player", users_info);
-
-	// user_tabs.appendChild(user1_tab)
-	// user_tabs.appendChild(user2_tab)
+	//have a button that changes whether is player1 or player2
+	//playerNr = playerNr === 1 ? : 2 : 1;
+	let playerNr = 1;
 
 	const tournament_block = document.createElement('div');
 	tournament_block.style.display = 'flex';
@@ -216,50 +199,14 @@ export function getUserTournamentBlock(): HTMLDivElement {
 
 	users_tournament_block.appendChild(user_block);
 	users_tournament_block.appendChild(tournament_block);
+	console.log("Sending data to the backend for the USERDATAMENU!!");
+	Game.socket.send({
+		action: 'userDataMenu', 
+		subaction: 'getUserDataMenu',
+		playerNr: playerNr
+	});
 	return users_tournament_block;
 }
-
-// function insertFriends(friends: any) {
-// 	const html_list = document.getElementById('friends_list') as HTMLUListElement;
-// 	if (!html_list) {
-// 		console.log('HTML List for Friends Not Found');
-// 		return;
-// 	}
-// 	html_list.innerHTML = "";
-// 	for (const friend of friends)
-// 	{
-// 			const row = styleRow(html_list, friend.name);
-// 			const status = friend.online_status == 0 ? 'offline' : 'online';
-// 			row.style.color = status === 'online' ? 'green' : 'gray';
-
-// 			const btnContainer = document.createElement('div');
-// 			btnContainer.style.display = 'flex';
-// 			btnContainer.style.gap = '0.3rem';
-		
-// 			const deleteFriendBtn = document.createElement('button');
-// 			styleListBtns(deleteFriendBtn, 'url("../../images/delete_friend.png")');
-// 			deleteFriendBtn.addEventListener("click", () => {
-// 				Game.socket.send({
-// 					action: 'friends',
-// 					subaction: 'unfriend',
-// 					userID: Game.match.player1.id, //incorrect because what if you are player2
-// 					friendID: friend.id
-// 				})
-// 				console.log("Unfriend player: " + friend.name);
-// 				row.remove();
-// 			});
-
-// 			const dashboardBtn = document.createElement('button');
-// 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
-// 			dashboardBtn.addEventListener("click", () => {
-// 				navigateTo('Dashboard');
-// 				getDashboard(friend.id, undefined);
-// 			});
-// 			btnContainer.appendChild(deleteFriendBtn);
-// 			btnContainer.appendChild(dashboardBtn);
-// 			row.appendChild(btnContainer);
-// 	}
-// }
 
 function getFriendsBlock(): HTMLDivElement {
 	const friends_block = document.createElement('div');
@@ -271,49 +218,6 @@ function getFriendsBlock(): HTMLDivElement {
 	});
 	return friends_block;
 }
-
-// export function insertPlayers(online_players: any) {
-// 	const html_list = document.getElementById('players_list') as HTMLUListElement;
-// 		if (!html_list) {
-// 		console.log('HTML List for Friends Not Found');
-// 		return;
-// 	}
-// 	html_list.innerHTML = "";
-// 	for (const player of online_players)
-// 	{
-// 			if (player.id > 2) {
-// 			const row = styleRow(html_list, player.name);
-// 			// const status = player.online_status == 0 ? 'offline' : 'online';
-// 			// row.style.color = status === 'online' ? 'green' : 'gray';
-
-// 			const btnContainer = document.createElement('div');
-// 			btnContainer.style.display = 'flex';
-// 			btnContainer.style.gap = '0.3rem';
-
-// 			//what about player2
-// 			if (player.name != Game.match.player1.name && !player.isFriend) {
-// 				const addFriendBtn = document.createElement('button');
-// 				styleListBtns(addFriendBtn, 'url("../../images/add_friend.png")');
-// 				addFriendBtn.addEventListener("click", () => {
-// 					alert(`Send ${player.name} a friend request`);
-// 					const id = Game.match.player1.id;
-// 					const friendID = player.id;
-// 					Game.socket.send({action: "friends", subaction: "friendRequest", id, friendID});
-// 				});
-// 				row.appendChild(addFriendBtn);
-// 			}
-
-// 			const dashboardBtn = document.createElement('button');
-// 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
-// 			dashboardBtn.addEventListener("click", () => {
-// 				navigateTo('Dashboard');
-// 				getDashboard(player.id, undefined);
-// 			});
-// 			btnContainer.appendChild(dashboardBtn);
-// 			row.appendChild(btnContainer);
-// 		}
-// 	}
-// }
 
 function getPlayersBlock(): HTMLDivElement {
 	const players_block = document.createElement('div');
