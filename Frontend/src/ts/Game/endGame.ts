@@ -1,11 +1,8 @@
-import { UI, Game } from "../gameData.js"
-import * as S from '../structs.js'
-import { OT, state } from '@shared/enums'
-import { submitLogout } from '../Auth/logout.js';
+import { Game } from "../gameData.js"
 import { log } from '../logging.js';
-import { styleElement } from '../Menu/menuContent.js';
-import { game } from './gameLogic.js';
 import { navigateTo } from "../history.js";
+
+let result = "";
 
 export function getGameOver() {
 	log("Game Over!");
@@ -32,15 +29,6 @@ export function getGameOver() {
 	txtGameOver.style.color = 'transparent';
 	txtGameOver.style.fontSize = '12rem';
 	txtGameOver.style.webkitTextStroke = '0.2rem #000';
-
-	let result;
-	if (Game.match.player1.score > Game.match.player2.score) {
-		result = "Left Player Wins!";
-	} else if (Game.match.player1.score < Game.match.player2.score) {
-  result = "Right Player Wins!"; 
-	} else {
-		result = "It is a Tie!"
-	}
 
 	const txtInnerGameOver = document.createElement('div');
 	txtInnerGameOver.textContent = `${result}`;
@@ -88,7 +76,6 @@ export function saveGame() {
 	if (Game.match.matchID == -1)
 		return ;
 
-	
 	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'save',
@@ -99,9 +86,19 @@ export function saveGame() {
 		clearTimeout(Game.match.pauseTimeOutID);
 		Game.match.pauseTimeOutID = null;
 	}
-	
+
+
+	// Save the result to show in the GameOver function
+	if (Game.match.player1.score > Game.match.player2.score)
+		result = "Left Player Wins!";
+	else if (Game.match.player1.score < Game.match.player2.score)
+  		result = "Right Player Wins!"; 
+	else
+		result = "It is a Tie!"
+
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
 	Game.match.matchID = -1;
+
 	navigateTo('GameOver');
 }
