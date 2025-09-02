@@ -377,7 +377,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					qrImg.remove();
 					qrLabel.textContent = '2FA activated successfully!';
 					form.remove();
-					Game.match.player1.Twofa = playerNr === 1 ? true : Game.match.player1.Twofa;
+					UI.user1.Twofa = playerNr === 1 ? true : UI.user1.Twofa;
 					setTimeout(() => {
 						overlay.remove();
 					}, 1000); // 1000 ms = 1 second

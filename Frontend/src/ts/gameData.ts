@@ -38,7 +38,6 @@ export const Game : S.Game = {
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,
-			Twofa: false
 		},
 		player2: {
 			ID: 1,
@@ -46,7 +45,6 @@ export const Game : S.Game = {
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,
-			Twofa: false
 		},
 		gameState: {
 			time: 0,

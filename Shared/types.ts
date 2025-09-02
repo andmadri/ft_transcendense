@@ -21,7 +21,6 @@ export type player = {
 		pressDOWN: boolean
 	},
 	score: number,
-	Twofa: boolean
 }
 
 export type gameState = {

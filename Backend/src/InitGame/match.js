@@ -47,7 +47,6 @@ async function newMatch(db, matchnr, id, id2, mode) {
 				ready: false,
 				input: { pressUP: false, pressDOWN: false },
 				score: 0,
-				Twofa: false
 			},
 			player2: {
 				ID: id2,
@@ -55,7 +54,6 @@ async function newMatch(db, matchnr, id, id2, mode) {
 				ready: false,
 				input: { pressUP: false, pressDOWN: false },
 				score: 0,
-				Twofa: false
 			},
 			gameState: {
 				time: 0,
