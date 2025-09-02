@@ -20,8 +20,8 @@ export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/signup', async (request, reply) => {
 		const { playerNr, username, email, password } = request.body;
 		const msg = {
-			name: username,
-			email: email,
+			name: username.trim(),
+			email: email.toLowerCase(),
 			password: password,
 			player: playerNr
 		};
@@ -36,7 +36,7 @@ export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/login', async (request, reply) => {
 		const { playerNr, email, password } = request.body;
 		const msg = {
-			email: email,
+			email: email.toLowerCase(),
 			password: password,
 			player: playerNr
 		};
