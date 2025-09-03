@@ -66,6 +66,21 @@ export function getGameOver() {
 	backToMenu.addEventListener('click', () => { navigateTo('Menu'); })
 	gameOver.appendChild(backToMenu);
 
+	const statsButton = document.createElement('button');
+	statsButton.id = 'statsButton';
+	statsButton.textContent = 'View Game Stats';
+	statsButton.style.fontFamily = '"Horizon", monospace';
+	statsButton.style.padding = '0.6rem 2rem';
+	statsButton.style.fontSize = '1.5rem';
+	statsButton.style.borderRadius = '0.8rem';
+	statsButton.style.border = '0.15rem solid black';
+	statsButton.style.backgroundColor = '#ededeb';
+	statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
+	statsButton.style.cursor = 'pointer';
+	statsButton.style.transition = 'all 0.2s ease-in-out';
+	statsButton.addEventListener('click', () => { navigateTo('GameStats'); })
+	gameOver.appendChild(statsButton);
+
 	const body = document.getElementById('body');
 	if (!body)
 		return ;

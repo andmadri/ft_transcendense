@@ -31,7 +31,6 @@ fastify.register(fastifyIO, {
 	}
 });
 
-// change how you create database
 export const db = await createDatabase();
 
 

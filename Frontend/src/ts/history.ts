@@ -3,6 +3,7 @@ import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
 import { getGameOver } from './Game/endGame.js';
+import { getGameStats } from './Game/gameStats.js';
 
 /**
  * NAVIGATION FOR
@@ -51,6 +52,9 @@ export function renderPage(newState: string) {
 			break ;
 		case 'GameOver':
 			getGameOver();
+			break ;
+		case 'GameStats':
+			getGameStats();
 			break ;
 		default:
 			console.log(`Page does not exist: ${newState}`);
