@@ -21,7 +21,7 @@ export function changeAuthMode(player: number) {
 	}
 }
 
-function getInputField(name: string, player: number) {
+function getInputField(label_name: string, name: string, player: number) {
 	const inputSingle = document.createElement('div');
 	inputSingle.className = 'inputSingle';
 
@@ -35,7 +35,7 @@ function getInputField(name: string, player: number) {
 
 	const label = document.createElement('label');
 	label.setAttribute('for', name);
-	label.textContent = "Email";
+	label.textContent = label_name;
 
 	inputWithIcon.appendChild(input);
 	inputSingle.append(label, inputWithIcon);
@@ -66,8 +66,8 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 	inputMultiple.className = "inputMultiple";
 
 	if (action != "Login")
-		inputMultiple.append(getInputField("name", player));
-	inputMultiple.append(getInputField('email', player), getInputField('password', player))
+		inputMultiple.append(getInputField("Username", "name", player));
+	inputMultiple.append(getInputField("Email", 'email', player), getInputField("Password", 'password', player))
 
 	const inputButtons = document.createElement('div');
 	inputButtons.className = "inputButtons";
