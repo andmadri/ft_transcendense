@@ -20,6 +20,19 @@ import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
 import { performCleanupDB } from './Database/cleanup.js';
 
+// ADDED FOR CREATING IMAGE IN THE BACKEND - start
+import fs from 'fs';
+import path from 'path';
+
+const UPLOADS_BASE = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
+try {
+	fs.mkdirSync(path.join(UPLOADS_BASE, 'charts'), { recursive: true });
+} catch (e) {
+	console.error('[BOOT] Cannot create uploads dir:', UPLOADS_BASE, e);
+}
+import chartRoutes from './routes/charts.js';
+// ADDED FOR CREATING IMAGE IN THE BACKEND - end
+
 // FASTIFY => API SERVER
 const fastify = Fastify({ logger: true });
 
@@ -61,8 +74,11 @@ await fastify.register(googleAuthRoutes);
 // POST /api/upload-avatar
 await fastify.register(avatarRoutes);
 
+// ADDED FOR CREATING IMAGE IN THE BACKEND - this one line
+await fastify.register(chartRoutes);
+
 fastify.setNotFoundHandler(function (request, reply) {
-  reply.status(404).send({ error: 'Not Found' });
+	reply.status(404).send({ error: 'Not Found' });
 });
 
 // const httpServer = createServer(fastify.server);

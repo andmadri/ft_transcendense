@@ -12,6 +12,8 @@ export function getGameStats() {
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
 
+	// const test_img = ensureStatsChartElement();
+	// test_img.src = `/api/charts/user-state-durations/${matchId}?t=${Date.now()}`;
 	// body.appendChild();
 
 }

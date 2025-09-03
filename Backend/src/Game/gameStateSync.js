@@ -26,20 +26,20 @@ export function applyKeyPressUpdate(match, msg) {
 }
 
 export async function updateScore(match, msg, io) {
-	console.log("updateScore -> handleMatchEventDB")
+	// console.log("updateScore -> handleMatchEventDB")
 	const eventID = await handleMatchEventDB(db, {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
-		event_type: 'goal'
-		// ball_x: ,
-		// ball_y: ,
+		event_type: 'goal',
+		ball_x: match.gameState.ball.pos.x,
+		ball_y: match.gameState.ball.pos.y,
 		// ball_angle: ,
 		// ball_result_x: ,
 		// ball_result_y: ,
-		// paddle_x_player_1: ,
-		// paddle_y_player_1: ,
-		// paddle_x_player_2: ,
-		// paddle_y_player_2: ,
+		paddle_x_player_1: match.gameState.paddle1.pos.x,
+		paddle_y_player_1: match.gameState.paddle1.pos.y,
+		paddle_x_player_2: match.gameState.paddle2.pos.x,
+		paddle_y_player_2: match.gameState.paddle2.pos.y
 	})
 
 	// update msg -> not send to socket but to room.

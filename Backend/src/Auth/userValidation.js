@@ -1,8 +1,6 @@
 import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
-import { onUserLogin } from '../Services/sessionsService.js';
 
 function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;

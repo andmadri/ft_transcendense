@@ -2,7 +2,7 @@ import { applyGameStateUpdate, updateScore, applyKeyPressUpdate } from "./gameSt
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
 
-export function handleGame(db, msg, socket, io) {
+export async function handleGame(db, msg, socket, io) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleGame');
 
@@ -23,7 +23,7 @@ export function handleGame(db, msg, socket, io) {
 			applyGameStateUpdate(match, msg);
 			break;
 		case 'scoreUpdate':
-			updateScore(match, msg, io);
+			await updateScore(match, msg, io);
 			break;
 		case 'keyPressUpdate':
 			applyKeyPressUpdate(match, msg, socket);

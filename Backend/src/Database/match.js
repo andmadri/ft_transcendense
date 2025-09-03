@@ -202,13 +202,6 @@ export async function getMatchEventByID(db, event_id) {
 //                           SHOW DATA IN THE LOGGER                           //
 // *************************************************************************** //
 
-// export async function sql_log(msg) {
-// 	// if (process.env.LOGSQL) {
-// 	const ts = new Date().toISOString().slice(0,19).replace('T',' ');
-// 	console.log(`[${ts}] ${msg}`);
-// 	// }
-// }
-
 export async function loggerUpdateMatchInDB(db, match_id) {
 	const match = await getMatchByID(db, match_id);
 	if (!match) {
