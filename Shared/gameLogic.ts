@@ -109,7 +109,7 @@ function checkPaddleSides(match: matchInfo) {
 
 export function updateGameState(match: matchInfo) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
-	
+	match.gameState.time = Date.now();
 	if (match.player1.score == 5 || match.player2.score == 5) {
 		match.state = state.End;
 		return ;

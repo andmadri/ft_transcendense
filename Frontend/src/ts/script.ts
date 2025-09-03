@@ -12,6 +12,7 @@ import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
 import { OT, state} from '@shared/enums'
+import { updatePaddlePos } from '@shared/gameLogic'
 import { sendScoreUpdate } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
@@ -58,21 +59,44 @@ function gameLoop() {
 			break ;
 		}
 		case state.Init: {
-			if (!document.getElementById('game'))
-			{
-				log('Init game');
+			//console.log(`state.Init`);
+			let startDuration;
+			if (!document.getElementById('game')) {
+				log('getGameField()');
 				getGameField();
-				initGame();
 			}
-			if (!document.getElementById('startGame'))
-				startGameField();
+			if (!document.getElementById('startGame')) {
+				if (Game.match.mode == OT.Online) {
+					console.log(`resumeTime = ${Game.match.resumeTime}`);
+					startDuration = Game.match.resumeTime - Date.now();
+				}
+				else {
+					startDuration = 4000;
+				}
+				console.log(`initGame()`);
+				initGame(); // this needs to happen only once
+				console.log(`startDuration = ${startDuration}`);
+				startGameField(startDuration);
+			}
 			break ;
 		}
 		case state.Paused: {
-			console.log(`state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
-			if (Game.match.pauseTimeOutID === null) {
-				pauseBallTemporarily(3000);
+			let pauseDuration;
+			if (Game.match.mode == OT.Online) {
+				const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
+				updatePaddlePos(paddle, Game.match.gameState.field);
+				pauseDuration = Game.match.resumeTime - Date.now();
 			}
+			else {
+				updatePaddlePos(Game.match.gameState.paddle1, Game.match.gameState.field);
+				updatePaddlePos(Game.match.gameState.paddle2, Game.match.gameState.field);
+				pauseDuration = 3000;
+			}
+			if (Game.match.pauseTimeOutID === null) {
+				console.log(`pauseDuration = ${pauseDuration}`);
+				pauseBallTemporarily(pauseDuration);
+			}
+			updateDOMElements(Game.match);
 			break ;
 		}
 		case state.Playing: {
@@ -82,10 +106,9 @@ function gameLoop() {
 			break ;
 		}
 		case state.Score: {
-			console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			updateDOMElements(Game.match);
-			Game.match.state = state.Paused;
 			if (Game.match.OT != OT.Online) {
+				Game.match.state = state.Paused;
 				sendScoreUpdate();
 			}
 			break;

@@ -129,16 +129,16 @@ export function initGame() {
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
 	}
-	else {
-		// Send server msg that player is ready with init game
-		const readyToPlay = {
-			action: 'init',
-			subaction: 'start',
-			matchID: Game.match.matchID,
-			userID: UI.user1.ID //user check
-		}
-		Game.socket.emit('message',readyToPlay);
-	}
+	// else {
+	// 	// Send server msg that player is ready with init game
+	// 	const readyToPlay = {
+	// 		action: 'init',
+	// 		subaction: 'start',
+	// 		matchID: Game.match.matchID,
+	// 		userID: UI.user1.ID //user check
+	// 	}
+	// 	Game.socket.emit('message',readyToPlay);
+	// }
 	const fieldDiv = document.getElementById('field');
 	if (fieldDiv) {
 		const resizeObserver = new ResizeObserver(() => {
@@ -158,12 +158,11 @@ export function actionInitOnlineGame(data: any) {
 		navigateTo('Menu');
 		return ;
 	}
-	getGameField();
+	//getGameField();
 
 	Game.match = match;
 	// Function to set all data sync with match in game...
 
-	navigateTo('Game'); //check this ->  is state changed in navigate to
-	startGameField();
+	navigateTo('Game'); //think we don't need this
 	console.log("Start online game...");
 }

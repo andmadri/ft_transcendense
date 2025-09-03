@@ -21,7 +21,6 @@ export function updateDOMElements(match : matchInfo) {
 	const fieldDiv = document.getElementById('field');
 
 	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore && fieldDiv) {
-		console.log("UpdateDOMElements()");
 		leftScore.textContent = match.player1.score.toString();
 		rightScore.textContent = match.player2.score.toString();
 
@@ -46,19 +45,16 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game(match : matchInfo) {
-	console.log('Game', Game.match.state, match.mode);
 	if (Game.match.state !== state.Playing) {
 		return;
 	}
 	if (match.mode == OT.Online) {
 		//update own paddle immediately in frontend
-		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		console.log("ball", match.gameState.ball);
 		renderGameInterpolated();
+		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
 		updatePaddlePos(paddle, match.gameState.field);
 	}
 	else {
-		match.time = performance.now();
 		if (match.mode == OT.ONEvsCOM) {
 			aiAlgorithm();
 		}

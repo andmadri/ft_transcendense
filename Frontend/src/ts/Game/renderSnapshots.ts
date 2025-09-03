@@ -23,7 +23,6 @@ const snapshots: Snapshot[] = [];
  * @param player 1 or 2, dependce on left/right correction
  */
 export function makeSnapshot(gameState: any, player: number) {
-	console.log("make snapshot");
 	snapshots.push({
 		ballX: gameState.ball.pos.x,
 		ballY: gameState.ball.pos.y,
@@ -93,7 +92,6 @@ function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number,
  * @param player left or right
  */
 function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: number, player: number) {
-	console.log(`interpolateSnapshot?`);
 	// calculate the right position at the right delay time
 	if (snap2.timestamp <= snap1.timestamp) {
 		console.error("Invalid snapshots: snap2.timestamp must be greater than snap1.timestamp");

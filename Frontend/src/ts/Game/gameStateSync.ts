@@ -5,24 +5,25 @@ import { OT, state } from '@shared/enums'
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 
 export function applyGameStateUpdate(data : any) {
-	console.log(`applyGameStateUpdate() state: ${data.state}`);
 	if (Game.match.mode == OT.Online) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
-		if (data.gameState) {
+		Game.match.state = data.state;
+		Game.match.resumeTime = data.resumeTime;
+		if (data.gameState && Game.match.state == state.Playing) {
 			makeSnapshot(data.gameState, playerNr);
 		}
-		else {
-			console.log("Data is missing in applyUpdatesGameServer");
-		}
+		// else {
+		// 	console.log("Data is missing in applyUpdatesGameServer");
+		// }
 	}
 }
 
 export function applyScoreUpdate(data: any) {
-	console.log(`applyScoreUpdate`);
 	if (Game.match.mode == OT.Online) {
 		Game.match.state = data.match.state;
 		Game.match.gameState = data.match.gameState;
 		Game.match.lastScoreID = data.match.lastScoreID;
+		Game.match.resumeTime = data.resumeTime;
 		Game.match.player1.score = data.match.player1.score;
 		Game.match.player2.score = data.match.player2.score;
 	}
