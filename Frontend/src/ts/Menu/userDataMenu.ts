@@ -40,7 +40,6 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	buttonsContainer.style.alignItems = 'center';
 	buttonsContainer.style.margin = '1rem';
 
-
   const userPic = document.createElement('img');
   userPic.src = `/api/avatar/${user_info.id}`;
   userPic.alt = `${user_info.name}'s avatar`;

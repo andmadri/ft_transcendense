@@ -26,7 +26,7 @@ function styleMainBtns(button: HTMLButtonElement, text: string)
 }
 
 export function styleListBtns(button: HTMLButtonElement, img_url: string) {
-	button.style.width = 'clamp(8px, 0.5vw, 10px)';
+	button.style.width = '20px';
 	button.style.aspectRatio = '1/1';
 	button.style.borderRadius = '50%';
 	button.style.backgroundImage = img_url;
@@ -135,7 +135,8 @@ export function styleBlock(title_text: string, block: HTMLElement, list_id?: str
 	}
 }
 
-export function styleRow(list: HTMLUListElement, playerName: string)
+//not using list here
+export function styleRow(playerName: string)
 {
 	const row = document.createElement('li');
 	row.textContent = playerName ?? "";
@@ -150,6 +151,8 @@ export function styleRow(list: HTMLUListElement, playerName: string)
 	row.style.display = 'flex';
 	row.style.listStyleType = 'none';
 	row.style.flex = '1';
+	row.style.alignItems = 'center';
+	row.style.justifyContent = 'space-between';
 	return row;
 }
 

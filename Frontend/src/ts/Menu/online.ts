@@ -87,8 +87,9 @@ export function insertPlayers(online_players: any) {
 	html_list.innerHTML = "";
 	for (const player of online_players)
 	{
-			if (player.id > 2) {
-			const row = styleRow(html_list, player.name);
+		//I don't want to show the current player
+			if (player.id > 2 || ) {
+			const row = styleRow(player.name);
 			// const status = player.online_status == 0 ? 'offline' : 'online';
 			// row.style.color = status === 'online' ? 'green' : 'gray';
 
@@ -106,7 +107,7 @@ export function insertPlayers(online_players: any) {
 					const friendID = player.id;
 					Game.socket.send({action: "friends", subaction: "friendRequest", id, friendID});
 				});
-				row.appendChild(addFriendBtn);
+				btnContainer.appendChild(addFriendBtn);
 			}
 
 			const dashboardBtn = document.createElement('button');
@@ -117,6 +118,7 @@ export function insertPlayers(online_players: any) {
 			});
 			btnContainer.appendChild(dashboardBtn);
 			row.appendChild(btnContainer);
+			html_list.append(row);
 		}
 	}
 }
