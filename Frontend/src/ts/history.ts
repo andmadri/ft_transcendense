@@ -66,6 +66,9 @@ export function renderPage(newState: string) {
  * @param gameData Extra information if needed
  */
 export function navigateTo(state: string) {
+	if (state == null)
+		return ('LoginP1');
+
 	console.log(`Save navigation to: ${state}`);
 
 	// save last page for when refresh page
