@@ -40,152 +40,167 @@
 
 
 /* Authentification */
-
 .authContainer {
-	display: flex;
-	background-color: #000;
-	border-radius: 24px;
-	flex-direction: row;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 90%;
-	max-width: 737px;
-	height: auto;
-	min-height: 524px;
-	margin: 35px auto auto auto;
+    display: flex;
+    background-color: #000;
+    border-radius: 24px;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 90%;
+    max-width: 737px;
+    min-width: 200px;
+    min-height: 550px;
+	max-height: 550px;
+    height: 40vh;
+    padding: 1rem;
+    margin: 35px auto auto auto;
 }
-
 .loginSignUpContainer {
-	display: flex;
-	flex-direction: column;
-	border-radius: 18px;
-	background-color: #ededeb;
-	width: 45%;
-	max-width: 335px;
-	height: 482px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    background-color: #EDEDEB;
+    width: 100%;
+    height: auto;
+    min-width: 190px;
+    max-width: 335px;
+    padding: 1rem;
+    margin: 0.5rem;
 }
-
 .header {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 1rem;
-	margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
-
 .header1Text {
-	font-size: 2.5rem;
-	color:#000;
-	font-family: 'Horizon', sans-serif;
+    font-size: clamp(0.1rem, 2.8vw, 2rem);
+    color:#000;
+    font-family: 'Horizon', sans-serif;
 }
-
 .inputMultiple {
-	font-family: 'RobotoCondensed', sans-serif;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 1rem;
-	margin-bottom: 2rem;
+    font-family: 'RobotoCondensed', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
-
 .inputButtons {
-	font-family: 'RobotoCondensed', sans-serif;
-	display: flex;
-	position: relative;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
+    font-family: 'RobotoCondensed', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
-
 .inputSingle {
-	display: flex;
-	flex-direction: inherit;
-	gap: 0.5rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-sizing: border-box;
 }
-
 .inputSingle input {
-	background-color: transparent;
-	border: 1px solid #000;
-	border-radius: 0.5rem;
-	outline: none;
-	width: 238px;
-  	height: 1.5rem;
+    background-color: transparent;
+    border: 1px solid #000;
+    border-radius: 0.5rem;
+    outline: none;
+    max-width: 100%;
+    width: 100%;
+    height: 2rem;
+    box-sizing: border-box;
 }
-
 .submitButton {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 238px;
-	height: 34px;
-	color: #ededeb;
-	background-color: #000;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-family: 'RobotoCondensed', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 238px;
+    height: 34px;
+    color: #EDEDEB;
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'RobotoCondensed', sans-serif;
 }
-
 .submitButton:hover {
-	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
-	border: none;
-	color: #000;
+    background: linear-gradient(90deg, #FF6117, #FFC433, #FFC433);
+    border: none;
+    color: #000;
 }
-
 .googleLoginButton {
-	cursor: pointer;
-	width: 38px;
-	height: 38px;
-	border-radius: 50%;
-	transition: transform 0.2s ease;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
 }
-
 .googleLoginImageButton:hover {
-	transform: scale(1.1);
+    transform: scale(1.1);
 }
-
 p.loginSignUpPrompt {
-	margin: 0;
+    margin: 0;
 }
-
 .loginSignUpLink {
-	color:#ff6117;
-	text-decoration: underline;
-	cursor: pointer;
+    color:#ff6117;
+    text-decoration: underline;
+    cursor: pointer;
 }
-
 .animationContainer {
-	display: flex;
-	position: relative;
-	flex-direction: column;
-	align-items: center;
-	border-radius: 18px;
-	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
-	width: 45%;
-	max-width: 335px;
-	height: 482px;
-	overflow: hidden;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    border-radius: 18px;
+    background: linear-gradient(90deg, #FF6117, #FFC433, #FFC433);
+    width: 100%;
+    max-width: 335px;
+    height: auto;
+    padding: 1rem;
+    overflow: hidden;
+    margin: 0.5rem;
+    justify-content: space-evenly;
+    align-items: center;
 }
-
-
 .pongText {
-	font-size: 4.063rem;
-	font-family: 'Horizon', sans-serif;
-	-webkit-text-stroke: 0.15rem #000;
-	letter-spacing: 0.5rem;
-	line-height: 1;
-	color: transparent;
+    font-family: 'Horizon', sans-serif;
+    font-size: 4em;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-text-stroke: 0.15rem #000;
+    letter-spacing: 0.5rem;
+    line-height: 1;
+    color: transparent;
 }
-
 .ball {
-	position: absolute;
-	height: 4rem;
-	width: 4rem;
-	border-radius: 50%;
-	background-color: #ededeb;
-	background-position: center;
-	box-shadow: 0.25rem 0.375rem 0.625rem;
-	animation: goX 1.2s linear 0s infinite alternate, goY 1.5s linear 0s infinite alternate;
+    position: absolute;
+    height: 4rem;
+    width: 4rem;
+    border-radius: 50%;
+    background-color: #EDEDEB;
+    background-position: center;
+    box-shadow: 0.25rem 0.375rem 0.625rem;
+    animation: goX 1.2s linear 0s infinite alternate, goY 1.5s linear 0s infinite alternate;
+}
+@media (max-width: 600px) {
+    .authContainer {
+        padding: 0.5rem;
+        height: auto;
+        align-items: center;
+    }
+    .loginSignUpContainer {
+        min-width: 200px;
+        width: 80%;
+        margin: 1rem;
+    }
+    .animationContainer {
+        display: none;
+    }
 }
