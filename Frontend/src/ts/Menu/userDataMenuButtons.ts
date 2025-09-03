@@ -279,34 +279,26 @@ export function get2faBtn(playerNr: number): HTMLButtonElement {
 	return (get2faSetupBtn(playerNr));
 }
 
-export function getAvatarBtn(playerNr: number): HTMLLabelElement {
+export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 	const fileInput = document.createElement('input');
 	fileInput.type = 'file';
 	fileInput.accept = 'image/*';
 	fileInput.style.display = 'none';
-	fileInput.addEventListener('change', (e) => {
+
+	fileInput.addEventListener('change', () => {
 		const file = fileInput.files?.[0];
 		if (file)
 			changeAvatar(file, playerNr);
 	});
 
-	const label = document.createElement('label');
-	label.textContent = 'Change Avatar';
-	label.htmlFor = fileInput.id = `avatarUpload${playerNr}`;
+	const button = document.createElement('button');
+	button.textContent = 'Change Avatar';
 
-	// styleElement(label, {
-	// 	backgroundColor: '#d9f0ff',
-	// 	border: '2px solid #d9f0ff',
-	// 	padding: '15px',
-	// 	fontSize: '1em',
-	// 	cursor: 'pointer',
-	// 	borderRadius: '10px',
-	// 	marginLeft: 'auto',
-	// 	display: 'inline-block',
-	// 	fontFamily: 'inherit'
-	// });
-	label.appendChild(fileInput);
-	return (label);
+	button.addEventListener('click', () => {
+		fileInput.click();
+	});
+	button.appendChild(fileInput);
+	return button;
 }
 
 

@@ -1,3 +1,5 @@
+import { navigateTo } from "../history";
+import { styleListBtns } from "./menuContent";
 import { get2faBtn, getLoginBtn, getAvatarBtn } from "./userDataMenuButtons";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
@@ -24,11 +26,11 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	if (!card)
 		return ;
 
-  const container = document.createElement('div');
-  container.style.display = 'flex';
-  // container.style.alignItems = 'center';
-  container.style.width = '100%';
-  container.style.height = '50%';
+	const container = document.createElement('div');
+	container.style.display = 'flex';
+	// container.style.alignItems = 'center';
+	container.style.width = '100%';
+	container.style.height = '50%';
 
 	const buttonsContainer = document.createElement('div');
 	buttonsContainer.style.display = 'flex';
@@ -40,46 +42,69 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	buttonsContainer.style.alignItems = 'center';
 	buttonsContainer.style.margin = '1rem';
 
-  const userPic = document.createElement('img');
-  userPic.src = `/api/avatar/${user_info.id}`;
-  userPic.alt = `${user_info.name}'s avatar`;
-  userPic.style.height = 'clamp(60px, 90%, 120px)';
-  userPic.style.aspectRatio = '1/1';
-  userPic.style.objectFit = 'cover';
-  userPic.style.borderRadius = '50%';
-  userPic.style.padding = '1rem';
+	const userPic = document.createElement('img');
+	userPic.src = `/api/avatar/${user_info.id}`;
+	userPic.alt = `${user_info.name}'s avatar`;
+	userPic.style.height = 'clamp(60px, 90%, 120px)';
+	userPic.style.aspectRatio = '1/1';
+	userPic.style.objectFit = 'cover';
+	userPic.style.borderRadius = '50%';
+	userPic.style.padding = '1rem';
 
-  const userInfoContainer = document.createElement('div');
-  userInfoContainer.style.display = 'flex';
-  userInfoContainer.style.flexDirection = 'column';
-  userInfoContainer.style.gap = '0.7rem';
+	const userInfoContainer = document.createElement('div');
+	userInfoContainer.style.display = 'flex';
+	userInfoContainer.style.flexDirection = 'column';
+	userInfoContainer.style.gap = '0.7rem';
 	userInfoContainer.style.height = '30%';
 	userInfoContainer.style.padding = '1rem';
 
-  const userName = document.createElement('div');
-  userName.textContent = `${user_info.name}`;
-  userName.style.fontFamily = '"Horizon", monospace';
-  userName.style.webkitTextStroke = '0.1rem #ffffff';
-  userName.style.color = 'transparent';
-  userName.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
-  userName.style.whiteSpace = 'nowrap';
+	const userName = document.createElement('div');
+	userName.textContent = `${user_info.name}`;
+	userName.style.fontFamily = '"Horizon", monospace';
+	userName.style.webkitTextStroke = '0.1rem #ffffff';
+	userName.style.color = 'transparent';
+	userName.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
+	userName.style.whiteSpace = 'nowrap';
 
-  const userStats = document.createElement('div');
-  userStats.textContent = `Games: ${stats.total_matches} W: ${stats.wins} L: ${stats.losses}`;
-  userStats.style.fontFamily = '"RobotoCondensed", monospace';
-  userStats.style.color = 'white';
-  userStats.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
+	const userStats = document.createElement('div');
+	userStats.textContent = `Games: ${stats.total_matches} W: ${stats.wins} L: ${stats.losses}`;
+	userStats.style.fontFamily = '"RobotoCondensed", monospace';
+	userStats.style.color = 'white';
+	userStats.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
 
-  userInfoContainer.appendChild(userName);
-  userInfoContainer.appendChild(userStats);
+	const topRightButtons = document.createElement('div');
+	topRightButtons.style.position = 'absolute';
+	topRightButtons.style.top = '1rem';
+	topRightButtons.style.right = '1rem';
+	topRightButtons.style.display = 'flex';
+	topRightButtons.style.flexDirection = 'row';
+	topRightButtons.style.gap = '0.5rem';
+
+	const dashboardBtn = document.createElement('button');
+	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
+	dashboardBtn.addEventListener("click", () => {
+		navigateTo('Dashboard');
+	});
+
+	const notificationsBtn = document.createElement('button');
+	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
+	dashboardBtn.addEventListener("click", () => {
+		navigateTo('Dashboard');
+	});
+
+	topRightButtons.appendChild(dashboardBtn);
+	topRightButtons.appendChild(notificationsBtn);
+	userInfoContainer.appendChild(userName);
+	userInfoContainer.appendChild(userStats);
 	buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
-	// buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
+	buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
 
   container.appendChild(userPic);
   container.appendChild(userInfoContainer);
   card.appendChild(container);
 	card.appendChild(buttonsContainer);
+	card.appendChild(topRightButtons);
 }
 
 export function actionUserDataMenu(data: any) {

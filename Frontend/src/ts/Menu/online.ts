@@ -88,7 +88,7 @@ export function insertPlayers(online_players: any) {
 	for (const player of online_players)
 	{
 		//I don't want to show the current player
-			if (player.id > 2 || ) {
+			if (player.id > 2) {
 			const row = styleRow(player.name);
 			// const status = player.online_status == 0 ? 'offline' : 'online';
 			// row.style.color = status === 'online' ? 'green' : 'gray';

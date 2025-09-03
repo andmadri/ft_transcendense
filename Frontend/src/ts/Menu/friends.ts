@@ -113,13 +113,11 @@ function insertFriends(friends: any) {
 		return;
 	}
 	html_list.innerHTML = "";
-	// if (!friends || friends.access == 'no') {
-	// 	console.log(`No Friends`);
-	// 	return ;
-	// }
+	const friendsArray = Array.isArray(friends.content) ? friends.content : [];
+	//there is a problem with the friends data
 	for (const friend of friends.content)
 	{
-			const row = styleRow(html_list, friend.name);
+			const row = styleRow(friend.name);
 			const status = friend.online_status == 0 ? 'offline' : 'online';
 			row.style.color = status === 'online' ? 'green' : 'gray';
 
@@ -149,6 +147,7 @@ function insertFriends(friends: any) {
 			btnContainer.appendChild(deleteFriendBtn);
 			btnContainer.appendChild(dashboardBtn);
 			row.appendChild(btnContainer);
+			html_list.appendChild(row);
 	}
 }
 

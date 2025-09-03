@@ -23,6 +23,7 @@ function styleMainBtns(button: HTMLButtonElement, text: string)
 	button.style.padding = '0.7rem';
 	button.style.color = 'white';
 	button.style.border = 'none';
+	button.style.flex = '1';
 }
 
 export function styleListBtns(button: HTMLButtonElement, img_url: string) {
@@ -38,7 +39,7 @@ export function styleListBtns(button: HTMLButtonElement, img_url: string) {
 
 export function getCreditBtn(): HTMLButtonElement {
 	const creditsBtn = document.createElement('button');
-	creditsBtn.style.flex = '1 1 25%';
+	// creditsBtn.style.flex = '1 1 25%';
 	styleMainBtns(creditsBtn, "Credits");
 
 	creditsBtn.addEventListener('click', () => {
@@ -84,16 +85,24 @@ export function getCreditBtn(): HTMLButtonElement {
 export function getPlayBtn(): HTMLButtonElement {
 	const playBtn = document.createElement('button');
 	styleMainBtns(playBtn, "Play Game")
-	playBtn.style.flex = '1 1 25%';
+	// playBtn.style.flex = '1 1 25%';
 	playBtn.addEventListener('click', () => {
 		navigateTo('Settings')
 	});
 	return (playBtn);
 }
 
+export function getTournamentBtn(): HTMLButtonElement {
+	const tournamentBtn = document.createElement('button');
+	styleMainBtns(tournamentBtn, "Tournament");
+	tournamentBtn.addEventListener('click', () => {
+		console.log('I am tired');
+	});
+	return (tournamentBtn);
+}
+
 export function getDashboardBtn(): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
-	dashboardBtn.style.flex = '1 1 50%'
 	styleMainBtns(dashboardBtn, "Dashboard");
 	dashboardBtn.addEventListener('click', () => {
 		navigateTo('Dashboard');
@@ -109,6 +118,7 @@ export function styleBlock(title_text: string, block: HTMLElement, list_id?: str
 	block.style.alignItems = 'center';
 	block.style.padding = '1rem';
 	block.style.borderRadius = '10px';
+	block.style.position = 'relative';
 
 	const title = document.createElement('div');
 	title.textContent = title_text;
@@ -131,11 +141,11 @@ export function styleBlock(title_text: string, block: HTMLElement, list_id?: str
 		list.style.width = '100%';
 		list.style.padding = '0';
 		list.style.margin = '0';
+		list.style.overflowY = 'auto';
 		block.appendChild(list);
 	}
 }
 
-//not using list here
 export function styleRow(playerName: string)
 {
 	const row = document.createElement('li');
@@ -271,7 +281,7 @@ export function getMenu() {
 	menuButtons.style.gap = '1rem';
 	menuButtons.style.justifyContent = 'center';
 	menuButtons.style.width = 'clamp(1000px, 90vw, 1500px)';
-	menuButtons.appendChild(getDashboardBtn());
+	menuButtons.appendChild(getTournamentBtn());
 	menuButtons.appendChild(getPlayBtn());
 	menuButtons.appendChild(getCreditBtn());
 
