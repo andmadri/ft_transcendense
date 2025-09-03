@@ -11,6 +11,9 @@ services:
     volumes:
       # - database_volume:/usr/app/pong.db
       - dbdata:/data
+    init: true
+    stop_signal: SIGTERM
+    stop_grace_period: 3s
     env_file:
       - .env
     networks:
@@ -23,6 +26,7 @@ services:
       context: .
       dockerfile: Server/Dockerfile
     restart: always
+    stop_grace_period: 1s
     env_file:
       - .env
     networks:
@@ -39,9 +43,3 @@ networks:
 
 volumes:
   dbdata:
-  # database_volume:
-  #   driver: local
-  #   driver_opts:
-  #     type: none
-  #     device: ./Database
-  #     o: bind

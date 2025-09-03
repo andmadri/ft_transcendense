@@ -4,7 +4,6 @@ all:	up
 
 up:
 	rm -rf Server/src
-	mkdir -p Database
 	cp -r Frontend/* Server/
 	docker compose -f docker-compose.yml up
 

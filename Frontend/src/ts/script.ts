@@ -48,6 +48,7 @@ UI.state = S.stateUI.LoginP1;
 const currentState = sessionStorage.getItem("currentState");
 if (!currentState) {
     sessionStorage.setItem("currentState", "LoginP1");
+	navigateTo("LoginP1");
 }
 
 function gameLoop() {

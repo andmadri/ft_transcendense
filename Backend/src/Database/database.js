@@ -7,15 +7,15 @@ import { onUserLogin } from '../Services/sessionsService.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 const { Database } = sqlite3.verbose();
-// const dbpath = './pong.db';
 const DB_PATH = process.env.DB_PATH || "/data/pong.db";
 
-// /**
-//  * Open sqlite database
-//  * 
-//  * @param {*} path 
-//  * @returns 
-//  */
+
+/**
+ * @brief Opens (or creates) a SQLite database at the given path.
+ *
+ * @param {string} path - Filesystem path to the SQLite database file.
+ * @returns {Promise<sqlite3.Database>} - Resolves with a connected database instance.
+ */
 function openDatabase(path) {
 	return new Promise((resolve, reject) => {
 		const db = new Database(path, (err) => {
@@ -29,10 +29,68 @@ function openDatabase(path) {
 	});
 }
 
+/**
+ * @brief Ensures that the schema exists, creating tables/views if needed.
+ *
+ * Uses PRAGMA user_version (an integer stored in the SQLite file header) to track
+ * schema versioning. If user_version < 1, it runs @ref createTables and sets the
+ * version to 1.
+ *
+ * @param {sqlite3.Database} db - The connected database instance.
+ * @returns {Promise<boolean>} - True if schema was created, false if already up-to-date.
+ */
+async function ensureSchema(db) {
+	const row = await new Promise((resolve, reject) => {
+		const sql = `PRAGMA user_version;`;
+		db.get(sql, (err, row) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(row);
+			}
+		});
+	});
+	const version = row && typeof row.user_version === 'number' ? row.user_version : 0;
+	if (version < 1) {
+		await createTables(db);
+		await new Promise((resolve, reject) => {
+			const sql = `PRAGMA user_version = 1;`;
+			db.exec(sql, (err) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+		return true;
+	}
+	sql_log(`Database already created. Skip creating tables and views`);
+	return false;
+}
 
-function run(db, sql, params = []) {
-	return new Promise((resolve, reject) => {
-		db.run(sql, params, (err) => {
+/**
+ * @brief Initializes the SQLite database.
+ *
+ * Steps:
+ *  - Ensures the database file and directory exist.
+ *  - Connects to SQLite.
+ *  - Enables foreign key enforcement (PRAGMA foreign_keys = ON).
+ *  - Ensures schema exists via @ref ensureSchema.
+ *  - Seeds the database with default "Guest" and "AI" users if schema was freshly created.
+ *
+ * @returns {Promise<sqlite3.Database>} - Resolves with the connected and ready database instance.
+ */
+export async function createDatabase() {
+	fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+	const db = await openDatabase(DB_PATH);
+	
+	sql_log(`Connected to the database`);
+
+	 // Enforce foreign key constraints (disabled by default in SQLite).
+	await new Promise((resolve, reject) => {
+		const sql = `PRAGMA foreign_keys = ON;`;
+		db.exec(sql, (err) => {
 			if (err) {
 				reject(err);
 			} else {
@@ -40,46 +98,27 @@ function run(db, sql, params = []) {
 			}
 		});
 	});
-}
 
-/**
- * @brief Initializes the SQLite database and creates tables if needed.
- *
- * @returns {Promise<sqlite3.Database>} - Resolves with the connected database instance.
- */
-export async function createDatabase() {
-	fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-	const db = await openDatabase(DB_PATH);
+	const created = await ensureSchema(db);
 	
-	sql_log(`Connected to the database`);
-	await run(db, "PRAGMA foreign_keys = ON");
-
-	await createTables(db);
-
-	const guest_id = await createNewUserToDB(db, {
-		name: 'Guest',
-		email: 'guest@guest.guest',
-		password: 'secretguest'
-	});
-
-	try {
-		await onUserLogin(db, guest_id);
-	} catch(err) {
-		console.log("onUserLogin failed: guest id");
+	if (created) {
+		const guest_id = await createNewUserToDB(db, {
+			name: 'Guest',
+			email: 'guest@guest.guest',
+			password: 'secretguest'
+		});
+		const ai_id = await createNewUserToDB(db, {
+			name: 'AI',
+			email: 'ai@ai.ai',
+			password: 'secretai'
+		});
+		try {
+			await onUserLogin(db, guest_id);
+			await onUserLogin(db, ai_id);
+		} catch(err) {
+			console.log("onUserLogin failed: guest / ai id");
+		}
 	}
-
-	const ai_id = await createNewUserToDB(db, {
-		name: 'AI',
-		email: 'ai@ai.ai',
-		password: 'secretai'
-	});
-
-	try {
-		await onUserLogin(db, ai_id);
-	} catch (err) {
-		console.log("onUserLogin failed: ai id");
-	}
-
-	sql_log(`Finished setting up database`, false, true);
+	sql_log(`Finished setting up database`);
 	return db;
 }

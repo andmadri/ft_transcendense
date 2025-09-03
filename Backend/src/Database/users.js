@@ -210,7 +210,7 @@ export async function getUserByEmail(db, email) {
 export function getOnlineUsers(db) {
 	const sql = `SELECT * FROM OnlineUsers ORDER BY name`;
 	return new Promise((resolve, reject) => {
-		db.all(sql, [], (err, rows) => {
+		db.all(sql, (err, rows) => {
 			if (err) {
 				sql_error(err, `getOnlineUsers`);
 				reject(err);
@@ -244,7 +244,7 @@ export async function getAllPlayers(db) {
 		ORDER BY u.name;
 	`;
 	return new Promise((resolve, reject) => {
-		db.all(sql, [], (err, rows) => {
+		db.all(sql, (err, rows) => {
 			if (err) {
 				sql_error(err, `getAllPlayers`);
 				reject(err);

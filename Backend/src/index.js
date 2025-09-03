@@ -18,6 +18,7 @@ import  googleAuthRoutes  from './routes/googleAuth.js';
 import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
+import { performCleanupDB } from './Database/cleanup.js';
 
 // FASTIFY => API SERVER
 const fastify = Fastify({ logger: true });
@@ -33,8 +34,7 @@ fastify.register(fastifyIO, {
 // change how you create database
 export const db = await createDatabase();
 
-// RUN THE TEST DATABASE FUNCTION (testDB.js)
-// await testDB(db);
+
 
 // Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
@@ -68,6 +68,27 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 // const httpServer = createServer(fastify.server);
 
+function installShutdownHandlers(fastify, db) {
+	const shutdown = async (signal) => {
+		console.log(`[graceful] Caught ${signal}. Starting cleanup…`);
+		try {
+			fastify.log.info({msg: `Received ${signal}, starting cleanup...`});
+			await performCleanupDB(db);
+			await fastify.close();
+			fastify.log.info({ msg: `Cleanup done. Exiting.` });
+			process.exit(0);
+		} catch (err) {
+			fastify.log.error(err, `Error during shutdown after ${signal}`);
+			process.exit(1);
+		}
+	};
+	
+	process.on('SIGTERM', () => shutdown('SIGTERM'));
+	process.on('SIGINT',  () => shutdown('SIGINT'));
+}
+
+installShutdownHandlers(fastify, db);
+
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
 		// console.log('🔌 A user connected:', socket.id);
@@ -90,6 +111,7 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
+					console.log(`UserId1=${userId1}`);
 					// Use userId or decoded as needed for player 1
 				} catch (err) {
 					console.error('JWT1 verification failed:', err);

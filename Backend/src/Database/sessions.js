@@ -95,7 +95,7 @@ const _baseStatsQuery = `SELECT u.id AS user_id, u.name,
 export function getAllUserStateDurationsDB(db) {
 	const sql = _baseStatsQuery + ` ORDER BY u.name`;
 	return new Promise((resolve, reject) => {
-		db.all(sql, [], (err, rows) => {
+		db.all(sql, (err, rows) => {
 			if (err) {
 				sql_error(err, `getAllUserStateDurationsDB`);
 				reject(err);
