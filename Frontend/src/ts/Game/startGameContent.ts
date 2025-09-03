@@ -2,7 +2,7 @@ import { Game, UI } from "../gameData.js";
 import { OT, state } from '@shared/enums'
 import { pauseBallTemporarily } from "./gameLogic.js";
 
-function getKey(keyContent: string) {
+function getKey(keyContent: string | null) {
 	const key = document.createElement('div');
 	key.style.width = '10vh';
 	key.style.height = '6vh';
@@ -20,7 +20,8 @@ function getKey(keyContent: string) {
 	key.style.overflow = 'hidden';
 	key.style.textOverflow = 'ellipsis';
 	key.style.whiteSpace = 'nowrap';
-	key.textContent = keyContent;
+	if (keyContent)
+		key.textContent = keyContent;
 	return (key);
 }
 
@@ -58,7 +59,7 @@ function getPlayerColom(playerNr: number) {
     keys.style.gap = '15px';
 
 	if (Game.match.mode == OT.ONEvsCOM && playerNr == 2) { // AI has no keys
-		keys.append(getKey(''), getKey(''));
+		keys.append(getKey(null), getKey(null));
 	} else if (playerNr == 1 && Game.match.mode == OT.ONEvsONE) {
 		keys.append(getKey('W'), getKey('S'));
 	} else {

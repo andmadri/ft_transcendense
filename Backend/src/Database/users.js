@@ -219,7 +219,7 @@ export async function createNewUserToDB(db, { name, email, password, avatar_url=
 }
 
 export async function getAllPlayers(db) {
-	const sql = `        
+	const sql = `
 		SELECT 
 			u.*,
 			CASE 

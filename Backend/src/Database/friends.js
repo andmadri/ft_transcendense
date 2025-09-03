@@ -114,7 +114,7 @@ export function deleteFriendDBfromUser(db, user_id, friend_id) {
 			`DELETE FROM Friends 
 			WHERE (user_id = ? AND friend_id = ?) 
 			OR (user_id = ? AND friend_id = ?)`,
-			[user_id, friend_id],
+			[user_id, friend_id, friend_id, user_id],
 			function (err) {
 				if (err)
 					reject(err);
@@ -144,10 +144,30 @@ export function deleteFriendDBfromID(db, request_id) {
 export async function getFriendsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `
-			SELECT u.id, u.name
+			SELECT 
+				u.id, 
+				u.name,
+				CASE 
+					WHEN us.state IS NULL OR us.state = 'logout' THEN 0
+					ELSE 1
+				END AS online_status
 			FROM Friends f
-			JOIN Users u ON (u.id = f.friend_id OR u.id = f.user_id)
-			WHERE f.accepted = 1 AND ? IN (f.user_id, f.friend_id) AND u.id != ?
+			JOIN Users u 
+				ON (u.id = f.friend_id OR u.id = f.user_id)
+			LEFT JOIN (
+				SELECT us1.user_id, us1.state
+				FROM UserSessions us1
+				WHERE us1.id = (
+					SELECT us2.id
+					FROM UserSessions us2
+					WHERE us2.user_id = us1.user_id
+					ORDER BY us2.timestamp DESC
+					LIMIT 1
+				)
+			) us ON u.id = us.user_id
+			WHERE f.accepted = 1 
+			  AND ? IN (f.user_id, f.friend_id) 
+			  AND u.id != ?
 		`;
 		db.all(sql, [player_id, player_id], (err, rows) => {
 			if (err) return reject(err);

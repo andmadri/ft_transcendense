@@ -80,7 +80,8 @@ export async function addFriendRequest(socket, userId1, data) {
 
 async function deleteFriendship(socket, userID1, msg) {
 	try {
-		friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
+		console.log("Want to delete: ", userID1, msg.friendID);
+		await friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
 	} catch (err) {
 		socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 		console.error(err);
