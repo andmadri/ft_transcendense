@@ -43,7 +43,7 @@ export function actionGame(data: any) {
 			break ;
 		case 'start':
 			navigateTo('Game');
-			Game.match.state = state.Playing;
+			Game.match.state = state.Playing; //don't think we need this
 			break ;
 		case 'gameStateUpdate':
 			applyGameStateUpdate(data);

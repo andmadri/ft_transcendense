@@ -12,6 +12,9 @@ export function applyGameStateUpdate(data : any) {
 		if (data.gameState && Game.match.state == state.Playing) {
 			makeSnapshot(data.gameState, playerNr);
 		}
+		if (Game.match.state != state.Playing) {
+			renderGameInterpolated();
+		}
 		// else {
 		// 	console.log("Data is missing in applyUpdatesGameServer");
 		// }
