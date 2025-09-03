@@ -66,7 +66,6 @@ fastify.setNotFoundHandler(function (request, reply) {
   reply.status(404).send({ error: 'Not Found' });
 });
 
-const socketUserMap = new Map();
 // const httpServer = createServer(fastify.server);
 
 fastify.ready().then(() => {
@@ -119,9 +118,6 @@ fastify.ready().then(() => {
 			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
 			return ;
 		}
-
-		// To save which user belongs to with socket.id (when disconnect)
-		socketUserMap.set(socket.id, userId1);
 
 		// add user to main room
 		addUserToRoom(socket, 'main');

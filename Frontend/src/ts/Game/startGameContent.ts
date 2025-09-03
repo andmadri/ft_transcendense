@@ -49,7 +49,7 @@ function getPlayerColom(playerNr: number) {
 	username.style.fontWeight = 'bold';
     username.style.marginBottom = '20px';
 	username.id = 'usernameStart' + playerNr;
-	username.textContent = playerNr === 1 ?Game.match.player1.name : Game.match.player2.name;
+	username.textContent = playerNr === 1 ? Game.match.player1.name : Game.match.player2.name;
 
 	const keys = document.createElement('div');
     keys.style.display = 'flex';
@@ -57,13 +57,9 @@ function getPlayerColom(playerNr: number) {
     keys.style.alignItems = 'center';
     keys.style.gap = '15px';
 
-	if (Game.match.mode == OT.ONEvsCOM) {
-		if (playerNr == 1) {
-			keys.append(getKey('UP'), getKey('DOWN'));
-		} else {
-			keys.append(getKey(''), getKey(''));
-		}
-	} else if (playerNr == 1) {
+	if (Game.match.mode == OT.ONEvsCOM && playerNr == 2) { // AI has no keys
+		keys.append(getKey(''), getKey(''));
+	} else if (playerNr == 1 && Game.match.mode == OT.ONEvsONE) {
 		keys.append(getKey('W'), getKey('S'));
 	} else {
 		keys.append(getKey('UP'), getKey('DOWN'));
