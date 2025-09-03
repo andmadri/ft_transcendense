@@ -40,7 +40,6 @@
 
 
 /* Authentification */
-
 .authContainer {
 	display: flex;
 	background-color: #000;
@@ -56,7 +55,6 @@
 	padding: 1rem;
 	margin: 35px auto auto auto;
 }
-
 .loginSignUpContainer {
 	display: flex;
 	flex-direction: column;
@@ -69,7 +67,6 @@
 	padding: 1rem;
 	margin: 0.5rem;
 }
-
 .header {
 	display: flex;
 	flex-direction: column;
@@ -77,13 +74,11 @@
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
-
 .header1Text {
 	font-size: clamp(0.1rem, 2.8vw, 2rem);
-	color:#000000;
+	color:#000;
 	font-family: 'Horizon', sans-serif;
 }
-
 .inputMultiple {
 	font-family: 'RobotoCondensed', sans-serif;
 	display: flex;
@@ -93,7 +88,6 @@
 	gap: 1rem;
 	margin-bottom: 2rem;
 }
-
 .inputButtons {
 	font-family: 'RobotoCondensed', sans-serif;
 	display: flex;
@@ -102,7 +96,6 @@
 	justify-content: center;
 	gap: 0.5rem;
 }
-
 .inputSingle {
 	width: 100%;
 	display: flex;
@@ -110,7 +103,6 @@
 	gap: 0.5rem;
 	box-sizing: border-box;
 }
-
 .inputSingle input {
 	background-color: transparent;
 	border: 1px solid #000;
@@ -121,7 +113,6 @@
 	height: 2rem;
 	box-sizing: border-box;
 }
-
 .submitButton {
 	display: flex;
 	justify-content: center;
@@ -135,13 +126,11 @@
 	cursor: pointer;
 	font-family: 'RobotoCondensed', sans-serif;
 }
-
 .submitButton:hover {
 	background: linear-gradient(90deg, #FF6117, #FFC433, #FFC433);
 	border: none;
-	color: #000000;
+	color: #000;
 }
-
 .googleLoginButton {
 	cursor: pointer;
 	width: 38px;
@@ -149,21 +138,17 @@
 	border-radius: 50%;
 	transition: transform 0.2s ease;
 }
-
 .googleLoginImageButton:hover {
 	transform: scale(1.1);
 }
-
 p.loginSignUpPrompt {
 	margin: 0;
 }
-
 .loginSignUpLink {
 	color:#ff6117;
 	text-decoration: underline;
 	cursor: pointer;
 }
-
 .animationContainer {
 	display: flex;
 	position: relative;
@@ -179,8 +164,6 @@ p.loginSignUpPrompt {
 	justify-content: space-evenly;
 	align-items: center;
 }
-
-
 .pongText {
 	font-family: 'Horizon', sans-serif;
 	font-size: 4em;
@@ -196,7 +179,6 @@ p.loginSignUpPrompt {
 	line-height: 1;
 	color: transparent;
 }
-
 .ball {
 	position: absolute;
 	height: 4rem;
