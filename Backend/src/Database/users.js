@@ -14,7 +14,7 @@ import { sql_log, sql_error } from './dblogger.js';
  * @throws {Error} - Rejects if the insert fails (e.g., duplicate email).
  */
 export async function addUserToDB(db, user) {
-	const hashedPassword = await bcrypt.hash(user.password, 10);
+	const hashedPassword = user.password ? await bcrypt.hash(user.password, 10) : null;
 	const avatar_url = user.avatar_url || null;
 
 	return new Promise((resolve, reject) => {
@@ -29,6 +29,19 @@ export async function addUserToDB(db, user) {
 			}
 		});
 	});
+}
+
+export async function createNewUserToDB(db, user = {}) {
+	const { name, email, password, avatar_url = null } = user;
+	if (!name || !email) {
+		throw new Error("createNewUserToDB: 'name' and 'email' are required");
+	}
+	const existing = await getUserByEmail(db, email);
+	if (existing) {
+		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
+		return existing.id;
+	}
+	return await addUserToDB(db, { name, email, password, avatar_url });
 }
 
 // *************************************************************************** //
@@ -206,16 +219,6 @@ export function getOnlineUsers(db) {
 			}
 		});
 	});
-}
-
-
-export async function createNewUserToDB(db, { name, email, password, avatar_url=null }) {
-	const existing = await getUserByEmail(db, email);
-	if (existing) {
-		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
-		return existing.id;
-	}
-	return await addUserToDB(db, { name, email, password, avatar_url });
 }
 
 export async function getAllPlayers(db) {

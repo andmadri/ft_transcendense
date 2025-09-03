@@ -1,4 +1,5 @@
 import sqlite3 from "sqlite3";
+import path from "path";
 import fs from "fs";
 import { createTables } from './schema.js'
 import { createNewUserToDB } from './users.js';
@@ -6,7 +7,8 @@ import { onUserLogin } from '../Services/sessionsService.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 const { Database } = sqlite3.verbose();
-const dbpath = './pong.db';
+// const dbpath = './pong.db';
+const DB_PATH = process.env.DB_PATH || "/data/pong.db";
 
 // /**
 //  * Open sqlite database
@@ -46,27 +48,13 @@ function run(db, sql, params = []) {
  * @returns {Promise<sqlite3.Database>} - Resolves with the connected database instance.
  */
 export async function createDatabase() {
-	const exists = fs.existsSync(dbpath);
-
-	let db;
-	try
-	{
-		db = await openDatabase(dbpath);
-	}
-	catch (err)
-	{
-		sql_error(err, `Error openinig database`);
-		throw err;
-	}
+	fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+	const db = await openDatabase(DB_PATH);
 	
 	sql_log(`Connected to the database`);
 	await run(db, "PRAGMA foreign_keys = ON");
-	
-	if (!exists) {
-		await createTables(db);
-	} else {
-		sql_log(`Database already exists. Skipping table creation.`);
-	}
+
+	await createTables(db);
 
 	const guest_id = await createNewUserToDB(db, {
 		name: 'Guest',

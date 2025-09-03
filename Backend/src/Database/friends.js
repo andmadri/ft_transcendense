@@ -1,3 +1,5 @@
+import { sql_log, sql_error } from './dblogger.js';
+
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
@@ -57,6 +59,10 @@ export async function addFriendRequestDB(db, user_id, friend_id) {
 	});
 }
 
+// *************************************************************************** //
+//                          CHANGE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
 export async function acceptFriendRequestDB(db, requestId) {
 	return new Promise((resolve, reject) => {
 		const sql = `UPDATE Friends SET accepted = 1 WHERE id = ? AND accepted = 0`;
@@ -72,10 +78,14 @@ export async function acceptFriendRequestDB(db, requestId) {
 	});
 }
 
+// *************************************************************************** //
+//                          DELETE ROW FROM SQL TABLE                          //
+// *************************************************************************** //
+
 export async function denyFriendRequestDB(db, requestId) {
 	return new Promise((resolve, reject) => {
 		const sql = `DELETE FROM Friends WHERE id = ? AND accepted = 0`;
-    	db.run(sql, [requestId], function(err) {
+		db.run(sql, [requestId], function(err) {
 			if (err) {
 				reject(err);
 			} else if (this.changes === 0) {
@@ -86,27 +96,6 @@ export async function denyFriendRequestDB(db, requestId) {
 		});
 	});
 }
-
-export async function getOpenFriendRequestsDB(db, player_id) {
-	return new Promise((resolve, reject) => {
-		const sql = `
-			SELECT f.id, u.id as requester_id, u.name as requester_name
-			FROM Friends f
-			JOIN Users u ON u.id = f.user_id
-			WHERE f.friend_id = ? AND f.accepted = 0
-		`;
-		db.all(sql, [player_id], (err, rows) => {
-			if (err)
-				return reject(err);
-			else
-				resolve(rows);
-		});
-	});
-}
-
-// *************************************************************************** //
-//                          DELETE ROW FROM SQL TABLE                          //
-// *************************************************************************** //
 
 export function deleteFriendDBfromUser(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
@@ -140,6 +129,26 @@ export function deleteFriendDBfromID(db, request_id) {
 	})
 }
 
+// *************************************************************************** //
+//                           VIEW DATA FROM SQL TABLE                          //
+// *************************************************************************** //
+
+export async function getOpenFriendRequestsDB(db, player_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `
+			SELECT f.id, u.id as requester_id, u.name as requester_name
+			FROM Friends f
+			JOIN Users u ON u.id = f.user_id
+			WHERE f.friend_id = ? AND f.accepted = 0
+		`;
+		db.all(sql, [player_id], (err, rows) => {
+			if (err)
+				return reject(err);
+			else
+				resolve(rows);
+		});
+	});
+}
 
 export async function getFriendsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
@@ -190,12 +199,6 @@ export async function getFriendsOnlyIdDB(db, player_id) {
 		});
 	});
 }
-
-// *************************************************************************** //
-//                           VIEW DATA FROM SQL TABLE                          //
-// *************************************************************************** //
-
-
 
 // *************************************************************************** //
 //                         VIEW DATA FROM VIEW TABLES                          //
