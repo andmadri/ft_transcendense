@@ -1,7 +1,8 @@
 import { log } from '../logging.js';
 
-export function getGameStats() {
-	log("See GameStats!");
+export function getGameStats(opts?: { matchId?: number }) {
+	log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
+	console.log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
 
 	const body = document.getElementById('body');
 	if (!body)

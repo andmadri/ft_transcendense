@@ -30,7 +30,8 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 			row.appendChild(cellDiv);
 		});
 		row.addEventListener('click', () => {
-		alert(`Match vs ${match.opponent} on ${match.date}`);
+			navigateTo('GameStats', { matchId: match.match_id });
+			// alert(`Match vs ${match.opponent} on ${match.date}`);
 		});
 		matchList.appendChild(row);
 	}

@@ -4,7 +4,7 @@ import { navigateTo } from "../history.js";
 
 let result = "";
 
-export function getGameOver() {
+export function getGameOver(opts?: { matchId?: number }) {
 	log("Game Over!");
 	const game = document.getElementById('game');
 	if (game)
@@ -81,7 +81,13 @@ export function getGameOver() {
 	statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
 	statsButton.style.cursor = 'pointer';
 	statsButton.style.transition = 'all 0.2s ease-in-out';
-	statsButton.addEventListener('click', () => { navigateTo('GameStats'); })
+	statsButton.addEventListener('click', () => { 
+		if (Number.isFinite(opts?.matchId)) {
+			navigateTo('GameStats', { matchId: Number(opts?.matchId) });
+		} else {
+			console.warn('View Game Stats clicked but no matchId available');
+		}
+	});
 	gameOver.appendChild(statsButton);
 
 	const body = document.getElementById('body');
@@ -116,7 +122,8 @@ export function saveGame() {
 
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
-	Game.match.matchID = -1;
+	// Game.match.matchID = -1;
 
-	navigateTo('GameOver');
+	navigateTo('GameOver', {matchId: Game.match.matchID});
+	Game.match.matchID = -1;
 }
