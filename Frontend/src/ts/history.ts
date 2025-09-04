@@ -21,7 +21,7 @@ import { getGameStats } from './Game/gameStats.js';
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string) {
+export function renderPage (newState: string, opts?: { matchId?: number }) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(state)) {
@@ -33,16 +33,16 @@ export function renderPage (newState: string) {
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
 				// User is authenticated, continue rendering
-				doRenderPage(newState);
+				doRenderPage(newState, opts);
 			})
 			.catch(() => {
 				// Not authenticated, redirect to login
 				sessionStorage.setItem("currentState", "LoginP1");
-				doRenderPage('LoginP1');
+				doRenderPage('LoginP1', opts);
 			});
 		return;
 	}
-	doRenderPage(newState);
+	doRenderPage(newState, opts);
 }
 
 
@@ -50,7 +50,7 @@ export function renderPage (newState: string) {
  * @brief change state or shows new page
  * @param state new state
  */
-function doRenderPage(newState: string) {
+function doRenderPage(newState: string, opts?: { matchId?: number }) {
 	switch (newState) {
 		case 'LoginP1':
 			UI.state = S.stateUI.LoginP1;
@@ -81,10 +81,16 @@ function doRenderPage(newState: string) {
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'GameOver':
-			getGameOver();
+			getGameOver( {matchId: Number(opts?.matchId)} );
 			break ;
 		case 'GameStats':
-			getGameStats();
+			let url = `/${state}`;
+			url = `/history?matchId=${opts!.matchId}`;
+
+			window.history.pushState({ state, ...opts }, '', url);
+
+			requestAnimationFrame(() => getGameStats( {matchId: Number(opts?.matchId) }));
+			// getGameStats( {matchId: Number(opts?.matchId) });
 			break ;
 		default:
 			console.log(`Page does not exist: ${newState}`);
@@ -100,7 +106,7 @@ function doRenderPage(newState: string) {
  * @param gameData Extra information if needed
  * Central auth check for protected pages
  */
-export function navigateTo(state: string) {
+export function navigateTo(state: string, opts?: { matchId?: number }) {
 	if (state == null)
 		return ('LoginP1');
 	// Central auth check for protected pages
@@ -110,7 +116,7 @@ export function navigateTo(state: string) {
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				continueNavigation(state);
+				continueNavigation(state, opts);
 			})
 			.catch(() => {
 				sessionStorage.setItem("currentState", "LoginP1");
@@ -118,7 +124,7 @@ export function navigateTo(state: string) {
 			});
 		return;
 	}
-	continueNavigation(state);
+	continueNavigation(state, opts);
 }
 
 /**
@@ -127,15 +133,15 @@ export function navigateTo(state: string) {
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
  */
-function continueNavigation(state: string) {
+function continueNavigation(state: string, opts?: { matchId?: number }) {
 	console.log(`Save navigation to: ${state}`);
 	sessionStorage.setItem('history', state);
 
 	if (history.state === state)
-		renderPage(state);
+		renderPage(state, opts);
 	else {
 		history.pushState(state, '', `#${state}`);
-		renderPage(state);
+		renderPage(state, opts);
 	}
 }
 
