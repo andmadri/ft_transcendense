@@ -4,6 +4,7 @@ import * as S from './structs.js'
 import { state } from '@shared/enums'
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
+import { log } from './logging.js';
 
 /**
  * NAVIGATION FOR
@@ -15,6 +16,34 @@ import { getGameStats } from './Game/gameStats.js';
  * Stats
  * Credits
  */
+
+function getMatchIdFromHash(): number | null {
+	// hash looks like: "#GameStats?matchId=123"
+	const hash = window.location.hash || '';
+	const q = hash.indexOf('?');
+	if (q === -1) 
+		return null;
+	const params = new URLSearchParams(hash.slice(q + 1));
+	const id = params.get('matchId');
+	if (!id) 
+		return null;
+	const n = Number(id);
+	return Number.isFinite(n) ? n : null;
+}
+
+export function initRoutingOnLoad() {
+	if (!window.location.hash)
+		return;
+	const hash = window.location.hash.replace(/^#/, '');
+	const state = (hash.split('?')[0] || 'Menu');
+
+	log(`initRoutingOnLoad: state=${state}`);
+	console.log(`initRoutingOnLoad: state=${state}`);
+
+	// Try to get matchId if present
+	const matchId = getMatchIdFromHash();
+	renderPage(state, { matchId: matchId ?? undefined });
+}
 
 /**
  * @brief change state or shows new page
@@ -51,17 +80,19 @@ export function renderPage(newState: string, opts?: { matchId?: number }) {
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'GameOver':
+			UI.state = S.stateUI.GameOver;
 			getGameOver( {matchId: Number(opts?.matchId)} );
 			break ;
 		case 'GameStats':
-			let url = `/${state}`;
-			url = `/history?matchId=${opts!.matchId}`;
+			UI.state = S.stateUI.GameStats;
 
-			window.history.pushState({ state, ...opts }, '', url);
-
-			requestAnimationFrame(() => getGameStats( {matchId: Number(opts?.matchId) }));
-			// getGameStats( {matchId: Number(opts?.matchId) });
-			break ;
+			const id = Number.isFinite(opts?.matchId as number) ? Number(opts!.matchId) : getMatchIdFromHash();
+			if (id != null) {
+				requestAnimationFrame(() => getGameStats({ matchId: id }));
+			} else {
+				console.warn('GameStats: no matchId found');
+			}
+			break;
 		default:
 			console.log(`Page does not exist: ${newState}`);
 			UI.state = S.stateUI.Menu;
@@ -76,18 +107,33 @@ export function renderPage(newState: string, opts?: { matchId?: number }) {
  * @param gameData Extra information if needed
  */
 export function navigateTo(state: string, opts?: { matchId?: number }) {
-	if (state == null)
+	if (state == null) {
 		return ('LoginP1');
-
-	console.log(`Save navigation to: ${state}`);
+	}
 
 	// save last page for when refresh page
+	console.log(`Save navigation to: ${state}`);
 	sessionStorage.setItem('history', state);
+
+	let hash = `#${state}`;
+	if (state === 'GameStats') {
+		// Prefer explicit param; otherwise preserve the current one from the URL
+		const id = Number.isFinite(opts?.matchId as number) ? Number(opts!.matchId) : getMatchIdFromHash();
+		if (id != null) {
+			// const desired = `#GameStats?matchId=${id}`;
+			// if (window.location.hash === desired && UI.state === S.stateUI.GameStats) {
+			// 	return ;
+			// }
+			// hash = desired;
+			hash = `#GameStats?matchId=${id}`;
+		}
+	}
 	
-	if (history.state === state)
+	if (history.state === state) {
+		history.replaceState(state, '', hash);
 		renderPage(state, opts);
-	else {
-		history.pushState(state, '', `#${state}`);
+	} else {
+		history.pushState(state, '', hash);
 		renderPage(state, opts);
 	}
 }
@@ -112,25 +158,34 @@ export function getValidState(state: string): string {
 	const currentState = sessionStorage.getItem("currentState");
 
 	// Is already logged in
-    if (state != 'LoginP1' && UI.user1.ID == -1)
+    if (state !== 'LoginP1' && state !== 'GameStats' && UI.user1.ID == -1) {
+		log("state !== 'LoginP1' && state !== 'GameStats' && UI.user1.ID == -1")
 		return ('Menu');
+	}
 
 	// No match is started
-    if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1)
+    if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1) {
+		log("state === 'Game' || state === 'GameOver') && Game.match.matchID == -1")
 		return ('Menu');
+	}
 
 	// When logged in not back to loginpage	
-	if (currentState == 'Menu' && state == 'LoginP1')
+	if (currentState == 'Menu' && state == 'LoginP1') {
+		log("currentState == 'Menu' && state == 'LoginP1'")
 		return ('Menu');
+	}
 
-	if (currentState == 'Menu' && (state === 'Game' || state === 'GameOver'))
+	if (currentState == 'Menu' && (state === 'Game' || state === 'GameOver')) {
+		log("currentState == 'Menu' && (state === 'Game' || state === 'GameOver'")
 		return ('Menu');
+	}
 
     const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard'];
+		'Settings', 'Dashboard', 'GameOver', 'GameStats'];
 	for (const page of allowedPages) {
-		if (page == state)
-			return (state);
+		if (page == state) {
+			return state;
+		}
 	}
     return ('Menu');
 }
@@ -144,19 +199,19 @@ export function controlBackAndForward(event: PopStateEvent) {
 	const currentState = sessionStorage.getItem("currentState");
 	
 	const validState = getValidState(state);
-	history.replaceState(validState, '', `#${validState}`);
+	history.replaceState(validState, '', window.location.hash);
 
 	console.log(`State: ${state} -> validState: ${validState}, currentState: ${currentState}`)
 	// Always go back to menu and stop game
 	if (currentState == 'Game') {
-			cancelOnlineMatch();
-			stopCurrentGame();
-			renderPage('Menu');
-			return ;
+		cancelOnlineMatch();
+		stopCurrentGame();
+		renderPage('Menu');
+		return ;
 	}
 
 	if (validState) {
-		renderPage(validState);
+		renderPage(validState, { matchId: getMatchIdFromHash() ?? undefined });
 	} else {
 		renderPage('Menu'); // fallback
 	}

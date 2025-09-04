@@ -7,7 +7,6 @@ async function getDashboardInfo(msg, socket, userId1) {
 	let stats = await getUserMatchStatsDB(db, userId1);
 	let matches = await getMatchHistoryDB(db, userId1);
 	let log_time = await getUserStateDurationsDB(db, userId1);
-	console.log("Recieved DB content: ", matches);
 
 	let returnMsg = {
 		action: "dashboardInfo",
@@ -28,7 +27,6 @@ export function handleDashboardMaking(msg, socket, userId1) {
 		return false;
 	}
 	if (msg.subaction === 'getFullDataDashboard') {
-		console.log('Received request for dashboard data:', msg, userId1);
 		getDashboardInfo(msg, socket, userId1);
 		return true;
 	} else {

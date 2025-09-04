@@ -14,7 +14,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.style.width = '100%';
 		row.style.height = '5%';
 		row.style.background = 'rgba(0, 0, 0, 0.18)';
-		row.style.cursor = 'point';
+		row.style.cursor = 'pointer';
 		row.style.borderRadius = '10px';
 		row.style.justifyContent = 'space-between';
 		row.style.alignItems = 'center';
@@ -29,9 +29,14 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 			cellDiv.style.flex = '1';
 			row.appendChild(cellDiv);
 		});
+
+		const matchId = Number(match.match_id);
 		row.addEventListener('click', () => {
-			navigateTo('GameStats', { matchId: match.match_id });
-			// alert(`Match vs ${match.opponent} on ${match.date}`);
+			if (Number.isFinite(matchId)) {
+				navigateTo('GameStats', { matchId });
+			} else {
+				console.warn('No match_id on row:', match);
+			}
 		});
 		matchList.appendChild(row);
 	}
@@ -98,6 +103,8 @@ export function populateDashboard(msg: any)
 
 export function getDashboard()
 {
+	if (UI.state !== S.stateUI.Dashboard) 
+		return;
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
@@ -232,5 +239,4 @@ export function getDashboard()
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
 	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
-
 }

@@ -9,6 +9,8 @@ export enum stateUI {
 	OptionMenu,
 	LoginP2,
 	Game,
+	GameOver,
+	GameStats,
 	Dashboard,
 	Settings,
 	Credits,

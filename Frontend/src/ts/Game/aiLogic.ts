@@ -78,7 +78,7 @@ function	predictAction() {
 }
 
 export function aiAlgorithm(){
-	console.log(`aiAlgorithm()`);
+	// console.log(`aiAlgorithm()`);
 
 	const paddleCenter = paddle2.pos.y + paddle2.size.height / 2;
 	if (Game.match.time - AI.lastView > AI.reactionTime) {

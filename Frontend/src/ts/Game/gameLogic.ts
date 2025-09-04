@@ -21,7 +21,7 @@ export function updateDOMElements(match : matchInfo) {
 	const fieldDiv = document.getElementById('field');
 
 	if (ballDiv && paddle1Div && paddle2Div && leftScore && rightScore && fieldDiv) {
-		console.log("UpdateDOMElements()");
+		// console.log("UpdateDOMElements()");
 		leftScore.textContent = match.player1.score.toString();
 		rightScore.textContent = match.player2.score.toString();
 
@@ -46,7 +46,7 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game(match : matchInfo) {
-	console.log('Game', Game.match.state, match.mode);
+	// console.log('Game', Game.match.state, match.mode);
 	if (Game.match.state !== state.Playing) {
 		return;
 	}

@@ -21,6 +21,7 @@ import { getDashboard } from './Dashboard/dashboardContents.js'
 import { startGameField } from './Game/startGameContent.js'
 import { initSocket } from './socketEvents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
+import { initRoutingOnLoad } from './history.js'
 
 createLog();
 
@@ -31,7 +32,12 @@ async function checkCookie() {
 		initSocket();
 		// CHECK IF PLAYER IS ONLINE ? OFFLINE ... (IF in loginp1 == offline)
 		// otherwise set player to online
-	  
+		
+		if (window.location.hash.startsWith('#GameStats')) {
+			sessionStorage.setItem('history', 'GameStats');
+			mainLoop();
+			return;
+		}
 		navigateTo(sessionStorage.getItem("currentState") || "LoginP1");
 	} else {
 		navigateTo("LoginP1");
@@ -46,6 +52,7 @@ window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
+initRoutingOnLoad();
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
