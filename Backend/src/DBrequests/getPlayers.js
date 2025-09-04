@@ -14,14 +14,16 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 
 export async function getAllPlayerInclFriends(db, userID, socket) {
 	try {
+		console.log("Getting all players including friends info for userID:", userID);
 		const players = await userDB.getAllPlayers(db);
 		// console.log("players: ", players);
 		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
 		const friendsIdsSet = new Set(friendsIds);
 
 		for (const player of players) {
-    		player.isFriend = friendsIdsSet.has(player.id);
+			player.isFriend = friendsIdsSet.has(player.id);
 		}
+		console.log("Players with friends info: ", players);
 		return sendContentToFrontend('players', 'retPlayers', socket, "yes", players);
 	} catch (err) {
 		console.error(err);

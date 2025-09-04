@@ -73,8 +73,8 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		UI.user2.name = name;
 		UI.user2.Twofa = twofa;
 	}
-	navigateTo('Menu');
 	document.getElementById('menu')?.remove();
+	navigateTo('Menu');
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {

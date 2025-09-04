@@ -27,24 +27,24 @@ function receivePlayerData(data: any) {
 		UI.user2.ID = data.id2 || -1;
 		Game.match.player2.score = data.score2 || 0;
 	}
-	if (UI.user1.ID != -1) {
+	// if (UI.user1.ID != -1) {
 
-		// Check where to go and if there is a page in the history (refresh)
-		const historyPage = sessionStorage.getItem('history');
-		
-		if (historyPage) {
-			const validPage = getValidState(historyPage);
+	// 	// Check where to go and if there is a page in the history (refresh)
+	// 	const historyPage = sessionStorage.getItem('history');
 
-			navigateTo(validPage);
-		} else {
-			navigateTo('Menu');
-		}
-	}
+	// 	if (historyPage) {
+	// 		const validPage = getValidState(historyPage);
 
-	const body = document.getElementById('body');
-	if (!body) return ;
-	const menu = document.createElement('div');
-	if (!menu) return ;
+	// 		navigateTo(validPage);
+	// 	} else {
+	// 		navigateTo('Menu');
+	// 	}
+	// }
+
+	// const body = document.getElementById('body');
+	// if (!body) return ;
+	// const menu = document.createElement('div');
+	// if (!menu) return ;
 }
 
 export function getPlayerData() {

@@ -47,7 +47,7 @@ UI.state = S.stateUI.LoginP1;
 
 const currentState = sessionStorage.getItem("currentState");
 if (!currentState) {
-    sessionStorage.setItem("currentState", "LoginP1");
+	sessionStorage.setItem("currentState", "LoginP1");
 	navigateTo("LoginP1");
 }
 
@@ -115,7 +115,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu'))	
+				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
 			}
