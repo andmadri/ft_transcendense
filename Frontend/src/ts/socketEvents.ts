@@ -51,21 +51,6 @@ export function initSocket() {
 	});
 }
 
-// ADDED FOR CREATING IMAGE IN THE BACKEND - this function
-function ensureStatsChartElement(): HTMLImageElement {
-  let img = document.getElementById('statsChart') as HTMLImageElement | null;
-  if (!img) {
-    const container = document.getElementById('statsChartContainer') ?? document.body;
-    img = document.createElement('img');
-    img.id = 'statsChart';
-    img.alt = 'User state durations';
-    img.style.maxWidth = '100%';
-    img.style.display = 'block';
-    container.appendChild(img);
-  }
-  return img;
-}
-
 /*
 FROM backend TO frontend
 • playerInfo => getName / getAvatar / revicePlayerData
@@ -100,14 +85,6 @@ export function receiveFromWS(data: any) {
 			actionInitOnlineGame(data);
 			break ;
 		case 'game':
-			// // ADDED FOR CREATING IMAGE IN THE BACKEND - this if statement
-			// if (data.subaction === 'save' && data.chartUrl) {
-			// 	console.log("Has data.chartUrl:", data.chartUrl);
-			// 	const img = ensureStatsChartElement();
-			// 	img.onload = () => console.log('Chart loaded:', img.naturalWidth, img.naturalHeight);
-			// 	img.onerror = (e) => console.error('Chart failed to load', e);
-			// 	img.src = data.chartUrl + '?t=' + Date.now(); // avoid stale cache
-			// }
 			actionGame(data);
 			break;
 		case 'dashboardInfo':

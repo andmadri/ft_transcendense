@@ -24,7 +24,7 @@ export function getGameStats(opts?: { matchId?: number }) {
 		return ;
 	}
 
-
+	// // Delete old DOM containers
 	// document.getElementById("creditDiv")?.remove();
 	// document.getElementById("containerDashboard")?.remove();
 	// document.getElementById("settingPage")?.remove();
@@ -55,9 +55,6 @@ export function getGameStats(opts?: { matchId?: number }) {
 	body.appendChild(img);
 	page.appendChild(img);
 	body.replaceChildren(page);
-	// const test_img = ensureStatsChartElement();
-	// test_img.src = `/api/charts/user-state-durations/${matchId}?t=${Date.now()}`;
-	// body.appendChild();
 
 	currentStatsMatchId = matchId;
 }
