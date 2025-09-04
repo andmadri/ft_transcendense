@@ -9,15 +9,38 @@ function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.cursor = 'pointer';
 	button.style.textAlign = 'center';
 	button.style.borderRadius = '10px';
-	button.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
+	button.style.fontSize = 'clamp(10px, 1.5vw, 15px)';
 	button.style.padding = '0.7rem';
 	button.style.color = 'black';
 	button.style.border = 'none';
 	button.style.alignItems = 'center';
 	button.style.justifyContent = 'center';
-	// button.style.height = '50%';
-	button.style.flex = '1 1';
+	button.style.height = '50%';
+	button.style.flex = '1 1 0%';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	return button;
+}
+
+function styleTabButton(button: HTMLButtonElement, isActive: boolean) {
+	button.style.textAlign = 'center';
+	button.style.fontFamily = '"Horizon", sans-serif';
+	button.style.fontSize = 'clamp(12px, 1.2vw, 16px)';
+	button.style.cursor = 'pointer';
+	button.style.padding = '0.5rem 1rem';
+	button.style.borderRadius = '10px 10px 0 0';
+	button.style.border = 'none';
+	button.style.flex = 'auto';
+	// button.style.marginRight = '2px';
+	if (isActive) {
+		button.style.background = '#363430';
+		button.style.color = 'white';
+		button.style.borderBottom = '2px solid #363430';
+		button.style.zIndex = '2';
+	} else {
+		button.style.background = '#36343080';
+		button.style.color = '#ccc';
+		button.style.zIndex = '1';
+	}
 }
 
 function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
@@ -26,9 +49,29 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	if (!card)
 		return ;
 
+	card.style.borderRadius = '0px 0px 10px 10px';
+	card.style.zIndex = '2';
+	const tabContainer = document.createElement('div');
+	tabContainer.style.display = 'flex';
+	tabContainer.style.marginBottom = '-16px'; // Overlap with card
+	// tabContainer.style.zIndex = '2';
+	tabContainer.style.position = 'relative';
+
+	const player1Tab = document.createElement('button');
+	player1Tab.textContent = '1';
+	styleTabButton(player1Tab, playerNr === 1);
+	// player1Tab.addEventListener('click', () => switchToPlayer(1));
+
+	const player2Tab = document.createElement('button');
+	player2Tab.textContent = '2';
+	styleTabButton(player2Tab, playerNr === 2);
+	// player2Tab.addEventListener('click', () => switchToPlayer(2));
+
+	tabContainer.appendChild(player1Tab);
+	tabContainer.appendChild(player2Tab);
+
 	const container = document.createElement('div');
 	container.style.display = 'flex';
-	// container.style.alignItems = 'center';
 	container.style.width = '100%';
 	container.style.height = '50%';
 
@@ -40,7 +83,7 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	buttonsContainer.style.justifyContent = 'space-between';
 	buttonsContainer.style.gap = '1rem';
 	buttonsContainer.style.alignItems = 'center';
-	buttonsContainer.style.margin = '1rem';
+	// buttonsContainer.style.margin = '1rem';
 
 	const userPic = document.createElement('img');
 	userPic.src = `/api/avatar/${user_info.id}`;
@@ -49,7 +92,8 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	userPic.style.aspectRatio = '1/1';
 	userPic.style.objectFit = 'cover';
 	userPic.style.borderRadius = '50%';
-	userPic.style.padding = '1rem';
+	// userPic.style.padding = '1rem';
+	userPic.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
 	const userInfoContainer = document.createElement('div');
 	userInfoContainer.style.display = 'flex';
@@ -71,23 +115,29 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	userStats.style.fontFamily = '"RobotoCondensed", monospace';
 	userStats.style.color = 'white';
 	userStats.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
+	userStats.style.whiteSpace = 'nowrap';
+
 
 	const topRightButtons = document.createElement('div');
-	topRightButtons.style.position = 'absolute';
-	topRightButtons.style.top = '1rem';
-	topRightButtons.style.right = '1rem';
 	topRightButtons.style.display = 'flex';
+	topRightButtons.style.width = '100%';
 	topRightButtons.style.flexDirection = 'row';
 	topRightButtons.style.gap = '0.5rem';
+	topRightButtons.style.justifyContent = 'flex-end'; // Align to the right
+	topRightButtons.style.alignItems = 'flex-start';
+	topRightButtons.style.padding = '1rem';
+
 
 	const dashboardBtn = document.createElement('button');
 	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
+	// dashboardBtn.style.width = 'clamp(26px, 1.5vw, 40px)';
 	dashboardBtn.addEventListener("click", () => {
 		navigateTo('Dashboard');
 	});
 
 	const notificationsBtn = document.createElement('button');
 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
+	// dashboardBtn.style.width = 'clamp(26px, 1.5vw, 40px)';
 	dashboardBtn.addEventListener("click", () => {
 		navigateTo('Dashboard');
 	});
@@ -99,12 +149,13 @@ function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
 	buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
 	buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
-
+	
   container.appendChild(userPic);
   container.appendChild(userInfoContainer);
+	container.appendChild(topRightButtons);
+	card.parentElement?.insertBefore(tabContainer, card);
   card.appendChild(container);
 	card.appendChild(buttonsContainer);
-	card.appendChild(topRightButtons);
 }
 
 export function actionUserDataMenu(data: any) {

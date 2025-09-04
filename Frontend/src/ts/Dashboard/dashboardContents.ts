@@ -3,6 +3,7 @@ import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
 import { log } from '../logging.js'
+import { createBackgroundText } from '../Menu/menuContent'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -30,7 +31,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 			row.appendChild(cellDiv);
 		});
 		row.addEventListener('click', () => {
-		alert(`Match vs ${match.opponent} on ${match.date}`);
+			alert(`Match vs ${match.opponent} on ${match.date}`);
 		});
 		matchList.appendChild(row);
 	}
@@ -114,6 +115,8 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	body.style.height = '100vh';
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
+
+	createBackgroundText(body);
 
 	const containerDashboard = document.createElement('div');
 	containerDashboard.style.display = 'flex';

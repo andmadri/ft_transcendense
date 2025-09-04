@@ -88,7 +88,7 @@ export function insertPlayers(online_players: any) {
 	for (const player of online_players)
 	{
 		//I don't want to show the current player
-			if (player.id > 2) {
+			if (player.id > 2 && player.id !== Game.match.player1.id) {
 			const row = styleRow(player.name);
 			// const status = player.online_status == 0 ? 'offline' : 'online';
 			// row.style.color = status === 'online' ? 'green' : 'gray';
@@ -98,7 +98,7 @@ export function insertPlayers(online_players: any) {
 			btnContainer.style.gap = '0.3rem';
 
 			//what about player2
-			if (player.name != Game.match.player1.name && !player.isFriend) {
+			if (!player.isFriend) {
 				const addFriendBtn = document.createElement('button');
 				styleListBtns(addFriendBtn, 'url("../../images/add_friend.png")');
 				addFriendBtn.addEventListener("click", () => {

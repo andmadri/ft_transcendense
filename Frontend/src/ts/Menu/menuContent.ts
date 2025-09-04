@@ -24,10 +24,11 @@ function styleMainBtns(button: HTMLButtonElement, text: string)
 	button.style.color = 'white';
 	button.style.border = 'none';
 	button.style.flex = '1';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 }
 
 export function styleListBtns(button: HTMLButtonElement, img_url: string) {
-	button.style.width = '20px';
+	button.style.width = 'clamp(20px, 2vw, 25px)';
 	button.style.aspectRatio = '1/1';
 	button.style.borderRadius = '50%';
 	button.style.backgroundImage = img_url;
@@ -35,6 +36,7 @@ export function styleListBtns(button: HTMLButtonElement, img_url: string) {
 	button.style.backgroundPosition = 'center';
 	button.style.border = 'none';
 	button.style.cursor = 'pointer';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 }
 
 export function getCreditBtn(): HTMLButtonElement {
@@ -125,7 +127,7 @@ export function styleBlock(title_text: string, block: HTMLElement, list_id?: str
 	title.style.fontFamily = '"Horizon", sans-serif';
 	title.style.webkitTextStroke = '0.1rem #ffffff';
 	title.style.color = 'transparent';
-	title.style.fontSize = 'clamp(15px, 2vw, 26px)';
+	title.style.fontSize = 'clamp(18px, 1vw, 20px)';
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
 	title.style.textAlign = 'center';
@@ -192,12 +194,13 @@ export function getUserTournamentBlock(): HTMLDivElement {
 	const user_block = document.createElement('div');
 	user_block.id = 'user_block';
 	user_block.style.display = 'flex';
-	user_block.style.height = '50%';
+	user_block.style.height = '30%';
 	user_block.style.background = '#363430'
 	user_block.style.display = 'flex';
 	user_block.style.flexDirection = 'column';
 	user_block.style.alignItems = 'center';
 	user_block.style.padding = '1rem';
+	user_block.style.gap = '1rem';
 	user_block.style.borderRadius = '10px';
 	user_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
@@ -207,7 +210,8 @@ export function getUserTournamentBlock(): HTMLDivElement {
 
 	const tournament_block = document.createElement('div');
 	tournament_block.style.display = 'flex';
-	tournament_block.style.height = '50%';
+	tournament_block.style.flex = '1 1';
+	tournament_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	styleBlock("Tournaments", tournament_block);
 
 	users_tournament_block.appendChild(user_block);
@@ -224,6 +228,7 @@ export function getUserTournamentBlock(): HTMLDivElement {
 function getFriendsBlock(): HTMLDivElement {
 	const friends_block = document.createElement('div');
 	friends_block.style.flex = '1 1 25%';
+	friends_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	styleBlock("Friends", friends_block, "friends_list");
 	Game.socket.send({
 		action: 'friends', 
@@ -235,12 +240,56 @@ function getFriendsBlock(): HTMLDivElement {
 function getPlayersBlock(): HTMLDivElement {
 	const players_block = document.createElement('div');
 	players_block.style.flex = '1 1 25%';
+	players_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	styleBlock("Players", players_block, "players_list");
 	Game.socket.send({
 		action: 'online', 
 		subaction: 'getAllPlayers'
 	});
 	return players_block;
+}
+
+export function createBackgroundText(body: HTMLElement) {
+	const backgroundText = document.createElement('div');
+	backgroundText.style.position = 'fixed';
+	backgroundText.style.top = '0';
+	backgroundText.style.left = '0';
+	backgroundText.style.width = '100%';
+	backgroundText.style.height = '100%';
+	backgroundText.style.overflow = 'hidden';
+	backgroundText.style.pointerEvents = 'none';
+	backgroundText.style.zIndex = '0';
+	backgroundText.style.fontFamily = '"Horizon", monospace';
+	backgroundText.style.fontSize = 'clamp(50px, 10vw, 105px)';
+	backgroundText.style.fontWeight = 'bold';
+	backgroundText.style.color = 'rgba(0, 0, 0, 0.07)';
+	backgroundText.style.lineHeight = '1.2';
+	backgroundText.style.whiteSpace = 'nowrap';
+	backgroundText.style.userSelect = 'none';
+
+	// let pongPattern = '';
+	const rows = 200;
+	const cols = 100;
+			
+	for (let row = 0; row < rows; row++) {
+		const rowDiv = document.createElement('div');
+		rowDiv.style.display = 'flex';
+		rowDiv.style.gap = '1.5rem';
+		// rowDiv.style.marginBottom = '1rem';
+		
+		for (let col = 0; col < cols; col++) {
+			const pongSpan = document.createElement('span');
+			pongSpan.textContent = 'PONG';
+			pongSpan.style.letterSpacing = '0.5rem';
+			  pongSpan.style.animation = `glitch 1s infinite`;
+  pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
+  pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
+			rowDiv.appendChild(pongSpan);
+		}
+		
+		backgroundText.appendChild(rowDiv);
+	}
+	body.appendChild(backgroundText);
 }
 
 export function getMenu() {
@@ -252,6 +301,8 @@ export function getMenu() {
 	body.style.height = '100vh';
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
+
+	createBackgroundText(body);
 
 	const menuContainer = document.createElement('div');
 	menuContainer.id = 'menu';

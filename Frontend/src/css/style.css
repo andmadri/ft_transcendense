@@ -38,6 +38,14 @@
 	from {top: 0} to {top: calc(100% - 4rem)};
 }
 
+@keyframes glitch {
+  0% { transform: translate(0,0); opacity: 1; }
+  20% { transform: translate(-2px, 0); opacity: 0.8; }
+  40% { transform: translate(2px, 0); opacity: 1; }
+  60% { transform: translate(-1px, 0); opacity: 0.9; }
+  100% { transform: translate(0,0); opacity: 1; }
+}
+
 
 /* Authentification */
 
