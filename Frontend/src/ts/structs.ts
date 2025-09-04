@@ -36,6 +36,7 @@ export type UI = {
 
 export type Game = {
 	socket: Socket,
+	socketStatus: SocketStatus,
 	match: matchInfo,
 	colletedSteps: [],
 }
@@ -70,3 +71,9 @@ export type AIInfo = {
 
 //export const host = window.location.host;
 export const host = window.location.host;
+
+export enum SocketStatus {
+	Disconnected,
+	Connecting,
+	Connected
+}

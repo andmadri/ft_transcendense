@@ -5,10 +5,8 @@ import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.j
 import * as S from './structs.js' //imports structures from the file structs.js
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
-import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
-import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
 import { OT, state} from '@shared/enums'
@@ -16,40 +14,43 @@ import { sendScoreUpdate } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
-// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
-import { getCreditBtn, getCreditsPage } from './Menu/credits.js'
+import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
-// import { getTwoFactorFields } from './Auth/twofa.js';
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { startGameField } from './Game/startGameContent.js'
-// getLoadingPage();
+import { initSocket } from './socketEvents.js'
+import { getLoadingPage } from './Loading/loadContent.js'
+
 createLog();
 
-log("host: " + window.location.host);
-log("hostname: " + window.location.hostname);
+async function checkCookie() {
+	const response = await fetch(`https://${S.host}/api/cookie`, { credentials: 'include' })
+	if (response.ok) {
+		console.log("Cookie valid, open socket direct");
+		initSocket();
+		// CHECK IF PLAYER IS ONLINE ? OFFLINE ... (IF in loginp1 == offline)
+		// otherwise set player to online
+	  
+		navigateTo(sessionStorage.getItem("currentState") || "LoginP1");
+	} else {
+		navigateTo("LoginP1");
+	}
+	mainLoop();
+};
 
-startSocketListeners();
+checkCookie();
 
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
-UI.state = S.stateUI.LoginP1;
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
 
 let lastSpeedIncreaseTime = 0;
-
-UI.state = S.stateUI.LoginP1;
-
-const currentState = sessionStorage.getItem("currentState");
-if (!currentState) {
-    sessionStorage.setItem("currentState", "LoginP1");
-	navigateTo("LoginP1");
-}
 
 function gameLoop() {
 	switch (Game.match.state) {
@@ -99,14 +100,26 @@ function gameLoop() {
 	}
 }
 
+function isReadyToConnect() {
+	if (Game.socketStatus !== S.SocketStatus.Connected) {
+		if (!document.getElementById('loadingpage')) {
+			document.body.innerHTML = '';
+			const loadingPage = getLoadingPage();
+			document.body.appendChild(loadingPage);
+			return(false);
+		}
+	} else {
+		document.getElementById('loadingpage')?.remove();
+		return(true);
+	}
+}
+
 function mainLoop() {
-	if (Game.socket.connected) {
+	if (UI.state === S.stateUI.LoginP1) {
+		if (!document.getElementById('auth1'))
+			getLoginFields(1);
+	} else if (isReadyToConnect()) {
 		switch (UI.state) {
-			case S.stateUI.LoginP1: {
-				if (!document.getElementById('auth1'))
-					getLoginFields(1);
-				break ;
-			}
 			case S.stateUI.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
@@ -130,23 +143,21 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Game: {
-				gameLoop();
+				if (isReadyToConnect())
+					gameLoop();
 				break ;
-			}case S.stateUI.Dashboard: {
+			} case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
 					getDashboard();
 				}
-				break;
+			break;
 			}
 			default:
 		}
 	} else {
-		log("Socket not connected, trying to reconnect...");
-		Game.socket.connect();
+		if (!Game.socket || Game.socketStatus === S.SocketStatus.Disconnected) {
+			initSocket();
+		}
 	}
 	window.requestAnimationFrame(mainLoop);
 }
-
-setTimeout(() => {
-	mainLoop();
-}, 1000);

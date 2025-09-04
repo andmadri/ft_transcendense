@@ -46,8 +46,6 @@ fastify.register(fastifyIO, {
 
 export const db = await createDatabase();
 
-
-
 // Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 // Register the JWT plugin
@@ -80,8 +78,6 @@ await fastify.register(chartRoutes);
 fastify.setNotFoundHandler(function (request, reply) {
 	reply.status(404).send({ error: 'Not Found' });
 });
-
-// const httpServer = createServer(fastify.server);
 
 function installShutdownHandlers(fastify, db) {
 	const shutdown = async (signal) => {
@@ -166,8 +162,7 @@ fastify.ready().then(() => {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
-			
+
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);

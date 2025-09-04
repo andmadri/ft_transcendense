@@ -1,9 +1,4 @@
 export function getLoadingPage() {
-	const body = document.getElementById('body');
-	if (!body)
-		return;
-	body.innerHTML = '';
-
 	const page = document.createElement('div');
 	page.id = "loadingpage";
 	page.style.width = '100vw';
@@ -42,5 +37,5 @@ export function getLoadingPage() {
 	}
 
 	page.appendChild(loading);
-	body.appendChild(page);
+	return (page);
 }
