@@ -17,6 +17,21 @@ import { onUserLogin } from '../Services/sessionsService.js';
  * It is designed to work with a database for user management and online status tracking.
  */
 export default async function userAuthRoutes(fastify) {
+	fastify.get('/api/cookie', async (request, reply) => {
+		try {
+			const cookies = request.cookies;
+			const unsigned = fastify.unsignCookie(cookies.jwtAuthToken1);
+
+			if (!unsigned.valid) {	
+				return reply.code(401).send({ ok: false });
+			}
+  			const decoded = fastify.jwt.verify(unsigned.value);
+  			return  { ok: true, userId: decoded.userId };
+		} catch (err) {
+  			return reply.code(401).send({ ok: false });
+		}
+	});
+
 	fastify.post('/api/signup', async (request, reply) => {
 		const { playerNr, username, email, password } = request.body;
 		const msg = {
