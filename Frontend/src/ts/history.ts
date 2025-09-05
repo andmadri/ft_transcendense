@@ -80,6 +80,9 @@ function doRenderPage(newState: string) {
 		case 'Game':
 			UI.state = S.stateUI.Game;
 			break ;
+		case 'Tournament':
+			UI.state = S.stateUI.Tournament;
+			break;
 		case 'GameOver':
 			getGameOver();
 			break ;
@@ -159,11 +162,11 @@ export function getValidState(state: string): string {
 	const currentState = sessionStorage.getItem("currentState");
 
 	// Is already logged in
-    if (state != 'LoginP1' && UI.user1.ID == -1)
+	if (state != 'LoginP1' && UI.user1.ID == -1)
 		return ('Menu');
 
 	// No match is started
-    if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1)
+	if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1)
 		return ('Menu');
 
 	// When logged in not back to loginpage	
@@ -173,13 +176,13 @@ export function getValidState(state: string): string {
 	if (currentState == 'Menu' && (state === 'Game' || state === 'GameOver'))
 		return ('Menu');
 
-    const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard'];
+	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
+		'Settings', 'Dashboard', 'Tournament'];
 	for (const page of allowedPages) {
 		if (page == state)
 			return (state);
 	}
-    return ('Menu');
+	return ('Menu');
 }
 
 /**

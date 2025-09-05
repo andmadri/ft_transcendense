@@ -54,9 +54,12 @@ export async function createTables(db)
 		end_time TEXT,
 		player_1_score INTEGER DEFAULT 0,
 		player_2_score INTEGER DEFAULT 0,
+		tournament_id INTEGER,
+		tournament_match_number INTEGER,
 		FOREIGN KEY(player_1_id) REFERENCES Users(id),
 		FOREIGN KEY(player_2_id) REFERENCES Users(id),
 		FOREIGN KEY(winner_id) REFERENCES Users(id),
+		FOREIGN KEY(tournament_id) REFERENCES Tournaments(id),
 		CHECK(player_1_id <> player_2_id)
 	);
 
@@ -79,7 +82,26 @@ export async function createTables(db)
 		FOREIGN KEY(user_id) REFERENCES Users(id)
 	);
 
+	CREATE TABLE IF NOT EXISTS Tournaments (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT,
+		state TEXT NOT NULL CHECK (state IN ('waiting', 'in_progress', 'finished')),
+		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+		started_at TEXT,
+		finished_at TEXT
+	);
 
+	CREATE TABLE IF NOT EXISTS TournamentPlayers (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		tournament_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
+		spot INTEGER NOT NULL, -- 1-4 for a 4-player tournament
+		joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(tournament_id) REFERENCES Tournaments(id),
+		FOREIGN KEY(user_id) REFERENCES Users(id),
+		UNIQUE(tournament_id, user_id),
+		UNIQUE(tournament_id, spot)
+	);
 
 	CREATE VIEW IF NOT EXISTS OnlineUsers AS
 		SELECT u.id, u.name

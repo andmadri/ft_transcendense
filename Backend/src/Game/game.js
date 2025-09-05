@@ -30,9 +30,17 @@ export async function handleGame(db, msg, socket, io) {
 			break;
 		case 'save':
 			saveMatch(db, match, msg, socket);
-			break ;
+			if (match.tournamentId) {
+				await reportTournamentMatchResult(match.tournamentId, match.tournamentMatchNumber, match);
+				await triggerNextTournamentMatch(match.tournamentId, io);
+			}
+			break;
 		case 'quit':
 			quitMatch(match, msg, socket, io);
+			if (match.tournamentId) {
+				await reportTournamentMatchResult(match.tournamentId, match.tournamentMatchNumber, match);
+				await triggerNextTournamentMatch(match.tournamentId, io);
+			}
 			break;
 		default:
 			console.log("subaction not found: " + msg.subaction);

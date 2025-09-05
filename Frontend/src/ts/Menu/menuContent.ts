@@ -9,6 +9,7 @@ import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
+import { joinTournament } from "../Tournament/tournamentContent.js";
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 
@@ -56,6 +57,22 @@ function getPlayBtn(): HTMLButtonElement {
 	playBtn.addEventListener('click', () => { navigateTo('Settings'); });
 	return (playBtn);
 }
+
+function getJoinTournamentBtn(): HTMLButtonElement {
+	const btn = document.createElement('button');
+	btn.textContent = 'Join Tournament';
+	styleElement(btn, {
+		backgroundColor: '#d9f0ff',
+		border: '2px solid #d9f0ff',
+		padding: '15px',
+		fontSize: '1em',
+		cursor: 'pointer',
+		borderRadius: '10px',
+	});
+	btn.addEventListener('click', joinTournament);
+	return btn;
+}
+
 
 function getDashboardBtn(): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
@@ -554,6 +571,7 @@ export function getMenu() {
 	});
 	bottomButtonDiv.appendChild(getCreditBtn());
 	bottomButtonDiv.appendChild(getPlayBtn());
+	bottomButtonDiv.appendChild(getJoinTournamentBtn());
 	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 

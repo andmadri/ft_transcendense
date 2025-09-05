@@ -23,7 +23,9 @@ import { getSettingsPage } from './SettingMenu/settings.js'
 // import { getTwoFactorFields } from './Auth/twofa.js';
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { startGameField } from './Game/startGameContent.js'
-// getLoadingPage();
+import { joinTournament } from './Tournament/tournamentContent.js'
+
+
 createLog();
 
 log("host: " + window.location.host);
@@ -144,7 +146,12 @@ function mainLoop() {
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
-			}case S.stateUI.Dashboard: {
+			}
+			case S.stateUI.Tournament: {
+				joinTournament();
+				break ;
+			}
+			case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
 					getDashboard();
 				}

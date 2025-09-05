@@ -9,6 +9,7 @@ export enum stateUI {
 	OptionMenu,
 	LoginP2,
 	Game,
+	Tournament,
 	Dashboard,
 	Settings,
 	Credits,

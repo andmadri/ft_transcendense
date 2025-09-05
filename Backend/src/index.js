@@ -19,7 +19,7 @@ import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
 import { performCleanupDB } from './Database/cleanup.js';
-// import { onUserLogin } from './Services/sessionsService.js';
+import { handleTournament } from './Tournament/tournament.js';
 
 // ADDED FOR CREATING IMAGE IN THE BACKEND - start
 import fs from 'fs';
@@ -186,6 +186,8 @@ fastify.ready().then(() => {
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
+				case 'tournament':
+					return handleTournament(db, msg, socket, fastify.io, userId1);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);
