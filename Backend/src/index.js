@@ -19,6 +19,7 @@ import  userAuthRoutes  from './routes/userAuth.js';
 import  avatarRoutes  from './routes/avatar.js';
 import  twoFactor  from './routes/twofa.js';
 import { performCleanupDB } from './Database/cleanup.js';
+// import { onUserLogin } from './Services/sessionsService.js';
 
 // ADDED FOR CREATING IMAGE IN THE BACKEND - start
 import fs from 'fs';
@@ -46,7 +47,8 @@ fastify.register(fastifyIO, {
 
 export const db = await createDatabase();
 
-
+// Map to track last seen timestamps for users
+const userLastSeen = new Map();
 
 // Register the cookie plugin and set a secret for signed cookies
 fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
@@ -80,6 +82,7 @@ await fastify.register(chartRoutes);
 fastify.setNotFoundHandler(function (request, reply) {
 	reply.status(404).send({ error: 'Not Found' });
 });
+
 
 // const httpServer = createServer(fastify.server);
 
@@ -191,18 +194,30 @@ fastify.ready().then(() => {
 			}
 		});
 
+		socket.on('heartbeat', () => {
+			if (userId1) {
+				userLastSeen.set(userId1, Date.now());
+			}
+		});
+
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
-			try {
-				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
-				console.log(`User ${userId1} successfully logged out on disconnect`);
-			} catch (err) {
-				console.error(`Failed logout for user ${userId1}`, err);
-			}
-			
 		});
 	});
 });
+
+setInterval(async () => {
+	const now = Date.now();
+	const TIMEOUT = 30000; // 30 seconds
+	for (const [userId, lastSeen] of userLastSeen.entries()) {
+		if (now - lastSeen > TIMEOUT) {
+			// Mark user offline in DB
+			await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+			userLastSeen.delete(userId);
+			console.log(`User ${userId} marked offline due to missed heartbeat`);
+		}
+	}
+}, 5000); // check every 5 seconds
 
 try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });

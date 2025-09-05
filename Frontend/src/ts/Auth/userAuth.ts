@@ -74,6 +74,8 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		UI.user2.Twofa = twofa;
 	}
 	document.getElementById('menu')?.remove();
+	Game.socket.disconnect();
+	Game.socket.connect();
 	navigateTo('Menu');
 }
 

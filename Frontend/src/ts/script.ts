@@ -31,6 +31,13 @@ log("hostname: " + window.location.hostname);
 
 startSocketListeners();
 
+// Send a heartbeat every 10 seconds
+setInterval(() => {
+	if (Game.socket && Game.socket.connected) {
+		Game.socket.emit('heartbeat');
+	}
+}, 10000);
+
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
@@ -41,15 +48,20 @@ window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
 
-let lastSpeedIncreaseTime = 0;
+fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
+	.then(res => res.ok ? res.json() : Promise.reject())
+	.then(data => {
+		// User is authenticated, go to menu
+		sessionStorage.setItem("currentState", "Menu");
+		navigateTo('Menu');
+		// NEEDED??? set UI.user1.ID = data.userId, etc.
+	})
+	.catch(() => {
+		// Not authenticated, show login
+		sessionStorage.setItem("currentState", "LoginP1");
+		navigateTo('LoginP1');
+});
 
-UI.state = S.stateUI.LoginP1;
-
-const currentState = sessionStorage.getItem("currentState");
-if (!currentState) {
-	sessionStorage.setItem("currentState", "LoginP1");
-	navigateTo("LoginP1");
-}
 
 function gameLoop() {
 	switch (Game.match.state) {
