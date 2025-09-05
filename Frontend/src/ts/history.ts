@@ -93,6 +93,9 @@ export function doRenderPage(newState: string) {
 		case 'Game':
 			UI.state = S.stateUI.Game;
 			break ;
+		case 'Tournament':
+			UI.state = S.stateUI.Tournament;
+			break;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
 			getGameOver();
@@ -201,8 +204,8 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-    const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard', 'GameOver'];
+	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
+		'Settings', 'Dashboard', 'Tournament', 'GameOver'];
 	for (const page of allowedPages) {
 		if (page == newState) {
 			return newState;
@@ -211,7 +214,7 @@ export function getValidState(newState: string, currentState: string): string {
 	if (newState.includes('GameStats')) {
 		return (newState);
 	}
-    return ('Menu');
+	return ('Menu');
 }
 
 /**

@@ -10,6 +10,7 @@ import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
+import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 
@@ -111,6 +112,8 @@ fastify.ready().then(() => {
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
+				case 'tournament':
+					return handleTournament(db, msg, socket, fastify.io, userId1);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);

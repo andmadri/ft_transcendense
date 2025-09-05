@@ -3,7 +3,7 @@ import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
 import { addUserSessionToDB } from '../Database/sessions.js';
 import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
-import { db } from '../index.js' // DELETE THIS LATER
+import { db } from '../index.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { verifyAuthCookie } from '../Auth/authToken.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';

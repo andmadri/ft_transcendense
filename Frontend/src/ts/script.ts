@@ -23,6 +23,8 @@ import { OT, state} from '@shared/enums'
 import { resetBall, updatePaddlePos } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
+import { joinTournament } from './Tournament/tournamentContent.js'
+
 createLog();
 
 log("host: " + window.location.host);
@@ -187,7 +189,12 @@ function mainLoop() {
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
-			} case S.stateUI.Dashboard: {
+			}
+			case S.stateUI.Tournament: {
+				joinTournament();
+				break ;
+			}
+			 case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
 					getDashboard();
 				}
