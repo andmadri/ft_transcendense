@@ -21,7 +21,7 @@ export function changeAuthMode(player: number) {
 	}
 }
 
-function getInputField(label_name: string, name: string, player: number) {
+export function getInputField(label_name: string, name: string, player: number) {
 	const inputSingle = document.createElement('div');
 	inputSingle.className = 'inputSingle';
 

@@ -2,7 +2,7 @@ import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.j
 import bcrypt from 'bcrypt';
 import { db } from '../index.js' // DELETE THIS LATER
 
-function checkName(name) {
+export function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
 	if (!name.length)
 		return ('Name can not be empty');
@@ -53,7 +53,7 @@ export async function addUser(msg) {
 		return (errorMsg);
 	try {
 		const userId = await addUserToDB(db, msg);
-		return (''); // Should we not return the userId?
+		return ('');
 	}
 	catch(err) {
 		if (err.code === 'SQLITE_CONSTRAINT') {

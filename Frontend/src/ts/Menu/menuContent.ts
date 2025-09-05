@@ -9,6 +9,7 @@ import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
+import { getChangeNameField } from "../SettingMenu/changeName.js"
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 

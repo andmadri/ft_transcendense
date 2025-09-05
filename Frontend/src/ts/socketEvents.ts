@@ -32,6 +32,15 @@ export function startSocketListeners() {
 	socket.on('error', (err: any) => {
 		log('Error: ' + err.reason);
 	});
+
+	socket.on('serverError', (err: any) => {
+		if (err.reason)
+			log(`error: ${err.reason}`);
+		else if (err.message)
+			log(`error: ${err.message}`)
+		else
+			console.log('data received from ws', err);
+	});
 }
 
 // ADDED FOR CREATING IMAGE IN THE BACKEND - this function
