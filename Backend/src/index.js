@@ -16,6 +16,9 @@ export const db = await createDatabase();
 
 const fastify = await initFastify();
 
+// Map to track last seen timestamps for users
+const userLastSeen = new Map();
+
 function installShutdownHandlers(fastify, db) {
 	const shutdown = async (signal) => {
 		console.log(`[graceful] Caught ${signal}. Starting cleanup…`);
@@ -115,18 +118,30 @@ fastify.ready().then(() => {
 			}
 		});
 
+		socket.on('heartbeat', () => {
+			if (userId1) {
+				userLastSeen.set(userId1, Date.now());
+			}
+		});
+
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
-			try {
-				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
-				console.log(`User ${userId1} successfully logged out on disconnect`);
-			} catch (err) {
-				console.error(`Failed logout for user ${userId1}`, err);
-			}
-			
 		});
 	});
 });
+
+setInterval(async () => {
+	const now = Date.now();
+	const TIMEOUT = 30000; // 30 seconds
+	for (const [userId, lastSeen] of userLastSeen.entries()) {
+		if (now - lastSeen > TIMEOUT) {
+			// Mark user offline in DB
+			await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+			userLastSeen.delete(userId);
+			console.log(`User ${userId} marked offline due to missed heartbeat`);
+		}
+	}
+}, 5000); // check every 5 seconds
 
 try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });

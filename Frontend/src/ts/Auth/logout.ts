@@ -24,15 +24,18 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		if (response.ok) {
 			const data = await response.json();
 			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
+			document.getElementById('menu')?.remove();
+			Game.socket.disconnect();
+			Game.socket.connect();
+			// Clear user data
 			if (playerNr == 1) {
 				UI.user1.ID = -1;
 				UI.user1.name = "";
-				navigateTo('LoginP1');
 			} else {
 				UI.user2.ID = 1;
 				UI.user2.name = "Guest";
 			}
-			document.getElementById('menu')?.remove();
+			navigateTo('LoginP1');
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();

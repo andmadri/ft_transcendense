@@ -31,33 +31,40 @@ function createPlayerList(): HTMLDivElement {
 }
 
 export function getPlayerList(): HTMLDivElement {
+	console.log("getPlayerList called");
 	let playerList = document.getElementById('players') as HTMLDivElement;
-	
-	if (!playerList)
+
+	if (!playerList) {
+
+		console.log("createPlayerList getting called");
 		playerList = createPlayerList();
-	else {
-		const list = document.getElementById('htmllistPlayers');
-		if (list instanceof HTMLUListElement)
-			list.innerHTML = '';
 	}
-    Game.socket.emit('message',{
-		action: 'players', 
+	else {
+		console.log("createPlayerList emptied");
+		// const list = document.getElementById('htmllistPlayers');
+		if (playerList instanceof HTMLUListElement)
+			playerList.innerHTML = '';
+	}
+	console.log("getPlayerList send request to backend");
+	Game.socket.emit('message',{
+		action: 'players',
 		subaction: 'getAllPlayers'
 	});
 	return (playerList);
 }
 
 function insertPlayers(players: any) {
+	console.log("insertPlayers called");
 	const html_list = document.getElementById('htmllistPlayers') as HTMLUListElement;
 	if (!html_list) {
 		log("HTML list for online players not found");
 		return;
 	}
 	html_list.className = 'playerOfList';
-	// console.log("players:", players); 
+	// console.log("players:", players);
 	for (const curr_player of players) {
 		if (curr_player.id > 2) {
-			console.log(curr_player); 
+			console.log(curr_player);
 			const html_list_element = document.createElement('li');
 			const status = curr_player?.online_status == 0 ? '(offline)' : '(online)';
 			html_list_element.textContent = curr_player.name + " " + status;
@@ -78,7 +85,7 @@ function insertPlayers(players: any) {
 				html_list.append(html_list_element, addFriendBtn);
 			} else
 				html_list.append(html_list_element);
-			
+
 		}
 	}
 }
@@ -95,7 +102,7 @@ export function actionPlayers(data: any) {
 		log('no subaction Players');
 		return ;
 	}
-	
+
 	switch(data.subaction) {
 		case "retPlayers":
 			processPlayers(data);
