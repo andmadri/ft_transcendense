@@ -4,7 +4,7 @@ import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 import { randomizeBallAngle, updateGameState } from "../SharedBuild/gameLogic.js";
-import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit } from "../Game/gameStateSync.js";
+import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit, sendServe } from "../Game/gameStateSync.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -37,31 +37,38 @@ function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		switch (match.state) {
 			case (state.Init) : {
-				randomizeBallAngle(match.gameState.ball)
+				randomizeBallAngle(match.gameState.ball);
 				match.state = state.Playing;
 			}
 			case (state.Playing) : {
-				updateGameState(match)
+				updateGameState(match);
 				sendGameStateUpdate(match, io);
 				break;
 			}
 			case (state.Paused) : {
-				match.state = state.Playing;
+				console.log(`matchInterval - case (state.Paused)`);
 				if (match.pauseTimeOutID == null) {
 					match.pauseTimeOutID = setTimeout(() => {
-						match.state = state.Playing;
+						match.state = state.Serve;
 						match.pauseTimeOutID = null
 					}, 3000)
 				}
 				break;
 			}
+			case (state.Serve) : {
+				console.log(`matchInterval - case (state.Serve)`);
+				updateGameState(match);
+				sendServe(match, io);
+				match.state = state.Playing;
+				break ;
+			}
 			case (state.Hit) : {
-				console.log(`matchInterval - case (state.Hit)`);
 				sendPadelHit(match, io);
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Score) : {
+				console.log(`matchInterval - case (state.Score)`);
 				sendScoreUpdate(match, io);
 				match.state = state.Paused;
 				break;

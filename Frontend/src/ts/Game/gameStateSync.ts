@@ -57,6 +57,14 @@ export function sendPadelHit() {
 	});
 }
 
+export function sendServe() {
+	Game.socket.emit('message',{
+		action: 'game',
+		subaction: 'serve',
+		matchID: Game.match.matchID,
+		gameState: Game.match.gameState
+	});
+}
 
 export function sendScoreUpdate() {
 	Game.socket.emit('message',{

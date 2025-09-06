@@ -26,13 +26,15 @@ export function applyKeyPressUpdate(match, msg) {
 }
 
 export async function updateMatchEventsDB(match, msg, io, event) {
-	console.log(`updateMatchEventsDB | ballX = ${match.gameState.ball.pos.x} - ballY = ${match.gameState.ball.pos.y}`);
-	if (event === "serve" || event === "goal" || event === "hit") {
+	if (event !== "serve" && event !== "goal" && event !== "hit") {
 		console.error(`updateMatchEventsDB: invalid event - ${event} | Should be 'serve', 'goal', 'hit'`);
-		// return ;
+		return ;
 	}
+	console.log(`updateMatchEventsDB: ${event} | ballX = ${match.gameState.ball.pos.x} - ballY = ${match.gameState.ball.pos.y}`);
+
+	// Find the correct player - or not
 	
-	const eventID = await handleMatchEventDB(db, {
+	const eventID = handleMatchEventDB(db, {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
 		event_type: event,
@@ -94,10 +96,26 @@ export function sendScoreUpdate(match, io) {
 	});
 }
 
-export function sendPadelHit(match, io) {
-	if (match.player1.score >= 5 || match.player2.score >= 5)
-		match.state = state.End;
+export function sendServe(match, io) {
+	io.to(match.matchID).emit('message', {
+		action: 'game',
+		subaction: 'serve',
+		matchID: match.matchID,
+		match: {
+			state: match.state,
+			gameState: match.gameState,
+			lastScoreID: match.lastScoreID,
+			player1: {
+				score: match.player1.score
+			},
+			player2: {
+				score: match.player2.score
+			}
+		}
+	});
+}
 
+export function sendPadelHit(match, io) {
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'padelHit',

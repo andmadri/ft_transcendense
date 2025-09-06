@@ -4,7 +4,7 @@ import { matchInfo } from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
 import { aiAlgorithm } from './aiLogic.js'
 import { navigateTo } from "../history.js"
-import { sendGameState} from './gameStateSync.js'
+import { sendGameState, sendServe } from './gameStateSync.js'
 import { renderGameInterpolated } from "./renderSnapshots.js"
 
 export function updateDOMElements(match : matchInfo) {
@@ -39,7 +39,7 @@ export function pauseBallTemporarily(duration: number) {
 		return;
 	ballDiv.style.animation = 'twinkle 1s ease-in-out infinite';
 	Game.match.pauseTimeOutID = setTimeout(() => {
-		Game.match.state = state.Playing;
+		Game.match.state = state.Serve;
 		ballDiv.style.animation = 'none';
 		Game.match.pauseTimeOutID = null;
 	}, duration);
@@ -56,8 +56,7 @@ export function game(match : matchInfo) {
 		console.log("ball", match.gameState.ball);
 		renderGameInterpolated();
 		updatePaddlePos(paddle, match.gameState.field);
-	}
-	else {
+	} else {
 		match.time = performance.now();
 		if (match.mode == OT.ONEvsCOM) {
 			aiAlgorithm();

@@ -22,6 +22,9 @@ export async function handleGame(db, msg, socket, io) {
 		case 'gameStateUpdate':
 			applyGameStateUpdate(match, msg);
 			break;
+		case 'serve':
+			updateMatchEventsDB(match, msg, io, "serve");
+			break;
 		case 'padelHit':
 			updateMatchEventsDB(match, msg, io, "hit");
 			break;

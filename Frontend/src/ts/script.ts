@@ -11,7 +11,7 @@ import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall } from '@shared/gameLogic'
-import { sendScoreUpdate, sendPadelHit } from './Game/gameStateSync.js'
+import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
@@ -100,7 +100,7 @@ function gameLoop() {
 			break ;
 		}
 		case state.Paused: {
-			console.log(`state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
+			console.log(`gameLoop - case state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.pauseTimeOutID === null) {
 				pauseBallTemporarily(3000);
 			}
@@ -112,8 +112,16 @@ function gameLoop() {
 			game(Game.match);
 			break ;
 		}
+		case state.Serve: {
+			console.log(`gameLoop - case state.Serve`);
+			if (Game.match.OT != OT.Online) {
+				sendServe();
+			}
+			Game.match.state = state.Playing;
+			break ;
+		}
 		case state.Hit: {
-			console.log(`gameLoop - state.Hit`);
+			// console.log(`gameLoop - state.Hit`);
 			if (Game.match.OT != OT.Online) {
 				sendPadelHit();
 			}
@@ -121,6 +129,7 @@ function gameLoop() {
 			break ;
 		}
 		case state.Score: {
+			console.log(`gameLoop - state.Score`);
 			// console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.OT != OT.Online) {
 				sendScoreUpdate();
