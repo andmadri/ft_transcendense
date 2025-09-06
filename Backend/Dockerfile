@@ -26,7 +26,7 @@ RUN mkdir -p /data && chown -R node:node /data
 USER node
 
 # copy folders from ./default_iamges to folder uploads/avatars inside the container
-COPY Backend/default_avatars/ /usr/app/uploads/avatars/
+COPY --chown=node:node Backend/default_avatars/ /usr/app/uploads/avatars/
 
 EXPOSE 8080 3000
 

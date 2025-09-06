@@ -9,6 +9,7 @@ export default async function avatarRoutes(fastify) {
 		try {
 			const data = await request.file(); // get the uploaded file
 			if (!data) {
+				console.log('No file uploaded');
 				reply.code(400).send({ error: 'No file uploaded' });
 				return;
 			}
@@ -16,7 +17,8 @@ export default async function avatarRoutes(fastify) {
 			// Validate MIME type
 			const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 			if (!allowedTypes.includes(data.mimetype)) {
-				return reply.code(400).send({ error: 'Unsupported file type' });
+				console.log('Unsupported file type:', data.mimetype);
+				return reply.code(415).send({ error: 'Unsupported file type' });
 			}
 
 			// Extract file extension
@@ -41,8 +43,10 @@ export default async function avatarRoutes(fastify) {
 
 			reply.send({ success: true, message: 'Upload succeeded', });
 		} catch (err) {
+			const errorData = await response.json().catch(() => ({}));
+			alert("Upload failed: " + (errorData.error || response.statusText));
 			fastify.log.error(err.response?.data || err.message);
-			reply.code(500).send('Upload Server failed.');
+			reply.code(500).send({ error: 'Upload Server failed.'});
 		}
 	});
 
