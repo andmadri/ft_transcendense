@@ -1,6 +1,6 @@
 import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
-import { matchInfo} from '@shared/types'
+import { matchInfo } from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
 import { aiAlgorithm } from './aiLogic.js'
 import { navigateTo } from "../history.js"

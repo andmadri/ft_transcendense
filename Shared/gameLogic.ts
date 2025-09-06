@@ -76,7 +76,7 @@ function handleScore(match: matchInfo, field: any, ball: entity, player: player)
 	match.state = state.Score;
 	player.score++;
 	match.lastScoreID = player.ID;
-	resetBall(ball, field);
+	// resetBall(ball, field); // Add data to DB: This should happen AFTER a message have been send to the backend
 }
 
 function checkPaddleCollision(match: matchInfo, field: any, ball: entity, paddle: entity, opponent: player) {
@@ -85,9 +85,12 @@ function checkPaddleCollision(match: matchInfo, field: any, ball: entity, paddle
 	const paddleHalfHeight = paddle.size.height / 2;
 
 	if ((ball.pos.y - ballRadius < paddle.pos.y + paddleHalfHeight) && (ball.pos.y + ballRadius > paddle.pos.y - paddleHalfHeight)) {
+		console.log(`I guess paddle hit: ballX = ${ball.pos.x} - ballY = ${ball.pos.y} | paddle posX = ${paddle.pos.x} - posY = ${paddle.pos.y}`);
+		match.state = state.Hit;
 		changeVelocityOnPaddleBounce(ball, paddle);
 	}
 	else {
+		console.log(`I guess score: ballX = ${ball.pos.x} - ballY = ${ball.pos.y} | paddle posX = ${paddle.pos.x} - posY = ${paddle.pos.y}`);
 		handleScore(match, field, ball, opponent);
 	}
 }

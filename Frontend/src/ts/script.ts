@@ -10,7 +10,8 @@ import { getGameField } from './Game/gameContent.js'
 import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
 import { OT, state} from '@shared/enums'
-import { sendScoreUpdate } from './Game/gameStateSync.js'
+import { resetBall } from '@shared/gameLogic'
+import { sendScoreUpdate, sendPadelHit } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
@@ -111,14 +112,23 @@ function gameLoop() {
 			game(Game.match);
 			break ;
 		}
+		case state.Hit: {
+			console.log(`gameLoop - state.Hit`);
+			if (Game.match.OT != OT.Online) {
+				sendPadelHit();
+			}
+			Game.match.state = state.Playing;
+			break ;
+		}
 		case state.Score: {
-			console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
-			updateDOMElements(Game.match);
-			Game.match.state = state.Paused;
+			// console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.OT != OT.Online) {
 				sendScoreUpdate();
 			}
-			break;
+			resetBall(Game.match.gameState.ball, Game.match.gameState.field);
+			updateDOMElements(Game.match);
+			Game.match.state = state.Paused;
+			break ;
 		}
 		case state.End: {
 			saveGame();

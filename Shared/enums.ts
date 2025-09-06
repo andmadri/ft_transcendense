@@ -16,6 +16,7 @@ export enum state {
 	Pending,
 	Init,
 	Playing,
+	Hit,
 	Score,
 	End,
 	Interrupted,
