@@ -85,12 +85,10 @@ function checkPaddleCollision(match: matchInfo, field: any, ball: entity, paddle
 	const paddleHalfHeight = paddle.size.height / 2;
 
 	if ((ball.pos.y - ballRadius < paddle.pos.y + paddleHalfHeight) && (ball.pos.y + ballRadius > paddle.pos.y - paddleHalfHeight)) {
-		console.log(`I guess paddle hit: ballX = ${ball.pos.x} - ballY = ${ball.pos.y} | paddle posX = ${paddle.pos.x} - posY = ${paddle.pos.y}`);
 		match.state = state.Hit;
 		changeVelocityOnPaddleBounce(ball, paddle);
 	}
 	else {
-		console.log(`I guess score: ballX = ${ball.pos.x} - ballY = ${ball.pos.y} | paddle posX = ${paddle.pos.x} - posY = ${paddle.pos.y}`);
 		handleScore(match, field, ball, opponent);
 	}
 }

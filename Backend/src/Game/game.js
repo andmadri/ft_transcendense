@@ -1,4 +1,4 @@
-import { applyGameStateUpdate, updateScore, applyKeyPressUpdate, updateMatchEventsDB } from "./gameStateSync.js";
+import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
 
@@ -23,14 +23,13 @@ export async function handleGame(db, msg, socket, io) {
 			applyGameStateUpdate(match, msg);
 			break;
 		case 'serve':
-			updateMatchEventsDB(match, msg, io, "serve");
+			updateMatchEventsDB(match, msg, msg.gameState, "serve");
 			break;
 		case 'padelHit':
-			updateMatchEventsDB(match, msg, io, "hit");
+			updateMatchEventsDB(match, msg, msg.gameState, "hit");
 			break;
 		case 'scoreUpdate':
-			updateMatchEventsDB(match, msg, io, "goal");
-			// await updateScore(match, msg, io);
+			updateMatchEventsDB(match, msg, msg.gameState, "goal");
 			break;
 		case 'keyPressUpdate':
 			applyKeyPressUpdate(match, msg, socket);

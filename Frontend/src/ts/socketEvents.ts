@@ -92,7 +92,7 @@ export function receiveFromWS(data: any) {
 	if (!action)
 		log('no action');
 
-	// log(`action: ${action}`);
+	// log(`receiveFromWS - action: ${action} - subaction: ${data.subaction}`);
 	switch(action) {
 		case 'playerInfo':
 			actionPlayerInfo(data);

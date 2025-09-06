@@ -25,12 +25,12 @@ export function applyKeyPressUpdate(match, msg) {
 	console.log(`paddleVY = ${paddle.velocity.vy} -- paddleSpeed = ${paddle.movement.speed}`);
 }
 
-export async function updateMatchEventsDB(match, msg, io, event) {
+export async function updateMatchEventsDB(match, msg, gameState, event) {
 	if (event !== "serve" && event !== "goal" && event !== "hit") {
 		console.error(`updateMatchEventsDB: invalid event - ${event} | Should be 'serve', 'goal', 'hit'`);
 		return ;
 	}
-	console.log(`updateMatchEventsDB: ${event} | ballX = ${match.gameState.ball.pos.x} - ballY = ${match.gameState.ball.pos.y}`);
+	// console.log(`updateMatchEventsDB: ${event} | ballX = ${gameState.ball.pos.x} - ballY = ${gameState.ball.pos.y}`);
 
 	// Find the correct player - or not
 	
@@ -38,38 +38,21 @@ export async function updateMatchEventsDB(match, msg, io, event) {
 		match_id: msg.matchID,
 		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
 		event_type: event,
-		ball_x: match.gameState.ball.pos.x,
-		ball_y: match.gameState.ball.pos.y,
+		ball_x: gameState.ball.pos.x,
+		ball_y: gameState.ball.pos.y,
 		// ball_angle: ,
 		// ball_result_x: ,
 		// ball_result_y: ,
-		paddle_x_player_1: match.gameState.paddle1.pos.x,
-		paddle_y_player_1: match.gameState.paddle1.pos.y,
-		paddle_x_player_2: match.gameState.paddle2.pos.x,
-		paddle_y_player_2: match.gameState.paddle2.pos.y
+		paddle_x_player_1: gameState.paddle1.pos.x,
+		paddle_y_player_1: gameState.paddle1.pos.y,
+		paddle_x_player_2: gameState.paddle2.pos.x,
+		paddle_y_player_2: gameState.paddle2.pos.y
+		// paddle_x_player_1: match.gameState.paddle1.pos.x,
+		// paddle_y_player_1: match.gameState.paddle1.pos.y,
+		// paddle_x_player_2: match.gameState.paddle2.pos.x,
+		// paddle_y_player_2: match.gameState.paddle2.pos.y
 	})
 	
-	// update msg -> not send to socket but to room.
-	return eventID;
-}
-
-export async function updateScore(match, msg, io) {
-	console.log(`updateScore | ballX = ${match.gameState.ball.pos.x} - ballY = ${match.gameState.ball.pos.y}`);
-	const eventID = await handleMatchEventDB(db, {
-		match_id: msg.matchID,
-		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
-		event_type: 'goal',
-		ball_x: match.gameState.ball.pos.x,
-		ball_y: match.gameState.ball.pos.y,
-		// ball_angle: ,
-		// ball_result_x: ,
-		// ball_result_y: ,
-		paddle_x_player_1: match.gameState.paddle1.pos.x,
-		paddle_y_player_1: match.gameState.paddle1.pos.y,
-		paddle_x_player_2: match.gameState.paddle2.pos.x,
-		paddle_y_player_2: match.gameState.paddle2.pos.y
-	})
-
 	// update msg -> not send to socket but to room.
 	return eventID;
 }

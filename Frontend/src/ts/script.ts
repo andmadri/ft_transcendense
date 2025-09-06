@@ -100,7 +100,6 @@ function gameLoop() {
 			break ;
 		}
 		case state.Paused: {
-			console.log(`gameLoop - case state.Paused: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.pauseTimeOutID === null) {
 				pauseBallTemporarily(3000);
 			}
@@ -113,7 +112,6 @@ function gameLoop() {
 			break ;
 		}
 		case state.Serve: {
-			console.log(`gameLoop - case state.Serve`);
 			if (Game.match.OT != OT.Online) {
 				sendServe();
 			}
@@ -121,7 +119,6 @@ function gameLoop() {
 			break ;
 		}
 		case state.Hit: {
-			// console.log(`gameLoop - state.Hit`);
 			if (Game.match.OT != OT.Online) {
 				sendPadelHit();
 			}
@@ -129,8 +126,6 @@ function gameLoop() {
 			break ;
 		}
 		case state.Score: {
-			console.log(`gameLoop - state.Score`);
-			// console.log(`state.Score: ballX = ${Game.match.gameState.ball.pos.x} - ballY = ${Game.match.gameState.ball.pos.y}`);
 			if (Game.match.OT != OT.Online) {
 				sendScoreUpdate();
 			}

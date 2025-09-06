@@ -46,7 +46,6 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.Paused) : {
-				console.log(`matchInterval - case (state.Paused)`);
 				if (match.pauseTimeOutID == null) {
 					match.pauseTimeOutID = setTimeout(() => {
 						match.state = state.Serve;
@@ -56,8 +55,6 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.Serve) : {
-				console.log(`matchInterval - case (state.Serve)`);
-				updateGameState(match);
 				sendServe(match, io);
 				match.state = state.Playing;
 				break ;
@@ -68,13 +65,11 @@ function matchInterval(match, io) {
 				break ;
 			}
 			case (state.Score) : {
-				console.log(`matchInterval - case (state.Score)`);
 				sendScoreUpdate(match, io);
 				match.state = state.Paused;
 				break;
 			}
 			case (state.End) : {
-				console.log(`interval cleared`);
 				clearInterval(match.intervalID);
 				break;
 			}

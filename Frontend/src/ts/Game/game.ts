@@ -4,7 +4,7 @@ import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, state } from '@shared/enums'
 import { navigateTo } from "../history.js";
-import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
+// import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
 
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
@@ -41,16 +41,16 @@ export function actionGame(data: any) {
 			log(`MatchID frontend: ${data.id}`);
 			processMatch(data);
 			break ;
-		case 'start':
-			navigateTo('Game');
-			Game.match.state = state.Playing;
-			break ;
-		case 'gameStateUpdate':
-			applyGameStateUpdate(data);
-			break ;
-		case 'scoreUpdate':
-			applyScoreUpdate(data);
-			break;
+		// case 'start':
+		// 	navigateTo('Game');
+		// 	Game.match.state = state.Playing;
+		// 	break ;
+		// case 'gameStateUpdate':
+		// 	applyGameStateUpdate(data);
+		// 	break ;
+		// case 'scoreUpdate':
+		// 	applyScoreUpdate(data);
+		// 	break;
 		case 'save':
 			processSavingMatch(data);
 			break ;

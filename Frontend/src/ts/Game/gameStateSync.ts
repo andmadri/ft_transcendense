@@ -71,6 +71,7 @@ export function sendScoreUpdate() {
 		action: 'game',
 		subaction: 'scoreUpdate',
 		player: Game.match.lastScoreID,
+		gameState: Game.match.gameState,
 		matchID: Game.match.matchID
 	});
 }
