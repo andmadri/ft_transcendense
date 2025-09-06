@@ -33,10 +33,20 @@ export async function updateMatchEventsDB(match, msg, gameState, event) {
 	// console.log(`updateMatchEventsDB: ${event} | ballX = ${gameState.ball.pos.x} - ballY = ${gameState.ball.pos.y}`);
 
 	// Find the correct player - or not
-	
+	let user_id = null;
+	if (event !== "serve") {
+		if (event == "goal") {
+			user_id = msg.player;
+		} else if (gameState.ball.pos.x < 0.5) {
+			user_id = match.player1.ID;
+		} else {
+			user_id = match.player2.ID;
+		}
+	}
+
 	const eventID = handleMatchEventDB(db, {
 		match_id: msg.matchID,
-		user_id: msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
+		user_id: user_id, //msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
 		event_type: event,
 		ball_x: gameState.ball.pos.x,
 		ball_y: gameState.ball.pos.y,

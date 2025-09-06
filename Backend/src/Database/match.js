@@ -46,9 +46,6 @@ export async function addMatchToDB(db, match) {
  * @param {string} event.event_type  Type of event (e.g., 'goal', 'bounce').
  * @param {number|null} [event.ball_x]            X-position of the ball.
  * @param {number|null} [event.ball_y]            Y-position of the ball.
- * @param {number|null} [event.ball_angle]        Angle of ball movement.
- * @param {number|null} [event.ball_result_x]     X-position after result.
- * @param {number|null} [event.ball_result_y]     Y-position after result.
  * @param {number|null} [event.paddle_x_player_1] Paddle X for player 1.
  * @param {number|null} [event.paddle_y_player_1] Paddle Y for player 1.
  * @param {number|null} [event.paddle_x_player_2] Paddle X for player 2.
@@ -64,14 +61,12 @@ export async function addMatchEventToDB(db, event) {
 
 	return new Promise((resolve, reject) => {
 		const sql = `INSERT INTO MatchEvents (
-			match_id, user_id, event_type, ball_x, ball_y, ball_angle,
-			ball_result_x, ball_result_y,
+			match_id, user_id, event_type, ball_x, ball_y,
 			paddle_x_player_1, paddle_y_player_1,
 			paddle_x_player_2, paddle_y_player_2)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 		const values = [event.match_id, event.user_id, event.event_type,
 			event.ball_x ?? null, event.ball_y ?? null,
-			event.ball_angle ?? null, event.ball_result_x ?? null, event.ball_result_y ?? null,
 			event.paddle_x_player_1 ?? null, event.paddle_y_player_1 ?? null,
 			event.paddle_x_player_2 ?? null, event.paddle_y_player_2 ?? null];
 		db.run(sql, values, function (err) {

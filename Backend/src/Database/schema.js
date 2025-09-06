@@ -63,14 +63,11 @@ export async function createTables(db)
 	CREATE TABLE IF NOT EXISTS MatchEvents (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		match_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL,
+		user_id INTEGER,
 		timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
 		event_type TEXT NOT NULL CHECK (event_type IN ('serve', 'goal', 'hit')),
 		ball_x REAL,
 		ball_y REAL,
-		ball_angle REAL,
-		ball_result_x REAL,
-		ball_result_y REAL,
 		paddle_x_player_1 REAL,
 		paddle_y_player_1 REAL,
 		paddle_x_player_2 REAL,
@@ -208,3 +205,22 @@ export async function createTables(db)
 		});
 	});
 }
+
+	// CREATE TABLE IF NOT EXISTS MatchEvents (
+	// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	// 	match_id INTEGER NOT NULL,
+	// 	user_id INTEGER NOT NULL,
+	// 	timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
+	// 	event_type TEXT NOT NULL CHECK (event_type IN ('serve', 'goal', 'hit')),
+	// 	ball_x REAL,
+	// 	ball_y REAL,
+	// 	ball_angle REAL,
+	// 	ball_result_x REAL,
+	// 	ball_result_y REAL,
+	// 	paddle_x_player_1 REAL,
+	// 	paddle_y_player_1 REAL,
+	// 	paddle_x_player_2 REAL,
+	// 	paddle_y_player_2 REAL,
+	// 	FOREIGN KEY(match_id) REFERENCES Matches(id),
+	// 	FOREIGN KEY(user_id) REFERENCES Users(id)
+	// );
