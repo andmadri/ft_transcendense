@@ -19,17 +19,34 @@ import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { startGameField } from './Game/startGameContent.js'
-// import { initSocket } from './socketEvents.js'
+import { initSocket } from './socketEvents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { initRoutingOnLoad } from './history.js'
-import { startSocketListeners } from './socketEvents.js'
+// import { startSocketListeners } from './socketEvents.js'
 
 createLog();
 
 log("host: " + window.location.host);
 log("hostname: " + window.location.hostname);
 
-startSocketListeners();
+// startSocketListeners();
+
+async function checkCookie() {
+	const response = await fetch(`https://${S.host}/api/cookie`, { credentials: 'include' })
+	if (response.ok) {
+		console.log("Cookie valid, open socket direct");
+		initSocket();
+		// CHECK IF PLAYER IS ONLINE ? OFFLINE ... (IF in loginp1 == offline)
+		// otherwise set player to online
+	  
+		navigateTo(sessionStorage.getItem("currentState") || "LoginP1");
+	} else {
+		navigateTo("LoginP1");
+	}
+	mainLoop();
+};
+
+checkCookie();
 
 // Send a heartbeat every 10 seconds
 setInterval(() => {
@@ -111,34 +128,26 @@ function gameLoop() {
 	}
 }
 
-// function isReadyToConnect() {
-// 	if (Game.socketStatus !== S.SocketStatus.Connected) {
-// 		if (!document.getElementById('loadingpage')) {
-// 			document.body.innerHTML = '';
-// 			const loadingPage = getLoadingPage();
-// 			document.body.appendChild(loadingPage);
-// 			return(false);
-// 		}
-// 	} else {
-// 		document.getElementById('loadingpage')?.remove();
-// 		return(true);
-// 	}
-// }
+function isReadyToConnect() {
+	if (Game.socketStatus !== S.SocketStatus.Connected) {
+		if (!document.getElementById('loadingpage')) {
+			document.body.innerHTML = '';
+			const loadingPage = getLoadingPage();
+			document.body.appendChild(loadingPage);
+			return(false);
+		}
+	} else {
+		document.getElementById('loadingpage')?.remove();
+		return(true);
+	}
+}
 
-// function mainLoop() {
-// 	if (UI.state === S.stateUI.LoginP1) {
-// 		if (!document.getElementById('auth1'))
-// 			getLoginFields(1);
-// 	} else if (isReadyToConnect()) {
-// 		switch (UI.state) {
 function mainLoop() {
-	if (Game.socket.connected) {
+	if (UI.state === S.stateUI.LoginP1) {
+		if (!document.getElementById('auth1'))
+			getLoginFields(1);
+	} else if (isReadyToConnect()) {
 		switch (UI.state) {
-			case S.stateUI.LoginP1: {
-				if (!document.getElementById('auth1'))
-					getLoginFields(1);
-				break ;
-			}
 			case S.stateUI.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
@@ -147,7 +156,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu'))
+				if (!document.getElementById('menu'))	
 					getMenu();
 				break ;
 			}
@@ -162,7 +171,7 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Game: {
-				// if (isReadyToConnect())
+				if (isReadyToConnect())
 					gameLoop();
 				break ;
 			} case S.stateUI.Dashboard: {
@@ -174,17 +183,62 @@ function mainLoop() {
 			default:
 		}
 	} else {
-		log("Socket not connected, trying to reconnect...");
-		Game.socket.connect();
+		if (!Game.socket || Game.socketStatus === S.SocketStatus.Disconnected) {
+			initSocket();
+		}
 	}
-	// else {
-	// 	if (!Game.socket || Game.socketStatus === S.SocketStatus.Disconnected) {
-	// 		initSocket();
-	// 	}
-	// }
 	window.requestAnimationFrame(mainLoop);
 }
 
-setTimeout(() => {
-	mainLoop();
-}, 1000);
+// function mainLoop() {
+// 	if (Game.socket.connected) {
+// 		switch (UI.state) {
+// 			case S.stateUI.LoginP1: {
+// 				if (!document.getElementById('auth1'))
+// 					getLoginFields(1);
+// 				break ;
+// 			}
+// 			case S.stateUI.LoginP2: {
+// 				if (!document.getElementById('auth2'))
+// 					getLoginFields(2);
+// 				break ;
+// 			}
+// 			case S.stateUI.Menu: {
+// 				document.getElementById('auth1')?.remove();
+// 				document.getElementById('auth2')?.remove();
+// 				if (!document.getElementById('menu'))
+// 					getMenu();
+// 				break ;
+// 			}
+// 			case S.stateUI.Settings: {
+// 				if (!document.getElementById('settingPage'))
+// 					getSettingsPage();
+// 				break;
+// 			}
+// 			case S.stateUI.Credits: {
+// 				if (!document.getElementById('Credits'))
+// 					getCreditsPage();
+// 				break ;
+// 			}
+// 			case S.stateUI.Game: {
+// 				// if (isReadyToConnect())
+// 					gameLoop();
+// 				break ;
+// 			} case S.stateUI.Dashboard: {
+// 				if (!document.getElementById('dashboard')) {
+// 					getDashboard();
+// 				}
+// 			break;
+// 			}
+// 			default:
+// 		}
+// 	} else {
+// 		log("Socket not connected, trying to reconnect...");
+// 		Game.socket.connect();
+// 	}
+// 	window.requestAnimationFrame(mainLoop);
+// }
+
+// setTimeout(() => {
+// 	mainLoop();
+// }, 1000);

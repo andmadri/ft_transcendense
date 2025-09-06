@@ -4,7 +4,7 @@ import { log } from '../logging.js'
 // import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 import { navigateTo } from '../history.js';
-// import { initSocket } from '../socketEvents.js'
+import { initSocket } from '../socketEvents.js'
 
 
 
@@ -76,9 +76,9 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		UI.user2.name = name;
 		UI.user2.Twofa = twofa;
 	}
-	// if (!Game.socket || !Game.socket.connected) {
-	// 	initSocket();
-	// }
+	if (!Game.socket || !Game.socket.connected) {
+		initSocket();
+	}
 	document.getElementById('menu')?.remove();
 	Game.socket.disconnect();
 	Game.socket.connect();
