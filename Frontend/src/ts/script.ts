@@ -25,14 +25,23 @@ import { getLoadingPage } from './Loading/loadContent.js'
 createLog();
 
 async function checkCookie() {
-	const response = await fetch(`https://${S.host}/api/cookie`, { credentials: 'include' })
+	const lastPage = sessionStorage.getItem("currentState");
+	let url = `https://${S.host}/api/cookie`;
+	if (lastPage)
+		url = `https://${S.host}/api/cookie?lastPage=${encodeURIComponent(lastPage)}`;
+
+	const response = await fetch(url, { credentials: 'include' })
 	if (response.ok) {
 		console.log("Cookie valid, open socket direct");
 		initSocket();
-		// CHECK IF PLAYER IS ONLINE ? OFFLINE ... (IF in loginp1 == offline)
-		// otherwise set player to online
-	  
-		navigateTo(sessionStorage.getItem("currentState") || "LoginP1");
+
+		// SET name because otherwise it is to slow for the menu later?
+		const data = await response.json();
+		if (data.userID)
+			UI.user1.ID = data.userID;
+		if (data.name)
+			UI.user1.name = data.name;
+		navigateTo(lastPage || "LoginP1");
 	} else {
 		navigateTo("LoginP1");
 	}

@@ -22,11 +22,16 @@ export default async function userAuthRoutes(fastify) {
 			const cookies = request.cookies;
 			const unsigned = fastify.unsignCookie(cookies.jwtAuthToken1);
 
-			if (!unsigned.valid) {	
+			if (!unsigned.valid) {
 				return reply.code(401).send({ ok: false });
 			}
   			const decoded = fastify.jwt.verify(unsigned.value);
-  			return  { ok: true, userId: decoded.userId };
+			const lastPage = request.query.lastPage;
+			if (request.query.lastPage && request.query.lastPage != 'LoginP1')
+				await addUserSessionToDB(db, { user_id: decoded.userId, state: 'login' });
+
+			const user = await getUserByID(db, decoded.userId);
+  			return  { ok: true, userID: decoded.userId, name: user.name};
 		} catch (err) {
   			return reply.code(401).send({ ok: false });
 		}

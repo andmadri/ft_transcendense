@@ -9,6 +9,7 @@ export default async function avatarRoutes(fastify) {
 		try {
 			const data = await request.file(); // get the uploaded file
 			if (!data) {
+				console.log('No file uploaded');
 				reply.code(400).send({ error: 'No file uploaded' });
 				return;
 			}
@@ -16,6 +17,7 @@ export default async function avatarRoutes(fastify) {
 			// Validate MIME type
 			const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 			if (!allowedTypes.includes(data.mimetype)) {
+				console.log('Unsupported file type:', data.mimetype);
 				return reply.code(400).send({ error: 'Unsupported file type' });
 			}
 
