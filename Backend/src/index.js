@@ -1,7 +1,7 @@
-import { handlePlayers } from './DBrequests/getPlayers.js';
+import { handlePlayers, getAllPlayerInclFriends } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-import { handleFriends, openFriendRequest } from './DBrequests/getFriends.js';
+import { handleFriends, openFriendRequest, getFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
@@ -101,7 +101,7 @@ fastify.ready().then(() => {
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
 				case 'players':
-					return handlePlayers(msg, socket, userId1);
+					return handlePlayers(db, msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard':
@@ -121,8 +121,11 @@ fastify.ready().then(() => {
 		socket.on('heartbeat', (msg) => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
-				if (msg.menu === true)
+				if (msg.menu === true) {
 					openFriendRequest(userId1, socket);
+					getAllPlayerInclFriends(db, userId1, socket);
+					getFriends(userId1, socket);
+				}
 			}
 		});
 
@@ -143,7 +146,7 @@ setInterval(async () => {
 				userLastSeen.delete(userId);
 				console.log(`User ${userId} marked offline due to missed heartbeat`);
 			} catch (err) {
-				console.error(`Error marking user ${userId} offline:`, err);
+				// console.error(`Error marking user ${userId} offline:`, err);
 			}
 		}
 	}
