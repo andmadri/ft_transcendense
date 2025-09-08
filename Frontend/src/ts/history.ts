@@ -17,6 +17,7 @@ import { log } from './logging.js';
  * Credits
  */
 
+
 function getMatchIdFromHash(): number | null {
 	// hash looks like: "#GameStats?matchId=123"
 	const hash = window.location.hash || '';
@@ -31,13 +32,13 @@ function getMatchIdFromHash(): number | null {
 	return Number.isFinite(n) ? n : null;
 }
 
+// THERE IS NO CHECK HERE THAT IT IS ALLOWED!!
 export function initRoutingOnLoad() {
 	if (!window.location.hash)
 		return;
 	const hash = window.location.hash.replace(/^#/, '');
 	const state = (hash.split('?')[0] || 'Menu');
 
-	log(`initRoutingOnLoad: state=${state}`);
 	console.log(`initRoutingOnLoad: state=${state}`);
 
 	// Try to get matchId if present
@@ -65,7 +66,6 @@ export function renderPage (newState: string, opts?: { matchId?: number }) {
 			})
 			.catch(() => {
 				// Not authenticated, redirect to login
-				sessionStorage.setItem("currentState", "LoginP1");
 				doRenderPage('LoginP1');
 			});
 		return ;
@@ -136,8 +136,6 @@ export function doRenderPage(newState: string, opts?: { matchId?: number }) {
  * Central auth check for protected pages
  */
 export function navigateTo(state: string, opts?: { matchId?: number }) {
-	if (state == null)
-		return ('LoginP1');
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(state)) {
@@ -148,7 +146,6 @@ export function navigateTo(state: string, opts?: { matchId?: number }) {
 				continueNavigation(state, {matchId: Number(opts?.matchId)});
 			})
 			.catch(() => {
-				sessionStorage.setItem("currentState", "LoginP1");
 				continueNavigation('LoginP1');
 			});
 		return;

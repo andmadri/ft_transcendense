@@ -1,7 +1,7 @@
 import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-import { handleFriends } from './DBrequests/getFriends.js';
+import { handleFriends, openFriendRequest } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
@@ -118,9 +118,11 @@ fastify.ready().then(() => {
 			}
 		});
 
-		socket.on('heartbeat', () => {
+		socket.on('heartbeat', (msg) => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
+				if (msg.menu === true)
+					openFriendRequest(userId1, socket);
 			}
 		});
 
@@ -136,9 +138,13 @@ setInterval(async () => {
 	for (const [userId, lastSeen] of userLastSeen.entries()) {
 		if (now - lastSeen > TIMEOUT) {
 			// Mark user offline in DB
-			await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
-			userLastSeen.delete(userId);
-			console.log(`User ${userId} marked offline due to missed heartbeat`);
+			try {
+				await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+				userLastSeen.delete(userId);
+				console.log(`User ${userId} marked offline due to missed heartbeat`);
+			} catch (err) {
+				console.error(`Error marking user ${userId} offline:`, err);
+			}
 		}
 	}
 }, 5000); // check every 5 seconds

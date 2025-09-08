@@ -51,7 +51,6 @@ async function getFriends(userId1, socket) {
 }
 
 export async function openFriendRequest(userId1, socket) {
-	console.log("check open friend request for userid: ", userId1);
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
 		if (!requests || requests.length === 0) {
