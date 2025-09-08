@@ -147,24 +147,24 @@ function gameLoop() {
 			break ;
 		}
 		case state.Serve: {
-			if (Game.match.OT != OT.Online) {
+			if (Game.match.mode != OT.Online) {
 				sendServe();
 			}
 			Game.match.state = state.Playing;
 			break ;
 		}
 		case state.Hit: {
-			if (Game.match.OT != OT.Online) {
+			if (Game.match.mode != OT.Online) {
 				sendPadelHit();
 			}
 			Game.match.state = state.Playing;
 			break ;
 		}
 		case state.Score: {
-			if (Game.match.OT != OT.Online) {
+			if (Game.match.mode != OT.Online) {
 				sendScoreUpdate();
+				resetBall(Game.match.gameState.ball, Game.match.gameState.field);
 			}
-			resetBall(Game.match.gameState.ball, Game.match.gameState.field);
 			updateDOMElements(Game.match);
 			Game.match.state = state.Paused;
 			break ;

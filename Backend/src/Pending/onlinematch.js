@@ -3,8 +3,9 @@ import { waitlist, matches } from "../InitGame/match.js";
 import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
-import { randomizeBallAngle, updateGameState, updatePaddlePos } from "../SharedBuild/gameLogic.js";
-import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit, sendServe } from "../Game/gameStateSync.js";
+import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall } from "../SharedBuild/gameLogic.js";
+import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit, sendServe, updateMatchEventsDB } from "../Game/gameStateSync.js";
+import { saveMatch } from "../End/endGame.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -37,7 +38,7 @@ function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		switch (match.state) {
 			case (state.Init) : {
-				console.log(`state.Init`);
+				// console.log(`state.Init`);
 				if (match.pauseTimeOutID == null) {
 					randomizeBallAngle(match.gameState.ball);
 					match.resumeTime = Date.now() + 4000;
@@ -67,22 +68,27 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.Serve) : {
-				sendServe(match, io);
+				updateMatchEventsDB(match, null, match.gameState, "serve");
+				// sendServe(match, io);
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Hit) : {
-				sendPadelHit(match, io);
+				updateMatchEventsDB(match, null, match.gameState, "hit");
+				// sendPadelHit(match, io);
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Score) : {
-				console.log(`state.Score`);
+				// console.log(`state.Score`);
+				updateMatchEventsDB(match, null, match.gameState, "goal");
+				resetBall(match.gameState.ball, match.gameState.field);
 				sendScoreUpdate(match, io);
 				match.state = state.Paused;
 				break;
 			}
 			case (state.End) : {
+				saveMatch(match, null, null);
 				clearInterval(match.intervalID);
 				break;
 			}

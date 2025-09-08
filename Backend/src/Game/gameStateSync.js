@@ -7,6 +7,11 @@ export function applyGameStateUpdate(match, msg) {
 	match.gameState = msg.gameState;
 }
 
+export function applyScoreUpdate(match, msg) {
+	match.lastScoreID = msg.player;
+	match.gameState = msg.gameState;
+}
+
 export function sendGameStateUpdate(match, io) {
 	io.to(match.matchID).emit('message', {
 		action: 'game',
@@ -35,7 +40,7 @@ export async function updateMatchEventsDB(match, msg, gameState, event) {
 	let user_id = null;
 	if (event !== "serve") {
 		if (event == "goal") {
-			user_id = msg.player;
+			user_id = match.lastScoreID;
 		} else if (gameState.ball.pos.x < 0.5) {
 			user_id = match.player1.ID;
 		} else {
@@ -44,7 +49,7 @@ export async function updateMatchEventsDB(match, msg, gameState, event) {
 	}
 
 	const eventID = handleMatchEventDB(db, {
-		match_id: msg.matchID,
+		match_id: match.matchID,
 		user_id: user_id, //msg.player == match.player1.ID ? match.player2.ID : match.player1.ID, // Should be the other player, I think
 		event_type: event,
 		ball_x: gameState.ball.pos.x,

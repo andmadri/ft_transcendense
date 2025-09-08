@@ -1,6 +1,7 @@
 import { Game } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
+import { OT } from '@shared/enums'
 
 let result = "";
 
@@ -100,11 +101,13 @@ export function saveGame() {
 	if (Game.match.matchID == -1)
 		return ;
 
-	Game.socket.emit('message',{
-		action: 'game',
-		subaction: 'save',
-		matchID: Game.match.matchID
-	});
+	if ( Game.match.mode != OT.Online) {
+		Game.socket.emit('message',{
+			action: 'game',
+			subaction: 'save',
+			matchID: Game.match.matchID
+		});
+	}
 
 	if (Game.match.pauseTimeOutID) {
 		clearTimeout(Game.match.pauseTimeOutID);

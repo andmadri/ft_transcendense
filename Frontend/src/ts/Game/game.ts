@@ -4,7 +4,7 @@ import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, state } from '@shared/enums'
 import { navigateTo } from "../history.js";
-// import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
+import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
 
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
@@ -45,12 +45,12 @@ export function actionGame(data: any) {
 		// 	navigateTo('Game');
 		// 	Game.match.state = state.Playing; //don't think we need this
 		// 	break ;
-		// case 'gameStateUpdate':
-		// 	applyGameStateUpdate(data);
-		// 	break ;
-		// case 'scoreUpdate':
-		// 	applyScoreUpdate(data);
-		// 	break;
+		case 'gameStateUpdate':
+			applyGameStateUpdate(data);
+			break ;
+		case 'scoreUpdate':
+			applyScoreUpdate(data);
+			break;
 		case 'save':
 			processSavingMatch(data);
 			break ;

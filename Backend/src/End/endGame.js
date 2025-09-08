@@ -4,6 +4,7 @@ import { matches } from "../InitGame/match.js";
 import { state } from "../SharedBuild/enums.js"
 import { renderUserStateDurationsSVG } from '../Database/test.js';
 import path from 'path';
+import { db } from "../index.js";
 
 const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
@@ -18,9 +19,9 @@ export async function quitMatch(match, msg, socket, io) {
 	match.state = state.End;
 }
 
-export async function saveMatch(db, match, msg, socket) {
+export async function saveMatch(match, msg, socket) {
 	// Update the match in the database
-	const matchID = await handleMatchEndedDB(db, msg.matchID);
+	const matchID = await handleMatchEndedDB(db, match.matchID);
 	
 	// Show some stats in the terminal
 	console.table(matchID);
@@ -29,7 +30,7 @@ export async function saveMatch(db, match, msg, socket) {
 	console.table(await getAllUserStateDurationsDB(db));
 
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - start
-	const idForName = String(msg?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
+	const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
 
 	const svgPath = await renderUserStateDurationsSVG(db, {
 		outDir: path.join(uploadsBase, 'charts', idForName),
@@ -46,11 +47,11 @@ export async function saveMatch(db, match, msg, socket) {
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - stop
 
 	// Send a message to the frontend
-	socket.emit('message', {
-		action: 'game',
-		subaction: 'save',
-		matchID: match.matchID,
-		success: true,
-		chartUrl
-	});
+	// socket.emit('message', {
+	// 	action: 'game',
+	// 	subaction: 'save',
+	// 	matchID: match.matchID,
+	// 	success: true,
+	// 	chartUrl
+	// });
 }

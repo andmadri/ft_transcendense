@@ -1,4 +1,4 @@
-import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB } from "./gameStateSync.js";
+import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB, applyScoreUpdate } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
 
@@ -29,13 +29,14 @@ export async function handleGame(db, msg, socket, io) {
 			updateMatchEventsDB(match, msg, msg.gameState, "hit");
 			break;
 		case 'scoreUpdate':
+			applyScoreUpdate(match, msg);
 			updateMatchEventsDB(match, msg, msg.gameState, "goal");
 			break;
 		case 'keyPressUpdate':
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
-			saveMatch(db, match, msg, socket);
+			saveMatch(match, msg, socket);
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket, io);
