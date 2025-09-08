@@ -115,7 +115,7 @@ function insertFriends(friends: any) {
 	html_list.innerHTML = "";
 	const friendsArray = Array.isArray(friends.content) ? friends.content : [];
 	//there is a problem with the friends data
-	for (const friend of friends.content)
+	for (const friend of friendsArray)
 	{
 			const row = styleRow(friend.name);
 			const status = friend.online_status == 0 ? 'offline' : 'online';

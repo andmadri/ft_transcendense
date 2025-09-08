@@ -1,5 +1,7 @@
-// import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGame.js";
+import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGame.js";
 // import { styleElement } from "../Menu/menuContent.js";
+
+import { styleMainBtns } from "../Menu/menuContent";
 
 // function styleBtn(btn: HTMLButtonElement, inRow: boolean) {
 // 	styleElement(btn, {
@@ -57,7 +59,7 @@
 // 	btnOnline.type = 'button';
 // 	btnOnline.textContent = 'Online';
 // 	styleBtn(btnOnline, false);
-// 	btnOnline.addEventListener('click', () => changeOpponentType('Online'));
+	// btnOnline.addEventListener('click', () => changeOpponentType('Online'));
 
 // 	opponentTypesDiv.append(btn1v1, btn1vCom, btnOnline);
 
@@ -134,26 +136,66 @@
 // }
 
 
-export function getOptionMenu() {
-	const settingPage = document.createElement('div');
-	settingPage.id = 'settingPage';
-	// styleElement(optionMenu, {
-	// 	display: 'flex',
-	// 	flexDirection: 'column',
-	// 	backgroundColor: '#ffd400',
-	// 	padding: '20px',
-	// 	height: '100%',
-	// 	width: '100%',
-	// 	boxSizing: 'border-box'
-	// });
+// export function getOptionMenu() {
+// 	const settingPage = document.createElement('div');
+// 	settingPage.id = 'settingPage';
+// 	// styleElement(optionMenu, {
+// 	// 	display: 'flex',
+// 	// 	flexDirection: 'column',
+// 	// 	backgroundColor: '#ffd400',
+// 	// 	padding: '20px',
+// 	// 	height: '100%',
+// 	// 	width: '100%',
+// 	// 	boxSizing: 'border-box'
+// 	// });
+// }
+
+function styleSettingTitle(text: string): HTMLDivElement {
+	const title = document.createElement('div');
+	title.textContent = text;
+	title.style.fontFamily = '"Horizon", sans-serif';
+	title.style.color = 'black';
+	title.style.fontSize = 'clamp(20px, 1.5vw, 25px)';
+	title.style.display = 'flex';
+	title.style.justifyContent = 'center';
+	title.style.alignItems = 'center';
+	title.style.whiteSpace = 'nowrap';
+	return title;
+}
+
+function styleSettingsBttns(button: HTMLButtonElement, text: string, opponent_type: string) {
+	button.textContent = text;
+	button.style.fontFamily = '"RobotoCondensed", sans-serif'
+	button.style.backgroundColor = '#363430';
+	button.style.color = 'white';
+	button.style.border = 'none';
+	button.style.flex = '1';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	button.style.fontSize = 'clamp(8px, 1vw, 10px)';
+
+	button.addEventListener("mouseenter", () => {
+		button.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		button.style.color = 'black';
+	});
+
+	button.addEventListener("mouseleave", () => {
+		button.style.background = '#363430';
+		button.style.color = 'white';
+	});
+
+	button.addEventListener("click", () => {
+		button.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		changeOpponentType(opponent_type);
+	})
 }
 
 export function getSettingsPage() {
 	if (document.getElementById('settingPage'))
 		return ;
+	const body = document.getElementById('body');
+	if (!body)
+		return ;
 
-	// changeMatchFormat('empty');
-	// changeOpponentType('empty')
 	const settingPage = document.createElement('div');
 	settingPage.id = 'settingPage';
 	settingPage.style.width = '100%';
@@ -164,47 +206,51 @@ export function getSettingsPage() {
 	settingPage.style.alignItems = 'center';
 	settingPage.style.backdropFilter = 'blur(6px)';
 
-	const settingBox = document.createElement('div');
-	settingBox.style.aspectRatio = '5/4';
-	settingBox.style.width = 'clamp(250px, 30vh, 350px)';
-	settingBox.style.borderRadius = '10px';
-	settingBox.style.padding = '0.7rem';
-	settingBox.style.border = '2px solid black';
-	settingBox.style.justifyContent = 'center';
-	settingBox.style.gap = '0.7rem';
-	settingBox.style.display = 'flex';
-	settingBox.style.flexDirection = 'column';
-
-	const settingTitle = document.createElement('div');
-	settingTitle.textContent = 'Game Settings';
-	settingTitle.style.whiteSpace = 'nowrap';
-	settingTitle.style.fontFamily = '"Horizon", sans-serif';
-	settingTitle.style.fontSize = 'clamp(16px 1.5vw 20px)';
-	settingTitle.style.textAlign = 'center';
-
-	const settingEnemyBtnBox = document.createElement('div');
-	settingEnemyBtnBox.style.width = '100%';
-	// settingEnemyBtnBox.
-	// settingBox.append(settingTitle);
+	const blackContainer = document.createElement('div');
+	blackContainer.style.aspectRatio = '5/4';
+	blackContainer.style.width = 'clamp(250px, 30vh, 350px)';
+	blackContainer.style.borderRadius = '10px';
+	blackContainer.style.padding = '0.7rem';
+	blackContainer.style.background = 'black';
+	// blackContainer.style.border = '2px solid black';
+	blackContainer.style.justifyContent = 'center';
+	blackContainer.style.gap = '0.7rem';
+	blackContainer.style.display = 'flex';
+	blackContainer.style.flexDirection = 'column';
+	blackContainer.style.borderRadius = '10px';
 
 
-	const optionLeftRight = document.createElement('div');
-	// styleElement(optionLeftRight, {
-	// 	display: 'flex',
-	// 	flexDirection: 'row',
-	// 	justifyContent: 'space-between',
-	// 	gap: '20px',
-	// 	flex: '1'
-	// })
+	const settingContainer = document.createElement('div');
+	settingContainer.id = 'settingContainer';
+	settingContainer.style.borderRadius = '5px';
+	settingContainer.style.color = 'black';
+	settingContainer.style.gap = '0.7rem';
+	settingContainer.style.background = 'white';
+	
 
-	// optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
-	// optionMenu.appendChild(optionLeftRight);
-	// optionLeftRight.append(getLeftSideOptionMenu(), getRightSideOptionMenu());
-	settingPage.appendChild(optionLeftRight);
+	const gameModeContainer = document.createElement('div');
+	gameModeContainer.id = 'settingContainer';
+	gameModeContainer.style.borderRadius = '5px';
+	gameModeContainer.style.color = 'black';
+	gameModeContainer.style.gap = '0.7rem';
+	gameModeContainer.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 
-	const body = document.getElementById('body');
-	if (!body)
-		return ;
-	// body.innerHTML = '';
+	const settingTitle = styleSettingTitle('Settings');
+
+
+	const gameModeTitle = styleSettingTitle('Game Mode');
+	const gameModeButtons = document.createElement('div');
+
+
+	const playGameButton = document.createElement('button');
+	playGameButton.style.width = '70%';
+	styleMainBtns(playGameButton, 'Play Game');
+	playGameButton
+
+	settingContainer.appendChild(settingTitle);
+	gameModeContainer.appendChild(gameModeTitle);
+	blackContainer.appendChild(settingContainer);
+	blackContainer.appendChild(gameModeContainer);
+	settingPage.appendChild(blackContainer);
 	body.append(settingPage);
 }

@@ -11,8 +11,7 @@ import { log } from '../logging.js';
 import { navigateTo } from "../history.js"; //USE THIS!!!
 import { getDashboard } from "../Dashboard/dashboardContents.js";
 
-function styleMainBtns(button: HTMLButtonElement, text: string)
-{
+export function styleMainBtns(button: HTMLButtonElement, text: string) {
 	button.textContent = text;
 	button.style.fontFamily = '"RobotoCondensed", sans-serif'
 	button.style.backgroundColor = '#363430';
@@ -184,45 +183,46 @@ function styleUserTab(tab: HTMLDivElement, text: string) {
 }
 
 export function getUserTournamentBlock(): HTMLDivElement {
-	const users_tournament_block = document.createElement('div');
-	users_tournament_block.style.display = 'flex';
-	users_tournament_block.style.flex = '1 1 50%';
-	users_tournament_block.style.flexDirection = 'column';
-	users_tournament_block.style.gap = '1rem';
-	users_tournament_block.style.height = '100%';
+	const users_block = document.createElement('div');
+	users_block.style.display = 'flex';
+	users_block.style.flex = '1 1 50%';
+	users_block.style.flexDirection = 'column';
+	users_block.style.gap = '1rem';
+	users_block.style.height = '100%';
 
-	const user_block = document.createElement('div');
-	user_block.id = 'user_block';
-	user_block.style.display = 'flex';
-	user_block.style.height = '30%';
-	user_block.style.background = '#363430'
-	user_block.style.display = 'flex';
-	user_block.style.flexDirection = 'column';
-	user_block.style.alignItems = 'center';
-	user_block.style.padding = '1rem';
-	user_block.style.gap = '1rem';
-	user_block.style.borderRadius = '10px';
-	user_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	const user1_block = document.createElement('div');
+	user1_block.id = 'user1_block';
+	// user1_block.style.display = 'flex';
+	// user1_block.style.height = '50%';
+	// user1_block.style.background = '#363430'
+	// user1_block.style.display = 'flex';
+	// user1_block.style.flexDirection = 'column';
+	// user1_block.style.alignItems = 'center';
+	// user1_block.style.padding = '1rem';
+	// user1_block.style.gap = '1rem';
+	// user1_block.style.borderRadius = '10px';
+	// user1_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
-	//have a button that changes whether is player1 or player2
-	//playerNr = playerNr === 1 ? : 2 : 1;
-	let playerNr = 1;
+	// //have a button that changes whether is player1 or player2
+	// //playerNr = playerNr === 1 ? : 2 : 1;
+	// let playerNr = 1;
 
-	const tournament_block = document.createElement('div');
-	tournament_block.style.display = 'flex';
-	tournament_block.style.flex = '1 1';
-	tournament_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
-	styleBlock("Tournaments", tournament_block);
+	const user2_block = document.createElement('div');
+	user2_block.id = 'user2_block';
+	// user2_block.style.display = 'flex';
+	// user2_block.style.flex = '1 1 50%';
+	// user2_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	// styleBlock("Tournaments", user2_block);
 
-	users_tournament_block.appendChild(user_block);
-	users_tournament_block.appendChild(tournament_block);
+	users_block.appendChild(user1_block);
+	users_block.appendChild(user2_block);
 	console.log("Sending data to the backend for the USERDATAMENU!!");
 	Game.socket.send({
 		action: 'userDataMenu', 
 		subaction: 'getUserDataMenu',
-		playerNr: playerNr
+		// playerNr: 1,
 	});
-	return users_tournament_block;
+	return users_block;
 }
 
 function getFriendsBlock(): HTMLDivElement {
@@ -278,13 +278,13 @@ export function createBackgroundText(body: HTMLElement) {
 		// rowDiv.style.marginBottom = '1rem';
 		
 		for (let col = 0; col < cols; col++) {
-			const pongSpan = document.createElement('span');
-			pongSpan.textContent = 'PONG';
-			pongSpan.style.letterSpacing = '0.5rem';
-			  pongSpan.style.animation = `glitch 1s infinite`;
-  pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
-  pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
-			rowDiv.appendChild(pongSpan);
+		const pongSpan = document.createElement('span');
+		pongSpan.textContent = 'PONG';
+		pongSpan.style.letterSpacing = '0.5rem';
+		// pongSpan.style.animation = `glitch 1s infinite`;
+		pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
+		pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
+		rowDiv.appendChild(pongSpan);
 		}
 		
 		backgroundText.appendChild(rowDiv);

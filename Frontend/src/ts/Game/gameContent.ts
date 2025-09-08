@@ -64,7 +64,7 @@ export function getGameField() {
 	if (!body)
 		return;
 	body.innerHTML = "";
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.style.margin = '0';
 	body.style.width = '100vw';
 	body.style.height = '100vh';
