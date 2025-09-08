@@ -20,12 +20,11 @@ export const UI : S.UI = {
 }
 
 export const Game : S.Game = { 
-	// socket: io(`https://${window.location.host}`, {
-	// 	path: '/socket.io/', 
-	// 	// transports: ['websocket'],
-	// 	secure: true,
-	// }),
-	socket: null,
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		// transports: ['websocket'],
+		secure: true,
+	}),
 	socketStatus: S.SocketStatus.Disconnected,
 	match: {
 		state: state.Pending,

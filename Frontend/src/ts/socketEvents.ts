@@ -10,30 +10,30 @@ import { actionInitOnlineGame } from './Game/initGame.js'
 import * as S from './structs.js'
 declare const io: any;
 
-// export function startSocketListeners() {
-// 	const socket = Game.socket;
+export function startSocketListeners() {
+	const socket = Game.socket;
 
-// 	socket.on('connect', () => {
-// 		console.log('Connected with id:', socket.id);
-// 		getPlayerData();
-// 	});
+	socket.on('connect', () => {
+		console.log('Connected with id:', socket.id);
+		getPlayerData();
+	});
 
-// 	socket.on('message', (msg: any)=> {
-// 		receiveFromWS(msg)
-// 	});
+	socket.on('message', (msg: any)=> {
+		receiveFromWS(msg)
+	});
 
-// 	socket.on('disconnect', (reason: any) => {
-// 		log('Disconnected: '+ reason);
-// 	});
+	socket.on('disconnect', (reason: any) => {
+		log('Disconnected: '+ reason);
+	});
 
-// 	socket.on('connect_error', (err: any) => {
-// 		log('Error: ' + err);
-// 	});
+	socket.on('connect_error', (err: any) => {
+		log('Error: ' + err);
+	});
 
-// 	socket.on('error', (err: any) => {
-// 		log('Error: ' + err.reason);
-// 	});
-// }
+	socket.on('error', (err: any) => {
+		log('Error: ' + err.reason);
+	});
+}
 
 export function initSocket() {
 	if (Game.socket && Game.socket.connected) {
