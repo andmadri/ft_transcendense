@@ -23,7 +23,7 @@ export async function getAllPlayerInclFriends(db, userID, socket) {
 		for (const player of players) {
 			player.isFriend = friendsIdsSet.has(player.id);
 		}
-		console.log("Players with friends info: ", players);
+		// console.log("Players with friends info: ", players);
 		return sendContentToFrontend('players', 'retPlayers', socket, "yes", players);
 	} catch (err) {
 		console.error(err);

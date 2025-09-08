@@ -53,7 +53,7 @@ export function game(match : matchInfo) {
 	if (match.mode == OT.Online) {
 		//update own paddle immediately in frontend
 		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		console.log("ball", match.gameState.ball);
+		// console.log("ball", match.gameState.ball);
 		renderGameInterpolated();
 		updatePaddlePos(paddle, match.gameState.field);
 	} else {

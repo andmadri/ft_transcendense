@@ -33,15 +33,25 @@ log("hostname: " + window.location.hostname);
 // startSocketListeners();
 
 async function checkCookie() {
-	const response = await fetch(`https://${S.host}/api/cookie`, { credentials: 'include' })
+	const lastPage = sessionStorage.getItem("currentState");
+	let url = `https://${S.host}/api/cookie`;
+	if (lastPage)
+		url = `https://${S.host}/api/cookie?lastPage=${encodeURIComponent(lastPage)}`;
+
+	const response = await fetch(url, { credentials: 'include' })
 	if (response.ok) {
 		console.log("Cookie valid, open socket direct");
+
+		// SET name because otherwise it is to slow for the menu later?
+		const data = await response.json();
+		if (data.userID)
+			UI.user1.ID = data.userID;
+		if (data.name)
+			UI.user1.name = data.name;
 		initSocket();
-		// CHECK IF PLAYER IS ONLINE ? OFFLINE ... (IF in loginp1 == offline)
-		// otherwise set player to online
-	  
-		navigateTo(sessionStorage.getItem("currentState") || "LoginP1");
+		navigateTo(lastPage || "LoginP1");
 	} else {
+		console.log("No valid cookie..");
 		navigateTo("LoginP1");
 	}
 	mainLoop();
