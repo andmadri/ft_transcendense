@@ -1,41 +1,65 @@
 export function getLoadingPage() {
+	if (document.getElementById('loadingpage')) {
+		return (document.getElementById('loadingpage'));
+  	}
 	const page = document.createElement('div');
 	page.id = "loadingpage";
+	page.className = "loadingpage";
 	page.style.width = '100vw';
 	page.style.height = '100vh';
-	page.style.position = 'relative';
-	page.style.backgroundImage = 'url("./../images/Background.jpg")';
-	page.style.backgroundSize = 'cover';
-	page.style.backgroundPosition = 'center';
-	// page.style.display = 'flex';
+	page.style.position = 'fixed';
+	page.style.display = 'flex';
 	page.style.justifyContent = 'center';
 	page.style.alignItems = 'center';
 	page.style.overflow = 'hidden';
+	page.style.zIndex =  '9999';
+	page.style.transition = 'opacity 200ms ease';
+	page.style.opacity = '1';
 
-	const loading = document.createElement('h1');
-	loading.textContent = 'Loading...';
-	loading.style.color = 'white';
-	loading.style.fontSize = '2em';
-	loading.style.animation = 'bounceText 3s linear infinite';
-	loading.style.position = 'absolute';
-	loading.style.left = '50%';
-	loading.style.top = '50%';
-	loading.style.transform = 'translate(-50%, -50%)';
-	loading.style.animationDirection = 'alternate-reverse';
+	const innerBox = document.createElement('div');
+	innerBox.style.position = 'relative';
+	innerBox.style.width = '10rem';
+	innerBox.style.height = '10rem';
+	innerBox.style.display = 'flex';
+	innerBox.style.alignItems = 'center';
+	innerBox.style.justifyContent = 'center';
+	innerBox.style.borderRadius = '12rem';
+	innerBox.style.padding = '1rem';
+
+	const wrapper = document.createElement('div');
+	wrapper.className = 'wrapper_loadingpage';
+	wrapper.style.position = 'absolute';
+	wrapper.style.width = '8rem';
+	wrapper.style.height = '8rem';
+	wrapper.style.display = 'block';
+	wrapper.style.transformOrigin = '50% 50%';
+	wrapper.style.animation = 'circleball 2s linear infinite';
+	wrapper.style.pointerEvents = 'none';
+
+	const ball = document.createElement('div');
+	ball.className = 'loading_ball';
+	ball.style.position = 'absolute';
+	ball.style.width = '1rem';
+	ball.style.height = '1rem';
+	ball.style.borderRadius= '50%';
+	ball.style.border = '2px solid black'; 
+	ball.style.background = 'white';
+	ball.style.top = '50%';
+	ball.style.left = '100%';
+	ball.style.transform = 'translate(-50%, -50%)';
 
 	if (!document.getElementById('bounceText')) {
 		const style = document.createElement('style');
 		style.id = 'bounceText';
 		style.innerHTML = `
-			@keyframes bounceText {
-			0% { left: 85%; top: 70%; }
-			50% { left: 18%; top: 50%; }
-			100% { left: 85%; top: 30%; }
-			}
-		`;
+			    @keyframes circleball {
+     			from { transform: rotate(0deg); }
+    			to   { transform: rotate(360deg); }
+   				}`;
 		document.head.appendChild(style);
 	}
-
-	page.appendChild(loading);
+	wrapper.appendChild(ball);
+	innerBox.appendChild(wrapper);
+	page.appendChild(innerBox)
 	return (page);
 }
