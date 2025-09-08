@@ -11,6 +11,7 @@ import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall } from '@shared/gameLogic'
+import { updatePaddlePos } from '@shared/gameLogic'
 import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
 import { Game, UI } from "./gameData.js"
@@ -99,20 +100,44 @@ function gameLoop() {
 			break ;
 		}
 		case state.Init: {
-			if (!document.getElementById('game'))
-			{
-				log('Init game');
+			//console.log(`state.Init`);
+			let startDuration;
+			if (!document.getElementById('game')) {
+				log('getGameField()');
 				getGameField();
-				initGame();
 			}
-			if (!document.getElementById('startGame'))
-				startGameField();
+			if (!document.getElementById('startGame')) {
+				if (Game.match.mode == OT.Online) {
+					console.log(`resumeTime = ${Game.match.resumeTime}`);
+					startDuration = Game.match.resumeTime - Date.now();
+				}
+				else {
+					startDuration = 4000;
+				}
+				console.log(`initGame()`);
+				initGame(); // this needs to happen only once
+				console.log(`startDuration = ${startDuration}`);
+				startGameField(startDuration);
+			}
 			break ;
 		}
 		case state.Paused: {
-			if (Game.match.pauseTimeOutID === null) {
-				pauseBallTemporarily(3000);
+			let pauseDuration;
+			if (Game.match.mode == OT.Online) {
+				const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
+				updatePaddlePos(paddle, Game.match.gameState.field);
+				pauseDuration = Game.match.resumeTime - Date.now();
 			}
+			else {
+				updatePaddlePos(Game.match.gameState.paddle1, Game.match.gameState.field);
+				updatePaddlePos(Game.match.gameState.paddle2, Game.match.gameState.field);
+				pauseDuration = 3000;
+			}
+			if (Game.match.pauseTimeOutID === null) {
+				console.log(`pauseDuration = ${pauseDuration}`);
+				pauseBallTemporarily(pauseDuration);
+			}
+			updateDOMElements(Game.match);
 			break ;
 		}
 		case state.Playing: {

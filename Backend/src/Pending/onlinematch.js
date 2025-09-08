@@ -3,7 +3,7 @@ import { waitlist, matches } from "../InitGame/match.js";
 import { OT, state } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
-import { randomizeBallAngle, updateGameState } from "../SharedBuild/gameLogic.js";
+import { randomizeBallAngle, updateGameState, updatePaddlePos } from "../SharedBuild/gameLogic.js";
 import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit, sendServe } from "../Game/gameStateSync.js";
 
 async function addToWaitinglist(socket, userID) {
@@ -37,8 +37,17 @@ function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		switch (match.state) {
 			case (state.Init) : {
-				randomizeBallAngle(match.gameState.ball);
-				match.state = state.Playing;
+				console.log(`state.Init`);
+				if (match.pauseTimeOutID == null) {
+					randomizeBallAngle(match.gameState.ball);
+					match.resumeTime = Date.now() + 4000;
+					console.log(`resumetime = ${match.resumeTime}`);
+					match.pauseTimeOutID = setTimeout(() => {
+						match.state = state.Playing;
+						match.pauseTimeOutID = null
+					}, match.resumeTime - Date.now());
+				}
+				break;
 			}
 			case (state.Playing) : {
 				updateGameState(match);
@@ -47,11 +56,14 @@ function matchInterval(match, io) {
 			}
 			case (state.Paused) : {
 				if (match.pauseTimeOutID == null) {
+					match.resumeTime = match.gameState.time + 3000;
 					match.pauseTimeOutID = setTimeout(() => {
 						match.state = state.Serve;
 						match.pauseTimeOutID = null
-					}, 3000)
+					}, match.resumeTime - Date.now());
 				}
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field);
 				break;
 			}
 			case (state.Serve) : {
@@ -65,6 +77,7 @@ function matchInterval(match, io) {
 				break ;
 			}
 			case (state.Score) : {
+				console.log(`state.Score`);
 				sendScoreUpdate(match, io);
 				match.state = state.Paused;
 				break;
@@ -74,6 +87,7 @@ function matchInterval(match, io) {
 				break;
 			}
 		}
+		sendGameStateUpdate(match, io);
 	}, 40)
 }
 

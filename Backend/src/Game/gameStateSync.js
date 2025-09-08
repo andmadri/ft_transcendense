@@ -12,6 +12,7 @@ export function sendGameStateUpdate(match, io) {
 		action: 'game',
 		subaction: 'gameStateUpdate',
 		matchID: match.matchID,
+		resumeTime: match.resumeTime,
 		gameState: match.gameState,
 		state: match.state
 	});
@@ -19,10 +20,8 @@ export function sendGameStateUpdate(match, io) {
 
 export function applyKeyPressUpdate(match, msg) {
 	let paddle = match.player1.ID == msg.id ? match.gameState.paddle1 : match.gameState.paddle2;
-	console.log(`player1ID = ${match.player1.ID} -- player2ID = ${match.player2.ID}`)
 	if (msg.key == 'ArrowDown') paddle.velocity.vy = msg.pressed ? paddle.movement.speed : 0;
 	if (msg.key == 'ArrowUp') paddle.velocity.vy = msg.pressed ? -paddle.movement.speed : 0;
-	console.log(`paddleVY = ${paddle.velocity.vy} -- paddleSpeed = ${paddle.movement.speed}`);
 }
 
 export async function updateMatchEventsDB(match, msg, gameState, event) {
@@ -77,6 +76,7 @@ export function sendScoreUpdate(match, io) {
 		matchID: match.matchID,
 		match: {
 			state: match.state,
+			resumeTime: match.resumeTime,
 			gameState: match.gameState,
 			lastScoreID: match.lastScoreID,
 			player1: {

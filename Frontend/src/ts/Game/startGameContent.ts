@@ -70,7 +70,7 @@ function getPlayerColom(playerNr: number) {
 	return (player);
 }
 
-export function startGameField() {
+export function startGameField(duration : number) {
 	const startGame = document.createElement('div');
 	startGame.id = 'startGame';
 	startGame.style.display = 'flex';
@@ -113,7 +113,7 @@ export function startGameField() {
     txtstartGame.style.animation = 'pulse 1s ease-in-out infinite';
 	setTimeout(() => {
     	txtstartGame.textContent = "GO!";
-	}, 3000);
+	}, duration * 0.75); //3000
 
 	const players = document.createElement('div');
 	players.style.display = 'flex';
@@ -138,6 +138,6 @@ export function startGameField() {
 
 	setTimeout(() => {
 		startGame.style.display = "none";
-		pauseBallTemporarily(1000);
-	}, 4000);
+		pauseBallTemporarily(duration * 0.25); //1000
+	}, duration); //4000
 }

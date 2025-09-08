@@ -39,6 +39,7 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
 			intervalID: null,
 			pauseTimeOutID: null,
+			resumeTime: -1,
 			mode: mode,
 			lastScoreID: -1,
 			player1: {
