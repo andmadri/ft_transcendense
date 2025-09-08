@@ -56,10 +56,12 @@ function insertPlayers(players: any) {
 	html_list.className = 'playerOfList';
 	// console.log("players:", players); 
 	for (const curr_player of players) {
+		console.log(`ids: ${curr_player.id} && ${UI.user1.ID}`);
 		if (curr_player.id > 2) {
-			console.log(curr_player); 
+			console.log('curr player:', curr_player); 
 			const html_list_element = document.createElement('li');
 			let status = "";
+			
 			if (curr_player.id === UI.user1.ID)
 				status = '(online)';
 			else

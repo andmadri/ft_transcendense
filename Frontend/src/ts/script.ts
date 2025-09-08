@@ -33,7 +33,6 @@ async function checkCookie() {
 	const response = await fetch(url, { credentials: 'include' })
 	if (response.ok) {
 		console.log("Cookie valid, open socket direct");
-		initSocket();
 
 		// SET name because otherwise it is to slow for the menu later?
 		const data = await response.json();
@@ -41,8 +40,10 @@ async function checkCookie() {
 			UI.user1.ID = data.userID;
 		if (data.name)
 			UI.user1.name = data.name;
+		initSocket();
 		navigateTo(lastPage || "LoginP1");
 	} else {
+		console.log("No valid cookie..");
 		navigateTo("LoginP1");
 	}
 	mainLoop();

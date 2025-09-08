@@ -26,11 +26,12 @@ export default async function userAuthRoutes(fastify) {
 				return reply.code(401).send({ ok: false });
 			}
   			const decoded = fastify.jwt.verify(unsigned.value);
-			const lastPage = request.query.lastPage;
+			console.log(`last page: ${request.query.lastPage}`);
 			if (request.query.lastPage && request.query.lastPage != 'LoginP1')
 				await addUserSessionToDB(db, { user_id: decoded.userId, state: 'login' });
 
 			const user = await getUserByID(db, decoded.userId);
+			console.log(`User: ${user}`);
   			return  { ok: true, userID: decoded.userId, name: user.name};
 		} catch (err) {
   			return reply.code(401).send({ ok: false });
