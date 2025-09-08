@@ -15,7 +15,8 @@ import path from 'path';
 
 export async function initFastify() {
 	// FASTIFY => API SERVER
-	const fastify = Fastify({ logger: true });
+	// const fastify = Fastify({ logger: true });
+	const fastify = Fastify({ level: 'error' });
 
 	// fastify-socket.io enables the use of Socket.io in a Fastify application.
 	fastify.register(fastifyIO, {
