@@ -128,10 +128,10 @@ function insertFriends(friends: any) {
 			const deleteFriendBtn = document.createElement('button');
 			styleListBtns(deleteFriendBtn, 'url("../../images/delete_friend.png")');
 			deleteFriendBtn.addEventListener("click", () => {
-				Game.socket.send({
+				Game.socket.emit('message', {
 					action: 'friends',
 					subaction: 'unfriend',
-					userID: Game.match.player1.id, //incorrect because what if you are player2
+					userID: UI.user1.ID, //incorrect because what if you are player2
 					friendID: friend.id
 				})
 				console.log("Unfriend player: " + friend.name);

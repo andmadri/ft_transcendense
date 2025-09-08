@@ -217,7 +217,7 @@ export function getUserTournamentBlock(): HTMLDivElement {
 	users_block.appendChild(user1_block);
 	users_block.appendChild(user2_block);
 	console.log("Sending data to the backend for the USERDATAMENU!!");
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'userDataMenu', 
 		subaction: 'getUserDataMenu',
 		// playerNr: 1,
@@ -230,7 +230,7 @@ function getFriendsBlock(): HTMLDivElement {
 	friends_block.style.flex = '1 1 25%';
 	friends_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	styleBlock("Friends", friends_block, "friends_list");
-	Game.socket.send({
+	Game.socket.emit('message', {
 		action: 'friends', 
 		subaction: 'getFriends'
 	});
@@ -242,8 +242,8 @@ function getPlayersBlock(): HTMLDivElement {
 	players_block.style.flex = '1 1 25%';
 	players_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	styleBlock("Players", players_block, "players_list");
-	Game.socket.send({
-		action: 'online', 
+	Game.socket.emit('message', {
+		action: 'players', 
 		subaction: 'getAllPlayers'
 	});
 	return players_block;

@@ -1,4 +1,4 @@
-import { Game } from "../gameData";
+import { Game, UI } from "../gameData";
 import { navigateTo } from "../history";
 import { submitLogout } from "../Auth/logout";
 import { changeAvatar } from "./avatar";
@@ -322,7 +322,7 @@ function getLogoutBtn(playerNr: number): HTMLButtonElement {
 }
 
 export function getLoginBtn(playerNr: number): HTMLButtonElement {
-	if (playerNr == 1 || Game.match.player2.ID != 1)
+	if (playerNr == 1 || UI.user2.ID != 1)
 		return (getLogoutBtn(playerNr));
 	const loginBtn = document.createElement('button');
 	loginBtn.textContent = 'Login';
