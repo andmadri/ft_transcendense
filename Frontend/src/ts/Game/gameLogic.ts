@@ -56,7 +56,7 @@ export function game(match : matchInfo) {
 	} else {
 		match.time = performance.now();
 		if (match.mode == OT.ONEvsCOM) {
-			aiAlgorithm();
+			aiAlgorithm(match);
 		}
 		updateGameState(match);
 		sendGameState();

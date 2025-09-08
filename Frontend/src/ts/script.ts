@@ -14,7 +14,7 @@ import { resetBall } from '@shared/gameLogic'
 import { updatePaddlePos } from '@shared/gameLogic'
 import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
-import { Game, UI } from "./gameData.js"
+import { Game, newMatch, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
 import { saveGame } from './Game/endGame.js';
 import { getCreditsPage } from './Menu/credits.js'
@@ -24,6 +24,7 @@ import { startGameField } from './Game/startGameContent.js'
 import { initSocket } from './socketEvents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { initRoutingOnLoad } from './history.js'
+import { resetAI } from './Game/aiLogic.js'
 // import { startSocketListeners } from './socketEvents.js'
 
 createLog();
@@ -223,7 +224,13 @@ function mainLoop() {
 				if (isReadyToConnect())
 					gameLoop();
 				break ;
-			} case S.stateUI.Dashboard: {
+			} 
+			case S.stateUI.GameOver: {
+				Game.match = newMatch();
+				resetAI(Game.match);
+				break;
+			}
+			case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
 					getDashboard();
 				}

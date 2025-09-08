@@ -94,6 +94,7 @@ export function getGameOver(opts?: { matchId?: number }) {
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
+	// body.innerHTML = '';
 	body.appendChild(gameOver);
 }
 
