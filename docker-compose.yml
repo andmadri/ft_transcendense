@@ -10,7 +10,6 @@ services:
       - DB_PATH=/data/pong.db
       - UPLOADS_DIR=/tmp/uploads
     volumes:
-      # - database_volume:/usr/app/pong.db
       - dbdata:/data
     init: true
     stop_signal: SIGTERM
