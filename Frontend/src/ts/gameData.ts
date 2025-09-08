@@ -6,27 +6,34 @@ type Socket = any;
 
 export const UI : S.UI = {
 	state: S.stateUI.LoginP1,
-	logDiv : document.getElementById('log') as HTMLDivElement
+	logDiv : document.getElementById('log') as HTMLDivElement,
+	user1: {
+		ID: -1,
+		name: 'unknown',
+		Twofa: false
+	},
+	user2: {
+		ID: 1,
+		name: 'Guest',
+		Twofa: false
+	},
 }
 
-export const Game : S.Game = { 
-	socket: io(`https://${window.location.host}`, {
-		path: '/socket.io/', 
-		transports: ['websocket'],
-		secure: true,
-	}),
-	match: {
+export function newMatch() {
+	return ({
 		state: state.Pending,
 		matchID: -1,
 		matchFormat: MF.Empty,
+		pauseTimeOutID: null,
+		resumeTime: -1,
 		mode: OT.Empty,
+		lastScoreID: -1,
 		player1: {
 			ID: -1,
 			name: 'unknown',
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,
-			Twofa: false
 		},
 		player2: {
 			ID: 1,
@@ -34,7 +41,6 @@ export const Game : S.Game = {
 			ready: false,
 			input: { pressUP: false, pressDOWN: false },
 			score: 0,
-			Twofa: false
 		},
 		gameState: {
 			time: 0,
@@ -58,6 +64,17 @@ export const Game : S.Game = {
 				movement: { speed: 0.015 },
 				},
 		}
-	},
-	colletedSteps: [],
+	});
+}
+
+export const Game : S.Game = { 
+	// socket: io(`https://${window.location.host}`, {
+	// 	path: '/socket.io/', 
+	// 	// transports: ['websocket'],
+	// 	secure: true,
+	// }),
+	socket: null,
+	socketStatus: S.SocketStatus.Disconnected,
+	match: newMatch(),
+	colletedSteps: [], //not used i think
 }

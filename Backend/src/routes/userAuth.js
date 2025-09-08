@@ -5,6 +5,7 @@ import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import { db } from '../index.js' // DELETE THIS LATER
 import { onUserLogin } from '../Services/sessionsService.js';
+import { verifyAuthCookie } from '../Auth/authToken.js';
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -17,11 +18,60 @@ import { onUserLogin } from '../Services/sessionsService.js';
  * It is designed to work with a database for user management and online status tracking.
  */
 export default async function userAuthRoutes(fastify) {
+	fastify.get('/api/cookie', async (request, reply) => {
+		try {
+			const cookies = request.cookies;
+			const unsigned = fastify.unsignCookie(cookies.jwtAuthToken1);
+
+			if (!unsigned.valid) {
+				return reply.code(401).send({ ok: false });
+			}
+  			const decoded = fastify.jwt.verify(unsigned.value);
+			console.log(`last page: ${request.query.lastPage}`);
+			if (request.query.lastPage && request.query.lastPage != 'LoginP1')
+				await addUserSessionToDB(db, { user_id: decoded.userId, state: 'login' });
+
+			const user = await getUserByID(db, decoded.userId);
+			console.log(`User: ${user}`);
+  			return  { ok: true, userID: decoded.userId, name: user.name};
+		} catch (err) {
+  			return reply.code(401).send({ ok: false });
+		}
+	});
+
+	fastify.post('/api/playerInfo', async (request, reply) => {
+		const cookies = request.cookies;
+		const cookie = cookies['jwtAuthToken1'];
+		if (!cookie) {
+			return reply.status(401).send({ error: 'Unauthorized' });
+		}
+		const unsigned = fastify.unsignCookie(cookie);
+		if (!unsigned.valid) {
+			return reply.status(401).send({ error: 'Unauthorized' });
+		}
+		try {
+			const decoded = fastify.jwt.verify(unsigned.value);
+			const user = await getUserByID(fastify.db || db, decoded.userId);
+			if (!user) {
+				return reply.status(401).send({ error: 'Unauthorized' });
+			}
+			reply.send({
+				success: true,
+				userId: user.id,
+				name: user.name,
+				email: user.email,
+				twofa: user.twofa_active,
+			});
+		} catch (err) {
+			return reply.status(401).send({ error: 'Unauthorized' });
+		}
+	});
+
 	fastify.post('/api/signup', async (request, reply) => {
 		const { playerNr, username, email, password } = request.body;
 		const msg = {
-			name: username,
-			email: email,
+			name: username.trim(),
+			email: email.toLowerCase(),
 			password: password,
 			player: playerNr
 		};
@@ -36,7 +86,7 @@ export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/login', async (request, reply) => {
 		const { playerNr, email, password } = request.body;
 		const msg = {
-			email: email,
+			email: email.toLowerCase(),
 			password: password,
 			player: playerNr
 		};
@@ -79,7 +129,9 @@ export default async function userAuthRoutes(fastify) {
 		}
 	});
 
-	fastify.post('/api/logout', async (request, reply) => {
+	fastify.post('/api/logout', {
+			preHandler: verifyAuthCookie
+		}, async (request, reply) => {
 		const playerNr = request.body.playerNr;
 		console.log(`Logging out player ${playerNr}`);
 		const cookies = request.cookies;

@@ -69,7 +69,7 @@ export async function addFriendRequest(socket, userId1, data) {
 	try {
 		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
-		if (err.message.includes('already exists')) {
+		if (err.message.includes('You already invited this player')) {
 			sendContentToFrontend('friends', 'error', socket, "no", err.message);
 		} else {
 			socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
@@ -80,7 +80,8 @@ export async function addFriendRequest(socket, userId1, data) {
 
 async function deleteFriendship(socket, userID1, msg) {
 	try {
-		friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
+		console.log("Want to delete: ", userID1, msg.friendID);
+		await friendsDB.deleteFriendDBfromUser(db, userID1, msg.friendID);
 	} catch (err) {
 		socket.emit('message', {action: '', subaction: '', msg: 'Database error'});
 		console.error(err);

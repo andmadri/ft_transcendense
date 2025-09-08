@@ -14,7 +14,7 @@ import { sql_log, sql_error } from './dblogger.js';
  * @throws {Error} - Rejects if the insert fails (e.g., duplicate email).
  */
 export async function addUserToDB(db, user) {
-	const hashedPassword = await bcrypt.hash(user.password, 10);
+	const hashedPassword = user.password ? await bcrypt.hash(user.password, 10) : null;
 	const avatar_url = user.avatar_url || null;
 
 	return new Promise((resolve, reject) => {
@@ -29,6 +29,19 @@ export async function addUserToDB(db, user) {
 			}
 		});
 	});
+}
+
+export async function createNewUserToDB(db, user = {}) {
+	const { name, email, password, avatar_url = null } = user;
+	if (!name || !email) {
+		throw new Error("createNewUserToDB: 'name' and 'email' are required");
+	}
+	const existing = await getUserByEmail(db, email);
+	if (existing) {
+		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
+		return existing.id;
+	}
+	return await addUserToDB(db, { name, email, password, avatar_url });
 }
 
 // *************************************************************************** //
@@ -197,7 +210,7 @@ export async function getUserByEmail(db, email) {
 export function getOnlineUsers(db) {
 	const sql = `SELECT * FROM OnlineUsers ORDER BY name`;
 	return new Promise((resolve, reject) => {
-		db.all(sql, [], (err, rows) => {
+		db.all(sql, (err, rows) => {
 			if (err) {
 				sql_error(err, `getOnlineUsers`);
 				reject(err);
@@ -208,25 +221,35 @@ export function getOnlineUsers(db) {
 	});
 }
 
-
-export async function createNewUserToDB(db, { name, email, password, avatar_url=null }) {
-	const existing = await getUserByEmail(db, email);
-	if (existing) {
-		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
-		return existing.id;
-	}
-	return await addUserToDB(db, { name, email, password, avatar_url });
-}
-
 export async function getAllPlayers(db) {
-	const sql = `SELECT * FROM Users ORDER BY name`;
+	const sql = `
+		SELECT 
+			u.*,
+			CASE 
+				WHEN us.state IS NULL OR us.state = 'logout' THEN 0
+				ELSE 1
+			END AS online_status
+		FROM Users u
+		LEFT JOIN (
+			SELECT us1.user_id, us1.state
+			FROM UserSessions us1
+			WHERE us1.id = (
+				SELECT us2.id
+				FROM UserSessions us2
+				WHERE us2.user_id = us1.user_id
+				ORDER BY us2.timestamp DESC
+				LIMIT 1
+			)
+		) us ON u.id = us.user_id
+		ORDER BY u.name;
+	`;
 	return new Promise((resolve, reject) => {
-		db.all(sql, [], (err, rows) => {
+		db.all(sql, (err, rows) => {
 			if (err) {
-				sql_error(err, `getOnlineUsers`);
+				sql_error(err, `getAllPlayers`);
 				reject(err);
 			} else {
-				resolve(rows)
+				resolve(rows);
 			}
 		});
 	});

@@ -9,7 +9,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		e.preventDefault();
 
 	const payload = { playerNr };
-	if (playerNr == 1 && Game.match.player2.ID != 1) {  // Ensure player 2 is logged out too
+	if (playerNr == 1 && UI.user2.ID != 1) {  // Ensure player 2 is logged out too
 		log(`Player 2 is logged in, logging out player 2 as well.`);
 		submitLogout(null, 2);
 	}
@@ -24,15 +24,18 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		if (response.ok) {
 			const data = await response.json();
 			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
-			if (playerNr == 1) {
-				Game.match.player1.ID = -1;
-				Game.match.player1.name = "";
-				navigateTo('LoginP1');
-			} else {
-				Game.match.player2.ID = 1;
-				Game.match.player2.name = "Guest";
-			}
 			document.getElementById('menu')?.remove();
+			Game.socket.disconnect();
+			Game.socket.connect();
+			// Clear user data
+			if (playerNr == 1) {
+				UI.user1.ID = -1;
+				UI.user1.name = "";
+			} else {
+				UI.user2.ID = 1;
+				UI.user2.name = "Guest";
+			}
+			navigateTo('LoginP1');
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();

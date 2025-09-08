@@ -6,6 +6,7 @@ function sendStartMsgToPlayers(matchID) {
 	io.to(matchID).emit('message', {
 		action: 'game',
 		subaction: 'start',
+		matchID: matchID
 	});
 }
 
@@ -43,5 +44,4 @@ export function handleInitGame(db, msg, socket, userId1, userId2) {
 		if (handleStartOnlineMatch(msg, match))
 			return ;
 	}
-	
 }

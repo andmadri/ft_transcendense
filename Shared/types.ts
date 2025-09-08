@@ -21,7 +21,6 @@ export type player = {
 		pressDOWN: boolean
 	},
 	score: number,
-	Twofa: boolean
 }
 
 export type gameState = {
@@ -35,8 +34,11 @@ export type gameState = {
 export type matchInfo = {
 	state: state,
 	matchID: number,
-	matchFormat: MF
+	matchFormat: MF,
+	pauseTimeOutID: number | null,
+	resumeTime: number,
 	mode: OT,
+	lastScoreID: number,
 	player1: player,
 	player2: player,
 	gameState: gameState

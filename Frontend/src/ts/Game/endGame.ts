@@ -1,12 +1,11 @@
-import { UI, Game } from "../gameData.js"
-import * as S from '../structs.js'
-import { OT, state } from '@shared/enums'
-import { submitLogout } from '../Auth/logout.js';
+import { Game } from "../gameData.js"
 import { log } from '../logging.js';
-import { game } from './gameLogic.js';
 import { navigateTo } from "../history.js";
+import { OT } from '@shared/enums'
 
-export function getGameOver() {
+let result = "";
+
+export function getGameOver(opts?: { matchId?: number }) {
 	log("Game Over!");
 	const game = document.getElementById('game');
 	if (game)
@@ -23,7 +22,10 @@ export function getGameOver() {
 	gameOver.style.fontFamily = '"Horizon", monospace';
 	gameOver.style.textAlign = 'center';
 	gameOver.style.width = '100%';
-	gameOver.style.height = '100%';
+
+	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
+	// gameOver.style.height = '100%';
+
 	// gameOver.style.gap = '5%'
 
 	const txtGameOver = document.createElement('div');
@@ -31,15 +33,6 @@ export function getGameOver() {
 	txtGameOver.style.color = 'transparent';
 	txtGameOver.style.fontSize = '12rem';
 	txtGameOver.style.webkitTextStroke = '0.2rem #000';
-
-	let result;
-	if (Game.match.player1.score > Game.match.player2.score) {
-		result = "Left Player Wins!";
-	} else if (Game.match.player1.score < Game.match.player2.score) {
-  result = "Right Player Wins!"; 
-	} else {
-		result = "It is a Tie!"
-	}
 
 	const txtInnerGameOver = document.createElement('div');
 	txtInnerGameOver.textContent = `${result}`;
@@ -77,33 +70,64 @@ export function getGameOver() {
 	backToMenu.addEventListener('click', () => { navigateTo('Menu'); })
 	gameOver.appendChild(backToMenu);
 
+	const statsButton = document.createElement('button');
+	statsButton.id = 'statsButton';
+	statsButton.textContent = 'View Game Stats';
+	statsButton.style.fontFamily = '"Horizon", monospace';
+	statsButton.style.padding = '0.6rem 2rem';
+	statsButton.style.fontSize = '1.5rem';
+	statsButton.style.borderRadius = '0.8rem';
+	statsButton.style.border = '0.15rem solid black';
+	statsButton.style.backgroundColor = '#ededeb';
+	statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
+	statsButton.style.cursor = 'pointer';
+	statsButton.style.transition = 'all 0.2s ease-in-out';
+	statsButton.addEventListener('click', () => { 
+		if (Number.isFinite(opts?.matchId)) {
+			navigateTo('GameStats', { matchId: Number(opts?.matchId) });
+		} else {
+			console.warn('View Game Stats clicked but no matchId available');
+		}
+	});
+	gameOver.appendChild(statsButton);
+
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
+	// body.innerHTML = '';
 	body.appendChild(gameOver);
 }
 
 export function saveGame() {
-	if (Game.match.ID == -1)
+	if (Game.match.matchID == -1)
 		return ;
 
-	navigateTo('GameOver');
+	if ( Game.match.mode != OT.Online) {
+		Game.socket.emit('message',{
+			action: 'game',
+			subaction: 'save',
+			matchID: Game.match.matchID
+		});
+	}
 
-	// MARTY HERE!!! - Is this the place where we can change the data of the message?
-	// No the last message when the game is finished.. ;)
-	Game.socket.send({
-		action: 'game',
-		subaction: 'save',
-		matchID: Game.match.ID
-	});
+	if (Game.match.pauseTimeOutID) {
+		clearTimeout(Game.match.pauseTimeOutID);
+		Game.match.pauseTimeOutID = null;
+	}
+
+
+	// Save the result to show in the GameOver function
+	if (Game.match.player1.score > Game.match.player2.score)
+		result = "Left Player Wins!";
+	else if (Game.match.player1.score < Game.match.player2.score)
+  		result = "Right Player Wins!"; 
+	else
+		result = "It is a Tie!"
 
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
-	Game.match.ID = -1;
+	// Game.match.matchID = -1;
 
-	// Change AI to GUEST before going back to menu
-	if (Game.match.player2.ID == 2) {
-		Game.match.player2.ID = 1
-		Game.match.player2.name = 'Guest';
-	}
+	navigateTo('GameOver', {matchId: Game.match.matchID});
+	Game.match.matchID = -1;
 }

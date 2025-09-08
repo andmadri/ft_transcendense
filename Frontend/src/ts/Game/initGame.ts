@@ -8,6 +8,7 @@ import { submitLogout } from '../Auth/logout.js';
 // import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
+import { startGameField } from './startGameContent.js';
 
 const field = Game.match.gameState.field;
 const ball = Game.match.gameState.ball;
@@ -32,7 +33,7 @@ export function startGame() {
 	
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
-			if (Game.match.player2.ID != -1) {
+			if (Game.match.player2.ID != -1) { // Check this!
 				navigateTo('Game');
 				Game.match.state = state.Init;
 			}
@@ -41,7 +42,7 @@ export function startGame() {
 			}
 			break ;
 		}
-		case OT.ONEvsCOM: {
+		case OT.ONEvsCOM: { // Check this!
 			Game.match.player2.ID = 2; // Is not getting used - only for visability
 			Game.match.player2.name = "AI"; // Is not getting used - only for visability
 			navigateTo('Game');
@@ -52,7 +53,7 @@ export function startGame() {
 			navigateTo('Game');
 			Game.match.state = state.Pending;
 			console.log("Send online request to backend");
-			Game.socket.send({
+			Game.socket.emit('message',{
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
 			});
@@ -112,71 +113,32 @@ export function initGameServer() {
 		}
 		if (Game.match.mode == OT.ONEvsCOM)
 			initGame.playerName2 = "Computer";
-		Game.socket.send(initGame);
+		Game.socket.emit('message',initGame);
 	}
 }
-
-function readyStart(txt: HTMLDivElement) {
-	log("Start button clicked");
-	if (document.getElementById('startScreen')) {
-		const body = document.getElementById('body');
-		const startScreen = document.getElementById('startScreen')
-		if (body && startScreen)
-			body.removeChild(startScreen);
-	}
-}
-
-// function getStartScreenBeforeGame() {
-// 	const body = document.getElementById('body');
-// 	if (!body)
-// 		return ;
-// 	body.innerHTML = "";
-// 	const startScreen = document.createElement('div');
-// 		startScreen.id = 'startScreen';
-// 	styleElement(startScreen, {
-
-// 	})
-// 	const player1 = document.createElement('div');
-// 	const player2 = document.createElement('div');
-// 	const name1 = document.createElement('div');
-// 	const name2 = document.createElement('div');
-// 	const avatar1 = document.createElement('img');
-// 	const avatar2 = document.createElement('img');
-// 	const txt = document.createElement('div');
-// 	const startBtn = document.createElement('button');
-
-// 	name1.textContent = Game.match.player1.name;
-// 	name2.textContent = Game.match.player2.name;
-// 	avatar1.src = "./../images/avatar.png";
-// 	styleElement(avatar1, {
-// 		objectFit: 'contain',
-// 	})
-// 	avatar2.src = "./../images/avatar.png";
-// 	styleElement(avatar2, {
-// 		objectFit: 'contain',
-// 	})
-// 	player1.append(name1, avatar1);
-// 	player2.append(name2, avatar2);
-// 	txt.textContent = "Ready...?";
-// 	startBtn.textContent = "START";
-// 	startBtn.addEventListener('click', (e) => readyStart(txt));
-// 	startScreen.append(player1, player2, txt, startBtn);
-// 	body.append(startScreen);
-// }
 
 export function initGame() {
-	if (Game.match.mode != OT.Online)
-		initGameServer();
-	else {
-		// Send server msg that player is ready with init game
-		const readyToPlay = {
-			action: 'init',
-			subaction: 'start',
-			matchID: Game.match.matchID,
-			userID: Game.match.player1.ID
+	if (Game.match.mode != OT.Online) {
+		//do we need to set the ID's here
+		Game.match.player1.ID = UI.user1.ID;
+		Game.match.player1.name = UI.user1.name;
+		if (Game.match.mode != OT.ONEvsCOM) {
+			Game.match.player2.ID = UI.user2.ID;
+			Game.match.player2.name = UI.user2.name;
 		}
-		Game.socket.send(readyToPlay);
+		randomizeBallAngle(Game.match.gameState.ball);
+		initGameServer();
 	}
+	// else {
+	// 	// Send server msg that player is ready with init game
+	// 	const readyToPlay = {
+	// 		action: 'init',
+	// 		subaction: 'start',
+	// 		matchID: Game.match.matchID,
+	// 		userID: UI.user1.ID //user check
+	// 	}
+	// 	Game.socket.emit('message',readyToPlay);
+	// }
 	const fieldDiv = document.getElementById('field');
 	if (fieldDiv) {
 		const resizeObserver = new ResizeObserver(() => {
@@ -184,7 +146,6 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
-	randomizeBallAngle(Game.match.gameState.ball);
 	// updateNamesMenu();
 	// resetScoreMenu();
 }
@@ -195,18 +156,13 @@ export function actionInitOnlineGame(data: any) {
 	if (match == null) { // something went wrong
 		alert('Could not start a new game');
 		navigateTo('Menu');
-		return ;	
+		return ;
 	}
-	getGameField();
+	//getGameField();
 
-	Game.match.player1.ID = match.player1.ID;
-	Game.match.player2.ID = match.player2.ID;
-	Game.match.player1.name = match.player1.name;
-	Game.match.player2.name = match.player2.name;
-	Game.match.ID = match.matchID;
-
+	Game.match = match;
 	// Function to set all data sync with match in game...
 
-	navigateTo('Game');
+	navigateTo('Game'); //think we don't need this
 	console.log("Start online game...");
 }

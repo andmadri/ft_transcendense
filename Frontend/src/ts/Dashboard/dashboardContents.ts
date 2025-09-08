@@ -3,6 +3,7 @@ import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
 import { log } from '../logging.js'
+import { navigateTo } from '../history'
 import { createBackgroundText } from '../Menu/menuContent'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
@@ -14,7 +15,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.style.width = '100%';
 		row.style.height = '5%';
 		row.style.background = 'rgba(0, 0, 0, 0.18)';
-		row.style.cursor = 'point';
+		row.style.cursor = 'pointer';
 		row.style.borderRadius = '5px';
 		row.style.boxShadow = '2.6px 5.1px 5.1px hsl(0deg 0% 0% / 0.42)';
 		row.style.justifyContent = 'space-between';
@@ -30,8 +31,14 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 			cellDiv.style.flex = '1';
 			row.appendChild(cellDiv);
 		});
+
+		const matchId = Number(match.match_id);
 		row.addEventListener('click', () => {
-			alert(`Match vs ${match.opponent} on ${match.date}`);
+			if (Number.isFinite(matchId)) {
+				navigateTo('GameStats', { matchId });
+			} else {
+				console.warn('No match_id on row:', match);
+			}
 		});
 		matchList.appendChild(row);
 	}
@@ -91,22 +98,16 @@ export function populateDashboard(msg: any)
 	const infoCardsContainer = document.getElementById('infoCardsContainer');
 	if (!infoCardsContainer || !matchList)
 		return ;
-	console.log("Going to: renderMatchInfo");
-	console.log(msg.matches);
 	renderMatchInfo(msg.matches, matchList);
-	console.log("Going to: renderUserInfoCard");
-	console.log(msg.player);
 	renderUserInfoCard(msg.player, infoCardsContainer);
-	console.log("Going to: renderUserStatsCard");
-	console.log(msg.stats);
 	renderUserStatsCard(msg.stats, infoCardsContainer);
-	console.log("Going to: renderPlayingTimeCard");
-	console.log(msg.log_time);
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
 export function getDashboard(playerID?: number, playerNr?: number)
 {
+	if (UI.state !== S.stateUI.Dashboard) 
+		return;
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
@@ -228,7 +229,7 @@ export function getDashboard(playerID?: number, playerNr?: number)
 		if (dashboard) {
 			dashboard.remove();
 		}
-		UI.state = S.stateUI.Menu;
+		navigateTo('Menu');
 	});
 
 	dashboard.appendChild(headers);
@@ -240,6 +241,5 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerID: playerID, playerNr: playerNr};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	Game.socket.emit('message', msg);
-
+	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
 }

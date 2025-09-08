@@ -1,6 +1,6 @@
 import { log } from '../logging.js';
 import { UI, Game } from "../gameData.js"
-import { navigateTo } from '../history.js';
+import { navigateTo, getValidState } from '../history.js';
 import * as S from '../structs.js'
 
 
@@ -20,24 +20,35 @@ function receivePlayerData(data: any) {
 		console.error('Error receiving player data:', data.msg);
 		return ;
 	} else {
-		Game.match.player1.name = data.name || 'unknown';
-		Game.match.player1.ID = data.id || -1;
+		UI.user1.name = data.name || 'unknown';
+		UI.user1.ID = data.id || -1;
 		Game.match.player1.score = data.score || 0;
-		Game.match.player2.name = data.name2 || 'Guest';
-		Game.match.player2.ID = data.id2 || 1;
+		UI.user2.name = data.name2 || 'Guest';
+		UI.user2.ID = data.id2 || -1;
 		Game.match.player2.score = data.score2 || 0;
 	}
-	if (Game.match.player1.ID != -1) {
-		navigateTo('Menu');
-	}
-	const body = document.getElementById('body');
-	if (!body) return ;
-	const menu = document.createElement('div');
-	if (!menu) return ;
+	// if (UI.user1.ID != -1) {
+
+	// 	// Check where to go and if there is a page in the history (refresh)
+	// 	const historyPage = sessionStorage.getItem('history');
+
+	// 	if (historyPage) {
+	// 		const validPage = getValidState(historyPage);
+
+	// 		navigateTo(validPage);
+	// 	} else {
+	// 		navigateTo('Menu');
+	// 	}
+	// }
+
+	// const body = document.getElementById('body');
+	// if (!body) return ;
+	// const menu = document.createElement('div');
+	// if (!menu) return ;
 }
 
 export function getPlayerData() {
-	Game.socket.send({
+	Game.socket.emit('message',{
 		action: 'playerInfo',
 		subaction: 'getPlayerData'});
 }

@@ -1,4 +1,6 @@
 import { gameState } from '@shared/types'
+import { state } from '@shared/enums'
+import { UI, Game } from '../gameData.js'
 
 const INTERPOLATION_DELAY = 100;
 const MAX_SNAPSHOT_AGE = 2000;
@@ -17,17 +19,17 @@ const snapshots: Snapshot[] = [];
 
 /**
  * @brief adds the current values as a snapshot to snapshots
- * @param data must contain: ballY + X, ballVY + X, paddleOneY, paddleTwoY
+ * @param match must contain: ballY + X, ballVY + X, paddleOneY, paddleTwoY
  * @param player 1 or 2, dependce on left/right correction
  */
-function makeSnapshot(data: any, player: number) {
+export function makeSnapshot(gameState: any, player: number) {
 	snapshots.push({
-		ballX: data.gameState.ball.pos.x,
-		ballY: data.gameState.ball.pos.y,
-		ballVX: data.gameState.velocity.pos.vx,
-		ballVY: data.gameState.velocity.pos.vy,
-		paddleY: player == 1 ? data.gamestate.paddle2.pos.y : data.gamestate.paddle1.pos.y,
-		paddleVY: player == 1 ? data.gamestate.paddle1.velocity.vx : data.gamestate.paddle1.velocity.vy,
+		ballX: gameState.ball.pos.x,
+		ballY: gameState.ball.pos.y,
+		ballVX: gameState.ball.velocity.vx,
+		ballVY: gameState.ball.velocity.vy,
+		paddleY: player == 1 ? gameState.paddle2.pos.y : gameState.paddle1.pos.y,
+		paddleVY: player == 1 ? gameState.paddle2.velocity.vy : gameState.paddle1.velocity.vy,
 		timestamp: Date.now(),
 	});
 }
@@ -59,19 +61,27 @@ function getBoundingSnapshots(renderTime: number) {
 /**
  * @brief updates the positions of the divElements in the frontend
  */
-function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
-	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
-	const ballDiv = document.getElementById('ball');
-	const fieldDiv = document.getElementById('field');
+// function updateDivFromSnapshot(ball: any, paddle: any, playerNr: number) {
+// 	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
+// 	const ballDiv = document.getElementById('ball');
+// 	const fieldDiv = document.getElementById('field');
 
-	if (!ballDiv || !playerDiv || !fieldDiv) {
-		console.error("Div elements are missing applyUpdatesGameServer");
-		return;
-	}
-	// Change values in div elements
-	playerDiv.style.top = `${(paddleY * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
-	ballDiv.style.left = `${ballX * fieldDiv.clientWidth}px`;
-	ballDiv.style.top = `${ballY * fieldDiv.clientWidth}px`;
+// 	if (!ballDiv || !playerDiv || !fieldDiv) {
+// 		console.error("Div elements are missing applyUpdatesGameServer");
+// 		return;
+// 	}
+// 	// Change values in div elements
+// 	playerDiv.style.top = `${(paddle.pos.y * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
+// 	ballDiv.style.left = `${ball.pos.x * fieldDiv.clientWidth}px`;
+// 	ballDiv.style.top = `${ball.pos.y * fieldDiv.clientWidth}px`;
+// }
+
+function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
+	const paddle = playerNr == 1 ? Game.match.gameState.paddle2 : Game.match.gameState.paddle1;
+	const ball = Game.match.gameState.ball;
+	paddle.pos.y = paddleY;
+	ball.pos.y = ballY;
+	ball.pos.x = ballX;
 }
 
 /**
@@ -88,7 +98,7 @@ function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: numbe
 		return;
 	}
 
-	const t = (Date.now() - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
+	const t = (renderTime - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
 	const fraction = Math.min(Math.max(t, 0), 1);
 
 	const ballX = snap1.ballX + (snap2.ballX - snap1.ballX) * fraction;
@@ -128,30 +138,26 @@ function deleteOldSnapshots(renderTime: number) {
  * @brief calculates the right time (interpolation) between two snapshots with a delay of INTERPOLATION_DELAY
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
-export function renderGameInterpolated(data: any) {
-	if ( data.ballY !== undefined && data.ballX !== undefined && data.playerNr !== undefined &&
-		data.paddleTwoY !== undefined && data.paddleOneY !== undefined && 
-		data.paddleOneVY !== undefined && data.paddleTwoVY !== undefined)
-		makeSnapshot(data, data.playerNr);
-	else {
-		console.log("Data is missing in applyUpdatesGameServer");
-		return;
+export function renderGameInterpolated() {
+	if (Game.match.state != state.Playing) { //clear snapshots on score/pause when ball is reset
+		snapshots.length = 0;
+		return ;
 	}
+	const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 
 	const now = Date.now();
 	const renderTime = now - INTERPOLATION_DELAY;
 
 	const [snap1, snap2] = getBoundingSnapshots(renderTime);
 	if (snap1 && snap2) {
-		interpolateSnapshot(snap1, snap2, renderTime, data.playerNr);
+		interpolateSnapshot(snap1, snap2, renderTime, playerNr);
 		deleteOldSnapshots(renderTime);
 	} 
-	else if (snap1) {
-		if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
-			extrapolateFromSnapshot(snap1, data.playerNr);
-		} else {
-			console.error("snap1 is too old for extrapolation");
-		}
-	}
-	
+	// else if (snap1) {
+	// 	if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
+	// 		extrapolateFromSnapshot(snap1, playerNr);
+	// 	} else {
+	// 		console.error("snap1 is too old for extrapolation");
+	// 	}
+	// }
 }

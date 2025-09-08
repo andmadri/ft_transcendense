@@ -79,9 +79,9 @@ export async function handleMatchEventDB(db, event) {
 			match_id: event.match_id
 		};
 		if (match.player_1_id === event.user_id) {
-			updated.player_2_score = (match.player_2_score || 0) + 1;
-		} else if (match.player_2_id === event.user_id) {
 			updated.player_1_score = (match.player_1_score || 0) + 1;
+		} else if (match.player_2_id === event.user_id) {
+			updated.player_2_score = (match.player_2_score || 0) + 1;
 		} else {
 			console.warn(`User ${event.user_id} not in match ${event.match_id}`)
 		}

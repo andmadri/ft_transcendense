@@ -3,6 +3,7 @@ import { log } from '../logging.js'
 import * as S from '../structs.js'
 import { movePadel } from '../Game/gameLogic.js';
 import { navigateTo } from '../history.js';
+import { text } from 'stream/consumers';
 
 export let authenticationMode = 'Sign Up';
 
@@ -20,60 +21,98 @@ export function changeAuthMode(player: number) {
 	}
 }
 
+function getInputField(label_name: string, name: string, player: number) {
+	const inputSingle = document.createElement('div');
+	inputSingle.className = 'inputSingle';
+
+	const inputWithIcon = document.createElement('div');
+	inputWithIcon.className = "inputWithIcon";
+
+	const input = document.createElement('input');
+	input.type = name;
+	input.id = `${name}${player}`;
+	input.name = name;
+
+	const label = document.createElement('label');
+	label.setAttribute('for', name);
+	label.textContent = label_name;
+
+	inputWithIcon.appendChild(input);
+	inputSingle.append(label, inputWithIcon);
+	return (inputSingle);
+}
+
 export function getAuthField(player: number, mandatory: boolean): HTMLElement {
+	const action = authenticationMode;
+
 	const authContainer = document.createElement('div');
 	authContainer.className = 'authContainer';
 	authContainer.id = 'auth' + player;
 
-	// const action = mandatory ? 'Sign Up' : 'Login';
-	const action = authenticationMode;
-	const usernameField = action === 'Login' ? '' : `
-		<div class="inputSingle">
-			<label for="name">Username</label>
-			<div class="inputWithIcon">
-				<input type="text" id="name${player}" name="name"/>
-			</div>
-		</div>`;
+	const authForm = document.createElement('form');
+	authForm.id = `authForm${player}`;
+	authForm.className = "loginSignUpContainer"
 
-	const pongTextDivs = Array.from({length: 8}, () =>
-		`<div class="pongText">Pong</div>`
-	).join('');
+	const headerAuthForm = document.createElement('div');
+	headerAuthForm.className = "header";
 
-	authContainer.innerHTML = `
-		<form class="loginSignUpContainer" id="authForm${player}">
-			<div class="header">
-				<div class="header1Text">${action}</div>
-			</div>
-			<div class="inputMultiple">
-				${usernameField}
-			<div class="inputSingle">
-				<label for="email">Email</label>
-				<div class="inputWithIcon">
-					<input type="email" id="email${player}" name="email" />
-				</div>
-			</div>
-			<div class="inputSingle">
-				<label for="password">Password</label>
-				<div class="inputWithIcon">
-					<input type="password" id="password${player}" name="password" />
-				</div>
-			</div>
-			</div>
-			<div class="inputButtons">
-				<button type="submit" class="submitButton" >${action}</button>
-				<span> or via social network</span>
-				<img src="css/icons/icons8-google.svg" id="google-login-btn${player}" class="googleLoginButton">
-				<p class="loginSignUpPrompt">
-					${action === "Login" ? "Don't have an account?" : "Have an account?"}
-					<span class="loginSignUpLink">${action === 'Login' ? 'Sign Up' : 'Login'}</span>
-				</p>
-			</div>
-		</form>
-		<div class="animationContainer">
-			${pongTextDivs}
-			<div class="ball"></div>
-		</div>`;
-		return authContainer;
+	const header1Text = document.createElement('div');
+	header1Text.className = "header1Text";
+	header1Text.textContent = action;
+
+	headerAuthForm.appendChild(header1Text);
+
+	const inputMultiple = document.createElement('div');
+	inputMultiple.className = "inputMultiple";
+
+	if (action != "Login")
+		inputMultiple.append(getInputField("Username", "name", player));
+	inputMultiple.append(getInputField("Email", 'email', player), getInputField("Password", 'password', player))
+
+	const inputButtons = document.createElement('div');
+	inputButtons.className = "inputButtons";
+
+	const submitBtn = document.createElement('button');
+	submitBtn.type = "submit";
+	submitBtn.className = "submitButton";
+	submitBtn.textContent = action;
+
+	const spanMsg = document.createElement('span');
+	spanMsg.textContent = "  or via social network";
+
+	const imgGoogle = document.createElement('img');
+	imgGoogle.src = "css/icons/icons8-google.svg";
+	imgGoogle.id = `google-login-btn${player}`;
+	imgGoogle.className = "googleLoginButton";
+
+	const textLogin = document.createElement('p');
+	textLogin.className = "loginSignUpPrompt";
+	textLogin.textContent = `${action === "Login" ? "Don't have an account? " : "Have an account? "}`
+
+	const spanTextLogin = document.createElement('span');
+	spanTextLogin.textContent = `${action === 'Login' ? 'Sign Up' : 'Login'}`;
+	spanTextLogin.className = "loginSignUpLink"
+
+	textLogin.appendChild(spanTextLogin);
+	inputButtons.append(submitBtn, spanMsg, imgGoogle, textLogin);
+	authForm.append(headerAuthForm, inputMultiple, inputButtons);
+
+	const animationContainer = document.createElement('div');
+	animationContainer.className = "animationContainer";
+
+	const ball = document.createElement('div');
+	ball.className = "ball";
+
+	for (let i = 0; i < 8; i++) {
+		const pongDiv = document.createElement('div');
+		pongDiv.className = "pongText";
+		pongDiv.textContent = "Pong";
+		animationContainer.appendChild(pongDiv);
+	}
+	animationContainer.appendChild(ball);
+
+	authContainer.append(authForm, animationContainer);
+	return (authContainer);
 }
 
 export function getLoginFields(player: number) {

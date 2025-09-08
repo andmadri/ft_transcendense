@@ -2,6 +2,15 @@ import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 import path from 'path';
 
+/*
+Tests:
+V credit page
+- dashboard page -> extra tests after match?
+- upload avatar
+- all elements there
+- ?
+*/
+
 const avatarPath = path.resolve('./Frontend/src/images/avatar.png');
 
 // DOES NOT WORK YET
@@ -24,7 +33,7 @@ export async function seeCredits(page) {
 
 export async function playerInOnlineMenu(page, playerName) {
 	await expect(
-		page.locator('#listOnlinePlayers', { hasText: playerName })
+		page.locator('#listPlayers', { hasText: playerName })
 	  ).toBeVisible();
 }
 
@@ -33,8 +42,11 @@ export async function switchPlayerTab(page, player) {
 	await page.waitForTimeout(1000);
 }
 
+
 export async function isInMenu(page) {
 	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
+	// add more checks if all the elements are in the menu...
+	// ...
 }
 
 export async function playerIsLoggedIn(page, player, name) {

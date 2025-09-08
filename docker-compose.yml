@@ -6,8 +6,14 @@ services:
       context: .
       dockerfile: Backend/Dockerfile
     restart: always
+    environment:
+      - DB_PATH=/data/pong.db
+      - UPLOADS_DIR=/tmp/uploads
     volumes:
-      - database_volume:/Database
+      - dbdata:/data
+    init: true
+    stop_signal: SIGTERM
+    stop_grace_period: 3s
     env_file:
       - .env
     networks:
@@ -20,6 +26,7 @@ services:
       context: .
       dockerfile: Server/Dockerfile
     restart: always
+    stop_grace_period: 1s
     env_file:
       - .env
     networks:
@@ -35,9 +42,4 @@ networks:
     driver: bridge
 
 volumes:
-  database_volume:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   device: ./Database
-    #   o: bind
+  dbdata:

@@ -9,6 +9,8 @@ export enum stateUI {
 	OptionMenu,
 	LoginP2,
 	Game,
+	GameOver,
+	GameStats,
 	Dashboard,
 	Settings,
 	Credits,
@@ -20,14 +22,23 @@ export type update = {
 	ball: [number, number, number, number];
 }
 
+export type user = {
+	ID: number,
+	name: string,
+	Twofa: boolean
+}
+
 
 export type UI = {
 	state: stateUI,
 	logDiv: HTMLDivElement,
+	user1: user,
+	user2: user
 }
 
 export type Game = {
 	socket: Socket,
+	socketStatus: SocketStatus,
 	match: matchInfo,
 	colletedSteps: [],
 }
@@ -62,3 +73,9 @@ export type AIInfo = {
 
 //export const host = window.location.host;
 export const host = window.location.host;
+
+export enum SocketStatus {
+	Disconnected,
+	Connecting,
+	Connected
+}

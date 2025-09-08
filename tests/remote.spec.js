@@ -4,6 +4,13 @@ import * as Game from './oneVSai.spec.js';
 import * as Menu from './menu.spec.js';
 import { time } from 'console';
 
+/*
+Tests:
+- Check is ball is moving
+- Check if both paddles can move with arrow up/down
+- ?
+*/
+
 export async function addRemotePlayer(browser, URL, name, email, password) {
 	const page2 = await U.createNewPage(browser);
 	await page2.goto(URL);

@@ -1,103 +1,81 @@
 import * as S from '../structs.js'
-import { Game } from "../gameData.js"
+import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
-import { OT } from '@shared/enums'
-import { renderGameInterpolated } from './renderSnapshots.js';
+import { OT, state } from '@shared/enums'
+import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 
-// const field = Game.match.gameState.field;
-// const ball = Game.match.gameState.ball;
-// const paddle1 = Game.match.gameState.paddle1;
-// const paddle2 = Game.match.gameState.paddle2;
-
-// export function applyBallUpdate(data: any) {
-// 	if (Game.match.mode == OT.Online) {
-// 		renderGameInterpolated(data);
-// 		return ;
-// 	}
-
-// 	if ('ballX' in data) {
-// 		if (typeof data.ballX === 'number')
-// 			ball.pos.x = data.ballX;
-// 		if (ball && typeof data.ballY === 'number')
-// 			ball.pos.y = data.ballY;
-// 	}
-// }
-
-// export function applyPaddleUpdate(data: any) {
-// 	if (Game.match.mode == OT.Online) {
-// 		renderGameInterpolated(data);
-// 		return ;
-// 	}
-
-// 	if ('rPlayerX' in data) {
-// 		const rPlayer = document.getElementById('rPlayer');
-// 		if (rPlayer && typeof data.playerOneX === 'number') //is right or left player player1???
-// 			paddle2.pos.x = data.playerOneX;
-// 		if (rPlayer && typeof data.playerOneY === 'number')
-// 			paddle2.pos.y = data.playerOneY;		
-// 	}
-// 	if ('lPlayerX' in data) {
-// 		const lPlayer = document.getElementById('lPlayer');
-// 		if (lPlayer && typeof data.playerTwoX === 'number')
-// 			paddle1.pos.x = data.playerTwoX;
-// 		if (lPlayer && typeof data.playerTwoY === 'number')
-// 			paddle1.pos.y = data.playerTwoY;
-// 	}
-// }
-
-function applyGameStateUpdate(data : any) {
+export function applyGameStateUpdate(data : any) {
 	if (Game.match.mode == OT.Online) {
-		renderGameInterpolated(data);
-		return ;
+		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
+		Game.match.state = data.state;
+		Game.match.resumeTime = data.resumeTime;
+		if (data.gameState && Game.match.state == state.Playing) {
+			makeSnapshot(data.gameState, playerNr);
+		}
+		if (Game.match.state != state.Playing) {
+			renderGameInterpolated();
+		}
+		// else {
+		// 	console.log("Data is missing in applyUpdatesGameServer");
+		// }
+	}
+}
+
+export function applyScoreUpdate(data: any) {
+	if (Game.match.mode == OT.Online) {
+		Game.match.state = data.match.state;
+		Game.match.gameState = data.match.gameState;
+		Game.match.lastScoreID = data.match.lastScoreID;
+		Game.match.resumeTime = data.resumeTime;
+		Game.match.player1.score = data.match.player1.score;
+		Game.match.player2.score = data.match.player2.score;
 	}
 }
 
 export function sendKeyPressUpdate(key : string) {
-	const msg = {
+	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'keyPressUpdate',
 		key: key,
 		pressed: S.Keys[key].pressed,
-		id: Game.match.player1.ID,
-		matchID: Game.match.ID };
-	Game.socket.send(JSON.stringify(msg)); // DELETE: JSON.stringify(msg)?? -> Game.socket.send(msg);?
-	// Send also ballX/Y ballVX/Y and paddleVy
+		id: UI.user1.ID,
+		matchID: Game.match.matchID
+	});
 }
 
 export function sendGameState() {
-	Game.socket.send({
+	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'gameStateUpdate',
-		matchID: Game.match.ID,
+		matchID: Game.match.matchID,
 		gameState: Game.match.gameState
 	});
 }
 
-export function sendScoreUpdate(id: number) {
-	Game.socket.send({
+export function sendPadelHit() {
+	Game.socket.emit('message',{
 		action: 'game',
-		subaction: 'scoreUpdate',
-		player: id,
-		matchID: Game.match.ID
+		subaction: 'padelHit',
+		matchID: Game.match.matchID,
+		gameState: Game.match.gameState
 	});
 }
 
-export function actionGame(data: any) {
-	if (!data.subaction) {
-		log('no subaction');
-		return ;
-	}
+export function sendServe() {
+	Game.socket.emit('message',{
+		action: 'game',
+		subaction: 'serve',
+		matchID: Game.match.matchID,
+		gameState: Game.match.gameState
+	});
+}
 
-	switch(data.subaction) {
-		case 'gameStateUpdate':
-			applyGameStateUpdate(data);
-		case 'ballUpdate':
-			//applyBallUpdate(data);
-			break ;
-		case 'padelUpdate':
-			//applyPaddleUpdate(data);
-			break ;
-		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
-	}
+export function sendScoreUpdate() {
+	Game.socket.emit('message',{
+		action: 'game',
+		subaction: 'scoreUpdate',
+		player: Game.match.lastScoreID,
+		gameState: Game.match.gameState,
+		matchID: Game.match.matchID
+	});
 }

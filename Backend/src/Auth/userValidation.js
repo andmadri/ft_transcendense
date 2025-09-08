@@ -1,17 +1,15 @@
 import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { addUserSessionToDB } from '../Database/sessions.js';
 import { db } from '../index.js' // DELETE THIS LATER
-import { onUserLogin } from '../Services/sessionsService.js';
 
 function checkName(name) {
-	const nameRegex = /^[a-zA-Z0-9_-]+$/;
+	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
 	if (!name.length)
 		return ('Name can not be empty');
 	else if (name.length > 30)
 		return ('Name is too long');
 	else if (!nameRegex.test(name))
-		return ('Name has forbidden characters');
+		return ("Only letters, numbers, spaces, '-' and '_' are allowed.");
 	return (null);
 }
 

@@ -1,10 +1,6 @@
-import Fastify from 'fastify';
-import fastifyIO from 'fastify-socket.io';
-import fastifyCookie from '@fastify/cookie';
-import fastifyJwt from '@fastify/jwt';
-import fastifyMultipart from '@fastify/multipart';
-import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js'
-import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { handlePlayers } from './DBrequests/getPlayers.js';
+// import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
+import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
@@ -14,115 +10,84 @@ import { handleInitGame } from './InitGame/initGame.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
-import  googleAuthRoutes  from './routes/googleAuth.js';
-import  userAuthRoutes  from './routes/userAuth.js';
-import  avatarRoutes  from './routes/avatar.js';
-import  twoFactor  from './routes/twofa.js';
-// import { testDB }   from './testDB.js';
+import { performCleanupDB } from './Database/cleanup.js';
+import { initFastify } from './fastify.js';
 
-// FASTIFY => API SERVER
-const fastify = Fastify({ logger: true });
-
-// fastify-socket.io enables the use of Socket.io in a Fastify application.
-fastify.register(fastifyIO, {
-	preClose: (done) => {
-		fastify.io.local.disconnectSockets(true);
-		done();
-	}
-});
-
-// change how you create database
 export const db = await createDatabase();
 
-// RUN THE TEST DATABASE FUNCTION (testDB.js)
-// await testDB(db);
+const fastify = await initFastify();
 
-// Register the cookie plugin and set a secret for signed cookies
-fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
-// Register the JWT plugin
-fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
+// Map to track last seen timestamps for users
+const userLastSeen = new Map();
 
-// Register Multipart for handling file uploads
-await fastify.register(fastifyMultipart, {
-	limits: { fileSize: 5 * 1024 * 1024, } // 5MB file size limit
-});
+function installShutdownHandlers(fastify, db) {
+	const shutdown = async (signal) => {
+		console.log(`[graceful] Caught ${signal}. Starting cleanup…`);
+		try {
+			fastify.log.info({msg: `Received ${signal}, starting cleanup...`});
+			await performCleanupDB(db);
+			await fastify.close();
+			fastify.log.info({ msg: `Cleanup done. Exiting.` });
+			process.exit(0);
+		} catch (err) {
+			fastify.log.error(err, `Error during shutdown after ${signal}`);
+			process.exit(1);
+		}
+	};
+	
+	process.on('SIGTERM', () => shutdown('SIGTERM'));
+	process.on('SIGINT', () => shutdown('SIGINT'));
+}
 
-// Register the auth route plugins for HTTPS API Auth endpoints:
-// POST /api/signup - Sign up a new user
-// POST /api/login - Log in an existing user
-// POST /api/logout - Log out a user
-await fastify.register(userAuthRoutes);
-// POST /2fa/generate - Generate a 2FA secret and QR code
-// POST /2fa/activate - Activate 2FA for a user
-// POST /2fa/disable - Disable 2FA for a user
-// GET /2fa/status - Check if 2FA is enabled for a user
-await fastify.register(twoFactor);
-// GET /api/auth/google - Redirect to Google OAuth
-// GET /api/auth/google/callback - Handle Google OAuth callback
-await fastify.register(googleAuthRoutes);
-// POST /api/upload-avatar
-await fastify.register(avatarRoutes);
-
-fastify.setNotFoundHandler(function (request, reply) {
-  reply.status(404).send({ error: 'Not Found' });
-});
-
-// const httpServer = createServer(fastify.server);
+installShutdownHandlers(fastify, db);
 
 fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
-	// console.log('🔌 A user connected:', socket.id);
-	// Check if the request has a valid JWT token in cookies
-	// const cookies = req.headers.cookie;
-	const cookies = socket.handshake.headers.cookie || '';
-	// console.log('Cookies from handshake:', cookies);
-	const authTokens = parseAuthTokenFromCookies(cookies);
-	// console.log('Auth tokens from cookies:', authTokens);
+		const cookies = socket.handshake.headers.cookie || '';
+		const authTokens = parseAuthTokenFromCookies(cookies);
 
-	let decoded;
-	let userId1 = null;
-	let userId2 = null;
-	if (authTokens && authTokens.jwtAuthToken1) {
-		// console.log('signed:', authTokens.jwtAuthToken1);
-		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
-		// console.log('unsigned:', unsigned.value);
-		// console.log('Unsigned JWT1:', unsigned);
-		if (unsigned.valid) {
-			try {
-				decoded = fastify.jwt.verify(unsigned.value);
-				userId1 = decoded.userId;
-				// Use userId or decoded as needed for player 1
-			} catch (err) {
-				console.error('JWT1 verification failed:', err);
+		let decoded;
+		let userId1 = null;
+		let userId2 = null;
+		if (authTokens && authTokens.jwtAuthToken1) {
+			const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken1);
+			if (unsigned.valid) {
+				try {
+					decoded = fastify.jwt.verify(unsigned.value);
+					userId1 = decoded.userId;
+					console.log(`UserId1=${userId1}`);
+					// Use userId or decoded as needed for player 1
+				} catch (err) {
+					console.error('JWT1 verification failed:', err);
+				}
+			} else {
+				console.error('JWT1 verification failed: Invalid cookie');
 			}
-		} else {
-			console.error('JWT1 verification failed: Invalid cookie');
 		}
-	}
-	if (authTokens && authTokens.jwtAuthToken2) {
-		const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
-		if (unsigned.valid) {
-			try {
-				decoded = fastify.jwt.verify(unsigned.value);
-				userId2 = decoded.userId;
-				// Use userId or decoded as needed for player 2
-			} catch (err) {
-				console.error('JWT2 verification failed:', err);
+		if (authTokens && authTokens.jwtAuthToken2) {
+			const unsigned = fastify.unsignCookie(authTokens.jwtAuthToken2);
+			if (unsigned.valid) {
+				try {
+					decoded = fastify.jwt.verify(unsigned.value);
+					userId2 = decoded.userId;
+					// Use userId or decoded as needed for player 2
+				} catch (err) {
+					console.error('JWT2 verification failed:', err);
+				}
+			} else {
+				console.error('JWT2 verification failed: Invalid cookie');
 			}
-		} else {
-			console.error('JWT2 verification failed: Invalid cookie');
 		}
-	}
-	// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
-	if (!userId1) {
-		console.error('No valid auth tokens found in cookies');
-		socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
-		return ;
-	}
+		// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
+		if (!userId1) {
+			console.error('No valid auth tokens found in cookies');
+			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+			return ;
+		}
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-
+	
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;
@@ -130,17 +95,16 @@ fastify.ready().then(() => {
 				socket.emit('error', { action: 'error', reason: 'No action specified' });
 				return ;
 			}
-			// console.log(`Msg userID1 is now:", ${userId1} with action: ${action} and sub: ${msg.subaction}`);
-			
+
 			switch (action) {
 				case 'playerInfo':
 					return handlePlayerInfo(msg, socket, userId1, userId2);
-				// case 'matchInfo':
-				// 	return handleMatchInfo(msg, socket, userId1);
+				case 'matchmaking':
+					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
 				case 'userDataMenu':
 					return handleUserDataMenu(msg, socket, userId1, userId2);
-				case 'online':
-					return handleOnlinePlayers(msg, socket, userId1);
+				case 'players':
+					return handlePlayers(msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard': {
@@ -148,7 +112,6 @@ fastify.ready().then(() => {
 					if (!msg.playerId) {
 						msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
 					}
-					console.log("Trying to fetch handleDashboardMaking");
 					return handleDashboardMaking(msg, socket, msg.playerId);
 				}
 				case 'init':
@@ -163,18 +126,30 @@ fastify.ready().then(() => {
 			}
 		});
 
-		socket.on('disconnect', () => {
-			console.log(`User disconnected: ${userId1}`);
-			try {
-				// not sure if this is the good function but I want to remove
-				// the player from the online list
-				addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
-			} catch (err) {
-				console.error('Failed logout cleanup', err);
+		socket.on('heartbeat', () => {
+			if (userId1) {
+				userLastSeen.set(userId1, Date.now());
 			}
+		});
+
+		socket.on('disconnect', async () => {
+			console.log(`User ${userId1} disconnected`);
 		});
 	});
 });
+
+setInterval(async () => {
+	const now = Date.now();
+	const TIMEOUT = 30000; // 30 seconds
+	for (const [userId, lastSeen] of userLastSeen.entries()) {
+		if (now - lastSeen > TIMEOUT) {
+			// Mark user offline in DB
+			await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+			userLastSeen.delete(userId);
+			console.log(`User ${userId} marked offline due to missed heartbeat`);
+		}
+	}
+}, 5000); // check every 5 seconds
 
 try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });

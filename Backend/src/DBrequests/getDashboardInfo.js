@@ -1,7 +1,5 @@
 import { getUserByID } from '../Database/users.js';
-import { getMatchHistoryDB } from '../Database/dashboard.js';
-import { getUserMatchStatsDB } from '../Database/sessions.js';
-import { getUserStateDurationsDB } from '../Database/sessions.js';
+import { getMatchHistoryDB, getUserMatchStatsDB, getUserStateDurationsDB } from '../Database/dashboard.js';
 import { db } from '../index.js';
 
 async function getDashboardInfo(msg, socket, playerID) {
@@ -20,7 +18,6 @@ async function getDashboardInfo(msg, socket, playerID) {
 		log_time
 	};
 	socket.emit('message', returnMsg);
-	// socket.send(JSON.stringify(returnMsg));
 }
 
 export function handleDashboardMaking(msg, socket, playerID) {
@@ -41,18 +38,3 @@ export function handleDashboardMaking(msg, socket, playerID) {
 		return false;
 	}
 }
-
-/* 
-
-[
-{ opponent name, date (DD-MM-YYYY (maybe time aswell)), winner, my_score, opp_score, duration, total_hits}
-{ opponent name, date (DD-MM-YYYY (maybe time aswell)), winner, my_score, opp_score, duration, total_hits}
-{ opponent name, date (DD-MM-YYYY (maybe time aswell)), winner, my_score, opp_score, duration, total_hits}
-
-]
-
-- All the matches from one user
-- Sorted in descending order (newest match on top, oldest match in the bottom)
-- We only want to have the match when the match is finished
-- Call the function: getMatchHistoryDB
-*/

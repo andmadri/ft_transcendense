@@ -37,14 +37,17 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			state: state.Start,
 			matchID: matchnr,
 			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+			intervalID: null,
+			pauseTimeOutID: null,
+			resumeTime: -1,
 			mode: mode,
+			lastScoreID: -1,
 			player1: {
 				ID: id,
 				name: name,
 				ready: false,
 				input: { pressUP: false, pressDOWN: false },
 				score: 0,
-				Twofa: false
 			},
 			player2: {
 				ID: id2,
@@ -52,7 +55,6 @@ async function newMatch(db, matchnr, id, id2, mode) {
 				ready: false,
 				input: { pressUP: false, pressDOWN: false },
 				score: 0,
-				Twofa: false
 			},
 			gameState: {
 				time: 0,
@@ -126,7 +128,7 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 
 		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
-			matches.get(matchID).stage = state.Playing;
+			matches.get(matchID).state = state.Playing;
 		}
 		return (matchID);
 	} catch (err) {

@@ -8,6 +8,14 @@ import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
 import * as Navigation from './navigation.spec.js'
 
+/*
+Tests:
+V Forward btn works
+V Backward btn works
+- Insert also forbdden combinations
+- Insert refresh
+- ?
+*/
 export async function navigation(page) {
 	// we are logged in and in the menu
 

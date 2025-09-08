@@ -1,4 +1,4 @@
-import { Game } from '../gameData.js'
+import { Game, UI } from '../gameData.js'
 import { log } from '../logging.js';
 import { showFriendRequests } from './friendRequests.js';
 import { styleRow, styleListBtns } from './menuContent.js'
@@ -160,7 +160,7 @@ function processFriends(data: any) {
 
 export function actionFriends(data: any) {
 	if (!data.subaction) {
-		log('no subaction online');
+		log('no subaction Friends');
 		return ;
 	}
 	switch(data.subaction) {
@@ -171,7 +171,7 @@ export function actionFriends(data: any) {
 			showFriendRequests(data.content);
 			break ;
 		case 'error':
-			alert(data.msg);
+			alert(data.content);
 			break ;
 		default:
 			console.log(`(actionOnline) Unknown action: ${data.subaction}`);

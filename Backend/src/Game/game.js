@@ -1,14 +1,17 @@
-import { applyGameStateUpdate, updateScore, applyKeyPressUpdate } from "./gameStateSync.js";
+import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB, applyScoreUpdate } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
 
-export function handleGame(db, msg, socket, io) {
+export async function handleGame(db, msg, socket, io) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleGame');
 
 	// we need to have a matchID by now
-	if (!msg.matchID)
-		return console.log("No matchID found in msg from frontend");
+	if (!msg.matchID) {
+		console.log("No matchID found in msg from frontend");
+		console.log(msg);
+		return ;
+	}
 
 	const match = matches.get(msg.matchID);
 	if (!match)
@@ -19,17 +22,24 @@ export function handleGame(db, msg, socket, io) {
 		case 'gameStateUpdate':
 			applyGameStateUpdate(match, msg);
 			break;
+		case 'serve':
+			updateMatchEventsDB(match, msg, msg.gameState, "serve");
+			break;
+		case 'padelHit':
+			updateMatchEventsDB(match, msg, msg.gameState, "hit");
+			break;
 		case 'scoreUpdate':
-			updateScore(match, msg, io);
+			applyScoreUpdate(match, msg);
+			updateMatchEventsDB(match, msg, msg.gameState, "goal");
 			break;
 		case 'keyPressUpdate':
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
-			saveMatch(db, match, msg, socket);
+			saveMatch(match, msg, socket);
 			break ;
 		case 'quit':
-			quitMatch(match, msg, socket);
+			quitMatch(match, msg, socket, io);
 			break;
 		default:
 			console.log("subaction not found: " + msg.subaction);

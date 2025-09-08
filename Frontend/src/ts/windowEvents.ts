@@ -1,21 +1,22 @@
 import * as S from './structs.js'
-import { Game } from "./gameData.js"
+import { Game, UI } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
 import { OT, state } from '@shared/enums'
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
-
 export function releaseButton(e: KeyboardEvent) {
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+	if (UI.state != S.stateUI.Game) {
+		return ;
+	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = 0;
 		return ;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		//set velocity to 0 but how do i know what paddle i am?
-
+		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
+		myPaddle.velocity.vy = 0;
+		S.Keys[e.key].pressed = false; // DOES THIS DO ANYTHING RIGHT NOW?
 		sendKeyPressUpdate(e.key);
 		return ;
 	}
@@ -30,16 +31,20 @@ export function releaseButton(e: KeyboardEvent) {
 }
 
 export function pressButton(e: KeyboardEvent) {
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+	if (UI.state != S.stateUI.Game) {
+		return ;
+	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
 		return;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-		//change paddle velocity, but how do we know which player i am?
-
-		if (Game.match.mode == OT.Online) {
-			sendKeyPressUpdate(e.key);
-		}
+		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
+		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
+		S.Keys[e.key].pressed = true;
+		sendKeyPressUpdate(e.key);
 		return;
 	}
 	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
@@ -53,8 +58,12 @@ export function pressButton(e: KeyboardEvent) {
 }
 
 export function initAfterResize() {
-	if (Game.match.state != state.Playing)
+	if (UI.state != S.stateUI.Game)
 		return ;
+
+	const paddle1 = Game.match.gameState.paddle1;
+	const paddle2 = Game.match.gameState.paddle2;
+	const ball = Game.match.gameState.ball;
 
 	const ballRadius = ball.size.height / 2;
 	const paddleHalfWidth = paddle1.size.width / 2;
@@ -73,7 +82,7 @@ export function initAfterResize() {
 		ballDiv.style.top = `${(ball.pos.y * newWidth) - (ballRadius * newWidth)}px`;
 		lPlayer.style.left = `${paddle1.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
 		lPlayer.style.top = `${paddle1.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
-		rPlayer.style.left = `${paddle2.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;
+		rPlayer.style.right = `${((1 - paddle2.pos.x) * newWidth) - (paddleHalfWidth * newWidth)}px`;
 		rPlayer.style.top = `${paddle2.pos.y * newWidth - (paddleHalfHeight * newWidth)}px`;
 
 	}

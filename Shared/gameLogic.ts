@@ -73,10 +73,10 @@ function changeVelocityOnPaddleBounce(ball: entity, player : entity) {
 }
 
 function handleScore(match: matchInfo, field: any, ball: entity, player: player) {
-	match.state = state.Paused;
+	match.state = state.Score;
 	player.score++;
-	//sendScoreUpdate(player.ID); //when to do this now?? -> maybe with state??
-	resetBall(ball, field);
+	match.lastScoreID = player.ID;
+	// resetBall(ball, field); // Add data to DB: This should happen AFTER a message have been send to the backend
 }
 
 function checkPaddleCollision(match: matchInfo, field: any, ball: entity, paddle: entity, opponent: player) {
@@ -85,6 +85,7 @@ function checkPaddleCollision(match: matchInfo, field: any, ball: entity, paddle
 	const paddleHalfHeight = paddle.size.height / 2;
 
 	if ((ball.pos.y - ballRadius < paddle.pos.y + paddleHalfHeight) && (ball.pos.y + ballRadius > paddle.pos.y - paddleHalfHeight)) {
+		match.state = state.Hit;
 		changeVelocityOnPaddleBounce(ball, paddle);
 	}
 	else {
@@ -109,10 +110,16 @@ function checkPaddleSides(match: matchInfo) {
 
 export function updateGameState(match: matchInfo) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
-
-	handleWallBounce(ball, field);
-	checkPaddleSides(match);
-	updateBallPos(ball, field);
-	updatePaddlePos(paddle1, field);
-	updatePaddlePos(paddle2, field);
+	match.gameState.time = Date.now();
+	if (match.player1.score == 5 || match.player2.score == 5) {
+		match.state = state.End;
+		return ;
+	}
+	if (match.state == state.Playing) {
+		updateBallPos(ball, field);
+		updatePaddlePos(paddle1, field);
+		updatePaddlePos(paddle2, field);
+		handleWallBounce(ball, field);
+		checkPaddleSides(match);
+	}
 }

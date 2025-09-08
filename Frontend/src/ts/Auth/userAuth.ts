@@ -4,6 +4,9 @@ import { log } from '../logging.js'
 // import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 import { navigateTo } from '../history.js';
+import { initSocket } from '../socketEvents.js'
+
+
 
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
@@ -63,19 +66,23 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 	document.getElementById('auth2')?.remove();
 	if (player == 1) {
 		log("Login Successfull (player one) with id: " + userId);
-		Game.match.player1.ID = userId;
-		Game.match.player1.name = name;
-		Game.match.player1.Twofa = twofa;
+		UI.user1.ID = userId;
+		UI.user1.name = name;
+		UI.user1.Twofa = twofa;
 	}
 	else if (player == 2) {
 		log("Login Successfull (player two) with id: " + userId);
-		Game.match.player2.ID = userId;
-		Game.match.player2.name = name;
-		Game.match.player2.Twofa = twofa;
+		UI.user2.ID = userId;
+		UI.user2.name = name;
+		UI.user2.Twofa = twofa;
 	}
-	navigateTo('Menu');
+	if (!Game.socket || !Game.socket.connected) {
+		initSocket();
+	}
 	document.getElementById('menu')?.remove();
-	log("playerNr 1 logged in: " + Game.match.player1.Login + "\n playerNr 2 logged in: " + Game.match.player2.Login);
+	Game.socket.disconnect();
+	Game.socket.connect();
+	navigateTo('Menu');
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {

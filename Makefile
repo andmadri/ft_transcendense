@@ -1,12 +1,9 @@
 NAME	= transcendence
 
-VOLUME	= "./Database"
-
 all:	up
 
 up:
 	rm -rf Server/src
-	mkdir -p Database
 	cp -r Frontend/* Server/
 	docker compose -f docker-compose.yml up
 
@@ -48,20 +45,13 @@ update-host-env:
 		echo "HOST_DOMAIN=$$HOST_DOMAIN" >> .env; \
 	fi
 
-build_volumes:
-	mkdir -p $(VOLUME)
-	chmod -R 777 $(VOLUME)
-	echo "volume directories are set up"
-
 clean_volumes:
-	rm -rf $(VOLUME)
-	echo "volume directories are removed"
+	docker compose down -v
 
 clean: stop
 	@if [ "$(docker ps -qa)" ]; then docker stop $(docker ps -qa); fi
 	@if [ "$(docker ps -qa)" ]; then docker rm $(docker ps -qa); fi
 	@if [ "$(docker images -qa)" ]; then docker rmi -f $(docker images -qa); fi
-	@if [ "$(docker volume ls -q)" ]; then docker volume rm $(docker volume ls -q); fi
 	@if [ "$(docker network ls -q)" ]; then docker network rm $(docker network ls -q); fi
 	rm -rf Server/src
 	rm -rf Server/*.json
@@ -72,10 +62,10 @@ re:	clean up
 prune: clean clean_volumes
 	docker system prune -a --volumes -f
 
-.PHONY: all up down start stop build server backend build_volumes test clean_volumes clean re prune
+.PHONY: all up down start stop build server backend test clean_volumes clean re prune
 
 
 # TESTER:
-# npm install --save-dev @playwright/test
+# npx install --save-dev @playwright/test
 # npx playwright install
 # npx playwright test --ui (IN VSC)

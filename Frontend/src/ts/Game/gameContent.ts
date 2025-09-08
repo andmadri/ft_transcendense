@@ -1,5 +1,6 @@
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
+import { state } from '@shared/enums'
 import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
 
@@ -42,18 +43,14 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
-		Game.socket.send({
+		Game.socket.emit('message',{
 			action: 'game',
 			subaction: 'quit',
-			matchID: Game.match.ID,
-			player: Game.match.player1.ID,
-			name: Game.match.player1.name
+			matchID: Game.match.matchID,
+			player: UI.user1.ID,
+			name: UI.user1.name
 		});
-		if (Game.match.player2.ID == 2) {
-			Game.match.player2.ID = 1
-			Game.match.player2.name = 'Guest';
-		}
-		navigateTo('Menu');
+		Game.match.state = state.End;
 	})
 	return (quitButton);
 }
@@ -126,7 +123,6 @@ export function getGameField() {
 	ball.style.aspectRatio = '1 / 1';
 	ball.style.backgroundColor = '#ededeb';
 	ball.style.borderRadius = '50%';
-	ball.style.transform = 'translate(-50%, -50%)';
 
 	const	lPlayer = document.createElement('div');
 	lPlayer.id = 'lPlayer';

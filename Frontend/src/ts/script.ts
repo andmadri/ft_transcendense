@@ -1,45 +1,97 @@
 //Initialize the game by setting up the WebSocket connection, the login system, the game state
 //importing functionality from different files
 
-import { game, pauseBallTemporarily } from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
+import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
 import * as S from './structs.js' //imports structures from the file structs.js
 import { initGame } from './Game/initGame.js'
 import { pressButton, releaseButton, initAfterResize } from './windowEvents.js'
-import { startSocketListeners } from './socketEvents.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getGameField } from './Game/gameContent.js'
-import { getGameOver } from './Game/endGame.js'
 import { createLog, log } from './logging.js'
 import { getPending } from './Game/pendingContent.js'
-import { OT, state, MF } from '@shared/enums'
+import { OT, state} from '@shared/enums'
+import { resetBall } from '@shared/gameLogic'
+import { updatePaddlePos } from '@shared/gameLogic'
+import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
 import { getMenu } from './Menu/menuContent.js'
-import { Game, UI } from "./gameData.js"
+import { Game, newMatch, UI } from "./gameData.js"
 import { navigateTo, controlBackAndForward } from './history.js'
-// import { getLoadingPage } from './Loading/loadContent.js'
 import { saveGame } from './Game/endGame.js';
-// import { getCreditBtn, getCreditsPage } from './Menu/credits.js'
+import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
-// import { getTwoFactorFields } from './Auth/twofa.js';
 import { getDashboard } from './Dashboard/dashboardContents.js'
-// getLoadingPage();
+import { startGameField } from './Game/startGameContent.js'
+import { initSocket } from './socketEvents.js'
+import { getLoadingPage } from './Loading/loadContent.js'
+import { initRoutingOnLoad } from './history.js'
+import { resetAI } from './Game/aiLogic.js'
+// import { startSocketListeners } from './socketEvents.js'
+
 createLog();
 
 log("host: " + window.location.host);
 log("hostname: " + window.location.hostname);
 
-startSocketListeners();
+// startSocketListeners();
+
+async function checkCookie() {
+	const lastPage = sessionStorage.getItem("currentState");
+	let url = `https://${S.host}/api/cookie`;
+	if (lastPage)
+		url = `https://${S.host}/api/cookie?lastPage=${encodeURIComponent(lastPage)}`;
+
+	const response = await fetch(url, { credentials: 'include' })
+	if (response.ok) {
+		console.log("Cookie valid, open socket direct");
+
+		// SET name because otherwise it is to slow for the menu later?
+		const data = await response.json();
+		if (data.userID)
+			UI.user1.ID = data.userID;
+		if (data.name)
+			UI.user1.name = data.name;
+		initSocket();
+		navigateTo(lastPage || "LoginP1");
+	} else {
+		console.log("No valid cookie..");
+		navigateTo("LoginP1");
+	}
+	mainLoop();
+};
+
+checkCookie();
+
+// Send a heartbeat every 10 seconds
+setInterval(() => {
+	if (Game.socket && Game.socket.connected) {
+		Game.socket.emit('heartbeat');
+	}
+}, 5000);
 
 // addEventListeners for Window
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 // window.addEventListener('resize', initAfterResize);
 
-navigateTo('LoginP1');
+initRoutingOnLoad();
 window.addEventListener('popstate', (event: PopStateEvent) => {
 	controlBackAndForward(event);
 });
 
-let lastSpeedIncreaseTime = 0;
+fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
+	.then(res => res.ok ? res.json() : Promise.reject())
+	.then(data => {
+		// User is authenticated, go to menu
+		sessionStorage.setItem("currentState", "Menu");
+		navigateTo('Menu');
+		// NEEDED??? set UI.user1.ID = data.userId, etc.
+	})
+	.catch(() => {
+		// Not authenticated, show login
+		sessionStorage.setItem("currentState", "LoginP1");
+		navigateTo('LoginP1');
+});
+
 
 function gameLoop() {
 	switch (Game.match.state) {
@@ -48,46 +100,104 @@ function gameLoop() {
 				getPending();
 			break ;
 		}
-		case state.Init:
-			if (!document.getElementById('game'))
-			{
-				log('Init game');
+		case state.Init: {
+			//console.log(`state.Init`);
+			let startDuration;
+			if (!document.getElementById('game')) {
+				log('getGameField()');
 				getGameField();
-				initGame();
-				Game.match.state = state.Playing;
-				console.log(`player one = ${Game.match.gameState.paddle1.pos.y} , player two = ${Game.match.gameState.paddle2.pos.y} , ballX = ${Game.match.gameState.ball.pos.x} , ballY = ${Game.match.gameState.ball.pos.y}`);
+			}
+			if (!document.getElementById('startGame')) {
+				if (Game.match.mode == OT.Online) {
+					console.log(`resumeTime = ${Game.match.resumeTime}`);
+					startDuration = Game.match.resumeTime - Date.now();
+				}
+				else {
+					startDuration = 4000;
+				}
+				console.log(`initGame()`);
+				initGame(); // this needs to happen only once
+				console.log(`startDuration = ${startDuration}`);
+				startGameField(startDuration);
 			}
 			break ;
+		}
 		case state.Paused: {
-			//maybe start with pause instead of immediately playing
-			//maybe send score here in local mode, cause ball is paused when point is scored ?? 
-			pauseBallTemporarily(3000);
+			let pauseDuration;
+			if (Game.match.mode == OT.Online) {
+				const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
+				updatePaddlePos(paddle, Game.match.gameState.field);
+				pauseDuration = Game.match.resumeTime - Date.now();
+			}
+			else {
+				updatePaddlePos(Game.match.gameState.paddle1, Game.match.gameState.field);
+				updatePaddlePos(Game.match.gameState.paddle2, Game.match.gameState.field);
+				pauseDuration = 3000;
+			}
+			if (Game.match.pauseTimeOutID === null) {
+				console.log(`pauseDuration = ${pauseDuration}`);
+				pauseBallTemporarily(pauseDuration);
+			}
+			updateDOMElements(Game.match);
 			break ;
 		}
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
 			document.getElementById('auth2')?.remove();
-			game();
+			game(Game.match);
 			break ;
-		} 
-		case state.End:
-			if (!document.getElementById('gameOver')) {
-				getGameOver();
-				saveGame();
+		}
+		case state.Serve: {
+			if (Game.match.mode != OT.Online) {
+				sendServe();
 			}
+			Game.match.state = state.Playing;
 			break ;
+		}
+		case state.Hit: {
+			if (Game.match.mode != OT.Online) {
+				sendPadelHit();
+			}
+			Game.match.state = state.Playing;
+			break ;
+		}
+		case state.Score: {
+			if (Game.match.mode != OT.Online) {
+				sendScoreUpdate();
+				resetBall(Game.match.gameState.ball, Game.match.gameState.field);
+			}
+			updateDOMElements(Game.match);
+			Game.match.state = state.Paused;
+			break ;
+		}
+		case state.End: {
+			saveGame();
+			break ;
+		}
 		default:
 	}
 }
 
+function isReadyToConnect() {
+	if (Game.socketStatus !== S.SocketStatus.Connected) {
+		if (!document.getElementById('loadingpage')) {
+			document.body.innerHTML = '';
+			const loadingPage = getLoadingPage();
+			document.body.appendChild(loadingPage);
+			return(false);
+		}
+	} else {
+		document.getElementById('loadingpage')?.remove();
+		return(true);
+	}
+}
+
 function mainLoop() {
-	if (Game.socket.connected) {
+	if (UI.state === S.stateUI.LoginP1) {
+		if (!document.getElementById('auth1'))
+			getLoginFields(1);
+	} else if (isReadyToConnect()) {
 		switch (UI.state) {
-			case S.stateUI.LoginP1: {
-				if (!document.getElementById('auth1'))
-					getLoginFields(1);
-				break ;
-			}
 			case S.stateUI.LoginP2: {
 				if (!document.getElementById('auth2'))
 					getLoginFields(2);
@@ -96,7 +206,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu'))
+				if (!document.getElementById('menu'))	
 					getMenu();
 				break ;
 			}
@@ -111,23 +221,80 @@ function mainLoop() {
 			// 	break ;
 			// }
 			case S.stateUI.Game: {
-				gameLoop();
+				if (isReadyToConnect())
+					gameLoop();
 				break ;
+			} 
+			case S.stateUI.GameOver: {
+				Game.match = newMatch();
+				resetAI(Game.match);
+				break;
 			}
 			case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard'))
+				if (!document.getElementById('dashboard')) {
 					getDashboard(undefined, 1);
-				break;
+				}
+			break;
 			}
 			default:
 		}
 	} else {
-		log("Socket not connected, trying to reconnect...");
-		Game.socket.connect();
+		if (!Game.socket || Game.socketStatus === S.SocketStatus.Disconnected) {
+			initSocket();
+		}
 	}
 	window.requestAnimationFrame(mainLoop);
 }
 
-setTimeout(() => {
-	mainLoop();
-}, 1000);
+// function mainLoop() {
+// 	if (Game.socket.connected) {
+// 		switch (UI.state) {
+// 			case S.stateUI.LoginP1: {
+// 				if (!document.getElementById('auth1'))
+// 					getLoginFields(1);
+// 				break ;
+// 			}
+// 			case S.stateUI.LoginP2: {
+// 				if (!document.getElementById('auth2'))
+// 					getLoginFields(2);
+// 				break ;
+// 			}
+// 			case S.stateUI.Menu: {
+// 				document.getElementById('auth1')?.remove();
+// 				document.getElementById('auth2')?.remove();
+// 				if (!document.getElementById('menu'))
+// 					getMenu();
+// 				break ;
+// 			}
+// 			case S.stateUI.Settings: {
+// 				if (!document.getElementById('settingPage'))
+// 					getSettingsPage();
+// 				break;
+// 			}
+// 			case S.stateUI.Credits: {
+// 				if (!document.getElementById('Credits'))
+// 					getCreditsPage();
+// 				break ;
+// 			}
+// 			case S.stateUI.Game: {
+// 				// if (isReadyToConnect())
+// 					gameLoop();
+// 				break ;
+// 			} case S.stateUI.Dashboard: {
+// 				if (!document.getElementById('dashboard')) {
+// 					getDashboard();
+// 				}
+// 			break;
+// 			}
+// 			default:
+// 		}
+// 	} else {
+// 		log("Socket not connected, trying to reconnect...");
+// 		Game.socket.connect();
+// 	}
+// 	window.requestAnimationFrame(mainLoop);
+// }
+
+// setTimeout(() => {
+// 	mainLoop();
+// }, 1000);
