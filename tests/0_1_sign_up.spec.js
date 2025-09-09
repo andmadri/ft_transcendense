@@ -1,13 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import { switchLoginTab } from './0_auth.spec.js';
-import * as Login from './2_login.spec.js';
-import * as Game from './game.spec.js';
-import * as Menu from './menu.spec.js';
-import * as Remote from './remote.spec.js';
-import * as OneVSone from './oneVSone.spec.js';
-import * as OneVSai from './oneVSai.spec.js';
-import * as Navigation from './navigation.spec.js'
+import { switchLoginTab } from './0_0_auth.spec.js';
 /*
 Tests:
 	SIGNUP
@@ -55,7 +48,9 @@ export async function signup_player(page, player, Name, Email, Password) {
 async function waitForAlert(page, player, Name, Email, Password, expectedMessage) {
 	const [dialog] = await Promise.all([
 		page.waitForEvent('dialog'),
-		await signup_player(page, player, Name, Email, Password)
+		(async () => {
+			await signup_player(page, player, Name, Email, Password);
+		})()
 	]);
 	expect(dialog.message()).toBe(expectedMessage);
 	await dialog.dismiss();

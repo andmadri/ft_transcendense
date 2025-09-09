@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import * as Login from './2_login.spec.js';
+import * as Login from './0_2_login.spec.js';
 import * as Game from './game.spec.js';
-import * as Menu from './menu.spec.js';
+import * as Menu from './1_0_menu.spec.js';
 import * as U from './utils.spec.js';
 
 /*

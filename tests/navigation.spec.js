@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import * as Login from './2_login.spec.js';
+import * as Login from './0_2_login.spec.js';
 import * as Game from './game.spec.js';
-import * as Menu from './menu.spec.js';
+import * as Menu from './1_0_menu.spec.js';
 import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';

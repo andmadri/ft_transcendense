@@ -1,7 +1,6 @@
-import { sign_in_tests, signup_player } from "./1_sign_up.spec.js";
-import { login_tests, login_player } from "./2_login.spec.js";
+import { sign_in_tests, signup_player } from "./0_1_sign_up.spec.js";
+import { login_tests, login_player } from "./0_2_login.spec.js";
 import * as U from './utils.spec.js';
-import * as Menu from './menu.spec.js';	
 
 /*
 Tests:

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import { authenticationTests } from './0_auth.spec.js';
+import { authenticationTests, signup_login_byPlayer } from './0_0_auth.spec.js';
+import { menuTests, isInMenu } from './1_0_menu.spec.js';
 import * as Game from './game.spec.js';
-import * as Menu from './menu.spec.js';
 import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
@@ -27,26 +27,23 @@ test.describe.configure({ mode: 'serial' });
 
 async function TestAuthentication(page) {
 	await page.goto(URL);
-
 	await authenticationTests(page, 1, name, email, password);
 }
 
 async function TestMenu(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'menu', 'menu' + email, password);
-		await Menu.isInMenu(page);
+		await signup_login_byPlayer(page, 1, name + 'menu', 'menu' + email, password);
+		await isInMenu(page);
 	}
-	await Menu.seeCredits(page);
-	await Menu.changeAvatar(page, 1, 'avatar1');
-	await Menu.playerIsLoggedIn(page, 1, name + 'menu');
+	menuTests(page, 1, name + 'menu');
 }
 
 async function TestOneVSone(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'onevsone', 'onevsone' + email, password);
-		await Menu.isInMenu(page);
+		await signup_login_byPlayer(page, 1, name + 'onevsone', 'onevsone' + email, password);
+		await isInMenu(page);
 	}
 
 	await OneVSone.oneVsOne(page, name2, email2, password2);
@@ -56,8 +53,8 @@ async function TestOneVSone(page, allTests) {
 async function TestOneVSai(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
+		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await isInMenu(page);
 	}
 
 	// PLAY 1 VS COM
@@ -68,21 +65,21 @@ async function TestOneVSai(page, allTests) {
 async function TestRemotePlayer(page, browser, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
+		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await isInMenu(page);
 	}
 	await Remote.remotePlayer(page, browser, URL, name, name2, email2, password2);
 	
 	// BACK TO MENU
 	await page.goto(URL);
-	await Menu.isInMenu(page);
+	await isInMenu(page);
 }
 
 async function TestNavigation(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
+		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await isInMenu(page);
 	}
 	await Navigation.navigation(page);
 }

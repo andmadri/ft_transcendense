@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import { switchLoginTab } from './0_auth.spec.js';
-import * as Menu from './menu.spec.js';
+import { switchLoginTab } from './0_0_auth.spec.js';
+import * as Menu from './1_0_menu.spec.js';
 
 /*
 Tests:
