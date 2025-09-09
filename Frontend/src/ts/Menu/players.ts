@@ -41,9 +41,9 @@ export function getPlayerList(): HTMLDivElement {
 	}
 	else {
 		console.log("createPlayerList emptied");
-		// const list = document.getElementById('htmllistPlayers');
-		if (playerList instanceof HTMLUListElement)
-			playerList.innerHTML = '';
+		const list = document.getElementById('htmllistPlayers') as HTMLUListElement;
+		if (list)
+			list.innerHTML = '';
 	}
 	console.log("getPlayerList send request to backend");
 	Game.socket.emit('message',{
@@ -60,7 +60,9 @@ function insertPlayers(players: any) {
 		log("HTML list for online players not found");
 		return;
 	}
+	html_list.innerHTML = '';
 	html_list.className = 'playerOfList';
+
 	// console.log("players:", players);
 	for (const curr_player of players) {
 		console.log(`ids: ${curr_player.id} && ${UI.user1.ID}`);

@@ -4,8 +4,9 @@ import { navigateTo } from "../history.js";
 import { OT } from '@shared/enums'
 
 let result = "";
+let lastMatchId = -1;
 
-export function getGameOver(opts?: { matchId?: number }) {
+export function getGameOver() {
 	log("Game Over!");
 	const game = document.getElementById('game');
 	if (game)
@@ -83,11 +84,7 @@ export function getGameOver(opts?: { matchId?: number }) {
 	statsButton.style.cursor = 'pointer';
 	statsButton.style.transition = 'all 0.2s ease-in-out';
 	statsButton.addEventListener('click', () => { 
-		if (Number.isFinite(opts?.matchId)) {
-			navigateTo('GameStats', { matchId: Number(opts?.matchId) });
-		} else {
-			console.warn('View Game Stats clicked but no matchId available');
-		}
+		navigateTo(`GameStats?matchId=${lastMatchId}`);
 	});
 	gameOver.appendChild(statsButton);
 
@@ -115,7 +112,6 @@ export function saveGame() {
 		Game.match.pauseTimeOutID = null;
 	}
 
-
 	// Save the result to show in the GameOver function
 	if (Game.match.player1.score > Game.match.player2.score)
 		result = "Left Player Wins!";
@@ -123,10 +119,10 @@ export function saveGame() {
   		result = "Right Player Wins!"; 
 	else
 		result = "It is a Tie!"
+	lastMatchId = Game.match.matchID;
 
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
-	// Game.match.matchID = -1;
 
 	navigateTo('GameOver', {matchId: Game.match.matchID});
 	Game.match.matchID = -1;

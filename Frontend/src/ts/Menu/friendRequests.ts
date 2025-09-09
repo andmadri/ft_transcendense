@@ -1,4 +1,5 @@
 import { Game } from "../gameData.js";
+import { getFriendsList } from "./friends.js";
 
 let friendRequestsDiv: HTMLDivElement | null = null;
 
@@ -21,7 +22,8 @@ export function initFriendRequestsContainer() {
 	friendRequestsDiv.style.borderRadius = '5px'
 
 	const body = document.getElementById('body');
-	if (!body) return;
+	if (!body)
+		return;
 	body.appendChild(friendRequestsDiv);
 }
 
@@ -98,4 +100,6 @@ function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 		const container = document.getElementById('friendRequestsDiv');
 		container?.remove();
 	}
+
+	getFriendsList(1);
 }

@@ -1,6 +1,5 @@
 import * as userDB from '../Database/users.js';
 import * as friendDB from '../Database/friends.js'
-import { db } from '../index.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 	const msg = {
@@ -14,7 +13,6 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 
 export async function getAllPlayerInclFriends(db, userID, socket) {
 	try {
-		console.log("Getting all players including friends info for userID:", userID);
 		const players = await userDB.getAllPlayers(db);
 		// console.log("players: ", players);
 		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
@@ -31,7 +29,7 @@ export async function getAllPlayerInclFriends(db, userID, socket) {
 	}
 }
 
-export async function handlePlayers(msg, socket, userId) {
+export async function handlePlayers(db, msg, socket, userId) {
 	if (msg.subaction == 'getAllPlayers')
 		return getAllPlayerInclFriends(db, userId, socket);
 	sendContentToFrontend('error', '', socket, "no", "Unkown action");
