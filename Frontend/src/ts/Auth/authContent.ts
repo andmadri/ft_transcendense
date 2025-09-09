@@ -58,6 +58,7 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 
 	const header1Text = document.createElement('div');
 	header1Text.className = "header1Text";
+	header1Text.id = 'header1TextAuth';
 	header1Text.textContent = action;
 
 	headerAuthForm.appendChild(header1Text);
@@ -82,6 +83,7 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 
 	const imgGoogle = document.createElement('img');
 	imgGoogle.src = "css/icons/icons8-google.svg";
+	imgGoogle.alt = "GoogleLogin";
 	imgGoogle.id = `google-login-btn${player}`;
 	imgGoogle.className = "googleLoginButton";
 

@@ -1,5 +1,5 @@
 import * as U from './utils.spec.js';
-import * as Login from './login.spec.js';
+import * as Login from './2_login.spec.js';
 import * as Game from './oneVSai.spec.js';
 import * as Menu from './menu.spec.js';
 

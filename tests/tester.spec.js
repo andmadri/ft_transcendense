@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import * as Login from './login.spec.js';
+import { authenticationTests } from './0_auth.spec.js';
 import * as Game from './game.spec.js';
 import * as Menu from './menu.spec.js';
 import * as Remote from './remote.spec.js';
@@ -25,19 +25,10 @@ test.describe.configure({ mode: 'serial' });
 //               TESTS TO ACCESS WITH ALL AND SINGLE TEST                      //
 // *************************************************************************** // 
 
-async function TestSignupAndLogin(page) {
+async function TestAuthentication(page) {
 	await page.goto(URL);
 
-	await Login.sign_in_tests(page, 1, name, email, password);
-	await Login.login_tests(page, 1, email, password);
-
-	await Menu.isInMenu(page);
-
-	// NAME PLAYER 1 IS VISIBLE IN MENU
-	await Menu.playerIsLoggedIn(page, 1, name);
-
-	await page.waitForTimeout(1000);
-	// await Menu.playerInOnlineMenu(page, name);
+	await authenticationTests(page, 1, name, email, password);
 }
 
 async function TestMenu(page, allTests) {
@@ -99,9 +90,9 @@ async function TestNavigation(page, allTests) {
 // *************************************************************************** //
 //                          SINGLE TESTS 			                           //
 // *************************************************************************** // 
-test('Sign Up and Login', async ({ browser }) => {
+test('Authentication', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
-	await TestSignupAndLogin(page);
+	await TestAuthentication(page);
 });
 
 test('Function Menu', async ({ browser }) => {
