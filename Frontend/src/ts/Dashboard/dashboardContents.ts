@@ -33,7 +33,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		const matchId = Number(match.match_id);
 		row.addEventListener('click', () => {
 			if (Number.isFinite(matchId)) {
-				navigateTo('GameStats', { matchId });
+				navigateTo(`GameStats?matchId=${matchId}`);
 			} else {
 				console.warn('No match_id on row:', match);
 			}

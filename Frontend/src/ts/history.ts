@@ -1,26 +1,26 @@
-import { Game, UI } from './gameData.js';
-import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import * as S from './structs.js'
 import { state } from '@shared/enums'
+import { Game, UI } from './gameData.js';
+import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
 import { log } from './logging.js';
 
 /**
- * NAVIGATION FOR
- * LoginP1
- * LoginP2
- * Menu
- * Settings
- * Game
- * Stats
- * Credits
+ * @brief Triggered on hash change, navigates to the new state
  */
+export function onHashChange() {
+  const hash = window.location.hash.replace(/^#/, '');
+  navigateTo(hash, true);
+};
 
-
-function getMatchIdFromHash(): number | null {
-	// hash looks like: "#GameStats?matchId=123"
-	const hash = window.location.hash || '';
+/**
+ * @brief Extracts the matchId from the hash
+ * @param hash window.location.hash
+ * @returns matchId or null
+ * hash looks like: "#GameStats?matchId=123"
+ */
+function getMatchIdFromHash(hash: string): number | null {
 	const q = hash.indexOf('?');
 	if (q === -1) 
 		return null;
@@ -29,31 +29,17 @@ function getMatchIdFromHash(): number | null {
 	if (!id) 
 		return null;
 	const n = Number(id);
-	return Number.isFinite(n) ? n : null;
-}
-
-// THERE IS NO CHECK HERE THAT IT IS ALLOWED!!
-export function initRoutingOnLoad() {
-	if (!window.location.hash)
-		return;
-	const hash = window.location.hash.replace(/^#/, '');
-	const state = (hash.split('?')[0] || 'Menu');
-
-	console.log(`initRoutingOnLoad: state=${state}`);
-
-	// Try to get matchId if present
-	const matchId = getMatchIdFromHash();
-	renderPage(state, { matchId: matchId ?? undefined });
+	return (Number.isFinite(n) ? n : null);
 }
 
 /**
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string, opts?: { matchId?: number }) {
+export function renderPage (newState: string) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
-	if (!unprotecedPages.includes(state)) {
+	if (!unprotecedPages.includes(newState)) {
 		fetch('/api/playerInfo', {
 			credentials: 'include',
 			method: 'POST',
@@ -62,7 +48,7 @@ export function renderPage (newState: string, opts?: { matchId?: number }) {
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
 				// User is authenticated, continue rendering
-				doRenderPage(newState, {matchId: Number(opts?.matchId)});
+				doRenderPage(newState);
 			})
 			.catch(() => {
 				// Not authenticated, redirect to login
@@ -70,14 +56,14 @@ export function renderPage (newState: string, opts?: { matchId?: number }) {
 			});
 		return ;
 	}
-	doRenderPage(newState, {matchId: Number(opts?.matchId)});
+	doRenderPage(newState);
 }
 
 /**
  * @brief change state or shows new page
  * @param state new state
  */
-export function doRenderPage(newState: string, opts?: { matchId?: number }) {
+export function doRenderPage(newState: string) {
 	switch (newState) {
 		case 'LoginP1':
 			UI.state = S.stateUI.LoginP1;
@@ -109,21 +95,22 @@ export function doRenderPage(newState: string, opts?: { matchId?: number }) {
 			break ;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
-			getGameOver( {matchId: Number(opts?.matchId)} );
+			getGameOver();
 			break ;
-		case 'GameStats':
-			UI.state = S.stateUI.GameStats;
-
-			const id = Number.isFinite(opts?.matchId as number) ? Number(opts!.matchId) : getMatchIdFromHash();
-			if (id != null) {
-				requestAnimationFrame(() => getGameStats({ matchId: id }));
-			} else {
-				console.warn('GameStats: no matchId found');
-			}
-			break;
 		default:
-			console.log(`Page does not exist: ${newState}`);
-			UI.state = S.stateUI.Menu;
+			if (newState.includes('GameStats')) {
+				UI.state = S.stateUI.GameStats;
+				const id = getMatchIdFromHash(newState);
+				if (id != null) {
+					requestAnimationFrame(() => getGameStats({ matchId: id }));
+				} else {
+					console.warn('GameStats: no matchId found');
+					UI.state = S.stateUI.Menu;
+				}
+			} else {
+				console.warn(`Page does not exist: ${newState}`);
+				UI.state = S.stateUI.Menu;
+			}
 	}
 	sessionStorage.setItem("currentState", newState);
 }
@@ -135,22 +122,30 @@ export function doRenderPage(newState: string, opts?: { matchId?: number }) {
  * @param gameData Extra information if needed
  * Central auth check for protected pages
  */
-export function navigateTo(state: string, opts?: { matchId?: number }) {
+export function navigateTo(newState: string, fromHash = false) {
+	if (!newState) {
+		console.warn('navigateTo called with empty state');
+		return;
+	}
+
+	if (fromHash) {
+		newState = getValidState(newState, sessionStorage.getItem("currentState") || '');
+	}
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
-	if (!unprotecedPages.includes(state)) {
+	if (!unprotecedPages.includes(newState)) {
 		// Only allow if authenticated
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				continueNavigation(state, {matchId: Number(opts?.matchId)});
+				continueNavigation(newState);
 			})
 			.catch(() => {
 				continueNavigation('LoginP1');
 			});
 		return;
 	}
-	continueNavigation(state, {matchId: Number(opts?.matchId)});
+	continueNavigation(newState);
 }
 
 /**
@@ -159,31 +154,12 @@ export function navigateTo(state: string, opts?: { matchId?: number }) {
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
  */
-function continueNavigation(state: string, opts?: { matchId?: number }) {
-	console.log(`Save navigation to: ${state}`);
-	sessionStorage.setItem('history', state);
+function continueNavigation(newState: string) {
+	console.log(`Save navigation to: ${newState}`);
+	sessionStorage.setItem('history', newState);
 
-	let hash = `#${state}`;
-	if (state === 'GameStats') {
-		// Prefer explicit param; otherwise preserve the current one from the URL
-		const id = Number.isFinite(opts?.matchId as number) ? Number(opts!.matchId) : getMatchIdFromHash();
-		if (id != null) {
-			// const desired = `#GameStats?matchId=${id}`;
-			// if (window.location.hash === desired && UI.state === S.stateUI.GameStats) {
-			// 	return ;
-			// }
-			// hash = desired;
-			hash = `#GameStats?matchId=${id}`;
-		}
-	}
-	
-	if (history.state === state) {
-		history.replaceState(state, '', hash);
-		renderPage(state, opts);
-	} else {
-		history.pushState(state, '', hash);
-		renderPage(state, opts);
-	}
+	history.pushState(newState, '', `#${newState}`);
+	renderPage(newState);
 }
 
 function stopCurrentGame() {
@@ -196,44 +172,44 @@ function stopCurrentGame() {
 	});
 }
 
-
 /**
  * @brief checks certain conditions if dir is possible and if page name is allowed
  * @param state asked page name
  * @returns de (new) state, is changed if conditions where right
  */
-export function getValidState(state: string): string {
-	const currentState = sessionStorage.getItem("currentState");
+export function getValidState(newState: string, currentState: string): string {
+	if (newState == null || newState == undefined || newState.length == 0) {
+		return ('Menu');
+	}
 
 	// Is already logged in
-    if (state !== 'LoginP1' && state !== 'GameStats' && UI.user1.ID == -1) {
-		log("state !== 'LoginP1' && state !== 'GameStats' && UI.user1.ID == -1")
+    if (newState !== 'LoginP1' && UI.user1.ID == -1) {
 		return ('Menu');
 	}
 
 	// No match is started
-    if ((state === 'Game' || state === 'GameOver') && Game.match.matchID == -1) {
-		log("state === 'Game' || state === 'GameOver') && Game.match.matchID == -1")
+    if ((newState === 'Game' || newState === 'GameOver') && Game.match.matchID == -1) {
 		return ('Menu');
 	}
 
 	// When logged in not back to loginpage	
-	if (currentState == 'Menu' && state == 'LoginP1') {
-		log("currentState == 'Menu' && state == 'LoginP1'")
+	if (currentState == 'Menu' && newState == 'LoginP1') {
 		return ('Menu');
 	}
 
-	if (currentState == 'Menu' && (state === 'Game' || state === 'GameOver')) {
-		log("currentState == 'Menu' && (state === 'Game' || state === 'GameOver'")
+	if (currentState == 'Menu' && (newState === 'Game' || newState === 'GameOver')) {
 		return ('Menu');
 	}
 
     const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard', 'GameOver', 'GameStats'];
+		'Settings', 'Dashboard', 'GameOver'];
 	for (const page of allowedPages) {
-		if (page == state) {
-			return state;
+		if (page == newState) {
+			return newState;
 		}
+	}
+	if (newState.includes('GameStats')) {
+		return (newState);
 	}
     return ('Menu');
 }
@@ -243,13 +219,11 @@ export function getValidState(state: string): string {
  * @param event PopStateEvent
  */
 export function controlBackAndForward(event: PopStateEvent) {
-	const state = event.state as string;
+	const newState = event.state as string;
 	const currentState = sessionStorage.getItem("currentState");
-	
-	const validState = getValidState(state);
+	const validState = getValidState(newState, currentState ? currentState : '');
 	history.replaceState(validState, '', window.location.hash);
 
-	console.log(`State: ${state} -> validState: ${validState}, currentState: ${currentState}`)
 	// Always go back to menu and stop game
 	if (currentState == 'Game') {
 		cancelOnlineMatch();
@@ -259,7 +233,7 @@ export function controlBackAndForward(event: PopStateEvent) {
 	}
 
 	if (validState) {
-		renderPage(validState, { matchId: getMatchIdFromHash() ?? undefined });
+		renderPage(validState);
 	} else {
 		renderPage('Menu'); // fallback
 	}

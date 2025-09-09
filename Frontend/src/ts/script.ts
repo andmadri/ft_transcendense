@@ -1,25 +1,23 @@
 //Initialize the game by setting up the WebSocket connection, the login system, the game state
 //importing functionality from different files
-
 import * as S from './structs.js' //imports structures from the file structs.js
-import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js' //imports everything from gamelogic.js with namespace GameLogic
-import { initGame } from './Game/initGame.js'
-import { pressButton, releaseButton } from './windowEvents.js'
-import { getLoginFields } from './Auth/authContent.js'
-import { getGameField } from './Game/gameContent.js'
+import { Game, UI } from "./gameData.js"
+import { navigateTo, controlBackAndForward, onHashChange } from './history.js'
 import { createLog, log } from './logging.js'
+import { pressButton, releaseButton } from './windowEvents.js'
+import { startSocketListeners } from './socketEvents.js'
+import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js'
+import { initGame } from './Game/initGame.js'
 import { getPending } from './Game/pendingContent.js'
 import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
-import { getMenu } from './Menu/menuContent.js'
-import { Game, UI } from "./gameData.js"
-import { navigateTo, controlBackAndForward } from './history.js'
 import { saveGame } from './Game/endGame.js';
+import { getGameField } from './Game/gameContent.js'
+import { startGameField } from './Game/startGameContent.js'
+import { getLoginFields } from './Auth/authContent.js'
+import { getMenu } from './Menu/menuContent.js'
 import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
-import { startGameField } from './Game/startGameContent.js'
-import { initRoutingOnLoad } from './history.js'
-import { startSocketListeners } from './socketEvents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall } from '@shared/gameLogic'
@@ -38,15 +36,12 @@ setInterval(() => {
 	}
 }, 5000);
 
+window.addEventListener("hashchange", () => { onHashChange(); });
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
+window.addEventListener('popstate', (event: PopStateEvent) => { controlBackAndForward(event); });
 
-// initRoutingOnLoad(); THERE IS NO CHECK IN HERE THAT IT IS ALLOWED!! THAT is why I have add currentState
-
-window.addEventListener('popstate', (event: PopStateEvent) => {
-	controlBackAndForward(event);
-});
-
+// On page load, check auth and navigate to the correct page
 fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 	.then(res => res.ok ? res.json() : Promise.reject())
 	.then(data => {
@@ -189,7 +184,7 @@ function mainLoop() {
 			default:
 		}
 	} else {
-		log("Socket not connected, trying to reconnect...");
+		console.warn("Socket not connected, trying to reconnect...");
 		if (!document.getElementById('loadingpage')) {
 			document.body.innerHTML = '';
 			getLoadingPage();
