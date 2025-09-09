@@ -121,7 +121,7 @@ export function getLoginFields(player: number) {
 		return ;
 	body.innerHTML = '';
 	body.style.height = "100vh";
-	body.style.backgroundColor = "#ededeb";
+	body.style.background = "#ededeb";
 	body.style.justifyContent = "center";
 	body.appendChild(getAuthField(player, true));
 

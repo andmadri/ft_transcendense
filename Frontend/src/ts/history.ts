@@ -93,6 +93,7 @@ export function doRenderPage(newState: string, opts?: { matchId?: number }) {
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Dashboard':
+			document.getElementById("settingPage")?.remove();
 			UI.state = S.stateUI.Dashboard;
 			break ;
 		case 'Credits':

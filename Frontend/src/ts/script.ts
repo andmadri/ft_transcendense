@@ -206,6 +206,7 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
+				document.getElementById('settingPage')?.remove();
 				if (!document.getElementById('menu'))	
 					getMenu();
 				break ;

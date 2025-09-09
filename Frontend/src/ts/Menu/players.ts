@@ -100,14 +100,14 @@ export function getPlayerList(): HTMLDivElement {
 // 	}
 // }
 
-export function insertPlayers(online_players: any) {
+export function insertPlayers(players: any) {
 	const html_list = document.getElementById('players_list') as HTMLUListElement;
 		if (!html_list) {
 		console.log('HTML List for Friends Not Found');
 		return;
 	}
 	html_list.innerHTML = "";
-	for (const player of online_players)
+	for (const player of players)
 	{
 		//I don't want to show the current player
 			if (player.id > 2 && player.id !== UI.user1.ID) {

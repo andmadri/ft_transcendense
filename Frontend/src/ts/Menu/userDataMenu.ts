@@ -206,11 +206,11 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 		userStats.style.whiteSpace = 'nowrap';
 		userInfoContainer.appendChild(userStats);
 	}
-
 	const topRightButtonContainer =  createTopRightButtonContainer();
-	const dashboard = createDashboardButton();
-	topRightButtonContainer.appendChild(dashboard);
-
+	if(user_info.id >= 2) {
+		const dashboard = createDashboardButton();
+		topRightButtonContainer.appendChild(dashboard);
+	}
 	if (playerNr === 1) {
 		const notifications = createNotificationButtons();
 		topRightButtonContainer.appendChild(notifications);
