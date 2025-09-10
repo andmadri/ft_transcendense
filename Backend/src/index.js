@@ -1,9 +1,9 @@
 import { handlePlayers } from './DBrequests/getPlayers.js';
-// import { handleOnlinePlayers } from './DBrequests/getOnlinePlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
+import { handleMatchmaking } from './Pending/matchmaking.js'
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
