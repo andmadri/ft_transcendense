@@ -4,14 +4,15 @@ import { Game, UI } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
+import { getDashboard } from './Dashboard/dashboardContents.js';
 import { log } from './logging.js';
 
 /**
  * @brief Triggered on hash change, navigates to the new state
  */
 export function onHashChange() {
-  const hash = window.location.hash.replace(/^#/, '');
-  navigateTo(hash, true);
+	const hash = window.location.hash.replace(/^#/, '');
+	navigateTo(hash, true);
 };
 
 /**
@@ -20,12 +21,12 @@ export function onHashChange() {
  * @returns matchId or null
  * hash looks like: "#GameStats?matchId=123"
  */
-function getMatchIdFromHash(hash: string): number | null {
+function getIdFromHash(hash: string, type: string): number | null {
 	const q = hash.indexOf('?');
 	if (q === -1) 
 		return null;
 	const params = new URLSearchParams(hash.slice(q + 1));
-	const id = params.get('matchId');
+	const id = params.get(type);
 	if (!id) 
 		return null;
 	const n = Number(id);
@@ -78,10 +79,6 @@ export function doRenderPage(newState: string) {
 			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
-		case 'Dashboard':
-			document.getElementById("oppponentMenu")?.remove();
-			UI.state = S.stateUI.Dashboard;
-			break ;
 		case 'Credits':
 			UI.state = S.stateUI.Credits;
 			break ;
@@ -101,16 +98,28 @@ export function doRenderPage(newState: string) {
 		default:
 			if (newState.includes('GameStats')) {
 				UI.state = S.stateUI.GameStats;
-				const id = getMatchIdFromHash(newState);
+				const id = getIdFromHash(newState, "matchId");
 				if (id != null) {
 					requestAnimationFrame(() => getGameStats({ matchId: id }));
 				} else {
 					console.warn('GameStats: no matchId found');
-					UI.state = S.stateUI.Menu;
+					navigateTo('Menu');
+				}
+			} else if (newState.includes('Dashboard')) {
+				UI.state = S.stateUI.Dashboard;
+				const userId = getIdFromHash(newState, "userId");
+				// Add a check that the number is in range of userId
+				console.log(`userId get Dashboard: ${userId}`);
+				if (userId != null) {
+					console.log('dashboard call historyloop', userId);
+					requestAnimationFrame(() => getDashboard(userId, 1));
+				} else {
+					console.warn('Dashboard: no userId found');
+					navigateTo('Menu');
 				}
 			} else {
 				console.warn(`Page does not exist: ${newState}`);
-				UI.state = S.stateUI.Menu;
+				navigateTo('Menu');
 			}
 	}
 	sessionStorage.setItem("currentState", newState);
@@ -128,9 +137,11 @@ export function navigateTo(newState: string, fromHash = false) {
 		console.warn('navigateTo called with empty state');
 		return;
 	}
-
+	console.log('navigate to: ', newState);
 	if (fromHash) {
+		console.log(`Before From hash: ${newState}, current: ${sessionStorage.getItem("currentState")}`)
 		newState = getValidState(newState, sessionStorage.getItem("currentState") || '');
+		console.log(`After From hash -> ${newState}`)
 	}
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
@@ -156,9 +167,7 @@ export function navigateTo(newState: string, fromHash = false) {
  * @param gameData Extra information if needed
  */
 function continueNavigation(newState: string) {
-	console.log(`Save navigation to: ${newState}`);
-	sessionStorage.setItem('history', newState);
-
+	sessionStorage.setItem('history', newState.replace(/^#/, ''));
 	history.pushState(newState, '', `#${newState}`);
 	renderPage(newState);
 }
@@ -183,9 +192,9 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-	// Is already logged in
+	// Is not logged in
     if (newState !== 'LoginP1' && UI.user1.ID == -1) {
-		return ('Menu');
+		return ('LoginP1');
 	}
 
 	// No match is started
@@ -209,7 +218,7 @@ export function getValidState(newState: string, currentState: string): string {
 			return newState;
 		}
 	}
-	if (newState.includes('GameStats')) {
+	if (newState.includes('GameStats') || newState.includes('Dashboard')) {
 		return (newState);
 	}
     return ('Menu');
@@ -220,10 +229,14 @@ export function getValidState(newState: string, currentState: string): string {
  * @param event PopStateEvent
  */
 export function controlBackAndForward(event: PopStateEvent) {
-	const newState = event.state as string;
+	let newState = event.state as string;
+	if (!newState) {
+		newState = window.location.hash.replace(/^#/, '');
+	}
+
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(newState, currentState ? currentState : '');
-	history.replaceState(validState, '', window.location.hash);
+	history.replaceState(validState, '', `#${validState}`);
 
 	// Always go back to menu and stop game
 	if (currentState == 'Game') {

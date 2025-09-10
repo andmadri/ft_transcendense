@@ -136,8 +136,7 @@ export function insertPlayers(players: any) {
 			const dashboardBtn = document.createElement('button');
 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 			dashboardBtn.addEventListener("click", () => {
-				navigateTo('Dashboard');
-				getDashboard(player.id, undefined);
+				navigateTo(`Dashboard?userId=${player.id}`);
 			});
 			btnContainer.appendChild(dashboardBtn);
 			row.appendChild(btnContainer);

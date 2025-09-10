@@ -14,7 +14,7 @@ import { saveGame } from './Game/endGame.js';
 import { getGameField } from './Game/gameContent.js'
 import { startGameField } from './Game/startGameContent.js'
 import { getLoginFields } from './Auth/authContent.js'
-import { getMenu } from './Menu/menuContent.js'
+import { getMenu , getCreditsPage } from './Menu/menuContent.js'
 import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
@@ -167,19 +167,14 @@ function mainLoop() {
 					getOpponentMenu();
 				break;
 			}
-			// case S.stateUI.Credits: {
-			// 	if (!document.getElementById('Credits'))
-			// 		getCreditsPage();
-			// 	break ;
-			// }
+			case S.stateUI.Credits: {
+				if (!document.getElementById('creditDiv'))
+					getCreditsPage();
+				break ;
+			}
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
-			} case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard')) {
-					getDashboard(undefined, 1);
-				}
-			break;
 			}
 			default:
 		}
