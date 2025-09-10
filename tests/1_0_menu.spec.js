@@ -12,7 +12,7 @@ Tests:
 */
 
 export async function menuTests(page, name, email, password, name2, email2, password2) {
-	await isInMenu(page);
+	await isInMenu(page, false, name, '');
 	await playerInOnlineMenu(page, name);
 
 
@@ -40,13 +40,38 @@ export async function switchPlayerTab(page, player) {
 }
 
 
-export async function isInMenu(page) {
-	await expect(page.locator('h2', { hasText: 'Menu' })).toBeVisible();
+export async function isInMenu(page, player2, name, name2) {
+	// blocks
 	await expect(page.locator('#menu')).toBeVisible();
-	await expect(page.locator('#creditDiv', { hasText: 'Credtis' })).toBeVisible();
+	// await expect(page.locator('#players')).toBeVisible();
+	// await expect(page.locator('#friends_list')).toBeVisible();
+
+	// player 1
+	await expect(page.locator(`#userNameMenu1`, { hasText: name })).toBeVisible();
+	await expect(page.locator('#dashboardBtn')).toBeVisible();
+	await expect(page.locator('#notificationBtn')).toBeVisible();
+	await expect(page.locator('#userStats1', {hasText: 'W: '})).toBeVisible();
+	await expect(page.locator('button', { hasText: 'Set Up 2FA' })).toBeVisible();	
+	await expect(page.locator('button', { hasText: 'Change Avatar' })).toBeVisible();
+	await expect(page.locator('#LogoutBtn1', { hasText: 'Logout' })).toBeVisible();
+	await expect(page.locator('#avatar1')).toBeVisible();
+
+	// player2
+	await expect(page.locator('#avatar2')).toBeVisible();
+	if (player2 == false) {
+		await expect(page.locator(`#userNameMenu2`, { hasText: 'Guest' })).toBeVisible();
+		await expect(page.locator('button', { hasText: 'Login' })).toBeVisible();
+	} else {
+		await expect(page.locator(`#userNameMenu2`, { hasText: name2 })).toBeVisible();
+		await expect(page.locator('#userStats2', {hasText: 'W: '})).toBeVisible();
+		await expect(page.locator('#LogoutBtn2', { hasText: 'Logout' })).toBeVisible();
+	}
+
+	// bts bottom
+	await expect(page.locator('button', { hasText: 'Credits' })).toBeVisible();
 	await expect(page.locator('button', { hasText: 'Play Game' })).toBeVisible();
 	await expect(page.locator('button', { hasText: 'Tournament' })).toBeVisible();
-	await expect(page.locator('button', { hasText: 'Dashboard' })).toBeVisible();
+
 
 }
 

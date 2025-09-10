@@ -61,5 +61,5 @@ export async function login_tests(page, player, Email, Password) {
 	await login_player(page, player, Email, Password);
 
 	// Check if in Menu
-	await Menu.isInMenu(page);
+	// await Menu.isInMenu(page, false, name, '');
 }

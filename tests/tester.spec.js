@@ -34,7 +34,7 @@ async function TestMenu(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
 		await signup_login_byPlayer(page, 1, name + 'menu', 'menu' + email, password);
-		await isInMenu(page);
+		await isInMenu(page, false, name, '');
 	}
 	menuTests(page, 1, name + 'menu');
 }
@@ -43,7 +43,7 @@ async function TestOneVSone(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
 		await signup_login_byPlayer(page, 1, name + 'onevsone', 'onevsone' + email, password);
-		await isInMenu(page);
+		await isInMenu(page, false, name, '');
 	}
 
 	await OneVSone.oneVsOne(page, name2, email2, password2);
@@ -54,7 +54,7 @@ async function TestOneVSai(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
 		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await isInMenu(page);
+		await isInMenu(page, false, name, '');
 	}
 
 	// PLAY 1 VS COM
@@ -66,22 +66,22 @@ async function TestRemotePlayer(page, browser, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
 		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await isInMenu(page);
+		await isInMenu(page, false, name, '');
 	}
 	await Remote.remotePlayer(page, browser, URL, name, name2, email2, password2);
 	
 	// BACK TO MENU
 	await page.goto(URL);
-	await isInMenu(page);
+	await isInMenu(page, false, name, '');
 }
 
 async function TestNavigation(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
 		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await isInMenu(page);
+		await isInMenu(page, false, name, '');
 	}
-	await Navigation.navigation(page);
+	await Navigation.navigation(page, name);
 }
 
 // *************************************************************************** //
@@ -123,7 +123,7 @@ test('Navigation', async ({browser}) => {
 // *************************************************************************** // 
 test('All tests', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
-	await TestSignupAndLogin(page, true);
+	await TestAuthentication(page, true);
 	await TestMenu(page, true);
 	await TestOneVSone(page, true);
 	await TestOneVSai(page, true);

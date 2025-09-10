@@ -306,6 +306,7 @@ export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 function getLogoutBtn(playerNr: number): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');
 	logoutBtn.textContent = 'Logout';
+	logoutBtn.id = `LogoutBtn${playerNr}`;
 	// styleElement(logoutBtn, {
 	// 	backgroundColor: '#d9f0ff',
 	// 	border: '2px solid #d9f0ff',

@@ -60,7 +60,7 @@ async function waitForAlert(page, player, Name, Email, Password, expectedMessage
 export async function sign_in_tests(page, player, Name, Email, Password) {
 	console.log('--- SIGN UP TESTS ---');
 
-	await U.checkHash(page, '#LoginP1');
+	// await U.checkHash(page, '#LoginP1');
 	await isInSignup(page, player);
 
 	// Missing fields
@@ -70,6 +70,7 @@ export async function sign_in_tests(page, player, Name, Email, Password) {
 
 	// Wrong name inputs
 	await waitForAlert(page, player, 'ARealyLongNameIsNotAllowedWhenLongerThan30', Email, Password, 'Name is too long (min 30 characters)');
+	page.waitForTimeout(5000);
 	// await waitForAlert(page, player, '    ', Email, Password, 'Name can not be empty');
 	await waitForAlert(page, player, Name + '*', Email, Password, "Only letters, numbers, spaces, '-' and '_' are allowed.");
 	

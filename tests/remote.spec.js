@@ -16,7 +16,7 @@ export async function addRemotePlayer(browser, URL, name, email, password) {
 	await page2.goto(URL);
 	await Login.signup_login_byPlayer(page2, 1, name + 'remote', 'remote' + email, password);
 	await page2.waitForTimeout(1000);
-	await Menu.isInMenu(page2);
+	await Menu.isInMenu(page2, false, name, '');
 	await Menu.playerIsLoggedIn(page2, 1, name + 'remote');
 	return (page2)
 }

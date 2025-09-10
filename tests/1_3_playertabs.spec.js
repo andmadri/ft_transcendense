@@ -18,7 +18,7 @@ Tests
 
 export async function playerTabsTests(page, player1, name1, email1, password1, player2, name2, email2, password2) {
 	await test.step('Player 1 stats visible', async () => {
-		await Menu.isInMenu(page);
+		await Menu.isInMenu(page, false, name1, '');
 		await expect(page.locator('#playerStatsBtn' + player1)).toBeVisible();
 	});
 
@@ -30,7 +30,7 @@ export async function playerTabsTests(page, player1, name1, email1, password1, p
 
 	await test.step('Player 1 login again', async () => {
 		await Login.login_player(page, player1, email1, password1);
-		await Menu.isInMenu(page);
+		await Menu.isInMenu(page, false, name1, '');
 		await Menu.playerIsLoggedIn(page, player1, name1);
 	});
 
@@ -41,7 +41,7 @@ export async function playerTabsTests(page, player1, name1, email1, password1, p
 
 	await test.step('Player 2 sign up / login', async () => {
 		await Login.signup_login_byPlayer(page, player2, name2, email2, password2);
-		await Menu.isInMenu(page);
+		await Menu.isInMenu(page, false, name1, name2);
 		await Menu.playerIsLoggedIn(page, player2, name2);
 	});
 
@@ -66,7 +66,7 @@ export async function playerTabsTests(page, player1, name1, email1, password1, p
 
 	await test.step('Player 2 login again', async () => {
 		await Login.login_player(page, player2, email2, password2);
-		await Menu.isInMenu(page);
+		await Menu.isInMenu(page, false, name1, name2);
 		await Menu.playerIsLoggedIn(page, player2, name2);
 	});
 

@@ -16,11 +16,11 @@ V Backward btn works
 - Insert refresh
 - ?
 */
-export async function navigation(page) {
+export async function navigation(page, name) {
 	// we are logged in and in the menu
 
 	await page.goBack(); // should not be possible so stay in menu
-	await Menu.isInMenu(page);
+	await Menu.isInMenu(page, false, name, '');
 
 	// Go to credit page
 	await U.pressDiv(page, "Credits");
@@ -28,7 +28,7 @@ export async function navigation(page) {
 
 	// Go back to menu
 	await page.goBack();
-	await Menu.isInMenu(page);
+	await Menu.isInMenu(page, false, name, '');
 
 	// Go forward to Credits
 	await page.goForward();
@@ -38,15 +38,15 @@ export async function navigation(page) {
 
 	// Go back to menu
 	await page.goBack();
-	await Menu.isInMenu(page);
+	await Menu.isInMenu(page, false, name, '');
 
 	// Start Game
 	await OneVSai.StartOneVsCom(page);
 
 	// Go back to menu
 	await page.goBack();
-	await Menu.isInMenu(page);	
+	await Menu.isInMenu(page, false, name, '');	
 
 	await page.goForward(); // Should not be possible
-	await Menu.isInMenu(page);	
+	await Menu.isInMenu(page, false, name, '');	
 }
