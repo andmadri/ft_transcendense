@@ -11,6 +11,7 @@ import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
+import { saveMatch } from './End/endGame.js';
 
 export const db = await createDatabase();
 
@@ -44,6 +45,7 @@ fastify.ready().then(() => {
 	fastify.io.on('connection', (socket) => {
 		const cookies = socket.handshake.headers.cookie || '';
 		const authTokens = parseAuthTokenFromCookies(cookies);
+		let showMatch = true;
 
 		let decoded;
 		let userId1 = null;
@@ -55,6 +57,7 @@ fastify.ready().then(() => {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
 					console.log(`UserId1=${userId1}`);
+					showMatch = true;
 					// Use userId or decoded as needed for player 1
 				} catch (err) {
 					console.error('JWT1 verification failed:', err);
@@ -81,12 +84,19 @@ fastify.ready().then(() => {
 		if (!userId1) {
 			console.error('No valid auth tokens found in cookies');
 			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+			showMatch = false;
 			return ;
 		}
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-	
+
+		if (showMatch) {
+			console.log(`Going to function saveMatch`);
+			saveMatch({matchID: 1}, null, null);
+			showMatch = false;
+		}
+		
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;

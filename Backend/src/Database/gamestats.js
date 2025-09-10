@@ -1,3 +1,19 @@
+import { getMatchEventsByMatchID } from './match.js';
+import { sql_log, sql_error } from './dblogger.js';
+import { inspect } from 'node:util';
+
+export async function getMatchEventsDB(db, matchId) {
+	const matchEvents = await getMatchEventsByMatchID(db, matchId);
+
+	console.log(`--- matchEvents --- ${matchId}`);
+	console.table(matchEvents);
+
+	// console.log('--- matchEvents --- keys:', 
+    // matchId && typeof matchId === 'object' ? Object.keys(matchId) : null);
+	// console.log('--- matchEvents --- inspect:\n', inspect(matchId, { depth: null, colors: true }));
+}
+
+
 // ADDED FOR CREATING IMAGE IN THE BACKEND - complete file
 
 import fs from 'fs';
