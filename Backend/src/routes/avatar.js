@@ -18,7 +18,7 @@ export default async function avatarRoutes(fastify) {
 			const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 			if (!allowedTypes.includes(data.mimetype)) {
 				console.log('Unsupported file type:', data.mimetype);
-				return reply.code(400).send({ error: 'Unsupported file type' });
+				return reply.code(415).send({ error: 'Unsupported file type' });
 			}
 
 			// Extract file extension
