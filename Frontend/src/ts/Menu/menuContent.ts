@@ -127,7 +127,7 @@ export function getPlayBtn(): HTMLButtonElement {
 	styleMainBtns(playBtn, "Play Game")
 	// playBtn.style.flex = '1 1 25%';
 	playBtn.addEventListener('click', () => {
-		navigateTo('Settings')
+		navigateTo('OpponentMenu')
 	});
 	return (playBtn);
 }
