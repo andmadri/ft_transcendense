@@ -1,10 +1,9 @@
 import * as S from '../structs.js'
 import { UI, Game } from '../gameData.js'
 import { log } from '../logging.js'
-// import { updatePlayerData } from '../SideMenu/updatePlayerData.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 import { navigateTo } from '../history.js';
-import { initSocket } from '../socketEvents.js'
+import { getLoadingPage } from '../Loading/loadContent.js';
 
 
 
@@ -76,13 +75,18 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 		UI.user2.name = name;
 		UI.user2.Twofa = twofa;
 	}
-	if (!Game.socket || !Game.socket.connected) {
-		initSocket();
-	}
 	document.getElementById('menu')?.remove();
+	if (!document.getElementById('loadingpage')) {
+		getLoadingPage();
+	}
 	Game.socket.disconnect();
 	Game.socket.connect();
-	navigateTo('Menu');
+
+	// Wait till connected to the socket server
+	Game.socket.once("connect", () => {	
+		console.log("Connection with the server!");
+		navigateTo("Menu");
+	});
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {

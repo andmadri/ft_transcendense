@@ -44,9 +44,9 @@ export function getPlayerList(): HTMLDivElement {
 	}
 	else {
 		console.log("createPlayerList emptied");
-		// const list = document.getElementById('htmllistPlayers');
-		if (playerList instanceof HTMLUListElement)
-			playerList.innerHTML = '';
+		const list = document.getElementById('htmllistPlayers') as HTMLUListElement;
+		if (list)
+			list.innerHTML = '';
 	}
 	console.log("getPlayerList send request to backend");
 	Game.socket.emit('message',{
@@ -107,6 +107,7 @@ export function insertPlayers(players: any) {
 		return;
 	}
 	html_list.innerHTML = "";
+	html_list.className = 'playerOfList';
 	for (const player of players)
 	{
 		//I don't want to show the current player

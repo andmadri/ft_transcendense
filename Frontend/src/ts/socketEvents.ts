@@ -7,55 +7,14 @@ import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
-import { actionUserDataMenu } from './Menu/userDataMenu.js'
-import * as S from './structs.js'
-declare const io: any;
 
-// export function startSocketListeners() {
-// 	const socket = Game.socket;
-
-// 	socket.on('connect', () => {
-// 		console.log('Connected with id:', socket.id);
-// 		getPlayerData();
-// 	});
-
-// 	socket.on('message', (msg: any)=> {
-// 		receiveFromWS(msg)
-// 	});
-
-// 	socket.on('disconnect', (reason: any) => {
-// 		log('Disconnected: '+ reason);
-// 	});
-
-// 	socket.on('connect_error', (err: any) => {
-// 		log('Error: ' + err);
-// 	});
-
-// 	socket.on('error', (err: any) => {
-// 		log('Error: ' + err.reason);
-// 	});
-// }
-
-export function initSocket() {
-	if (Game.socket && Game.socket.connected) {
-		Game.socketStatus = S.SocketStatus.Connected;
-		return ;
-	}
-
-	Game.socketStatus = S.SocketStatus.Connecting;
-
-	Game.socket = io(`https://${window.location.host}`, {
-		path: "/socket.io/",
-		transports: ['websocket'],
-		secure: true,
-		withCredentials: true,
-	});
-
+export function startSocketListeners() {
 	const socket = Game.socket;
 
 	socket.on('connect', () => {
 		console.log('Connected with id:', socket.id);
-		Game.socketStatus = S.SocketStatus.Connected;
+		if (document.getElementById('loadingpage'))
+			document.body.removeChild(document.getElementById('loadingpage')!);
 		getPlayerData();
 	});
 
@@ -64,12 +23,11 @@ export function initSocket() {
 	});
 
 	socket.on('disconnect', (reason: any) => {
-		Game.socketStatus = S.SocketStatus.Disconnected;
 		log('Disconnected: '+ reason);
 	});
 
 	socket.on('connect_error', (err: any) => {
-		log('Error: ' + err);
+		log('Connection error: ' + err);
 	});
 
 	socket.on('error', (err: any) => {

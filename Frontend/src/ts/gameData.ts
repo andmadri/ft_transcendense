@@ -2,7 +2,6 @@ import { OT, state, MF } from '@shared/enums'
 import * as S from './structs.js'
 
 declare const io: any;
-type Socket = any;
 
 export const UI : S.UI = {
 	state: S.stateUI.LoginP1,
@@ -68,13 +67,11 @@ export function newMatch() {
 }
 
 export const Game : S.Game = { 
-	// socket: io(`https://${window.location.host}`, {
-	// 	path: '/socket.io/', 
-	// 	// transports: ['websocket'],
-	// 	secure: true,
-	// }),
-	socket: null,
-	socketStatus: S.SocketStatus.Disconnected,
+	socket: io(`https://${window.location.host}`, {
+		path: '/socket.io/', 
+		transports: ['websocket'],
+		secure: true,
+	}),
 	match: newMatch(),
 	colletedSteps: [], //not used i think
 }

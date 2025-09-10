@@ -37,7 +37,7 @@ async function denyFriendRequest(socket, userID1, data) {
 	}
 }
 
-async function getFriends(userId1, socket) {
+export async function getFriends(userId1, socket) {
 	try {
 		const friends = await friendsDB.getFriendsDB(db, userId1);
 		if (!friends || friends.length === 0) {
@@ -51,7 +51,6 @@ async function getFriends(userId1, socket) {
 }
 
 export async function openFriendRequest(userId1, socket) {
-	console.log("check open friend request for userid: ", userId1);
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
 		if (!requests || requests.length === 0) {

@@ -1,7 +1,7 @@
 export function getLoadingPage() {
-	if (document.getElementById('loadingpage')) {
-		return (document.getElementById('loadingpage'));
-  	}
+	if (document.getElementById('loadingpage'))
+		return;
+
 	const page = document.createElement('div');
 	page.id = "loadingpage";
 	page.className = "loadingpage";
@@ -32,9 +32,10 @@ export function getLoadingPage() {
 	wrapper.style.width = '8rem';
 	wrapper.style.height = '8rem';
 	wrapper.style.display = 'block';
-	wrapper.style.transformOrigin = '50% 50%';
+	wrapper.style.transformOrigin = 'center center';
 	wrapper.style.animation = 'circleball 2s linear infinite';
 	wrapper.style.pointerEvents = 'none';
+	
 
 	const ball = document.createElement('div');
 	ball.className = 'loading_ball';
@@ -46,7 +47,17 @@ export function getLoadingPage() {
 	ball.style.background = 'white';
 	ball.style.top = '50%';
 	ball.style.left = '100%';
-	ball.style.transform = 'translate(-50%, -50%)';
+	ball.style.transform = 'translate(-50%, -50%) translateX(4rem)';
+
+	const loadingTxt = document.createElement('div');
+	loadingTxt.textContent = "Loading...";
+	loadingTxt.style.position = 'absolute';
+	loadingTxt.style.textAlign = 'center';
+	loadingTxt.style.fontSize = '1.2rem';
+	loadingTxt.style.fontWeight = 'bold';
+	loadingTxt.style.color = 'black';
+	loadingTxt.style.transform = 'translate(-50%, -50%)'; 
+	innerBox.appendChild(loadingTxt);
 
 	if (!document.getElementById('bounceText')) {
 		const style = document.createElement('style');
@@ -59,7 +70,7 @@ export function getLoadingPage() {
 		document.head.appendChild(style);
 	}
 	wrapper.appendChild(ball);
-	innerBox.appendChild(wrapper);
-	page.appendChild(innerBox)
-	return (page);
+	innerBox.append(loadingTxt, wrapper);
+	page.appendChild(innerBox);
+	document.body.appendChild(page);
 }
