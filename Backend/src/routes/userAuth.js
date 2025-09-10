@@ -18,27 +18,6 @@ import { verifyAuthCookie } from '../Auth/authToken.js';
  * It is designed to work with a database for user management and online status tracking.
  */
 export default async function userAuthRoutes(fastify) {
-	fastify.get('/api/cookie', async (request, reply) => {
-		try {
-			const cookies = request.cookies;
-			const unsigned = fastify.unsignCookie(cookies.jwtAuthToken1);
-
-			if (!unsigned.valid) {
-				return reply.code(401).send({ ok: false });
-			}
-  			const decoded = fastify.jwt.verify(unsigned.value);
-			console.log(`last page: ${request.query.lastPage}`);
-			if (request.query.lastPage && request.query.lastPage != 'LoginP1')
-				await addUserSessionToDB(db, { user_id: decoded.userId, state: 'login' });
-
-			const user = await getUserByID(db, decoded.userId);
-			console.log(`User: ${user}`);
-  			return  { ok: true, userID: decoded.userId, name: user.name};
-		} catch (err) {
-  			return reply.code(401).send({ ok: false });
-		}
-	});
-
 	fastify.post('/api/playerInfo', async (request, reply) => {
 		const cookies = request.cookies;
 		const cookie = cookies['jwtAuthToken1'];
