@@ -1,6 +1,6 @@
 import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
-import { matchInfo } from '@shared/types'
+import { matchInfo, gameState } from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
 import { aiAlgorithm } from './aiLogic.js'
 import { navigateTo } from "../history.js"
@@ -44,15 +44,25 @@ export function pauseBallTemporarily(duration: number) {
 	}, duration);
 }
 
+export function reconcilePaddle(playerNr : number, serverGameState : gameState) {
+	const paddle = playerNr == 1 ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
+	const serverPaddle = playerNr == 1 ? serverGameState.paddle1 : serverGameState.paddle2;
+
+	const diff = serverPaddle.pos.y - paddle.pos.y;
+	if (Math.abs(diff) > 0.05) {
+		paddle.pos.y += diff * 0.05;
+	}
+}
+
 export function game(match : matchInfo) {
 	if (Game.match.state !== state.Playing) {
 		return;
 	}
 	if (match.mode == OT.Online) {
 		//update own paddle immediately in frontend
-		renderGameInterpolated();
-		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		updatePaddlePos(paddle, match.gameState.field);
+		// renderGameInterpolated();
+		// const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+		// updatePaddlePos(paddle, match.gameState.field);
 	} else {
 		match.time = performance.now();
 		if (match.mode == OT.ONEvsCOM) {
