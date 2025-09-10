@@ -8,6 +8,7 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	card.style.background = '#363430';
 	card.style.flex = '1 1 50%';
 	card.style.padding = '1rem';
+	card.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
 	const title = document.createElement('div');
 	title.id = 'userStatsTitle';
@@ -26,62 +27,6 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	titleContainer.appendChild(title);
 
 	card.appendChild(titleContainer);
-
-	// const headers = document.createElement('div');
-	// headers.id = 'userStatsHeaders';
-	// headers.style.display = 'grid';
-	// headers.style.gridTemplateAreas = `
-	// 	"matchesHeader avgHeader"
-	// 	". ."
-	// 	"winsHeader lossesHeader"
-	// `;
-	// headers.style.gridTemplateColumns = '1fr 1fr';
-	// headers.style.gridTemplateRows = 'auto auto auto';
-	// headers.style.textAlign = 'center';
-	// headers.style.fontSize = 'clamp(6px, 1vw, 12px)';
-	// headers.style.fontFamily = '"Horizon", monospace';
-	// headers.style.color = 'white';
-	// headers.style.padding = '0.7% 0.5rem';
-	// headers.style.whiteSpace = 'nowrap';
-
-	// const labels = ['MATCHES', 'AVG DURATION', 'WINS', 'LOSSES'];
-	// const header_labels = ['matchesHeader', 'avgHeader', 'winsHeader', 'lossesHeader']
-
-	// labels.forEach((label, i) => {
-	// 	const headerItem = document.createElement('div');
-	// 	headerItem.textContent = label;
-	// 	headerItem.style.gridArea = header_labels[i];
-	// 	headers.appendChild(headerItem);
-	// });
-
-
-	// const userStats = document.createElement('div');
-	// userStats.id = 'userStatsInfo';
-	// userStats.style.display = 'grid';
-	// userStats.style.gridTemplateAreas = `
-	// 	"matches avg"
-	// 	"bar bar"
-	// 	"wins losses"
-	// `;
-	// userStats.style.gridTemplateColumns = '1fr 1fr';
-	// userStats.style.gridTemplateRows = 'auto auto auto';
-	// userStats.style.gap = '0.5rem';
-	// userStats.style.textAlign = 'center';
-	// userStats.style.fontSize = 'clamp(8px, 2vw, 19px)';
-	// userStats.style.fontFamily = '"RobotoCondensed", monospace';
-	// userStats.style.color = 'white';
-	// userStats.style.padding = '0.7% 1rem';
-	// userStats.style.whiteSpace = 'nowrap';
-
-	// const statsInfo = [`${stats.total_matches}`, `${stats.avg_duration}`, `${stats.wins}`, `${stats.losses}`];
-	// const statsInfo_labels = ['matches', 'avg', 'wins', 'losses'];
-
-	// statsInfo.forEach((value, i) => {
-	// 	const statsInfoItem = document.createElement('div');
-	// 	statsInfoItem.textContent = value;
-	// 	statsInfoItem.style.gridArea = statsInfo_labels[i]; 
-	// 	userStats.appendChild(statsInfoItem);
-	// });
 
 	const statsGrid = document.createElement('div');
 	statsGrid.style.display = 'grid';

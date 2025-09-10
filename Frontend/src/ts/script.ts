@@ -15,7 +15,6 @@ import { getGameField } from './Game/gameContent.js'
 import { startGameField } from './Game/startGameContent.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getMenu } from './Menu/menuContent.js'
-import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
@@ -158,7 +157,8 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
-				if (!document.getElementById('menu'))
+				document.getElementById('settingPage')?.remove();
+				if (!document.getElementById('menu'))	
 					getMenu();
 				break ;
 			}
@@ -167,17 +167,17 @@ function mainLoop() {
 					getSettingsPage();
 				break;
 			}
-			case S.stateUI.Credits: {
-				if (!document.getElementById('Credits'))
-					getCreditsPage();
-				break ;
-			}
+			// case S.stateUI.Credits: {
+			// 	if (!document.getElementById('Credits'))
+			// 		getCreditsPage();
+			// 	break ;
+			// }
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
 			} case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
-					getDashboard();
+					getDashboard(undefined, 1);
 				}
 			break;
 			}
