@@ -36,3 +36,5 @@ export const GameStats = {
 		y: 0
 	}
 }
+
+export const USERLOGIN_TIMEOUT = 30 // 30 seconds
