@@ -74,19 +74,19 @@ export function doRenderPage(newState: string) {
 		case 'Menu':
 			document.getElementById("creditDiv")?.remove();
 			document.getElementById("containerDashboard")?.remove();
-			document.getElementById("settingPage")?.remove();
+			document.getElementById("oppponentMenu")?.remove();
 			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Dashboard':
-			document.getElementById("settingPage")?.remove();
+			document.getElementById("oppponentMenu")?.remove();
 			UI.state = S.stateUI.Dashboard;
 			break ;
 		case 'Credits':
 			UI.state = S.stateUI.Credits;
 			break ;
-		case 'Settings':
-			UI.state = S.stateUI.Settings;
+		case 'OpponentMenu':
+			UI.state = S.stateUI.OpponentMenu;
 			break ;
 		case 'Pending':
 			Game.match.state = state.Pending;
