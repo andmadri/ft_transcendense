@@ -13,6 +13,8 @@ import chartRoutes from './routes/charts.js';
 import fs from 'fs';
 import path from 'path';
 
+const UPLOADS_BASE = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
+
 export async function initFastify() {
 	// FASTIFY => API SERVER
 	// const fastify = Fastify({ logger: true });

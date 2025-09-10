@@ -100,9 +100,9 @@ export function doRenderPage(newState: string) {
 		default:
 			if (newState.includes('GameStats')) {
 				UI.state = S.stateUI.GameStats;
-				const id = getMatchIdFromHash(newState);
-				if (id != null) {
-					requestAnimationFrame(() => getGameStats({ matchId: id }));
+				const matchId = getMatchIdFromHash(newState);
+				if (matchId != null) {
+					requestAnimationFrame(() => getGameStats(matchId));
 				} else {
 					console.warn('GameStats: no matchId found');
 					UI.state = S.stateUI.Menu;

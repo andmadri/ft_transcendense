@@ -39,6 +39,8 @@ export async function saveMatch(match, msg, socket) {
 		barHeight: 26
 	});
 	console.log('Chart saved at:', svgPath);
+	// console.log('2. Chart saved at:', svgPath);
+	// console.log('3. Chart saved at:', svgPath);
 
 	// Delete the data in the backend
 	matches.delete(match.matchID);

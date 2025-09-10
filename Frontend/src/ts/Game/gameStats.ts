@@ -1,6 +1,6 @@
-import { log } from '../logging.js';
+import { navigateTo } from '../history.js';
 
-let currentStatsMatchId: number | null = null;
+// let currentStatsMatchId: number | null = null;
 
 function ensureStatsChartElement(): HTMLImageElement {
 	let img = document.getElementById('statsChart') as HTMLImageElement | null;
@@ -14,15 +14,13 @@ function ensureStatsChartElement(): HTMLImageElement {
 	return img;
 }
 
-export function getGameStats(opts?: { matchId?: number }) {
-	log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
-	console.log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
+export function getGameStats(matchId: number) {
+	console.log(`See GameStats! of gameID:${matchId}`);
 
-	const matchId = Number(opts?.matchId);
-	if (!Number.isFinite(matchId) && currentStatsMatchId === matchId) {
-		console.warn('getGameStats: no matchId or game stats is already loaded');
-		return ;
-	}
+	// if (!Number.isFinite(matchId) && currentStatsMatchId === matchId) {
+	// 	console.warn('getGameStats: no matchId or game stats is already loaded');
+	// 	return ;
+	// }
 
 	// // Delete old DOM containers
 	// document.getElementById("creditDiv")?.remove();
@@ -52,9 +50,30 @@ export function getGameStats(opts?: { matchId?: number }) {
 	img.onerror = (e) => console.warn('Chart failed to load', e);
 	img.src = `/api/charts/user-state-durations/${matchId}?t=${Date.now()}`;
 
-	body.appendChild(img);
+	const exitButton = document.createElement('button');
+	exitButton.id = 'exitButton';
+	exitButton.textContent = 'X';
+	exitButton.style.color = 'black';
+	exitButton.style.fontSize = 'clamp(10px, 1.5vw, 15px)';
+	exitButton.style.position = 'fixed';
+	exitButton.style.top = '1rem';
+	exitButton.style.right = '1rem';
+	exitButton.style.background = 'transparent';
+	exitButton.style.border = 'transparent';
+	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	exitButton.style.fontFamily = '"Horizon", sans-serif';
+
+	exitButton.addEventListener('click', () => {
+		// const statsPage = document.getElementById('statsPage');
+		// if (statsPage) {
+		// 	statsPage.remove();
+		// }
+		navigateTo('Menu');
+	});
+
+	page.appendChild(exitButton);
 	page.appendChild(img);
 	body.replaceChildren(page);
 
-	currentStatsMatchId = matchId;
+	// currentStatsMatchId = matchId;
 }
