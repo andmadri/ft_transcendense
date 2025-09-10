@@ -14,11 +14,9 @@ function ensureStatsChartElement(): HTMLImageElement {
 	return img;
 }
 
-export function getGameStats(opts?: { matchId?: number }) {
-	log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
-	console.log(`See GameStats! of gameID:${Number(opts?.matchId)}`);
+export function getGameStats(matchId: number) {
+	console.log(`See GameStats! of gameID:${matchId}`);
 
-	const matchId = Number(opts?.matchId);
 	if (!Number.isFinite(matchId) && currentStatsMatchId === matchId) {
 		console.warn('getGameStats: no matchId or game stats is already loaded');
 		return ;

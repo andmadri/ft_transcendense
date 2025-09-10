@@ -17,7 +17,6 @@ import { getLoginFields } from './Auth/authContent.js'
 import { getMenu } from './Menu/menuContent.js'
 import { getCreditsPage } from './Menu/credits.js'
 import { getSettingsPage } from './SettingMenu/settings.js'
-import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall } from '@shared/gameLogic'
@@ -175,11 +174,6 @@ function mainLoop() {
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
-			} case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard')) {
-					getDashboard();
-				}
-			break;
 			}
 			default:
 		}

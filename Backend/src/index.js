@@ -105,7 +105,7 @@ fastify.ready().then(() => {
 				case 'friends':
 					return handleFriends(msg, socket, userId1, fastify.io);
 				case 'dashboard':
-					return handleDashboardMaking(msg, socket, userId1);
+					return handleDashboardMaking(msg, socket, msg.userID);
 				case 'init':
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':

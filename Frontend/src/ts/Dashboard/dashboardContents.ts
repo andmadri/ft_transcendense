@@ -101,7 +101,7 @@ export function populateDashboard(msg: any)
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
-export function getDashboard()
+export function getDashboard(userId: number)
 {
 	if (UI.state !== S.stateUI.Dashboard) 
 		return;
@@ -236,7 +236,5 @@ export function getDashboard()
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
 	body.append(exitButton);
-	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
-	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
+	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard', userID: userId });
 }

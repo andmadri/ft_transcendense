@@ -70,7 +70,7 @@ function getDashboardBtn(): HTMLButtonElement {
 		// width: '60%',
 	});
 	dashboardBtn.addEventListener('click', () => {
-		navigateTo('Dashboard');
+		navigateTo('Dashboard?userId=3'); // make this dynamic in the new menu!
 	});
 	return (dashboardBtn);
 }

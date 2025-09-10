@@ -4,6 +4,7 @@ import { Game, UI } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
+import { getDashboard } from './Dashboard/dashboardContents.js';
 import { log } from './logging.js';
 
 /**
@@ -15,17 +16,18 @@ export function onHashChange() {
 };
 
 /**
- * @brief Extracts the matchId from the hash
+ * @brief Extracts the matchId or userId from the hash
  * @param hash window.location.hash
- * @returns matchId or null
+ * @param type matchId or userId
+ * @returns matchId or userId or null
  * hash looks like: "#GameStats?matchId=123"
  */
-function getMatchIdFromHash(hash: string): number | null {
+function getIdFromHash(hash: string, type: string): number | null {
 	const q = hash.indexOf('?');
 	if (q === -1) 
 		return null;
 	const params = new URLSearchParams(hash.slice(q + 1));
-	const id = params.get('matchId');
+	const id = params.get(type);
 	if (!id) 
 		return null;
 	const n = Number(id);
@@ -36,7 +38,7 @@ function getMatchIdFromHash(hash: string): number | null {
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string) {
+export function renderPage(newState: string) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(newState)) {
@@ -78,9 +80,6 @@ export function doRenderPage(newState: string) {
 			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
-		case 'Dashboard':
-			UI.state = S.stateUI.Dashboard;
-			break ;
 		case 'Credits':
 			UI.state = S.stateUI.Credits;
 			break ;
@@ -100,11 +99,22 @@ export function doRenderPage(newState: string) {
 		default:
 			if (newState.includes('GameStats')) {
 				UI.state = S.stateUI.GameStats;
-				const id = getMatchIdFromHash(newState);
-				if (id != null) {
-					requestAnimationFrame(() => getGameStats({ matchId: id }));
+				const matchId = getIdFromHash(newState, "matchId");
+				// Add a check that the number is in range of matchId
+				if (matchId != null) {
+					requestAnimationFrame(() => getGameStats(matchId));
 				} else {
 					console.warn('GameStats: no matchId found');
+					UI.state = S.stateUI.Menu;
+				}
+			} else if (newState.includes('Dashboard')) {
+				UI.state = S.stateUI.Dashboard;
+				const userId = getIdFromHash(newState, "userId");
+				// Add a check that the number is in range of userId
+				if (userId != null) {
+					requestAnimationFrame(() => getDashboard(userId));
+				} else {
+					console.warn('Dashboard: no userId found');
 					UI.state = S.stateUI.Menu;
 				}
 			} else {
@@ -201,14 +211,16 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-    const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard', 'GameOver'];
+	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2', 'Settings', 'GameOver'];
 	for (const page of allowedPages) {
 		if (page == newState) {
 			return newState;
 		}
 	}
 	if (newState.includes('GameStats')) {
+		return (newState);
+	}
+	if (newState.includes('Dashboard')) {
 		return (newState);
 	}
     return ('Menu');
