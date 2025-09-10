@@ -242,8 +242,8 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 
 		qrDiv.appendChild(form);
 		overlay.appendChild(qrDiv);
-		const app = document.getElementById('app')
-		app?.appendChild(overlay);
+		const body = document.getElementById('body')
+		body?.appendChild(overlay);
 	});
 	return (twoFABtn);
 }
