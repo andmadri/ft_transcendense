@@ -10,8 +10,8 @@ import { log } from './logging.js';
  * @brief Triggered on hash change, navigates to the new state
  */
 export function onHashChange() {
-  const hash = window.location.hash.replace(/^#/, '');
-  navigateTo(hash, true);
+	const hash = window.location.hash.replace(/^#/, '');
+	navigateTo(hash, true);
 };
 
 /**
@@ -130,7 +130,9 @@ export function navigateTo(newState: string, fromHash = false) {
 	}
 
 	if (fromHash) {
+		console.log(`Before From hash: ${newState}, current: ${sessionStorage.getItem("currentState")}`)
 		newState = getValidState(newState, sessionStorage.getItem("currentState") || '');
+		console.log(`After From hash -> ${newState}`)
 	}
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
@@ -156,9 +158,7 @@ export function navigateTo(newState: string, fromHash = false) {
  * @param gameData Extra information if needed
  */
 function continueNavigation(newState: string) {
-	console.log(`Save navigation to: ${newState}`);
-	sessionStorage.setItem('history', newState);
-
+	sessionStorage.setItem('history', newState.replace(/^#/, ''));
 	history.pushState(newState, '', `#${newState}`);
 	renderPage(newState);
 }
@@ -183,9 +183,9 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-	// Is already logged in
+	// Is not logged in
     if (newState !== 'LoginP1' && UI.user1.ID == -1) {
-		return ('Menu');
+		return ('LoginP1');
 	}
 
 	// No match is started
@@ -220,10 +220,14 @@ export function getValidState(newState: string, currentState: string): string {
  * @param event PopStateEvent
  */
 export function controlBackAndForward(event: PopStateEvent) {
-	const newState = event.state as string;
+	let newState = event.state as string;
+	if (!newState) {
+		newState = window.location.hash.replace(/^#/, '');
+	}
+
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(newState, currentState ? currentState : '');
-	history.replaceState(validState, '', window.location.hash);
+	history.replaceState(validState, '', `#${validState}`);
 
 	// Always go back to menu and stop game
 	if (currentState == 'Game') {

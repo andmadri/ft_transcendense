@@ -35,7 +35,7 @@ setInterval(() => {
 	}
 }, 5000);
 
-window.addEventListener("hashchange", () => { onHashChange(); });
+// window.addEventListener("hashchange", () => { onHashChange(); });
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('popstate', (event: PopStateEvent) => { controlBackAndForward(event); });
