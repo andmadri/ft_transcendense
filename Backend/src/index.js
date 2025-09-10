@@ -130,9 +130,9 @@ fastify.ready().then(() => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
 				if (msg.menu === true) {
-					// openFriendRequest(userId1, socket);
-					// getAllPlayerInclFriends(db, userId1, socket);
-					// getFriends(userId1, socket);
+					openFriendRequest(userId1, socket);
+					getAllPlayerInclFriends(db, userId1, socket);
+					getFriends(userId1, socket);
 				}
 			}
 		});

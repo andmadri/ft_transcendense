@@ -98,7 +98,8 @@ function createTabs(): { tabContainer1: HTMLDivElement; tabContainer2: HTMLDivEl
 
 function createUserPicture(user_info: any): HTMLImageElement {
 	const userPic = document.createElement('img');
-	userPic.src = `/api/avatar/${user_info?.id}`;
+	userPic.id = `avatar1`;
+	userPic.src = `/api/avatar/${user_info?.id}?ts=${Date.now()}`
 	userPic.alt = `${user_info?.name}'s avatar`;
 	userPic.style.height = 'clamp(60px, 90%, 120px)';
 	userPic.style.aspectRatio = '1/1';
@@ -147,6 +148,7 @@ function createDashboardButton(): HTMLButtonElement {
 
 function createNotificationButtons(): HTMLButtonElement {
 	const notificationsBtn = document.createElement('button');
+	notificationsBtn.id = 'notificationBtn';
 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
 	notificationsBtn.addEventListener("click", () => {
 		// Add notifications logic here
