@@ -2,12 +2,8 @@ import { handlePlayers, getAllPlayerInclFriends } from './DBrequests/getPlayers.
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-<<<<<<< HEAD
-import { handleFriends } from './DBrequests/getFriends.js';
 import { handleMatchmaking } from './Pending/matchmaking.js'
-=======
 import { handleFriends, openFriendRequest, getFriends } from './DBrequests/getFriends.js';
->>>>>>> main
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
@@ -134,9 +130,9 @@ fastify.ready().then(() => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
 				if (msg.menu === true) {
-					openFriendRequest(userId1, socket);
-					getAllPlayerInclFriends(db, userId1, socket);
-					getFriends(userId1, socket);
+					// openFriendRequest(userId1, socket);
+					// getAllPlayerInclFriends(db, userId1, socket);
+					// getFriends(userId1, socket);
 				}
 			}
 		});

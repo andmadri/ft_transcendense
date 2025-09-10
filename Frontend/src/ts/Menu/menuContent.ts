@@ -98,6 +98,7 @@ export function getTournamentBtn(): HTMLButtonElement {
 	styleMainBtns(tournamentBtn, "Tournament");
 	tournamentBtn.addEventListener('click', () => {
 		console.log('I am tired');
+		console.log('That is okay, sleep well ;)');
 	});
 	return (tournamentBtn);
 }

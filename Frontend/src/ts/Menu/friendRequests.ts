@@ -1,5 +1,5 @@
 import { Game } from "../gameData.js";
-import { getFriendsList } from "./friends.js";
+// import { getFriendsList } from "./friends.js";
 
 let friendRequestsDiv: HTMLDivElement | null = null;
 
@@ -101,5 +101,5 @@ function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 		container?.remove();
 	}
 
-	getFriendsList(1);
+	// getFriendsList(1);
 }
