@@ -1,5 +1,6 @@
 import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGame.js";
 import { navigateTo } from "../history.js";
+import { UI } from "../gameData.js";
 
 function styleSettingTitle(text: string): HTMLDivElement {
 	const title = document.createElement('div');
@@ -156,7 +157,7 @@ export function getOpponentMenu() {
 
 	const gameModeButtonsContainer = styleContainerButtons();
 	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs AI', '1 vs COM'));
-	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs Guest', '1 vs 1'));
+	gameModeButtonsContainer.appendChild(styleSettingsBttns(`vs ${UI.user2.name}`, '1 vs 1'));
 	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs Online', 'Online'));
 
 	const playGameButton = stylePlayGameBttn('Play Game');
