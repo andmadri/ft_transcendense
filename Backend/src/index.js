@@ -3,9 +3,10 @@ import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
-import { createDatabase } from './Database/database.js'
-import { handleGame } from './Game/game.js'
-import { handleInitGame } from './InitGame/initGame.js'
+import { createDatabase } from './Database/database.js';
+import { handleGame } from './Game/game.js';
+import { handleInitGame } from './InitGame/initGame.js';
+import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
