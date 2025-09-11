@@ -38,7 +38,7 @@ export default async function twoFactor(fastify, opts) {
 			const userSecretStr = await getUserSecretDB(db, userId);
 			if (userSecretStr) {
 				const userSecret = JSON.parse(userSecretStr);
-				console.log(`User secret: ${userSecret}`);
+				// console.log(`User secret: ${userSecret}`);
 				if (userSecret.google == "true") {
 					return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
 				}
@@ -48,7 +48,7 @@ export default async function twoFactor(fastify, opts) {
 			await addUser2faSecretToDB(db, userId, encryptedSecret);
 
 			const qrCodeDataURL = await qrcode.toDataURL(secret.otpauth_url);
-			console.log(`2FA secret generated for user ${userId}: qrCodeDataURL=${qrCodeDataURL}`);
+			// console.log(`2FA secret generated for user ${userId}: qrCodeDataURL=${qrCodeDataURL}`);
 			return reply.send({ qrCodeDataURL });
 		} catch (err) {
 			return reply.status(500).send({ success: false, message: 'Failed to generate 2FA secret' + `: ${err.message}` });

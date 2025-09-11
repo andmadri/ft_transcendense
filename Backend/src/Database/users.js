@@ -126,35 +126,35 @@ export async function updateUserInDB(db, user) {
 //                          DELETE ROW FROM SQL TABLE                          //
 // *************************************************************************** //
 
-/**
- * @brief Soft-deletes a user (marks them deleted + logs them out).
- *
- * @param {sqlite3.Database} db
- * @param {number} user_id
- * @returns {Promise<void>}
- * @throws {Error}
- */
-export async function deactivateUserInDB(db, user_id) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
+// /**
+//  * @brief Soft-deletes a user (marks them deleted + logs them out).
+//  *
+//  * @param {sqlite3.Database} db
+//  * @param {number} user_id
+//  * @returns {Promise<void>}
+//  * @throws {Error}
+//  */
+// export async function deactivateUserInDB(db, user_id) {
+// 	const existing = await getUserByID(db, user.user_id);
+// 	if (!existing) {
+// 		throw new Error(`User ID ${user.user_id} does not exist.`);
+// 	}
 	
-	await new Promise((resolve, reject) => {
-		const sql = `UPDATE Users SET is_deleted = 1, last_edited = CURRENT_TIMESTAMP WHERE id = ?`;
-		db.run(sql, [user_id], function (err) {
-			if (err) {
-				sql_error(err, `deactivateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
-				reject(err);
-			} else {
-				sql_log(`User deactivated: [${user.user_id}] ${existing.name} (${existing.email})`);
-				resolve();
-			}
-		});
-	});
+// 	await new Promise((resolve, reject) => {
+// 		const sql = `UPDATE Users SET is_deleted = 1, last_edited = CURRENT_TIMESTAMP WHERE id = ?`;
+// 		db.run(sql, [user_id], function (err) {
+// 			if (err) {
+// 				sql_error(err, `deactivateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
+// 				reject(err);
+// 			} else {
+// 				sql_log(`User deactivated: [${user.user_id}] ${existing.name} (${existing.email})`);
+// 				resolve();
+// 			}
+// 		});
+// 	});
 
-	await addUserSessionToDB(db, { user_id, state: 'logout' });
-}
+// 	await addUserSessionToDB(db, { user_id, state: 'logout' });
+// }
 
 // *************************************************************************** //
 //                           VIEW DATA FROM SQL TABLE                          //

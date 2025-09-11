@@ -1,4 +1,5 @@
 import { sql_log, sql_error } from './dblogger.js';
+import { getUserByID } from './users.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
@@ -6,26 +7,18 @@ import { sql_log, sql_error } from './dblogger.js';
 
 async function isAlreadyAnInvite(db, user_id, friend_id) {
 	return new Promise((resolve, reject) => {
-		const checkSql = `
-			SELECT id FROM Friends
-			WHERE (user_id = ? AND friend_id = ?)
-			LIMIT 1
-		`;
-		db.get(
-			checkSql,
-			[friend_id, user_id],	
-			(err, row) => {
-				if (err)
-					return reject(err);
-				if (row) {
-					resolve(row.id);
-				} else {
-					resolve(null);
-				}
+		const sql = `SELECT id FROM Friends	WHERE (user_id = ? AND friend_id = ?) LIMIT 1`;
+		db.get(sql, [friend_id, user_id], (err, row) => {
+			if (err)
+				return reject(err);
+			if (row) {
+				resolve(row.id);
+			} else {
+				resolve(null);
 			}
-		);
+		});
 	});
-};
+}
 
 export async function addFriendRequestDB(db, user_id, friend_id) {
 	try {
@@ -41,21 +34,18 @@ export async function addFriendRequestDB(db, user_id, friend_id) {
 	}
 
 	return new Promise((resolve, reject) => {
-		db.run(
-			`INSERT INTO Friends (user_id, friend_id) VALUES (?, ?)`,
-			[user_id, friend_id],
-			(err) => {
-				if (err) {
-					if (err.message.includes('UNIQUE')) {
-						reject(new Error('You already invited this player'));
-					} else {
-						reject(err);
-					}
+		const sql = `INSERT INTO Friends (user_id, friend_id) VALUES (?, ?)`;
+		db.run(sql, [user_id, friend_id], (err) => {
+			if (err) {
+				if (err.message.includes('UNIQUE')) {
+					reject(new Error('You already invited this player'));
 				} else {
-					resolve();
+					reject(err);
 				}
+			} else {
+				resolve();
 			}
-		);
+		});
 	});
 }
 
@@ -67,14 +57,15 @@ export async function acceptFriendRequestDB(db, requestId) {
 	return new Promise((resolve, reject) => {
 		const sql = `UPDATE Friends SET accepted = 1 WHERE id = ? AND accepted = 0`;
 		db.run(sql, [requestId], function(err) {
-    		if (err) {
-    			reject(err);
-    		} else if (this.changes === 0) {
-    			reject(new Error("No pending friend request found"));
-    		} else {
-    			resolve();
-    		}
-    	});
+			if (err) {
+				reject(err);
+			} else if (this.changes === 0) {
+				reject(new Error("No pending friend request found"));
+			} else {
+				sql_log(`Friend request accepted: [${requestId}]`);
+				resolve();
+			}
+		});
 	});
 }
 
@@ -97,36 +88,39 @@ export async function denyFriendRequestDB(db, requestId) {
 	});
 }
 
-export function deleteFriendDBfromUser(db, user_id, friend_id) {
+export async function deleteFriendDBfromUser(db, user_id, friend_id) {
+	const user1 = await getUserByID(db, user_id);
+	const user2 = await getUserByID(db, friend_id);
+	if (!user1 || !user2) {
+		throw new Error(`deleteFriendDBfromUser | ${user_id} and/or ${friend_id} does not exist.`);
+	}
 	return new Promise((resolve, reject) => {
-		db.run(
-			`DELETE FROM Friends 
-			WHERE (user_id = ? AND friend_id = ?) 
-			OR (user_id = ? AND friend_id = ?)`,
-			[user_id, friend_id, friend_id, user_id],
-			function (err) {
-				if (err)
-					reject(err);
-				else
-					resolve();
+		const sql = `DELETE FROM Friends WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)`;
+		db.run(sql,	[user_id, friend_id, friend_id, user_id], function (err) {
+			if (err) {
+				sql_error(`deleteFriendDBfromUser | user_id=${user_id}, friend_id=${friend_id}`);
+				reject(err);
+			} else {
+				sql_log(`Friendship deleted: ${user1.name} - ${user2.name}`);
+				resolve();
 			}
-		)
-	})
+		});
+	});
 }
 
 export function deleteFriendDBfromID(db, request_id) {
 	return new Promise((resolve, reject) => {
-		db.run(
-			`DELETE FROM Friends WHERE id = ?`,
-			[request_id],
-			function (err) {
-				if (err)
-					reject(err);
-				else
-					resolve();
+		const sql = `DELETE FROM Friends WHERE id = ?`;
+		db.run(sql, [request_id], function (err) {
+			if (err) {
+				sql_error(`deleteFriendDBfromID | request_id=${request_id}`);
+				reject(err);
+			} else {
+				sql_log(`Friendship request denied: ${user1.name} - ${user2.name}`);
+				resolve();
 			}
-		)
-	})
+		});
+	});
 }
 
 // *************************************************************************** //
@@ -135,17 +129,16 @@ export function deleteFriendDBfromID(db, request_id) {
 
 export async function getOpenFriendRequestsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
-		const sql = `
-			SELECT f.id, u.id as requester_id, u.name as requester_name
-			FROM Friends f
-			JOIN Users u ON u.id = f.user_id
-			WHERE f.friend_id = ? AND f.accepted = 0
-		`;
+		const sql = `SELECT f.id, u.id as requester_id, u.name as requester_name
+			FROM Friends f JOIN Users u ON u.id = f.user_id	WHERE f.friend_id = ? AND f.accepted = 0`;
 		db.all(sql, [player_id], (err, rows) => {
-			if (err)
+			if (err) {
+				
 				return reject(err);
-			else
+			} else {
+				
 				resolve(rows);
+			}
 		});
 	});
 }
