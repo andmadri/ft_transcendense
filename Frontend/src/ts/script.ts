@@ -20,8 +20,8 @@ import { getSettingsPage } from './SettingMenu/settings.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
-import { resetBall } from '@shared/gameLogic'
-import { updatePaddlePos } from '@shared/gameLogic'
+import { resetBall, updatePaddlePos } from '@shared/gameLogic'
+import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
 createLog();
 
@@ -29,10 +29,24 @@ log("host: " + window.location.host);
 
 startSocketListeners();
 
-// Send a heartbeat every 10 seconds
+// Send a heartbeat every 5 seconds
 setInterval(() => {
 	if (Game.socket && Game.socket.connected) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
+		fetch('/api/refresh-token', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ playerNr: 1 })
+		});
+		if (UI.user2.ID !== 1) {	// if user2 is not guest
+			fetch('/api/refresh-token', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ playerNr: 2 })
+			});
+		}
 	}
 }, 5000);
 
@@ -79,9 +93,7 @@ function gameLoop() {
 				else {
 					startDuration = 4000;
 				}
-				console.log(`initGame()`);
-				initGame(); // this needs to happen only once
-				console.log(`startDuration = ${startDuration}`);
+				initGame();
 				startGameField(startDuration);
 			}
 			break ;
@@ -99,9 +111,9 @@ function gameLoop() {
 				pauseDuration = 3000;
 			}
 			if (Game.match.pauseTimeOutID === null) {
-				console.log(`pauseDuration = ${pauseDuration}`);
 				pauseBallTemporarily(pauseDuration);
 			}
+			renderGameInterpolated();
 			updateDOMElements(Game.match);
 			break ;
 		}

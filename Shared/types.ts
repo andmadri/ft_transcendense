@@ -38,6 +38,7 @@ export type matchInfo = {
 	pauseTimeOutID: number | null,
 	resumeTime: number,
 	winnerID: number | null,
+	lastUpdateTime: number,
 	mode: OT,
 	lastScoreID: number,
 	player1: player,
