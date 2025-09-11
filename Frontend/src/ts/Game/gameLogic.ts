@@ -45,12 +45,17 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game(match : matchInfo) {
-	
+	let now = performance.now();
+	if (!match.lastUpdateTime) {
+		match.lastUpdateTime = now;
+		return;
+	}
+	let deltaTime = (now - match.lastUpdateTime) / 1000;
 	switch (match.mode) {
 		case OT.Online : {
 			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
 			renderGameInterpolated();
-			updatePaddlePos(paddle, match.gameState.field);
+			updatePaddlePos(paddle, match.gameState.field, deltaTime);
 			break ;
 		}
 		case OT.ONEvsCOM : {
@@ -58,16 +63,16 @@ export function game(match : matchInfo) {
 		}
 		case OT.ONEvsONE : {
 			if (match.state != state.Paused) {
-				updateGameState(match);
+				updateGameState(match, deltaTime);
 			}
 			else {
-				updatePaddlePos(match.gameState.paddle1, match.gameState.field);
-				updatePaddlePos(match.gameState.paddle2, match.gameState.field);
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field, deltaTime);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field, deltaTime);
 			}
-			match.time = performance.now();
 			sendGameState(); //do we need this still?
 			break;
 		}
 	}
+	match.lastUpdateTime = now;
 	updateDOMElements(match);
 }

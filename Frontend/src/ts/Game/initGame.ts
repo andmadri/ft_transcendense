@@ -1,5 +1,5 @@
 import * as S from '../structs'
-import { Game, UI } from "../gameData.js"
+import { Game, UI, newMatch } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
@@ -119,7 +119,6 @@ export function initGameServer() {
 
 export function initGame() {
 	if (Game.match.mode != OT.Online) {
-		//do we need to set the ID's here
 		Game.match.player1.ID = UI.user1.ID;
 		Game.match.player1.name = UI.user1.name;
 		if (Game.match.mode != OT.ONEvsCOM) {

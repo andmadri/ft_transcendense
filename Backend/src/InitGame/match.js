@@ -40,6 +40,7 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			intervalID: null,
 			pauseTimeOutID: null,
 			resumeTime: -1,
+			lastUpdateTime: null,
 			mode: mode,
 			lastScoreID: -1,
 			player1: {
@@ -63,19 +64,19 @@ async function newMatch(db, matchnr, id, id2, mode) {
 					size: { width: 0.05, height: 0.05 },
 					pos: { x: 0.5, y: 0.75 / 2 },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.01 },
+					movement: { speed: 0.5 },
 					},
 				paddle1: { 
 					size: { width: 0.02, height: 0.14},
 					pos: { x: 0.02, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.015 },
+					movement: { speed: 0.6 },
 					},
 				paddle2: { 
 					size: { width: 0.02, height: 0.14 },
 					pos: { x: 0.98, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.015 },
+					movement: { speed: 0.6 },
 					},
 			}
 		});

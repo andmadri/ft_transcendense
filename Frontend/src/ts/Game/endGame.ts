@@ -120,7 +120,6 @@ export function saveGame() {
 	else
 		result = "It is a Tie!"
 	lastMatchId = Game.match.matchID;
-	Game.match = newMatch();
 	
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;

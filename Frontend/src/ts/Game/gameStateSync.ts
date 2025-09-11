@@ -9,10 +9,10 @@ export function applyGameStateUpdate(data : any) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 		Game.match.state = data.state;
 		Game.match.resumeTime = data.resumeTime;
-		if (data.gameState && Game.match.state == state.Playing) {
+		if (data.gameState && Game.match.state == state.Playing || Game.match.state == state.Paused) {
 			makeSnapshot(data.gameState, playerNr);
 		}
-		if (Game.match.state != state.Playing) {
+		if (Game.match.state == state.Score) {
 			renderGameInterpolated();
 		}
 		// else {
