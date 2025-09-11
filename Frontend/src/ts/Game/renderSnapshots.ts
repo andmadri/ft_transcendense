@@ -139,20 +139,19 @@ function deleteOldSnapshots(renderTime: number) {
  * @param data must contain: ballY, ballX, paddleOneY, paddleTwoY, paddleOneVY, paddleTwoVY, and playerNr (in match, left/right?)
  */
 export function renderGameInterpolated() {
-	if (Game.match.state != state.Playing) { //clear snapshots on score/pause when ball is reset
-		snapshots.length = 0;
-		return ;
-	}
 	const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
-
+	
 	const now = Date.now();
 	const renderTime = now - INTERPOLATION_DELAY;
-
+	
 	const [snap1, snap2] = getBoundingSnapshots(renderTime);
 	if (snap1 && snap2) {
 		interpolateSnapshot(snap1, snap2, renderTime, playerNr);
 		deleteOldSnapshots(renderTime);
 	} 
+	if (Game.match.state == state.Score) { //clear snapshots on score/pause when ball is reset
+		snapshots.length = 0;
+	}
 	// else if (snap1) {
 	// 	if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
 	// 		extrapolateFromSnapshot(snap1, playerNr);

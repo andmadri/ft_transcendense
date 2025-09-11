@@ -87,6 +87,7 @@ export async function validateLogin(msg, fastify) {
 
 	try {
 		const onlineUsers = await getOnlineUsers(db);
+		console.log('Online users:', onlineUsers.map(u => u.id));
 		for (const onlineUser of onlineUsers) {
 			if (onlineUser.id === user.id) {
 				return ({ error: 'You are already logged in!' });
