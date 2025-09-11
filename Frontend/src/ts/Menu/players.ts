@@ -113,8 +113,8 @@ export function insertPlayers(players: any) {
 		//I don't want to show the current player
 			if (player.id > 2 && player.id !== UI.user1.ID) {
 			const row = styleRow(player.name);
-			// const status = player.online_status == 0 ? 'offline' : 'online';
-			// row.style.color = status === 'online' ? 'green' : 'gray';
+			const status = player.online_status == 0 ? 'offline' : 'online';
+			row.style.color = status === 'online' ? 'green' : 'gray';
 
 			const btnContainer = document.createElement('div');
 			btnContainer.style.display = 'flex';

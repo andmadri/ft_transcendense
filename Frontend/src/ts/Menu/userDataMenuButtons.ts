@@ -284,7 +284,9 @@ export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 	return button;
 }
 
-
+// export function getChangeNameBtn(playerNr: number): HTMLButtonElement {
+// 	con
+// }
 
 function getLogoutBtn(playerNr: number): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');

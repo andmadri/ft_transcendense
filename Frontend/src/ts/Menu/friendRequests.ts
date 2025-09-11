@@ -27,57 +27,88 @@ export function initFriendRequestsContainer() {
 	body.appendChild(friendRequestsDiv);
 }
 
-export function showFriendRequests(requests: any) {
-	if (!friendRequestsDiv)
-		initFriendRequestsContainer();
-	if (!friendRequestsDiv)
+function updateNotificationBadge(count: number) {
+	const badge = document.getElementById('notificationBadge');
+	if (!badge)
 		return;
+	if (count > 0) {
+		badge.style.display = 'flex';
+		badge.textContent = count >  99 ? '99+' : count.toString();
+	} else {
+		badge.style.display = 'none';
+	}
+}
 
-	friendRequestsDiv.innerHTML = '';
+export function showFriendRequests(requests: any) {
+	const notificationBtn = document.getElementById('notificationBtn');
+	const notificationBtnList = document.getElementById('notificationBtnList');
+	if (!notificationBtnList)
+		return ;
+	notificationBtnList.innerHTML = '';
+	notificationBtnList.style.gap = '0.5rem';
+	notificationBtnList.style.overflowY = 'auto';
 
-	const title = document.createElement('div');
-	title.textContent = "Friend Requests";
-	title.style.fontWeight = 'bold';
-	title.style.fontSize = '1.2rem';
-	title.style.marginBottom = '0.5rem';
-	friendRequestsDiv.appendChild(title);
+	updateNotificationBadge(requests.length);
 
-	for (const req of requests) {
-		const div = document.createElement('div');
-		div.style.background = '#fff';
-		div.style.padding = '0.6rem';
-		div.style.borderRadius = '6px';
-		div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.25)';
-		div.style.display = 'flex';
-		div.style.justifyContent = 'space-between';
-		div.style.alignItems = 'center';
-		div.style.fontSize = '1rem';
-		div.classList.add('friend-request-item');
-		div.dataset.requestId = req.id.toString();
+	 for (const req of requests) {
+
+		const row = document.createElement('li');
+		row.style.fontFamily = '"RobotoCondensed", sans-serif';
+		row.style.background = 'transparent';
+		row.style.padding = '12px 16px';
+		row.style.borderRadius = '0';
+		row.style.color = 'white';
+		// row.style.boxShadow = '0 2px 6px rgba(0,0,0,0.25)';
+		row.style.display = 'flex';
+		row.style.justifyContent = 'space-between';
+		row.style.alignItems = 'center';
+		row.style.cursor = 'default';
+		row.style.fontSize = '20px';
+		row.dataset.requestId = req.id.toString();
+
+		// row.addEventListener('mouseenter', () => {
+		// 	row.style.backgroundColor = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		// 	row.style.color = 'black';
+		// 	row.style.borderRadius = '5px';
+		// });
+		// row.addEventListener('mouseleave', () => {
+		// 	row.style.backgroundColor = 'transparent';
+		// 	// row.style.backgroundColor = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		// 	row.style.color = 'black';
+		// 	row.style.borderRadius = '5px';
+		// });
 
 		const nameSpan = document.createElement('span');
+		nameSpan.style.display = 'flex';
+		nameSpan.style.flex = '1';
 		nameSpan.textContent = req.requester_name;
-		div.appendChild(nameSpan);
+		row.appendChild(nameSpan);
 
 		const buttonContainer = document.createElement('div');
+		buttonContainer.style.justifyContent = 'space-between';
+		buttonContainer.style.display = 'flex';
+		buttonContainer.style.flex = '1';
 
 		const acceptBtn = document.createElement('button');
+		acceptBtn.style.borderRadius = '50%';
 		acceptBtn.textContent = '✓';
-		acceptBtn.style.marginRight = '0.3rem';
-		acceptBtn.style.fontSize = '0.9rem';
+		acceptBtn.style.fontFamily = '"Horizon", sans-serif';
+		acceptBtn.style.background = '#ffc233'
+		acceptBtn.style.border = 'none';
 		acceptBtn.onclick = () => handleFriendRequest(req.id, 'accept');
 
 		const denyBtn = document.createElement('button');
 		denyBtn.textContent = '✗';
-		denyBtn.style.fontSize = '0.9rem';
+		denyBtn.style.borderRadius = '50%';
+		denyBtn.style.borderRadius = '"Horizon", sans-serif';
+		denyBtn.style.background = '#ffc233'
+		denyBtn.style.border = 'none';
 		denyBtn.onclick = () => handleFriendRequest(req.id, 'deny');
 
-		buttonContainer.appendChild(acceptBtn);
-		buttonContainer.appendChild(denyBtn);
-		div.appendChild(buttonContainer);
-
-		friendRequestsDiv.appendChild(div);
-	};
+		buttonContainer.append(acceptBtn, denyBtn);
+		row.appendChild(buttonContainer);
+		notificationBtnList.appendChild(row);
+	}
 }
 
 function handleFriendRequest(requestId: number, acceptOrDeny: string) {
