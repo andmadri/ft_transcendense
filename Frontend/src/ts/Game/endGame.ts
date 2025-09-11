@@ -1,4 +1,4 @@
-import { Game } from "../gameData.js"
+import { Game, newMatch } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT } from '@shared/enums'
@@ -137,7 +137,7 @@ export function saveGame() {
 		clearTimeout(Game.match.pauseTimeOutID);
 		Game.match.pauseTimeOutID = null;
 	}
-
+	
 	// Save the result to show in the GameOver function
 	result = getWinnerResult();
 	lastMatchId = Game.match.matchID;

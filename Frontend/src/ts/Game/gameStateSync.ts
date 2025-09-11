@@ -12,7 +12,7 @@ export function applyGameStateUpdate(data : any) {
 			Game.match.state = data.state;
 		}
 		Game.match.resumeTime = data.resumeTime;
-		if (data.gameState && Game.match.state != state.Score) {
+		if (data.gameState && Game.match.state == state.Playing || Game.match.state == state.Paused) {
 			makeSnapshot(data.gameState, playerNr);
 		}
 		if (Game.match.state == state.Score) {

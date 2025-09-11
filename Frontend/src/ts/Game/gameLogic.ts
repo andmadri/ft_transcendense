@@ -55,17 +55,34 @@ export function reconcilePaddle(playerNr : number, serverGameState : gameState) 
 }
 
 export function game(match : matchInfo) {
-	if (match.mode == OT.Online) {
-		renderGameInterpolated();
-		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		updatePaddlePos(paddle, match.gameState.field);
-	} else {
-		match.time = Date.now();
-		if (match.mode == OT.ONEvsCOM) {
+	let now = performance.now();
+	if (!match.lastUpdateTime) {
+		match.lastUpdateTime = now;
+		return;
+	}
+	let deltaTime = (now - match.lastUpdateTime) / 1000;
+	switch (match.mode) {
+		case OT.Online : {
+			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+			renderGameInterpolated();
+			updatePaddlePos(paddle, match.gameState.field, deltaTime);
+			break ;
+		}
+		case OT.ONEvsCOM : {
 			aiAlgorithm(match);
 		}
-		updateGameState(match);
-		sendGameState();
+		case OT.ONEvsONE : {
+			if (match.state != state.Paused) {
+				updateGameState(match, deltaTime);
+			}
+			else {
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field, deltaTime);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field, deltaTime);
+			}
+			sendGameState(); //do we need this still?
+			break;
+		}
 	}
+	match.lastUpdateTime = now;
 	updateDOMElements(match);
 }
