@@ -45,21 +45,29 @@ export function pauseBallTemporarily(duration: number) {
 }
 
 export function game(match : matchInfo) {
-	if (Game.match.state !== state.Playing) {
-		return;
-	}
-	if (match.mode == OT.Online) {
-		//update own paddle immediately in frontend
-		renderGameInterpolated();
-		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		updatePaddlePos(paddle, match.gameState.field);
-	} else {
-		match.time = performance.now();
-		if (match.mode == OT.ONEvsCOM) {
+	
+	switch (match.mode) {
+		case OT.Online : {
+			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+			renderGameInterpolated();
+			updatePaddlePos(paddle, match.gameState.field);
+			break ;
+		}
+		case OT.ONEvsCOM : {
 			aiAlgorithm(match);
 		}
-		updateGameState(match);
-		sendGameState();
+		case OT.ONEvsONE : {
+			if (match.state != state.Paused) {
+				updateGameState(match);
+			}
+			else {
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field);
+			}
+			match.time = performance.now();
+			sendGameState(); //do we need this still?
+			break;
+		}
 	}
 	updateDOMElements(match);
 }

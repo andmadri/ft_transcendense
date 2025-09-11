@@ -1,4 +1,4 @@
-import { Game } from "../gameData.js"
+import { Game, newMatch } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT } from '@shared/enums'
@@ -111,16 +111,17 @@ export function saveGame() {
 		clearTimeout(Game.match.pauseTimeOutID);
 		Game.match.pauseTimeOutID = null;
 	}
-
+	
 	// Save the result to show in the GameOver function
 	if (Game.match.player1.score > Game.match.player2.score)
 		result = "Left Player Wins!";
 	else if (Game.match.player1.score < Game.match.player2.score)
-  		result = "Right Player Wins!"; 
+		result = "Right Player Wins!"; 
 	else
 		result = "It is a Tie!"
 	lastMatchId = Game.match.matchID;
-
+	Game.match = newMatch();
+	
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
 
