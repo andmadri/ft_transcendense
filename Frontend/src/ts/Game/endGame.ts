@@ -113,10 +113,19 @@ export function saveGame() {
 	}
 
 	// Save the result to show in the GameOver function
-	if (Game.match.player1.score > Game.match.player2.score)
-		result = "Left Player Wins!";
-	else if (Game.match.player1.score < Game.match.player2.score)
-  		result = "Right Player Wins!"; 
+	let winnerName;
+	if (Game.match.winnerID) {
+		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
+		result = `${winnerName} Wins!`;
+	}
+	else if (Game.match.player1.score > Game.match.player2.score) {
+		winnerName = Game.match.player1.name;
+		result = `${winnerName} Wins!`;
+	}
+	else if (Game.match.player1.score < Game.match.player2.score) {
+		winnerName = Game.match.player2.name;
+  		result = `${winnerName} Wins!`;
+	}
 	else
 		result = "It is a Tie!"
 	lastMatchId = Game.match.matchID;

@@ -25,6 +25,7 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
+	Game.match.winnerID = data.winner;
 	Game.match.state = state.End;
 	log(data.reason);
 }

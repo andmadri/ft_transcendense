@@ -26,6 +26,7 @@ export function newMatch() {
 		pauseTimeOutID: null,
 		resumeTime: -1,
 		mode: OT.Empty,
+		winnerID: null,
 		lastScoreID: -1,
 		player1: {
 			ID: -1,

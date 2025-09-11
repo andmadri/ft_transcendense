@@ -108,7 +108,10 @@ export async function handleMatchEndedDB(db, match_id) {
 
 	// Find out who is the winner
 	let winner_id = null;
-	if (match.player_1_score > match.player_2_score) {
+	if (match.winnerID) {
+		winner_id = match.winnerID;
+	}
+	else if (match.player_1_score > match.player_2_score) {
 		winner_id = match.player_1_id;
 	} else if (match.player_1_score < match.player_2_score) {
 		winner_id = match.player_2_id;

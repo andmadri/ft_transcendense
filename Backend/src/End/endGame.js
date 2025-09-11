@@ -1,7 +1,7 @@
 import { getUserMatchStatsDB, getAllUserStateDurationsDB } from "../Database/dashboard.js";
 import { handleMatchEndedDB } from "../Services/matchService.js";
 import { matches } from "../InitGame/match.js";
-import { state } from "../SharedBuild/enums.js"
+import { state, OT } from "../SharedBuild/enums.js"
 import { renderUserStateDurationsSVG } from '../Database/test.js';
 import path from 'path';
 import { db } from "../index.js";
@@ -10,10 +10,14 @@ const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
 export async function quitMatch(match, msg, socket, io) {
 	const name = msg.name ? msg.name : 'unknown player';
+	if (match.mode != OT.ONEvsONE) {
+		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
+	}
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
 		matchID: match.matchID,
+		winner: match.winnerID,
 		reason: `match quit by player ${msg.name}`
 	});
 	match.state = state.End;
