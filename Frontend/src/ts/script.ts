@@ -35,12 +35,14 @@ startSocketListeners();
 setInterval(() => {
 	if (Game.socket && Game.socket.connected) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
-		fetch('/api/refresh-token', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ playerNr: 1 })
-		});
+		if (UI.user1.ID !== -1) {
+			fetch('/api/refresh-token', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ playerNr: 1 })
+			});
+		}
 		if (UI.user2.ID !== 1) {	// if user2 is not guest
 			fetch('/api/refresh-token', {
 				method: 'POST',
