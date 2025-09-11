@@ -11,6 +11,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	card.style.flexDirection = 'column';
 	card.style.gap = '1rem';
 	card.style.padding = '1rem';
+	card.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
 	const title = document.createElement('div');
 	title.id = 'playingTimeTitle';

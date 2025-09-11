@@ -4,6 +4,7 @@ import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
 import { log } from '../logging.js'
 import { navigateTo } from '../history'
+import { createBackgroundText } from '../Menu/menuContent'
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -15,7 +16,8 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.style.height = '5%';
 		row.style.background = 'rgba(0, 0, 0, 0.18)';
 		row.style.cursor = 'pointer';
-		row.style.borderRadius = '10px';
+		row.style.borderRadius = '5px';
+		row.style.boxShadow = '2.6px 5.1px 5.1px hsl(0deg 0% 0% / 0.42)';
 		row.style.justifyContent = 'space-between';
 		row.style.alignItems = 'center';
 		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
@@ -47,7 +49,8 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	const card = document.createElement('div');
 	card.id = 'userInfoCard';
 	// card.style.aspectRatio = '4 / 3';
-	card.style.borderRadius = '16px';
+	card.style.borderRadius = '10px';
+	card.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	card.style.display = 'flex';
 	card.style.background = '#363430';
 	card.style.flex = '1 1 25%';
@@ -57,8 +60,8 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.justifyContent = 'center'; 
 
 	const userPic = document.createElement('img')
-	userPic.src = `/api/avatar/${user_info.id}`;
-	//clamped
+	//forces the browser not to use the cached image that it already had
+	userPic.src = `/api/avatar/${user_info.id}?t=${Date.now()}`;
 	userPic.style.height = 'clamp(60px, 30%, 120px)';
 	userPic.style.objectFit = 'cover';
 	userPic.style.borderRadius = '50%';
@@ -68,14 +71,12 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	userName.textContent = `${user_info.name}`;
 	userName.style.display = 'inline-flex';
 	userName.style.color = 'white';
-	//clamped
 	userName.style.fontSize = 'clamp(14px, 2vw, 24px)';
 	userName.style.fontFamily = '"Horizon", sans-serif';
 	userName.style.whiteSpace = 'nowrap';
 
 	const userDateCreation = document.createElement('div');
 	userDateCreation.style.color = 'white';
-	//clamped
 	userDateCreation.style.fontSize = 'clamp(6px, 1vw, 16px)';
 	userDateCreation.textContent = `Created at: ${user_info.created_at}`;
 	userDateCreation.style.display = 'inline-flex';
@@ -101,7 +102,7 @@ export function populateDashboard(msg: any)
 	renderPlayingTimeCard(msg.log_time, infoCardsContainer);
 }
 
-export function getDashboard()
+export function getDashboard(playerID?: number, playerNr?: number)
 {
 	if (UI.state !== S.stateUI.Dashboard) 
 		return;
@@ -113,6 +114,8 @@ export function getDashboard()
 	body.style.height = '100vh';
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
+
+	createBackgroundText(body);
 
 	const containerDashboard = document.createElement('div');
 	containerDashboard.style.display = 'flex';
@@ -135,7 +138,8 @@ export function getDashboard()
 	// dashboard.style.height = '50vh';
 	dashboard.style.width = 'clamp(500px, 80vw, 1200px)';
 	dashboard.style.height = 'clamp(300px, 50vh, 800px)';
-	dashboard.style.borderRadius = '16px';
+	dashboard.style.borderRadius = '10px';
+	dashboard.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	dashboard.style.position = 'relative';
 	dashboard.style.boxSizing = 'border-box';
 	dashboard.style.alignItems = 'flex-start';
@@ -151,7 +155,8 @@ export function getDashboard()
 	title.style.whiteSpace = 'nowrap';
 	title.style.display = 'inline-block';
 	title.style.background = '#363430';;
-	title.style.borderRadius = '16px';
+	title.style.borderRadius = '10px';
+	title.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	// title.style.width = '80vw';
 	title.style.width = 'clamp(500px, 80vw, 1200px)';
 	title.style.padding = '0.5rem';
@@ -190,8 +195,6 @@ export function getDashboard()
 	matchList.style.flexGrow = '1';
 	matchList.style.paddingLeft = '2%';
 	matchList.style.fontFamily = '"RobotoCondensed", sans-serif';
-	// matchList.style.fontSize = 'min(2vw, 2vh)';
-	//clamped
 	matchList.style.fontSize = 'min(2vw, 2vh)';
 	matchList.style.textAlign = 'center';
 
@@ -199,8 +202,6 @@ export function getDashboard()
 	infoCardsContainer.id = 'infoCardsContainer';
 	infoCardsContainer.style.display = 'flex';
 	infoCardsContainer.style.direction = 'row';
-	// infoCardsContainer.style.width = '80vw';
-	// infoCardsContainer.style.height = '25vh';
 	infoCardsContainer.style.width = 'clamp(500px, 80vw, 1200px)';
 	infoCardsContainer.style.height = 'clamp(200px, 25vh, 300px)';
 	infoCardsContainer.style.justifyContent = 'space-between';
@@ -222,10 +223,10 @@ export function getDashboard()
 	exitButton.style.fontFamily = '"Horizon", sans-serif';
 
 	exitButton.addEventListener('click', () => {
-		const dashboard = document.getElementById('dashboard');
-		if (dashboard) {
-			dashboard.remove();
-		}
+		// const dashboard = document.getElementById('dashboard');
+		// if (dashboard) {
+			containerDashboard.remove();
+		// }
 		navigateTo('Menu');
 	});
 
@@ -236,7 +237,7 @@ export function getDashboard()
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
 	body.append(exitButton);
-	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard'};
+	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerId: playerID, playerNr: playerNr};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
+	Game.socket.emit('message', msg);
 }

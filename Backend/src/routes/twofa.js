@@ -39,8 +39,6 @@ export default async function twoFactor(fastify) {
 			console.error(`Stopping generate 2FA, becasue can not find request or user`);
 			return reply.status(404).send({ success: false, message: 'Invalid input - generate 2FA' });
 		}
-		console.log('Request:', request);
-		console.log('Generating 2FA secret for user:', request.user);
 		try {
 			const user = await getUserByID(db, request.user.userId);
 			if (!user) {
@@ -53,22 +51,26 @@ export default async function twoFactor(fastify) {
 				length: 20
 			});
 
-			if (user.twofa_secret) {
-				console.log(`user.twofa_secret: ${user.twofa_secret}`);
-				const userSecret = JSON.parse(user.twofa_secret);
-				console.log(`userSecret: ${userSecret}`);
-
-				// IF THESE LOGS ABOVE ARE THE SAME THEN THIS STATEMENT CAN GO SEPERATE AND THE OTHER CODE CAN BE DELETED!
-				if (user.twofa_secret === 'google') {
-					console.log(`PLEASE DELETE SOME CODE HERE!! - Not this current ifstatement, but the nested ifstatement`);
-					return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
-				}
-
-
-				if (userSecret.google == "true") {
-					return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
-				}
+			if (user.twofa_secret === 'google') {
+				return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
 			}
+			// console.log(`user.twofa_secret: ${user.twofa_secret}`);
+			// if (user.twofa_secret) {
+			// 	console.log(`user.twofa_secret: ${user.twofa_secret}`);
+			// 	const userSecret = JSON.parse(user.twofa_secret);
+			// 	console.log(`userSecret: ${userSecret}`);
+
+			// 	// IF THESE LOGS ABOVE ARE THE SAME THEN THIS STATEMENT CAN GO SEPERATE AND THE OTHER CODE CAN BE DELETED!
+			// 	if (user.twofa_secret === 'google') {
+			// 		console.log(`PLEASE DELETE SOME CODE HERE!! - Not this current ifstatement, but the nested ifstatement`);
+			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+			// 	}
+
+
+			// 	if (userSecret.google == "true") {
+			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+			// 	}
+			// }
 			
 
 			const encryptedSecret = encryptSecret(secret.base32);

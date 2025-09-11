@@ -4,14 +4,25 @@ import { Game, UI } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
+import { getDashboard } from './Dashboard/dashboardContents.js';
 import { log } from './logging.js';
+
+function splitHash(hash: string) {
+	const cleanHash = hash.replace(/^#/, '');
+	const indexQ = cleanHash.indexOf('?');
+	if (indexQ == -1)
+		return { page: cleanHash || 'Menu', query: ''};
+	else
+		return { page: cleanHash.slice(0, indexQ), query: cleanHash.slice(indexQ + 1)};
+}
 
 /**
  * @brief Triggered on hash change, navigates to the new state
  */
 export function onHashChange() {
-  const hash = window.location.hash.replace(/^#/, '');
-  navigateTo(hash, true);
+	const { page, query } = splitHash(window.location.hash);
+	console.log('onHashChange -> page:', page, 'query:', query);
+	navigateTo(page + (query ? `?${query}` : ''), true);
 };
 
 /**
@@ -20,12 +31,9 @@ export function onHashChange() {
  * @returns matchId or null
  * hash looks like: "#GameStats?matchId=123"
  */
-function getMatchIdFromHash(hash: string): number | null {
-	const q = hash.indexOf('?');
-	if (q === -1) 
-		return null;
-	const params = new URLSearchParams(hash.slice(q + 1));
-	const id = params.get('matchId');
+function getIdFromHash(hash: string, type: string): number | null {
+	const params = new URLSearchParams(hash);
+	const id = params.get(type);
 	if (!id) 
 		return null;
 	const n = Number(id);
@@ -36,7 +44,7 @@ function getMatchIdFromHash(hash: string): number | null {
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string) {
+export function renderPage (newState: string, query: string) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(newState)) {
@@ -48,22 +56,22 @@ export function renderPage (newState: string) {
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
 				// User is authenticated, continue rendering
-				doRenderPage(newState);
+				doRenderPage(newState, query);
 			})
 			.catch(() => {
 				// Not authenticated, redirect to login
-				doRenderPage('LoginP1');
+				doRenderPage('LoginP1', query);
 			});
 		return ;
 	}
-	doRenderPage(newState);
+	doRenderPage(newState, query);
 }
 
 /**
  * @brief change state or shows new page
  * @param state new state
  */
-export function doRenderPage(newState: string) {
+export function doRenderPage(newState: string, query: string) {
 	switch (newState) {
 		case 'LoginP1':
 			UI.state = S.stateUI.LoginP1;
@@ -74,18 +82,15 @@ export function doRenderPage(newState: string) {
 		case 'Menu':
 			document.getElementById("creditDiv")?.remove();
 			document.getElementById("containerDashboard")?.remove();
-			document.getElementById("settingPage")?.remove();
+			document.getElementById("oppponentMenu")?.remove();
 			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
-			break ;
-		case 'Dashboard':
-			UI.state = S.stateUI.Dashboard;
 			break ;
 		case 'Credits':
 			UI.state = S.stateUI.Credits;
 			break ;
-		case 'Settings':
-			UI.state = S.stateUI.Settings;
+		case 'OpponentMenu':
+			UI.state = S.stateUI.OpponentMenu;
 			break ;
 		case 'Pending':
 			Game.match.state = state.Pending;
@@ -97,22 +102,35 @@ export function doRenderPage(newState: string) {
 			UI.state = S.stateUI.GameOver;
 			getGameOver();
 			break ;
-		default:
-			if (newState.includes('GameStats')) {
-				UI.state = S.stateUI.GameStats;
-				const id = getMatchIdFromHash(newState);
-				if (id != null) {
-					requestAnimationFrame(() => getGameStats({ matchId: id }));
-				} else {
-					console.warn('GameStats: no matchId found');
-					UI.state = S.stateUI.Menu;
-				}
+		case 'GameStats':
+			UI.state = S.stateUI.GameStats;
+			const id = getIdFromHash(query, "matchId");
+			if (id != null) {
+				requestAnimationFrame(() => getGameStats({ matchId: id }));
 			} else {
-				console.warn(`Page does not exist: ${newState}`);
-				UI.state = S.stateUI.Menu;
+				console.warn('GameStats: no matchId found');
+				navigateTo('Menu');
 			}
-	}
-	sessionStorage.setItem("currentState", newState);
+			break;
+		case 'Dashboard':
+			UI.state = S.stateUI.Dashboard;
+			const userId = getIdFromHash(query, "userId");
+			// Add a check that the number is in range of userId
+			if (userId != null) {
+				requestAnimationFrame(() => getDashboard(userId, 1));
+			} else {
+				console.warn('Dashboard: no userId found');
+				navigateTo('Menu');
+			}
+			break;
+		default:
+			console.warn(`Page does not exist: ${newState}`);
+			navigateTo('Menu');
+		}
+	if (query && query != '')
+		sessionStorage.setItem("currentState", newState + '?' + query);
+	else
+		sessionStorage.setItem("currentState", newState);
 }
 
 /**
@@ -122,30 +140,30 @@ export function doRenderPage(newState: string) {
  * @param gameData Extra information if needed
  * Central auth check for protected pages
  */
-export function navigateTo(newState: string, fromHash = false) {
+export function navigateTo(newState: any, fromHash = false) {
 	if (!newState) {
 		console.warn('navigateTo called with empty state');
 		return;
 	}
+	let { page, query } = splitHash(newState);
 
-	if (fromHash) {
-		newState = getValidState(newState, sessionStorage.getItem("currentState") || '');
-	}
+	if (fromHash)
+		page = getValidState(page, sessionStorage.getItem("currentState") || '');
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
-	if (!unprotecedPages.includes(newState)) {
+	if (!unprotecedPages.includes(page)) {
 		// Only allow if authenticated
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				continueNavigation(newState);
+				continueNavigation(page, query);
 			})
 			.catch(() => {
-				continueNavigation('LoginP1');
+				continueNavigation('LoginP1', query);
 			});
 		return;
 	}
-	continueNavigation(newState);
+	continueNavigation(newState, query);
 }
 
 /**
@@ -154,12 +172,14 @@ export function navigateTo(newState: string, fromHash = false) {
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
  */
-function continueNavigation(newState: string) {
-	console.log(`Save navigation to: ${newState}`);
+function continueNavigation(newState: string, query: string) {
 	sessionStorage.setItem('history', newState);
-
-	history.pushState(newState, '', `#${newState}`);
-	renderPage(newState);
+	const stateObj = { page: newState, ts: Date.now(), query:  query};
+	if (query && query.length > 0)
+		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
+	else
+		history.pushState(stateObj, '', `#${newState}`);
+	renderPage(newState, query);
 }
 
 function stopCurrentGame() {
@@ -182,9 +202,9 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-	// Is already logged in
+	// Is not logged in
     if (newState !== 'LoginP1' && UI.user1.ID == -1) {
-		return ('Menu');
+		return ('LoginP1');
 	}
 
 	// No match is started
@@ -202,14 +222,11 @@ export function getValidState(newState: string, currentState: string): string {
 	}
 
     const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'Settings', 'Dashboard', 'GameOver'];
+		'OpponentMenu', 'Dashboard', 'GameStats', 'GameOver'];
 	for (const page of allowedPages) {
 		if (page == newState) {
 			return newState;
 		}
-	}
-	if (newState.includes('GameStats')) {
-		return (newState);
 	}
     return ('Menu');
 }
@@ -219,22 +236,30 @@ export function getValidState(newState: string, currentState: string): string {
  * @param event PopStateEvent
  */
 export function controlBackAndForward(event: PopStateEvent) {
-	const newState = event.state as string;
+	console.log('popstate event:', event.state, 'hash:', window.location.hash);
+	
+	let newState = event.state?.page;
+	if (!newState) {
+		newState = window.location.hash || 'Menu';
+	}
+	const { page, query } = splitHash(newState);
+
 	const currentState = sessionStorage.getItem("currentState");
-	const validState = getValidState(newState, currentState ? currentState : '');
-	history.replaceState(validState, '', window.location.hash);
+	const validState = getValidState(page, currentState ? currentState : '');
+	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
+	history.replaceState({ page: validState, query }, '', fullHash);
 
 	// Always go back to menu and stop game
-	if (currentState == 'Game') {
+	if (currentState == 'Game' && validState !== 'Game') {
 		cancelOnlineMatch();
 		stopCurrentGame();
-		renderPage('Menu');
+		navigateTo('Menu', false);
 		return ;
 	}
 
 	if (validState) {
-		renderPage(validState);
+		renderPage(validState, query);
 	} else {
-		renderPage('Menu'); // fallback
+		renderPage('Menu', query); // fallback
 	}
 }

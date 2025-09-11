@@ -1,11 +1,11 @@
 import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
 import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
-import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
@@ -101,12 +101,19 @@ fastify.ready().then(() => {
 					return handlePlayerInfo(msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+				case 'userDataMenu':
+					return handleUserDataMenu(msg, socket, userId1, userId2);
 				case 'players':
 					return handlePlayers(db, msg, socket, userId1);
 				case 'friends':
 					return handleFriends(msg, socket, userId1);
-				case 'dashboard':
-					return handleDashboardMaking(msg, socket, userId1);
+				case 'dashboard': {
+				//if there is no player id it is specify whether to use userID1 or userID2
+					if (!msg.playerId) {
+						msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
+					}
+					return handleDashboardMaking(msg, socket, msg.playerId);
+				}
 				case 'init':
 					return handleInitGame(db, msg, socket, userId1, userId2);
 				case 'game':

@@ -78,30 +78,37 @@ export async function updateUserInDB(db, user) {
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];
+		const changes = [];
 
 		if (user.name !== undefined) {
 			updates.push("name = ?");
 			values.push(user.name);
+			changes.push(`name = ${user.name}\n`);
 		}
 		if (user.email !== undefined) {
 			updates.push("email = ?");
 			values.push(user.email);
+			changes.push(`email = ${user.email}\n`);
 		}
 		if (user.password !== undefined) {
 			updates.push("password = ?");
 			values.push(user.password);
+			changes.push(`password = ${user.password}\n`);
 		}
 		if (user.twofa_secret !== undefined) {
 			updates.push("twofa_secret = ?");
 			values.push(user.twofa_secret);
+			changes.push(`twofa_secret = ${user.twofa_secret}\n`);
 		}
 		if (user.twofa_active !== undefined) {
 			updates.push("twofa_active = ?");
 			values.push(user.twofa_active);
+			changes.push(`twofa_active = ${user.twofa_active}\n`);
 		}
 		if (user.avatar_url !== undefined) {
 			updates.push("avatar_url = ?");
 			values.push(user.avatar_url);
+			changes.push(`avatar_url = ${user.avatar_url}\n`);
 		}
 
 		if (updates.length === 0) {
@@ -119,8 +126,8 @@ export async function updateUserInDB(db, user) {
 				sql_error(err, `updateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				sql_log(`User updated: [${user.user_id}] ${user.name} (${user.email})`);
-				resolve();
+				sql_log(`User updated: [${user.user_id}] ${existing.name} | Number of changes=${this.changes}\n${changes}`);
+				resolve(this.changes);
 			}
 		});
 	});
