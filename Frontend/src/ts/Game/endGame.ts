@@ -44,6 +44,7 @@ export function getGameOver() {
 	gameOver.style.fontFamily = '"Horizon", monospace';
 	gameOver.style.textAlign = 'center';
 	gameOver.style.width = '100%';
+	gameOver.style.height = '100%';
 
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
 	// gameOver.style.height = '100%';
@@ -113,6 +114,10 @@ export function getGameOver() {
 	if (!body)
 		return ;
 	// body.innerHTML = '';
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.appendChild(gameOver);
 }
 

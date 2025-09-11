@@ -3,18 +3,22 @@ import { Game, UI } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state } from '@shared/enums'
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
+import { reconcilePaddle } from './gameLogic.js';
 
 export function applyGameStateUpdate(data : any) {
 	if (Game.match.mode == OT.Online) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
-		Game.match.state = data.state;
+		if (Game.match.state != state.Hit && Game.match.state != state.Serve) {
+			Game.match.state = data.state;
+		}
 		Game.match.resumeTime = data.resumeTime;
-		if (data.gameState && Game.match.state == state.Playing) {
+		if (data.gameState && Game.match.state != state.Score) {
 			makeSnapshot(data.gameState, playerNr);
 		}
-		if (Game.match.state != state.Playing) {
+		if (Game.match.state == state.Score) {
 			renderGameInterpolated();
 		}
+		reconcilePaddle(playerNr, data.gameState);
 		// else {
 		// 	console.log("Data is missing in applyUpdatesGameServer");
 		// }

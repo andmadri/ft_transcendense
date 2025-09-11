@@ -40,6 +40,7 @@ async function newMatch(db, matchnr, id, id2, mode) {
 			intervalID: null,
 			pauseTimeOutID: null,
 			resumeTime: -1,
+			lastUpdateTime: -1,
 			mode: mode,
 			lastScoreID: -1,
 			winnerID: null,
