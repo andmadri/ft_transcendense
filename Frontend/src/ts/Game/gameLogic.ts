@@ -50,7 +50,7 @@ export function reconcilePaddle(playerNr : number, serverGameState : gameState) 
 
 	const diff = serverPaddle.pos.y - paddle.pos.y;
 	if (Math.abs(diff) > 0.05) {
-		paddle.pos.y += diff * 0.05;
+		paddle.pos.y += diff * 0.02;
 	}
 }
 
@@ -59,10 +59,10 @@ export function game(match : matchInfo) {
 		return;
 	}
 	if (match.mode == OT.Online) {
-		//update own paddle immediately in frontend
-		// renderGameInterpolated();
-		// const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		// updatePaddlePos(paddle, match.gameState.field);
+		// update own paddle immediately in frontend
+		renderGameInterpolated();
+		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+		updatePaddlePos(paddle, match.gameState.field);
 	} else {
 		match.time = performance.now();
 		if (match.mode == OT.ONEvsCOM) {
