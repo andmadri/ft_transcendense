@@ -1,7 +1,7 @@
-import { handlePlayers, getAllPlayerInclFriends } from './DBrequests/getPlayers.js';
+import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-import { handleFriends, openFriendRequest, getFriends } from './DBrequests/getFriends.js';
+import { handleFriends } from './DBrequests/getFriends.js';
 import { createDatabase } from './Database/database.js'
 import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
@@ -104,7 +104,7 @@ fastify.ready().then(() => {
 				case 'players':
 					return handlePlayers(db, msg, socket, userId1);
 				case 'friends':
-					return handleFriends(msg, socket, userId1, fastify.io);
+					return handleFriends(msg, socket, userId1);
 				case 'dashboard':
 					return handleDashboardMaking(msg, socket, userId1);
 				case 'init':
@@ -123,9 +123,7 @@ fastify.ready().then(() => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
 				if (msg.menu === true) {
-					openFriendRequest(userId1, socket);
-					getAllPlayerInclFriends(db, userId1, socket);
-					getFriends(userId1, socket);
+					handleFriends({ subaction: 'initMenu' }, socket, userId1);
 				}
 			}
 		});
