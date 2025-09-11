@@ -33,7 +33,7 @@ export function startGame() {
 	
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
-			if (Game.match.player2.ID != -1) { // Check this!
+			if (Game.match.player2.ID != -1) {
 				navigateTo('Game');
 				Game.match.state = state.Init;
 			}
@@ -42,9 +42,7 @@ export function startGame() {
 			}
 			break ;
 		}
-		case OT.ONEvsCOM: { // Check this!
-			Game.match.player2.ID = 2; // Is not getting used - only for visability
-			Game.match.player2.name = "AI"; // Is not getting used - only for visability
+		case OT.ONEvsCOM: {
 			navigateTo('Game');
 			Game.match.state = state.Init;
 			break ;
@@ -105,14 +103,12 @@ export function initGameServer() {
 		const initGame = {
 			action: 'init',
 			subaction: 'createMatch',
-			playerId: Game.match.player1.ID,
-			playerName: Game.match.player1.name,
+			player1ID: Game.match.player1.ID,
+			player1Name: Game.match.player1.name,
 			mode: Game.match.mode,
-			playerId2: Game.match.player2.ID,
-			playerName2: Game.match.player2.name
+			player2ID: Game.match.player2.ID,
+			player2Name: Game.match.player2.name
 		}
-		if (Game.match.mode == OT.ONEvsCOM)
-			initGame.playerName2 = "Computer";
 		Game.socket.emit('message',initGame);
 	}
 }
@@ -125,6 +121,10 @@ export function initGame() {
 		if (Game.match.mode != OT.ONEvsCOM) {
 			Game.match.player2.ID = UI.user2.ID;
 			Game.match.player2.name = UI.user2.name;
+		}
+		else {
+			Game.match.player2.ID = 2;
+			Game.match.player2.name = "AI";
 		}
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();

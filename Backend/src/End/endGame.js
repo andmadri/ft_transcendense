@@ -10,8 +10,11 @@ const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
 export async function quitMatch(match, msg, socket, io) {
 	const name = msg.name ? msg.name : 'unknown player';
-	if (match.mode != OT.ONEvsONE) {
+	if (match.mode == OT.Online) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
+	}
+	else {
+		match.winnerID = msg.winnerID
 	}
 	io.to(match.matchID).emit('message', {
 		action: 'game',

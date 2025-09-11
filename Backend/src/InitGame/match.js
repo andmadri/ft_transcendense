@@ -114,8 +114,8 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 	if (mode === OT.ONEvsCOM)
 		userId2 = 2; // COM
 
-	if (userId2 == null) // This should not happen
-		userId2 = 1; // guest
+	if (userId2 == null)
+		userId2 = 1;
 
 	try {
 		// CREATE MATCH IN DB

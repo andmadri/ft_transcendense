@@ -6,6 +6,27 @@ import { OT } from '@shared/enums'
 let result = "";
 let lastMatchId = -1;
 
+function getWinnerResult() {
+	let winnerName = null;
+	console.log(`winner ID ${Game.match.winnerID}`);
+	if (Game.match.winnerID == -1) {
+		return "Match interrupted..."
+	}
+	else if (Game.match.winnerID) {
+		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
+	}
+	else if (Game.match.player1.score > Game.match.player2.score) {
+		winnerName = Game.match.player1.name;
+	}
+	else if (Game.match.player1.score < Game.match.player2.score) {
+		winnerName = Game.match.player2.name;
+	}
+	else {
+		winnerName = null;
+	}
+	return winnerName ? `${winnerName} Wins!` : "It is a Tie!";
+}
+
 export function getGameOver() {
 	log("Game Over!");
 	const game = document.getElementById('game');
@@ -113,26 +134,8 @@ export function saveGame() {
 	}
 
 	// Save the result to show in the GameOver function
-	let winnerName;
-	if (Game.match.winnerID) {
-		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
-		result = `${winnerName} Wins!`;
-	}
-	else if (Game.match.player1.score > Game.match.player2.score) {
-		winnerName = Game.match.player1.name;
-		result = `${winnerName} Wins!`;
-	}
-	else if (Game.match.player1.score < Game.match.player2.score) {
-		winnerName = Game.match.player2.name;
-  		result = `${winnerName} Wins!`;
-	}
-	else
-		result = "It is a Tie!"
+	result = getWinnerResult();
 	lastMatchId = Game.match.matchID;
 
-	Game.match.player1.score = 0;
-	Game.match.player2.score = 0;
-
 	navigateTo('GameOver', {matchId: Game.match.matchID});
-	Game.match.matchID = -1;
 }

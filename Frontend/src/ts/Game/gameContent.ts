@@ -1,6 +1,6 @@
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
-import { state } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
 
@@ -43,14 +43,25 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
+		//determine winner in local game
+		//if online -> winnerID stays undefined -> backend will determine winner
+		if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
+			Game.match.winnerID = Game.match.player2.ID;
+		}
+		else if (Game.match.mode == OT.ONEvsONE) {
+			Game.match.winnerID = -1;
+		}
 		Game.socket.emit('message',{
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.match.matchID,
 			player: UI.user1.ID,
-			name: UI.user1.name
+			name: UI.user1.name,
+			winner: Game.match.winnerID
 		});
-		Game.match.state = state.End;
+		if (Game.match.mode != OT.Online) {
+			Game.match.state = state.End;
+		}
 	})
 	return (quitButton);
 }

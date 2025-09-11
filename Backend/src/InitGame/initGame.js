@@ -37,7 +37,7 @@ export function handleInitGame(db, msg, socket, userId1, userId2) {
 
 	// for local games
 	if (msg.subaction == 'createMatch' && msg.mode != 3)
-		return createMatch(db, msg.mode, socket, userId1, userId2);
+		return createMatch(db, msg.mode, socket, msg.player1ID, msg.player2ID);
 
 	// receive msg that frontend is ready to play (online match)
 	if (msg.subaction == 'start') {
