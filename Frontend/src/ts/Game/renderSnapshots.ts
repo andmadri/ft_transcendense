@@ -141,8 +141,10 @@ function deleteOldSnapshots(renderTime: number) {
 export function renderGameInterpolated() {
 	const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 	
+	
 	const now = Date.now();
 	const renderTime = now - INTERPOLATION_DELAY;
+	
 	
 	const [snap1, snap2] = getBoundingSnapshots(renderTime);
 	if (snap1 && snap2) {

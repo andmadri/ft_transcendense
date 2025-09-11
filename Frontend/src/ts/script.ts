@@ -20,8 +20,8 @@ import { getSettingsPage } from './SettingMenu/settings.js'
 import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
-import { resetBall } from '@shared/gameLogic'
-import { updatePaddlePos } from '@shared/gameLogic'
+import { resetBall, updatePaddlePos } from '@shared/gameLogic'
+import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
 createLog();
 
