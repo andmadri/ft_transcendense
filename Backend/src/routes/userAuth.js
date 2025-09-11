@@ -21,7 +21,7 @@ import { USERLOGIN_TIMEOUT } from '../structs.js';
 export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/refresh-token', { preHandler: verifyAuthCookie }, async (request, reply) => {
 		const playerNr = request.body.playerNr;
-		console.log('Refreshing token for playerNr: ', playerNr);
+		// console.log('Refreshing token for playerNr: ', playerNr);
 		if (playerNr === 2 ) {
 			const cookies = request.cookies;
 			const token = cookies['jwtAuthToken2'];
@@ -43,7 +43,7 @@ export default async function userAuthRoutes(fastify) {
 		}
 
 		const userId = request.user.userId;
-		console.log(`Refreshing token for user ID: ${userId}`);
+		// console.log(`Refreshing token for user ID: ${userId}`);
 		const user = await getUserByID(fastify.db || db, userId);
 		if (!user) {
 			return reply.status(401).send({ error: 'Unauthorized' });

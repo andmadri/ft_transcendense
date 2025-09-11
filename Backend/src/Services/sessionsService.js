@@ -6,7 +6,6 @@ export async function updatePlayersSessionDB(db, user_ids, state) {
 	);
 }
 
-
 /*
 1) Update two players userSession using this function: addUserSessionToDB(db, session)
 2) Check if the player is online using this function: getLatestSessionByState(db, user_id, state)
