@@ -12,7 +12,7 @@ export enum stateUI {
 	GameOver,
 	GameStats,
 	Dashboard,
-	Settings,
+	OpponentMenu,
 	Credits,
 }
 

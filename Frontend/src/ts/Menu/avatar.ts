@@ -22,7 +22,7 @@ export async function changeAvatar(file: File,  playerNr: number) {
 		const user = playerNr == 1 ? UI.user1.ID : UI.user2.ID;
 		avatar.src = `/api/avatar/${user}?ts=${Date.now()}`
 	} else {
-		alert("Upload failed");
+		alert("Upload failed: " + response.statusText);
 		log("Error with upload avatar");
 	}
 }

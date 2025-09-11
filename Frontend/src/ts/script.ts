@@ -14,10 +14,8 @@ import { saveGame } from './Game/endGame.js';
 import { getGameField } from './Game/gameContent.js'
 import { startGameField } from './Game/startGameContent.js'
 import { getLoginFields } from './Auth/authContent.js'
-import { getMenu } from './Menu/menuContent.js'
-import { getCreditsPage } from './Menu/credits.js'
-import { getSettingsPage } from './SettingMenu/settings.js'
-import { getDashboard } from './Dashboard/dashboardContents.js'
+import { getMenu , getCreditsPage } from './Menu/menuContent.js'
+import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall, updatePaddlePos } from '@shared/gameLogic'
@@ -29,14 +27,27 @@ log("host: " + window.location.host);
 
 startSocketListeners();
 
-// Send a heartbeat every 10 seconds
+// Send a heartbeat every 5 seconds
 setInterval(() => {
 	if (Game.socket && Game.socket.connected) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
+		fetch('/api/refresh-token', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ playerNr: 1 })
+		});
+		if (UI.user2.ID !== 1) {	// if user2 is not guest
+			fetch('/api/refresh-token', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ playerNr: 2 })
+			});
+		}
 	}
 }, 5000);
 
-window.addEventListener("hashchange", () => { onHashChange(); });
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('popstate', (event: PopStateEvent) => { controlBackAndForward(event); });
@@ -149,28 +160,28 @@ function mainLoop() {
 			case S.stateUI.Menu: {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
+				document.getElementById('opponentMenu')?.remove();
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
 			}
-			case S.stateUI.Settings: {
-				if (!document.getElementById('settingPage'))
-					getSettingsPage();
+			case S.stateUI.OpponentMenu: {
+				if (!document.getElementById('opponentMenu'))
+					getOpponentMenu();
 				break;
 			}
 			case S.stateUI.Credits: {
-				if (!document.getElementById('Credits'))
+				if (!document.getElementById('creditDiv'))
 					getCreditsPage();
 				break ;
 			}
+			// case S.stateUI.Dashboard: {
+				
+					
+			// }
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;
-			} case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard')) {
-					getDashboard();
-				}
-			break;
 			}
 			default:
 		}

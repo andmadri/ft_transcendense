@@ -5,7 +5,7 @@ import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
 import { getGameField } from './gameContent.js';
 import { submitLogout } from '../Auth/logout.js';
-import { styleElement } from '../Menu/menuContent.js';
+// import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
 import { startGameField } from './startGameContent.js';
