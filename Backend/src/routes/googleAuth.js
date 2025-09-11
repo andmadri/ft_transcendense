@@ -3,7 +3,7 @@ import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js'
-import { addUser2faSecretToDB, getUserSecretDB } from '../Services/twofa.js';
+import { addUser2faSecretToDB, getUserSecretDB } from '../Database/twofa.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
 

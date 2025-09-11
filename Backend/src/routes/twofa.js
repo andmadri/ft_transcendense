@@ -1,6 +1,6 @@
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
-import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Services/twofa.js';
+import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Database/twofa.js';
 import { encryptSecret, decryptSecret } from '../utils/encryption.js';
 import { verifyAuthCookie, verifyPendingTwofaCookie } from '../Auth/authToken.js';
 import { signFastifyJWT } from "../utils/jwt.js";
@@ -12,7 +12,6 @@ import { db } from '../index.js' // DELETE THIS LATER
 /**
  * Handles the Two-Factor Authentication (2FA) routes.
  * @param {Object} fastify - The Fastify instance.
- * @param {Object} opts - Options for the Fastify plugin.
  * @returns {Promise<void>} - Returns a promise that resolves when the routes are registered.
  * @description
  * This function registers the 2FA routes for generating, activating, disabling, and verifying 2FA.
@@ -22,7 +21,7 @@ import { db } from '../index.js' // DELETE THIS LATER
  * - POST /api/2fa/disable: Disables 2FA for the user by verifying the provided token.
  * - POST /api/2fa/verify: Verifies the provided token and logs in the user if successful.
  *  */
-export default async function twoFactor(fastify, opts) {
+export default async function twoFactor(fastify) {
 	fastify.post('/api/2fa/generate', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {

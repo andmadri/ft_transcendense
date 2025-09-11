@@ -28,7 +28,7 @@ async function acceptFriendRequest(socket, data) {
 	}
 }
 
-async function denyFriendRequest(socket, userID1, data) {
+async function denyFriendRequest(socket, data) {
 	try {
 		await friendsDB.denyFriendRequestDB(db, data.requestId);
 	} catch (err) {
@@ -83,7 +83,7 @@ export async function handleFriends(msg, socket, userId1) {
 			acceptFriendRequest(socket, msg);
 			break ;
 		case 'denyFriendRequest':
-			denyFriendRequest(socket, userId1, msg);
+			denyFriendRequest(socket, msg);
 			break ;
 		case 'unfriend':
 			deleteFriendship(socket, userId1, msg);
