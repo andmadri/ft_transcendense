@@ -168,7 +168,7 @@ function mainLoop() {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
 				document.getElementById('opponentMenu')?.remove();
-				if (!document.getElementById('menu'))	
+				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
 			}

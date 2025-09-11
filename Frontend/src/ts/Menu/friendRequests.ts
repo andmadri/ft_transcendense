@@ -88,6 +88,7 @@ export function showFriendRequests(requests: any) {
 		buttonContainer.style.justifyContent = 'space-between';
 		buttonContainer.style.display = 'flex';
 		buttonContainer.style.flex = '1';
+		buttonContainer.style.padding = '0.3rem';
 
 		const acceptBtn = document.createElement('button');
 		acceptBtn.style.borderRadius = '50%';

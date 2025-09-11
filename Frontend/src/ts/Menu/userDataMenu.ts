@@ -1,7 +1,7 @@
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js"
 import { styleListBtns } from "./menuContent.js";
-import { get2faBtn, getLoginBtn, getAvatarBtn } from "./userDataMenuButtons.js";
+import { get2faBtn, getLoginBtn, getAvatarBtn, getChangeNameBtn } from "./userDataMenuButtons.js";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.display = 'flex';
@@ -163,7 +163,7 @@ function createNotificationButtons(): HTMLButtonElement {
 	notificationBtnList.style.padding = '8px 0';
 	notificationBtnList.style.background = '#2a2927';
 	notificationBtnList.style.boxShadow = 'rgba(30, 30, 30, 1) 0px 20px 30px -10px';
-	notificationBtnList.style.width = '140px';
+	notificationBtnList.style.width = '210px';
 	notificationBtnList.style.height = '200px';
 
 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
@@ -268,7 +268,7 @@ function createButtonsContainer(playerNr: number): HTMLDivElement {
 	if (playerNr == 1) {
 		buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
 		buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
-		// buttonsContainer.appendChild(styleBtnUserMenu(getChangeNameBtn(playerNr))); //Merel will built this
+		buttonsContainer.appendChild(styleBtnUserMenu(getChangeNameBtn(playerNr))); //Merel will built this
 	}
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
 	return buttonsContainer;
