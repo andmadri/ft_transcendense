@@ -12,7 +12,7 @@ function sendContentToFrontend(socket, actionable, sub, content) {
 
 async function addFriendRequest(socket, userId1, data) {
 	try {
-		const friendRequest = await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
+		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
 		sendContentToFrontend(socket, 'friends', 'error', err.message);
 	}
@@ -45,9 +45,6 @@ async function deleteFriendship(socket, userID1, msg) {
 export async function getFriends(userId1, socket) {
 	try {
 		const friends = await friendsDB.getFriendsDB(db, userId1);
-		// if (!friends || friends.length === 0) {
-		// 	sendContentToFrontend(socket, 'friends', 'retFriends', 'No friends found');
-		// } else {
 		if (friends || friends.length !== 0) {
 			sendContentToFrontend(socket, 'friends', 'retFriends', friends);
 		}
@@ -75,9 +72,6 @@ export async function handleFriends(msg, socket, userId1) {
 		case 'friendRequest':
 			addFriendRequest(socket, userId1, msg);
 			break ;
-		// case 'openFriendRequests':
-		// 	openFriendRequest(userId1, socket);
-		// 	break ;
 		case 'acceptFriendRequest':
 			acceptFriendRequest(socket, msg);
 			break ;
