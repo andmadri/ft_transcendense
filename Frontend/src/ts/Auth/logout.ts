@@ -35,6 +35,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			} else {
 				UI.user2.ID = 1;
 				UI.user2.name = "Guest";
+				navigateTo('Menu');
 			}
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);
