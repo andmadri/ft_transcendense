@@ -6,17 +6,6 @@ import { changeAvatar } from "./avatar";
 function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	const twofaDisableBtn = document.createElement('button');
 	twofaDisableBtn.textContent = 'Disable 2FA';
-	// styleElement(twofaDisableBtn, {
-	// 	backgroundColor: '#d9f0ff',
-	// 	border: '2px solid #d9f0ff',
-	// 	padding: '15px',
-	// 	fontSize: '1em',
-	// 	cursor: 'pointer',
-	// 	borderRadius: '10px',
-	// 	marginLeft: 'auto',
-	// 	marginBottom: '10px',
-	// 	fontFamily: 'inherit'
-	// });
 	twofaDisableBtn.addEventListener('click', async () => {
 		console.log('2FA Disable button clicked for player ' + playerNr);
 
@@ -100,9 +89,9 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 					label.textContent = '2FA disabled successfully!';
 					form.remove();
 					if (data.playerNr == 1)
-						Game.match.player1.Twofa = false;
+						UI.user1.Twofa = false; //changed this line with the new main
 					else
-						Game.match.player2.Twofa = false;
+						UI.user2.Twofa = false; //changed this line with the new main
 					setTimeout(() => overlay.remove(), 1000);
 					document.getElementById('menu')?.remove();
 				} else {
@@ -115,8 +104,8 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 
 		formDiv.appendChild(form);
 		overlay.appendChild(formDiv);
-		const app = document.getElementById('app');
-		app?.appendChild(overlay);
+		const body = document.getElementById('body');
+		body?.appendChild(overlay);
 	});
 	return twofaDisableBtn;
 }
@@ -124,21 +113,9 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 	const twoFABtn = document.createElement('button');
 	twoFABtn.textContent = 'Set Up 2FA';
-	// styleElement(twoFABtn, {
-	// 	backgroundColor: '#d9f0ff',
-	// 	border: '2px solid #d9f0ff',
-	// 	padding: '15px',
-	// 	fontSize: '1em',
-	// 	cursor: 'pointer',
-	// 	borderRadius: '10px',
-	// 	marginLeft: 'auto',
-	// 	marginBottom: '10px',
-	// 	fontFamily: 'inherit'
-	// });
 	twoFABtn.addEventListener('click', async () => {
 		console.log('2FA button clicked for player ' + playerNr);
 
-		// Create overlay
 		const overlay = document.createElement('div');
 		overlay.style.position = 'fixed';
 		overlay.style.top = '0';
@@ -184,7 +161,6 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 		qrImg.style.marginBottom = '20px';
 		qrDiv.appendChild(qrImg);
 
-		// Fetch QR code from backend
 		try {
 			const res = await fetch('/api/2fa/generate', {
 				method: 'POST',
@@ -204,7 +180,6 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 			qrLabel.textContent = 'Error loading QR code.';
 		}
 
-		// 2FA code input form
 		const form = document.createElement('form');
 		form.style.display = 'flex';
 		form.style.flexDirection = 'column';
@@ -251,7 +226,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					qrImg.remove();
 					qrLabel.textContent = '2FA activated successfully!';
 					form.remove();
-					Game.match.player1.Twofa = playerNr === 1 ? true : Game.match.player1.Twofa;
+					UI.user1.Twofa = playerNr === 1 ? true : UI.user1.Twofa;
 					setTimeout(() => {
 						overlay.remove();
 					}, 1000); // 1000 ms = 1 second
@@ -267,14 +242,22 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 
 		qrDiv.appendChild(form);
 		overlay.appendChild(qrDiv);
-		const app = document.getElementById('app')
-		app?.appendChild(overlay);
+		const body = document.getElementById('body')
+		body?.appendChild(overlay);
 	});
 	return (twoFABtn);
 }
 
+// export function get2faBtn(playerNr: number): HTMLButtonElement {
+// 	if (Game.match.player1.Twofa && playerNr == 1)
+// 		return (get2faDisableBtn(playerNr));
+// 	return (get2faSetupBtn(playerNr));
+// }
+
 export function get2faBtn(playerNr: number): HTMLButtonElement {
-	if (Game.match.player1.Twofa && playerNr == 1)
+	if (UI.user1.Twofa && playerNr == 1)
+		return (get2faDisableBtn(playerNr));
+	if (UI.user2.Twofa && playerNr == 2)
 		return (get2faDisableBtn(playerNr));
 	return (get2faSetupBtn(playerNr));
 }
@@ -327,17 +310,6 @@ export function getLoginBtn(playerNr: number): HTMLButtonElement {
 		return (getLogoutBtn(playerNr));
 	const loginBtn = document.createElement('button');
 	loginBtn.textContent = 'Login';
-	// styleElement(loginBtn, {
-	// 	backgroundColor: '#d9f0ff',
-	// 	border: '2px solid #d9f0ff',
-	// 	padding: '15px',
-	// 	fontSize: '1em',
-	// 	cursor: 'pointer',
-	// 	borderRadius: '10px',
-	// 	marginLeft: 'auto',
-	// 	marginBottom: '10px',
-	// 	fontFamily: 'inherit'
-	// });
 	loginBtn.addEventListener('click', () => {
 		console.log('Login button clicked for player ' + playerNr);
 		document.getElementById('menu')?.remove();

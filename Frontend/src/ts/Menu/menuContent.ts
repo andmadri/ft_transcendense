@@ -38,47 +38,87 @@ export function styleListBtns(button: HTMLButtonElement, img_url: string) {
 	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 }
 
+export function getCreditsPage() {
+	const body = document.getElementById('body');
+	if (!body)
+		return ;
+
+	const creditDiv = document.createElement('div');
+	creditDiv.id = 'creditDiv';
+	creditDiv.style.position = 'fixed';
+	creditDiv.style.width = '100vw';
+	creditDiv.style.height = '100vh';
+	creditDiv.style.top = '0';
+	creditDiv.style.left = '0';
+	creditDiv.style.backgroundColor = 'white';
+	creditDiv.style.display = 'flex';
+	creditDiv.style.flexDirection = 'column';
+	creditDiv.style.justifyContent = 'center';
+	creditDiv.style.alignItems = 'center';
+
+	const creditImg = document.createElement('img');
+	creditImg.src = "./../images/Credits.png";
+	creditImg.style.maxWidth = '90vw';
+	creditImg.style.maxHeight = '90vh';
+	creditImg.style.objectFit = 'contain';
+
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = "CLOSE";
+	closeBtn.style.zIndex = '100000';
+	closeBtn.style.margin = '10px';
+
+	creditDiv.appendChild(creditImg);
+	creditDiv.appendChild(closeBtn);
+	body.appendChild(creditDiv);
+
+	closeBtn.addEventListener('click', () => {
+		body.removeChild(creditDiv);
+		navigateTo('Menu');
+	})
+}
+
 export function getCreditBtn(): HTMLButtonElement {
 	const creditsBtn = document.createElement('button');
 	// creditsBtn.style.flex = '1 1 25%';
 	styleMainBtns(creditsBtn, "Credits");
 
 	creditsBtn.addEventListener('click', () => {
-		const body = document.getElementById('body');
-		if (!body)
-			return ;
+		// const body = document.getElementById('body');
+		// if (!body)
+		// 	return ;
 
-		const creditDiv = document.createElement('div');
-		creditDiv.id = 'creditDiv';
-		creditDiv.style.position = 'fixed';
-		creditDiv.style.width = '100vw';
-		creditDiv.style.height = '100vh';
-		creditDiv.style.top = '0';
-		creditDiv.style.left = '0';
-		creditDiv.style.backgroundColor = 'white';
-		creditDiv.style.display = 'flex';
-		creditDiv.style.flexDirection = 'column';
-		creditDiv.style.justifyContent = 'center';
-		creditDiv.style.alignItems = 'center';
+		// const creditDiv = document.createElement('div');
+		// creditDiv.id = 'creditDiv';
+		// creditDiv.style.position = 'fixed';
+		// creditDiv.style.width = '100vw';
+		// creditDiv.style.height = '100vh';
+		// creditDiv.style.top = '0';
+		// creditDiv.style.left = '0';
+		// creditDiv.style.backgroundColor = 'white';
+		// creditDiv.style.display = 'flex';
+		// creditDiv.style.flexDirection = 'column';
+		// creditDiv.style.justifyContent = 'center';
+		// creditDiv.style.alignItems = 'center';
 
-		const creditImg = document.createElement('img');
-		creditImg.src = "./../images/Credits.png";
-		creditImg.style.maxWidth = '90vw';
-		creditImg.style.maxHeight = '90vh';
-		creditImg.style.objectFit = 'contain';
+		// const creditImg = document.createElement('img');
+		// creditImg.src = "./../images/Credits.png";
+		// creditImg.style.maxWidth = '90vw';
+		// creditImg.style.maxHeight = '90vh';
+		// creditImg.style.objectFit = 'contain';
 
-		const closeBtn = document.createElement('button');
-		closeBtn.textContent = "CLOSE";
-		closeBtn.style.zIndex = '100000';
-		closeBtn.style.margin = '10px';
+		// const closeBtn = document.createElement('button');
+		// closeBtn.textContent = "CLOSE";
+		// closeBtn.style.zIndex = '100000';
+		// closeBtn.style.margin = '10px';
 
-		creditDiv.appendChild(creditImg);
-		creditDiv.appendChild(closeBtn);
-		body.appendChild(creditDiv);
+		// creditDiv.appendChild(creditImg);
+		// creditDiv.appendChild(closeBtn);
+		// body.appendChild(creditDiv);
 
-		closeBtn.addEventListener('click', () => {
-			body.removeChild(creditDiv);
-		})
+		// closeBtn.addEventListener('click', () => {
+		// 	body.removeChild(creditDiv);
+		// })
+		navigateTo('Credits')
 	})
 	return (creditsBtn);
 }
@@ -88,7 +128,7 @@ export function getPlayBtn(): HTMLButtonElement {
 	styleMainBtns(playBtn, "Play Game")
 	// playBtn.style.flex = '1 1 25%';
 	playBtn.addEventListener('click', () => {
-		navigateTo('Settings')
+		navigateTo('OpponentMenu')
 	});
 	return (playBtn);
 }
@@ -107,7 +147,8 @@ export function getDashboardBtn(): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
 	styleMainBtns(dashboardBtn, "Dashboard");
 	dashboardBtn.addEventListener('click', () => {
-		navigateTo('Dashboard');
+		console.log('navigate to dashboard');
+		navigateTo(`Dashboard?userId=${UI.user1.ID}`);
 	});
 	return (dashboardBtn);
 }

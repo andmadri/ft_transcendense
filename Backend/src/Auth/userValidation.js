@@ -6,8 +6,8 @@ function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
 	if (!name.length)
 		return ('Name can not be empty');
-	else if (name.length > 30)
-		return ('Name is too long (min 30 characters)');
+	else if (name.length > 10)
+		return ('Name is too long');
 	else if (!nameRegex.test(name))
 		return ("Only letters, numbers, spaces, '-' and '_' are allowed.");
 	return (null);

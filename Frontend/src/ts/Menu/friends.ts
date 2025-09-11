@@ -141,8 +141,8 @@ function insertFriends(friends: any) {
 			const dashboardBtn = document.createElement('button');
 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 			dashboardBtn.addEventListener("click", () => {
-				navigateTo('Dashboard');
-				getDashboard(friend.id, undefined);
+				console.log('dashboard call friend.id', friend.id);
+				navigateTo(`Dashboard?userId=${friend.id}`);
 			});
 			btnContainer.appendChild(deleteFriendBtn);
 			btnContainer.appendChild(dashboardBtn);

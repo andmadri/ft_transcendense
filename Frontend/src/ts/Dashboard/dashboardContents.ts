@@ -239,7 +239,7 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	containerDashboard.appendChild(dashboard);
 	body.append(containerDashboard);
 	body.append(exitButton);
-	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerID: playerID, playerNr: playerNr};
+	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerId: playerID, playerNr: playerNr};
 	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
-	Game.socket.emit('message', { action: 'dashboard', subaction: 'getFullDataDashboard' });
+	Game.socket.emit('message', msg);
 }

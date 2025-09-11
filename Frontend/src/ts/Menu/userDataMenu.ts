@@ -1,6 +1,7 @@
-import { navigateTo } from "../history";
-import { styleListBtns } from "./menuContent";
-import { get2faBtn, getLoginBtn, getAvatarBtn } from "./userDataMenuButtons";
+import { navigateTo } from "../history.js";
+import { UI } from "../gameData.js"
+import { styleListBtns } from "./menuContent.js";
+import { get2faBtn, getLoginBtn, getAvatarBtn } from "./userDataMenuButtons.js";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.display = 'flex';
@@ -142,7 +143,7 @@ function createDashboardButton(): HTMLButtonElement {
 	dashboardBtn.id = 'dashboardBtn';
 	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 	dashboardBtn.addEventListener("click", () => {
-		navigateTo('Dashboard');
+		navigateTo(`Dashboard?userId=${UI.user1.ID}`);
 	});
 	return dashboardBtn;
 }
