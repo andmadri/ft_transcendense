@@ -6,9 +6,8 @@ import { verifyAuthCookie, verifyPendingTwofaCookie } from '../Auth/authToken.js
 import { signFastifyJWT } from "../utils/jwt.js";
 import { getUserByID } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
-
+import { USERLOGIN_TIMEOUT } from '../structs.js';
 import { db } from '../index.js' // DELETE THIS LATER
-import { get } from 'http';
 
 /**
  * Handles the Two-Factor Authentication (2FA) routes.
@@ -155,7 +154,7 @@ export default async function twoFactor(fastify, opts) {
 			signed: true,        // signed cookies
 			encode: v => v,      // Use default encoding
 			path: '/',
-			maxAge: 60 * 60      // 1 hour
+			maxAge: USERLOGIN_TIMEOUT
 		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name, twofa: user.twofa_active });
 
 

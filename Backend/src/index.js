@@ -11,6 +11,7 @@ import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
+import { USERLOGIN_TIMEOUT } from './structs.js';
 
 export const db = await createDatabase();
 
@@ -137,9 +138,8 @@ fastify.ready().then(() => {
 
 setInterval(async () => {
 	const now = Date.now();
-	const TIMEOUT = 30000; // 30 seconds
 	for (const [userId, lastSeen] of userLastSeen.entries()) {
-		if (now - lastSeen > TIMEOUT) {
+		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 			// Mark user offline in DB
 			try {
 				await addUserSessionToDB(db, { user_id: userId, state: 'logout' });

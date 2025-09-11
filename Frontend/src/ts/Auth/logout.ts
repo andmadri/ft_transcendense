@@ -31,11 +31,11 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			if (playerNr == 1) {
 				UI.user1.ID = -1;
 				UI.user1.name = "";
+				navigateTo('LoginP1');
 			} else {
 				UI.user2.ID = 1;
 				UI.user2.name = "Guest";
 			}
-			navigateTo('LoginP1');
 		} else {
 			log(`Logout failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();
