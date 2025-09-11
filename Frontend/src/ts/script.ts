@@ -16,7 +16,6 @@ import { startGameField } from './Game/startGameContent.js'
 import { getLoginFields } from './Auth/authContent.js'
 import { getMenu , getCreditsPage } from './Menu/menuContent.js'
 import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
-import { getDashboard } from './Dashboard/dashboardContents.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
 import { resetBall } from '@shared/gameLogic'
@@ -35,7 +34,6 @@ setInterval(() => {
 	}
 }, 5000);
 
-window.addEventListener("hashchange", () => { onHashChange(); });
 window.addEventListener('keydown', pressButton);
 window.addEventListener('keyup', releaseButton);
 window.addEventListener('popstate', (event: PopStateEvent) => { controlBackAndForward(event); });

@@ -73,6 +73,7 @@ export function getCreditsPage() {
 
 	closeBtn.addEventListener('click', () => {
 		body.removeChild(creditDiv);
+		navigateTo('Menu');
 	})
 }
 
