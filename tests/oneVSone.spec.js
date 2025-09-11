@@ -14,13 +14,13 @@ Tests:
 
 export async function StartOneVsOne(page) {
 	await U.pressBtn(page, "Play game");
-	await U.pressBtn(page, "1 VS 1");
-	await U.pressBtn(page, "single game");
+	await U.pressBtn(page, "vs Guest");
 	await U.pressBtn(page, "PLAY");
 }
 
 export async function oneVsOne(page, name2, email2, password2) {
-	await Menu.switchPlayerTab(page, 2);
+	console.log('--- ONE VS ONE TESTS ---');
+	// await Menu.switchPlayerTab(page, 2);
 	// await page.getByRole('button', { name: 'login', exact: true }).filter({ hasText: 'login', visible: true }).click();
 	
 	// BUG

@@ -31,6 +31,7 @@ export async function switchLoginTab(page, tabName) {
 
 export async function signup_login_byPlayer(page, player, Name, Email, Password) {
 	await signup_player(page, player, Name, Email, Password);
+	await page.waitForTimeout(1000);
 	await login_player(page, player, Email, Password);
 }
 

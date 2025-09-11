@@ -7,7 +7,7 @@ function checkName(name) {
 	if (!name.length)
 		return ('Name can not be empty');
 	else if (name.length > 10)
-		return ('Name is too long');
+		return ('Name is too long (min 10 characters)');
 	else if (!nameRegex.test(name))
 		return ("Only letters, numbers, spaces, '-' and '_' are allowed.");
 	return (null);

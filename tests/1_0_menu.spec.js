@@ -35,7 +35,7 @@ export async function playerInOnlineMenu(page, playerName) {
 }
 
 export async function switchPlayerTab(page, player) {
-	await U.pressBtn(page, "Player " + player);
+	await U.pressBtn(page, player);
 	await page.waitForTimeout(1000);
 }
 
@@ -71,8 +71,6 @@ export async function isInMenu(page, player2, name, name2) {
 	await expect(page.locator('button', { hasText: 'Credits' })).toBeVisible();
 	await expect(page.locator('button', { hasText: 'Play Game' })).toBeVisible();
 	await expect(page.locator('button', { hasText: 'Tournament' })).toBeVisible();
-
-
 }
 
 export async function playerIsLoggedIn(page, player, name) {

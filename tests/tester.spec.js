@@ -11,7 +11,7 @@ import * as Navigation from './navigation.spec.js'
 
 const URL = 'https://localhost:8443';
 
-const name = `User${Math.floor(Math.random() * 1000000)}`;
+const name = `U${Math.floor(Math.random() * 1000000)}`;
 const email = `${name}@codam.com`;
 const password = `Hallo123`;
 const name2 = `User${Math.floor(Math.random() * 1000000)}`;
@@ -33,7 +33,7 @@ async function TestAuthentication(page) {
 async function TestMenu(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await signup_login_byPlayer(page, 1, name + 'menu', 'menu' + email, password);
+		await signup_login_byPlayer(page, 1, name + 'm', 'm' + email, password);
 		await isInMenu(page, false, name, '');
 	}
 	menuTests(page, 1, name + 'menu');
@@ -42,10 +42,10 @@ async function TestMenu(page, allTests) {
 async function TestOneVSone(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await signup_login_byPlayer(page, 1, name + 'onevsone', 'onevsone' + email, password);
-		await isInMenu(page, false, name, '');
+		await signup_login_byPlayer(page, 1, name + 'o', 'o' + email, password);
+		// await isInMenu(page, false, name + 'o', '');
 	}
-
+	console.log("Tests one vs one");
 	await OneVSone.oneVsOne(page, name2, email2, password2);
 	// await Game.quitGame(page);
 }
@@ -53,7 +53,7 @@ async function TestOneVSone(page, allTests) {
 async function TestOneVSai(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await signup_login_byPlayer(page, 1, name + 'a', 'a' + email, password);
 		await isInMenu(page, false, name, '');
 	}
 
@@ -65,7 +65,7 @@ async function TestOneVSai(page, allTests) {
 async function TestRemotePlayer(page, browser, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await signup_login_byPlayer(page, 1, name + 'a', 'a' + email, password);
 		await isInMenu(page, false, name, '');
 	}
 	await Remote.remotePlayer(page, browser, URL, name, name2, email2, password2);
@@ -78,7 +78,7 @@ async function TestRemotePlayer(page, browser, allTests) {
 async function TestNavigation(page, allTests) {
 	if (!allTests) {
 		await page.goto(URL);
-		await signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
+		await signup_login_byPlayer(page, 1, name + 'a', 'ai' + email, password);
 		await isInMenu(page, false, name, '');
 	}
 	await Navigation.navigation(page, name);

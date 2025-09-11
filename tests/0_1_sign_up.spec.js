@@ -69,10 +69,10 @@ export async function sign_in_tests(page, player, Name, Email, Password) {
 	// await waitForAlert(page, player, Name, Email, '', 'Please fill in all required fields');
 
 	// Wrong name inputs
-	await waitForAlert(page, player, 'ARealyLongNameIsNotAllowedWhenLongerThan30', Email, Password, 'Name is too long (min 30 characters)');
+	await waitForAlert(page, player, 'ARealyLongNameIsNotAllowedWhenLongerThan30', Email, Password, 'Name is too long (min 10 characters)');
 	page.waitForTimeout(5000);
 	// await waitForAlert(page, player, '    ', Email, Password, 'Name can not be empty');
-	await waitForAlert(page, player, Name + '*', Email, Password, "Only letters, numbers, spaces, '-' and '_' are allowed.");
+	await waitForAlert(page, player, 'Hallo*', Email, Password, "Only letters, numbers, spaces, '-' and '_' are allowed.");
 	
 	// Wrong email inputs
 	// await waitForAlert(page, player, Name, '   ', Password, 'Email can not be empty');
