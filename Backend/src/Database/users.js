@@ -174,6 +174,9 @@ export async function getUserByID(db, user_id) {
 				sql_error(err, `getUserByID | id=${user_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getUserByID | user_id not found! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});
