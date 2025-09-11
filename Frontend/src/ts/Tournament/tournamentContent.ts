@@ -1,6 +1,8 @@
 import { Game, UI } from "../gameData.js"
 import { navigateTo } from "../history.js";
 import { showTournamentScreen } from './tournamentDisplay.js';
+import { tournamentGameStart } from "./tournamentGameStart.js";
+import { createLog, log } from '../logging.js'
 
 export function actionTournament (data: any) {
 	if  (data.subaction === 'update') {
@@ -9,23 +11,28 @@ export function actionTournament (data: any) {
 		tournamentGameStart(data);
 	} else if (data.subaction === 'result') {
 		tournamentResult(data);
+	} else if (data.subaction === 'error') {
+		tournamentError;
 	}
 }
 
 function tournamentUpdate(data: any) {
 	console.log('Tournament update:', data);
 	document.getElementById('tournamentScreen')?.remove();
+	log('Tournament update received: ' + JSON.stringify(data.tournamentState));
 	showTournamentScreen(data.tournamentState);
 }
 
-function tournamentGameStart(data: any) {
-	alert('Your tournament match is starting!');
-	// TODO: Show match info, transition to game, etc.
+function tournamentResult(data: any) {
+	tournamentUpdate(data);
+	alert('Tournament result: ' + JSON.stringify(data));
+	
 }
 
-function tournamentResult(data: any) {
-	alert('Tournament result: ' + JSON.stringify(data));
-	// TODO: Show results, update bracket, etc.
+
+function tournamentError(data: any) {
+	alert('Tournament error: ' + (data.reason || 'Unknown error'));
+	navigateTo('Menu');
 }
 
 export function joinTournament() {

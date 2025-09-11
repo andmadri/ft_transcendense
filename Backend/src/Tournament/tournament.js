@@ -26,6 +26,7 @@ function getTournamentStateForFrontend() {
 }
 
 export function handleTournament(db, msg, socket, io, userId) {
+	console.log('Tournament message:', msg);
 	if (msg.subaction === 'join') {
 		socket.join('tournament_1');
 		// Add player to the tournament if not already present

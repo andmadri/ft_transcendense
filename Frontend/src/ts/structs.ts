@@ -29,7 +29,6 @@ export type user = {
 	Twofa: boolean
 }
 
-
 export type UI = {
 	state: stateUI,
 	logDiv: HTMLDivElement,

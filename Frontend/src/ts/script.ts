@@ -33,7 +33,7 @@ startSocketListeners();
 
 // Send a heartbeat every 5 seconds
 setInterval(() => {
-	if (Game.socket && Game.socket.connected) {
+	if (Game.socket && Game.socket.connected && UI.state !== S.stateUI.LoginP1) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
 		if (UI.user1.ID !== -1) {
 			fetch('/api/refresh-token', {
@@ -193,7 +193,8 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Tournament: {
-				joinTournament();
+				if (!document.getElementById('tournamentScreen'))
+					joinTournament();
 				break ;
 			}
 			 case S.stateUI.Dashboard: {
