@@ -5,6 +5,17 @@ import { getUserByID } from './users.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
+/**
+ * @brief Checks if the opposite friend request already exists (B→A when creating A→B).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} user_id        ID of the requester (A).
+ * @param {number} friend_id      ID of the target user (B).
+ * @param {string} user_id_name   Display name of A (for logging).
+ * @param {string} friend_id_name Display name of B (for logging).
+ * @returns {Promise<{id:number}|null>} Resolves with the existing request row (id) or null.
+ * @throws {Error} If the SQL query fails.
+ */
 async function isAlreadyAnInvite(db, user_id, friend_id, user_id_name, friend_id_name) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT id FROM Friends	WHERE (user_id = ? AND friend_id = ?) LIMIT 1`;
@@ -21,6 +32,16 @@ async function isAlreadyAnInvite(db, user_id, friend_id, user_id_name, friend_id
 		});
 	});
 }
+
+/**
+ * @brief Creates a new friend request (A→B). If B→A already exists, auto-accepts it.
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} user_id     Requester user ID (A).
+ * @param {number} friend_id   Target user ID (B).
+ * @returns {Promise<number>}  Resolves with the new request ID (or accept result if auto-accepted).
+ * @throws {Error} If users don’t exist or the insert/update fails.
+ */
 
 export async function addFriendRequestDB(db, user_id, friend_id) {
 	const user1 = await getUserByID(db, user_id);
@@ -60,6 +81,16 @@ export async function addFriendRequestDB(db, user_id, friend_id) {
 //                          CHANGE ROW FROM SQL TABLE                          //
 // *************************************************************************** //
 
+/**
+ * @brief Accepts a pending friend request by ID (sets accepted = 1).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} request_id      Friend request ID.
+ * @param {string} [user1_name]    Optional requester name (for logging).
+ * @param {string} [user2_name]    Optional target name (for logging).
+ * @returns {Promise<number|undefined>} Resolves with lastID/undefined (driver provides lastID on UPDATE as Statement field; use changes to check effect).
+ * @throws {Error} If the request or users cannot be found, or the SQL update fails.
+ */
 export async function acceptFriendRequestDB(db, request_id, user1_name, user2_name) {
 	if (!user1_name || !user2_name) {
 		const request = await getFriendRequestByID(db, request_id);
@@ -95,6 +126,14 @@ export async function acceptFriendRequestDB(db, request_id, user1_name, user2_na
 //                          DELETE ROW FROM SQL TABLE                          //
 // *************************************************************************** //
 
+/**
+ * @brief Denies (deletes) a pending friend request by ID (accepted = 0).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} request_id  Friend request ID.
+ * @returns {Promise<void>}    Resolves when the request has been removed (no-op if already accepted).
+ * @throws {Error} If the request/users cannot be found or the SQL delete fails.
+ */
 export async function denyFriendRequestDB(db, request_id) {
 	const request = await getFriendRequestByID(db, request_id);
 	if (!request) {
@@ -122,6 +161,15 @@ export async function denyFriendRequestDB(db, request_id) {
 	});
 }
 
+/**
+ * @brief Removes an existing friendship between two users (deletes accepted rows in either direction).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} user_id     One side of the friendship.
+ * @param {number} friend_id   The other side of the friendship.
+ * @returns {Promise<void>}    Resolves when the friendship row(s) are deleted.
+ * @throws {Error} If no friendship/request exists or the SQL delete fails.
+ */
 export async function deleteFriendDB(db, user_id, friend_id) {
 	const request = await getFriendRequestByUserIDs(db, user_id, friend_id);
 	if (!request) {
@@ -151,6 +199,15 @@ export async function deleteFriendDB(db, user_id, friend_id) {
 //                           VIEW DATA FROM SQL TABLE                          //
 // *************************************************************************** //
 
+/**
+ * @brief Fetches a friend request/friendship row for a pair of users (either direction).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} user1_id
+ * @param {number} user2_id
+ * @returns {Promise<object|null>} Resolves with the Friends row or null if none exists.
+ * @throws {Error} If the SQL query fails.
+ */
 export async function getFriendRequestByUserIDs(db, user1_id, user2_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM Friends WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)`;
@@ -168,6 +225,14 @@ export async function getFriendRequestByUserIDs(db, user1_id, user2_id) {
 	});
 }
 
+/**
+ * @brief Fetches a friend request/friendship by its request ID.
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} requestID
+ * @returns {Promise<object|null>} Resolves with the Friends row or null if not found.
+ * @throws {Error} If the SQL query fails.
+ */
 export async function getFriendRequestByID(db, requestID) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM Friends  WHERE id = ?`;
@@ -185,6 +250,14 @@ export async function getFriendRequestByID(db, requestID) {
 	});
 }
 
+/**
+ * @brief Lists all open (not yet accepted) friend requests for a player (incoming).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} player_id
+ * @returns {Promise<Array<{id:number, requester_id:number, requester_name:string}>>}
+ * @throws {Error} If the SQL query fails.
+ */
 export async function getOpenFriendRequestsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT f.id, u.id as requester_id, u.name as requester_name
@@ -200,6 +273,14 @@ export async function getOpenFriendRequestsDB(db, player_id) {
 	});
 }
 
+/**
+ * @brief Returns a player’s accepted friends with online status (0 = offline/logout, 1 = online).
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} player_id
+ * @returns {Promise<Array<{id:number, name:string, online_status:0|1}>>}
+ * @throws {Error} If the SQL query fails.
+ */
 export async function getFriendsDB(db, player_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `
@@ -239,6 +320,14 @@ export async function getFriendsDB(db, player_id) {
 	});
 }
 
+/**
+ * @brief Returns only the IDs of a player’s accepted friends.
+ *
+ * @param {sqlite3.Database} db
+ * @param {number} player_id
+ * @returns {Promise<number[]>} Array of friend IDs.
+ * @throws {Error} If the SQL query fails.
+ */
 export async function getFriendsOnlyIdDB(db, player_id) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT u.id FROM Friends f	JOIN Users u ON (u.id = f.friend_id OR u.id = f.user_id)

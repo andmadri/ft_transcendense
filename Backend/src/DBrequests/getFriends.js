@@ -45,10 +45,11 @@ async function deleteFriendship(socket, userID1, msg) {
 export async function getFriends(userId1, socket) {
 	try {
 		const friends = await friendsDB.getFriendsDB(db, userId1);
-		if (!friends || friends.length === 0) {
-			sendContentToFrontend(socket, 'friends', 'error', 'No friends found');
-		} else {
-			sendContentToFrontend(socket, 'friends', 'error', friends);
+		// if (!friends || friends.length === 0) {
+		// 	sendContentToFrontend(socket, 'friends', 'retFriends', 'No friends found');
+		// } else {
+		if (friends || friends.length !== 0) {
+			sendContentToFrontend(socket, 'friends', 'retFriends', friends);
 		}
 	} catch (err) {
 		sendContentToFrontend(socket, 'friends', 'error', err.message);
@@ -59,7 +60,7 @@ export async function openFriendRequest(userId1, socket) {
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
 		if (requests || requests.length !== 0) {
-			sendContentToFrontend(socket, 'friends', 'error', requests);
+			sendContentToFrontend(socket, 'friends', 'openRequests', requests);
 		}
 	} catch (err) {
 		sendContentToFrontend(socket, 'friends', 'error', err.message);
