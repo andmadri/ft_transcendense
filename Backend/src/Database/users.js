@@ -51,18 +51,14 @@ export async function createNewUserToDB(db, user = {}) {
 /**
  * @brief Updates one or more fields of a user’s profile.
  *
- * Only these keys can be changed:
- *   • name
- *   • email
- *   • password (will be hashed if provided)
- *   • avatar_url
- *
  * @param {sqlite3.Database} db
  * @param {Object} userUpdates
  * @param {number} userUpdates.user_id           – the user’s ID (required)
  * @param {string} [userUpdates.name]            – new display name
  * @param {string} [userUpdates.email]           – new email address
  * @param {string} [userUpdates.password]        – new raw password
+ * @param {string} [userUpdates.twofa_secret]    – set or now 2FA secret
+ * @param {string} [userUpdates.twofa_active]    – activate or disable 2FA
  * @param {string|null} [userUpdates.avatar_url] – new avatar URL (or empty to clear)
  *
  * @returns {Promise<void>}
@@ -94,6 +90,14 @@ export async function updateUserInDB(db, user) {
 		if (user.password !== undefined) {
 			updates.push("password = ?");
 			values.push(user.password);
+		}
+		if (user.twofa_secret !== undefined) {
+			updates.push("twofa_secret = ?");
+			values.push(user.twofa_secret);
+		}
+		if (user.twofa_active !== undefined) {
+			updates.push("twofa_active = ?");
+			values.push(user.twofa_active);
 		}
 		if (user.avatar_url !== undefined) {
 			updates.push("avatar_url = ?");
