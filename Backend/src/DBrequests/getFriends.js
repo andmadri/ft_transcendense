@@ -16,7 +16,7 @@ async function acceptFriendRequest(socket, data) {
 		await friendsDB.acceptFriendRequestDB(db, data.requestId);
 	} catch (err) {
 		if (err.message.includes('No pending')) {
-			sendContentToFrontend('friends', 'error', 'no', err.message);
+			sendContentToFrontend('friends', 'error', socket, 'no', err.message);
 		} else {
 			socket.emit('message', {action: 'error', msg: 'Database error'});
 			console.error(err);			

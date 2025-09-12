@@ -51,6 +51,8 @@ function getQuitBtn() {
 			name: UI.user1.name
 		});
 		Game.match.state = state.End;
+		if (document.getElementById('startGame'))
+			document.getElementById('startGame')?.remove();
 	})
 	return (quitButton);
 }
