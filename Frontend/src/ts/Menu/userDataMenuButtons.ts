@@ -284,7 +284,12 @@ export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 	return button;
 }
 
-
+export function getChangeNameBtn(playerNr: number): HTMLButtonElement {
+	const button = document.createElement('button');
+	button.textContent = 'Change Username';
+	//logic here!
+	return button;
+}
 
 function getLogoutBtn(playerNr: number): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');

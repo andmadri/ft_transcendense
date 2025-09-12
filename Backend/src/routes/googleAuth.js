@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { db } from '../index.js'
 import { addUser2faSecretToDB, getUserSecretDB } from '../Services/twofa.js';
 import { onUserLogin } from '../Services/sessionsService.js';
+import { USERLOGIN_TIMEOUT } from '../structs.js';
 
 /**
  * Handles the Google authentication process.
@@ -153,7 +154,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				signed: true,        // signed cookies
 				encode: v => v,      // Use default encoding
 				path: '/',
-				maxAge: 60 * 60      // 1 hour
+				maxAge: USERLOGIN_TIMEOUT
 			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

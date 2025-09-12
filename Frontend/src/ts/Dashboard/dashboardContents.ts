@@ -60,8 +60,8 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.justifyContent = 'center'; 
 
 	const userPic = document.createElement('img')
-	userPic.src = `/api/avatar/${user_info.id}`;
-	//clamped
+	//forces the browser not to use the cached image that it already had
+	userPic.src = `/api/avatar/${user_info.id}?t=${Date.now()}`;
 	userPic.style.height = 'clamp(60px, 30%, 120px)';
 	userPic.style.objectFit = 'cover';
 	userPic.style.borderRadius = '50%';
@@ -71,14 +71,12 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	userName.textContent = `${user_info.name}`;
 	userName.style.display = 'inline-flex';
 	userName.style.color = 'white';
-	//clamped
 	userName.style.fontSize = 'clamp(14px, 2vw, 24px)';
 	userName.style.fontFamily = '"Horizon", sans-serif';
 	userName.style.whiteSpace = 'nowrap';
 
 	const userDateCreation = document.createElement('div');
 	userDateCreation.style.color = 'white';
-	//clamped
 	userDateCreation.style.fontSize = 'clamp(6px, 1vw, 16px)';
 	userDateCreation.textContent = `Created at: ${user_info.created_at}`;
 	userDateCreation.style.display = 'inline-flex';
@@ -225,10 +223,10 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	exitButton.style.fontFamily = '"Horizon", sans-serif';
 
 	exitButton.addEventListener('click', () => {
-		const dashboard = document.getElementById('dashboard');
-		if (dashboard) {
-			dashboard.remove();
-		}
+		// const dashboard = document.getElementById('dashboard');
+		// if (dashboard) {
+			containerDashboard.remove();
+		// }
 		navigateTo('Menu');
 	});
 

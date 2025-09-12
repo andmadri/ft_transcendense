@@ -111,6 +111,7 @@ export function doRenderPage(newState: string, query: string) {
 				console.warn('GameStats: no matchId found');
 				navigateTo('Menu');
 			}
+			break;
 		case 'Dashboard':
 			UI.state = S.stateUI.Dashboard;
 			const userId = getIdFromHash(query, "userId");
@@ -121,6 +122,7 @@ export function doRenderPage(newState: string, query: string) {
 				console.warn('Dashboard: no userId found');
 				navigateTo('Menu');
 			}
+			break;
 		default:
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');

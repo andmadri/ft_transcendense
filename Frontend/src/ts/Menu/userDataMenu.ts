@@ -1,7 +1,7 @@
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js"
 import { styleListBtns } from "./menuContent.js";
-import { get2faBtn, getLoginBtn, getAvatarBtn } from "./userDataMenuButtons.js";
+import { get2faBtn, getLoginBtn, getAvatarBtn, getChangeNameBtn } from "./userDataMenuButtons.js";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.display = 'flex';
@@ -151,11 +151,49 @@ function createDashboardButton(): HTMLButtonElement {
 function createNotificationButtons(): HTMLButtonElement {
 	const notificationsBtn = document.createElement('button');
 	notificationsBtn.id = 'notificationBtn';
+
+	const notificationBtnList = document.createElement('ul');
+	notificationBtnList.id = 'notificationBtnList';
+	notificationBtnList.style.display = 'none';
+	notificationBtnList.style.zIndex = '100';
+	notificationBtnList.style.position = 'absolute';
+	notificationBtnList.style.border = '3px solid #403f3f';
+	notificationBtnList.style.borderRadius = '5px';
+	notificationBtnList.style.margin = '0';
+	notificationBtnList.style.listStyle = 'none';
+	notificationBtnList.style.padding = '8px 0';
+	notificationBtnList.style.background = '#2a2927';
+	notificationBtnList.style.boxShadow = 'rgba(30, 30, 30, 1) 0px 20px 30px -10px';
+	notificationBtnList.style.width = '210px';
+	notificationBtnList.style.height = '200px';
+
 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
 	notificationsBtn.addEventListener("click", () => {
-		// Add notifications logic here
+		if (notificationBtnList.style.display === 'none') {
+			notificationBtnList.style.display = 'block';
+		} else {
+			notificationBtnList.style.display = 'none';
+		}
 		console.log('Notifications clicked');
 	});
+
+	const notificationBadge = document.createElement('span');
+	notificationBadge.id = 'notificationBadge';
+	notificationBadge.style.position = 'relative';
+	notificationBadge.style.top = '-10px';
+	notificationBadge.style.right = '-8px';
+	notificationBadge.style.background = '#ff4444';
+	notificationBadge.style.color = 'white';
+	notificationBadge.style.borderRadius = '50%';
+	notificationBadge.style.fontSize = '10px';
+	notificationBadge.style.width = '18px';
+  notificationBadge.style.height = '18px';
+	notificationBadge.style.display = 'none';
+	notificationBadge.style.alignItems = 'center';
+	notificationBadge.style.justifyContent = 'center';
+
+	notificationsBtn.appendChild(notificationBadge);
+	notificationsBtn.appendChild(notificationBtnList);
 	return notificationsBtn;
 }
 
@@ -179,11 +217,6 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 
 	const userPic = createUserPicture(user_info, playerNr);
 	userContainer.appendChild(userPic);
-	// if (user_info.id < 2) {
-	// 	return userContainer;
-	// }
-	// const userInfoContainer = createUserInfoSection(user_info, stats); //fix this
-	// userContainer.appendChild(userInfoContainer);
 
 	const userInfoContainer = document.createElement('div');
 	userInfoContainer.style.display = 'flex';
@@ -238,6 +271,7 @@ function createButtonsContainer(playerNr: number): HTMLDivElement {
 	if (playerNr == 1) {
 		buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
 		buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
+		buttonsContainer.appendChild(styleBtnUserMenu(getChangeNameBtn(playerNr))); //Merel will built this
 	}
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
 	return buttonsContainer;
@@ -267,150 +301,6 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 	user2_block.appendChild(user2Container);
 	user2_block.appendChild(buttonsContainer2);
 }
-
-
-
-// function renderUserCardMenu(user_info: any, stats: any, playerNr: number)
-// {
-// 	const users1_block = document.getElementById('user1_block');
-// 	if (!users1_block)
-// 		return ;
-
-// 	const users2_block = document.getElementById('users2_block');
-// 	if (!users2_block)
-// 		return ;
-
-
-// 	users1_block.style.borderRadius = '0px 0px 10px 10px';
-// 	users2_block.style.borderRadius = '0px 0px 10px 10px';
-
-// 	const tabContainer1 = document.createElement('div');
-// 	tabContainer1.style.display = 'flex';
-// 	tabContainer1.style.marginBottom = '-16px'; // Overlap with users1_block
-// 	tabContainer1.style.position = 'relative';
-
-
-// 	const tabContainer2 = document.createElement('div');
-// 	tabContainer2.style.display = 'flex';
-// 	tabContainer2.style.marginBottom = '-16px'; // Overlap with users2_block but idk if it should be -16 or more?
-// 	tabContainer2.style.position = 'relative';
-
-// 	const player1Tab = document.createElement('button');
-// 	player1Tab.textContent = '1';
-// 	styleTabButton(player1Tab, playerNr === 1);
-
-// 	const player2Tab = document.createElement('button');
-// 	player2Tab.textContent = '2';
-// 	styleTabButton(player2Tab, playerNr === 2);
-
-// 	tabContainer1.appendChild(player1Tab);
-// 	tabContainer2.appendChild(player2Tab);
-// //------------------------------------------------------------
-// 	const user1Container = document.createElement('div');
-// 	user1Container.style.display = 'flex';
-// 	user1Container.style.width = '100%';
-// 	user1Container.style.height = '50%';
-
-// 	const buttonsContainerUser1 = document.createElement('div');
-// 	buttonsContainerUser1.style.display = 'flex';
-// 	buttonsContainerUser1.style.flexDirection = 'row';
-// 	buttonsContainerUser1.style.width = '100%';
-// 	buttonsContainerUser1.style.height = '35%';
-// 	buttonsContainerUser1.style.justifyContent = 'space-between';
-// 	buttonsContainerUser1.style.gap = '1rem';
-// 	buttonsContainerUser1.style.alignItems = 'center';
-// 	// buttonsContainerUser1.style.margin = '1rem';
-
-// 	const user1Pic = document.createElement('img');
-// 	user1Pic.src = `/api/avatar/${user_info.id}`;
-// 	user1Pic.alt = `${user_info.name}'s avatar`;
-// 	user1Pic.style.height = 'clamp(60px, 90%, 120px)';
-// 	user1Pic.style.aspectRatio = '1/1';
-// 	user1Pic.style.objectFit = 'cover';
-// 	user1Pic.style.borderRadius = '50%';
-// 	// user1Pic.style.padding = '1rem';
-// 	user1Pic.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
-
-// 	const user1InfoContainer = document.createElement('div');
-// 	user1InfoContainer.style.display = 'flex';
-// 	user1InfoContainer.style.flexDirection = 'column';
-// 	user1InfoContainer.style.gap = '0.7rem';
-// 	user1InfoContainer.style.height = '30%';
-// 	user1InfoContainer.style.padding = '1rem';
-
-// 	const user1Name = document.createElement('div');
-// 	user1Name.textContent = `${user_info.name}`;
-// 	user1Name.style.fontFamily = '"Horizon", monospace';
-// 	user1Name.style.webkitTextStroke = '0.1rem #ffffff';
-// 	user1Name.style.color = 'transparent';
-// 	user1Name.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
-// 	user1Name.style.whiteSpace = 'nowrap';
-
-// 	const user1Stats = document.createElement('div');
-// 	user1Stats.textContent = `Games: ${stats.total_matches} W: ${stats.wins} L: ${stats.losses}`;
-// 	user1Stats.style.fontFamily = '"RobotoCondensed", monospace';
-// 	user1Stats.style.color = 'white';
-// 	user1Stats.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
-// 	user1Stats.style.whiteSpace = 'nowrap';
-
-
-// 	const topRightButtons = document.createElement('div');
-// 	topRightButtons.style.display = 'flex';
-// 	topRightButtons.style.width = '100%';
-// 	topRightButtons.style.flexDirection = 'row';
-// 	topRightButtons.style.gap = '0.5rem';
-// 	topRightButtons.style.justifyContent = 'flex-end'; // Align to the right
-// 	topRightButtons.style.alignItems = 'flex-start';
-// 	topRightButtons.style.padding = '1rem';
-
-
-// 	const dashboardBtn = document.createElement('button');
-// 	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
-// 	// dashboardBtn.style.width = 'clamp(26px, 1.5vw, 40px)';
-// 	dashboardBtn.addEventListener("click", () => {
-// 		navigateTo('Dashboard');
-// 	});
-
-// 	const notificationsBtn = document.createElement('button');
-// 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
-// 	// dashboardBtn.style.width = 'clamp(26px, 1.5vw, 40px)';
-// 	dashboardBtn.addEventListener("click", () => {
-// 		navigateTo('Dashboard');
-// 	});
-
-// 	topRightButtons.appendChild(dashboardBtn);
-// 	topRightButtons.appendChild(notificationsBtn);
-
-// 	user1InfoContainer.appendChild(user1Name);
-// 	user1InfoContainer.appendChild(user1Stats);
-
-// 	user2InfoContainer.appendChild(user2Name);
-// 	user2InfoContainer.appendChild(user2Stats);
-
-// 	buttonsContainerUser1.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
-// 	buttonsContainerUser1.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
-// 	buttonsContainerUser1.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
-
-// 	buttonsContainerUser1.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
-	
-//   user1Container.appendChild(user1Pic);
-//   user1Container.appendChild(user1InfoContainer);
-// 	user1Container.appendChild(topRightButtons);
-
-// 	user2Container.appendChild(user2Pic);
-//   user2Container.appendChild(user2InfoContainer);
-// 	// user2Container.appendChild(topRightButtons); only attach the dashboard button to the topRightButton for player2
-
-
-// 	users1_block.parentElement?.insertBefore(tabContainer1, users1_block);
-// 	users2_block.parentElement?.insertBefore(tabContainer2, users2_block);
-
-// 	users1_block.appendChild(user1Container);
-// 	users1_block.appendChild(buttonsContainerUser1);
-
-// 	users2_block.appendChild(user2Container);
-// 	users2_block.appendChild(buttonsContainerUser2);
-// }
 
 export function actionUserDataMenu(data: any) {
 	console.log('Action to get UserDataMenu')

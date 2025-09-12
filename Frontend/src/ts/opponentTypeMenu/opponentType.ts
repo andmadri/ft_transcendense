@@ -1,6 +1,7 @@
 import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGame.js";
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js";
+import { getMenu } from "../Menu/menuContent.js";
 
 function styleSettingTitle(text: string): HTMLDivElement {
 	const title = document.createElement('div');
@@ -101,6 +102,9 @@ export function getOpponentMenu() {
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
+	if (!document.getElementById('menu')) {
+		getMenu();
+	}
 
 	const opponentMenu = document.createElement('div');
 	opponentMenu.id = 'opponentMenu';
