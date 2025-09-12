@@ -14,5 +14,6 @@ TESTS
 
 export async function friendsTests(page, name, name2) {
 	// TO DO
+	
 
 }

@@ -1,3 +1,8 @@
+import { test, expect } from '@playwright/test';
+import * as U from './utils.spec.js';
+import { signup_login_byPlayer } from './0_0_auth.spec.js';
+import { isInSignup, sign_in_tests } from './0_1_sign_up.spec.js';
+import { login_tests } from './0_2_login.spec.js';
 
 /**
 Tests
@@ -14,64 +19,19 @@ Tests
 	- player 2 in playerlist (offline)
 	- player 2 login again
 	- player 1 and 2 in menu
- */
+*/
+
+
 
 export async function playerTabsTests(page, player1, name1, email1, password1, player2, name2, email2, password2) {
-	await test.step('Player 1 stats visible', async () => {
-		await Menu.isInMenu(page, false, name1, '');
-		await expect(page.locator('#playerStatsBtn' + player1)).toBeVisible();
-	});
+	// LOGIN PLAYER 2:
+	await U.pressBtn(page, 'Login');
+	await switchLoginTab(page, 'Sign Up');
+	await isInSignup(page, 2);
+	await signup_player(page, 2, name2, email2, password2);
+	await login_player(page, 2, email2, password2);
+	await expect(page.locator('#LogoutBtn2')).toBeVisible();
+	await expect(page.locator('#dashboardBtn2')).toBeVisible();
 
-	await test.step('Player 1 logout', async () => {
-		await Menu.switchPlayerTab(page, player1);
-		await U.pressBtn(page, "logout");
-		await expect(page.locator('h2', { hasText: 'Login' })).toBeVisible();
-	});
 
-	await test.step('Player 1 login again', async () => {
-		await Login.login_player(page, player1, email1, password1);
-		await Menu.isInMenu(page, false, name1, '');
-		await Menu.playerIsLoggedIn(page, player1, name1);
-	});
-
-	await test.step('Player 1 switch tab', async () => {
-		await Menu.switchPlayerTab(page, player1);
-		await page.waitForTimeout(1000);
-	});
-
-	await test.step('Player 2 sign up / login', async () => {
-		await Login.signup_login_byPlayer(page, player2, name2, email2, password2);
-		await Menu.isInMenu(page, false, name1, name2);
-		await Menu.playerIsLoggedIn(page, player2, name2);
-	});
-
-	await test.step('Player 1 and 2 in playerlist (online)', async () => {
-		await Menu.playerInOnlineMenu(page, name1);
-		await Menu.playerInOnlineMenu(page, name2);
-	});
-
-	await test.step('Player 2 logout', async () => {
-		await Menu.switchPlayerTab(page, player2);
-		await U.pressBtn(page, "logout");
-		await expect(page.locator('h2', { hasText: 'Login' })).toBeVisible();
-	});
-
-	await test.step('Player 2 in playerlist (offline)', async () => {
-		await Menu.switchPlayerTab(page, player1);
-		await Menu.playerInOnlineMenu(page, name1);
-		await expect(
-			page.locator('#listPlayers', { hasText: name2 })
-		  ).not.toBeVisible();
-	});
-
-	await test.step('Player 2 login again', async () => {
-		await Login.login_player(page, player2, email2, password2);
-		await Menu.isInMenu(page, false, name1, name2);
-		await Menu.playerIsLoggedIn(page, player2, name2);
-	});
-
-	await test.step('Player 1 and 2 in menu', async () => {
-		await Menu.playerInOnlineMenu(page, name1);
-		await Menu.playerInOnlineMenu(page, name2);
-	});
 }

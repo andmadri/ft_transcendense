@@ -13,23 +13,20 @@ Tests:
 */
 
 export async function StartOneVsOne(page) {
-	await U.pressBtn(page, "Play game");
+	await U.pressBtn(page, "Play Game");
 	await U.pressBtn(page, "vs Guest");
-	await U.pressBtn(page, "PLAY");
+	const playBtn = await page.locator('#settingContainer').getByRole('button', { name: 'Play Game' });
+	await expect(playBtn).toBeVisible();
+	await playBtn.click();
 }
 
-export async function oneVsOne(page, name2, email2, password2) {
+export async function oneVsOne(page, name, name2, email2, password2) {
 	console.log('--- ONE VS ONE TESTS ---');
-	// await Menu.switchPlayerTab(page, 2);
-	// await page.getByRole('button', { name: 'login', exact: true }).filter({ hasText: 'login', visible: true }).click();
-	
-	// BUG
-	// await page.getByText('Sign Up').click();
-	// await page.getByText('Sign Up').click();
-
 	// await Login.signup_login_byPlayer(page, 2, name2, email2, password2);
 	
 	await StartOneVsOne(page);
 	await page.waitForTimeout(10000);
 	await Game.quitGame(page);
+	await U.pressBtn(page, 'BACK TO MENU');
+	await Menu.isInMenu(page, false, name, '');
 }

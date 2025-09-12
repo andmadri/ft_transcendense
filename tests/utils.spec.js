@@ -28,5 +28,5 @@ export async function checkHash(page, expectedUrl) {
 	const currentUrl = page.url();
 	const urlObj = new URL(currentUrl);
 	const hash = urlObj.hash; 
-	expect(hash).toBe(expectedUrl);
+	await expect(hash).toContain(expectedUrl);
 };

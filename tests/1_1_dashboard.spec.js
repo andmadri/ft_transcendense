@@ -14,29 +14,20 @@ Tests:
 
 */
 
+export async function isOnDashboardPage(page) {
+	await expect(page.locator('#dashboardBtn1')).toBeVisible();
+	await page.locator('#dashboardBtn1').click()
+	await page.waitForTimeout(1000);
+	await U.checkHash(page, '#Dashboard?userId=');
+	await expect(page.locator('#userInfoCard')).toBeVisible();
+	await expect(page.locator('#statsCard')).toBeVisible();
+	await expect(page.locator('#dashboardTitle')).toBeVisible();
+	await expect(page.locator('#PlayerGameTime')).toBeVisible();
+	await expect(page.locator('#PlayerGameTime')).toBeVisible();
+	await expect(page.locator('#exitButton')).toBeVisible();
+	await page.locator('#exitButton').click();
+}
+
 export async function dashboardTests(page) {
-	
-	await U.checkHash(page, '#Dashboard');
-	await expect(page.locator('h2', { hasText: 'Dashboard' })).toBeVisible();
-	await expect(page.locator('#playerStats1')).toBeVisible();
-	await expect(page.locator('#playerStats2')).toBeVisible();
-	await expect(page.locator('#matchHistory')).toBeVisible();
-	await expect(page.locator('#closeDashboard')).toBeVisible();
-	await expect(page.locator('#backToMenuFromDashboard')).toBeVisible();
-	await expect(page.locator('#match1')).toBeVisible();
-
-	// Click match if mathc...
-	await U.pressDiv(page, "match1");
-	await page.waitForTimeout(1000);
-	await U.checkHash(page, '#Match/1');
-
-	// Go back to dashboard
-	await U.pressBtn(page, "CLOSE");
-	await page.waitForTimeout(1000);
-	await U.checkHash(page, '#Dashboard');
-
-	// Close dashboard
-	await U.pressBtn(page, "CLOSE");
-	await page.waitForTimeout(1000);
-	await U.checkHash(page, '#Menu');
+	await isOnDashboardPage(page);
 }

@@ -17,9 +17,9 @@ export async function authenticationTests(page, player, Name, Email, Password) {
 	// LOGIN TESTS
 	await login_tests(page, player, Email, Password);
 
-	// GOOGLE TESTS
+	// GOOGLE TESTS: manual
 	
-	// 2FA TESTS
+	// 2FA TESTS: manual
 
 }
 

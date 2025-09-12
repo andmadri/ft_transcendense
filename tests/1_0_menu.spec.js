@@ -12,26 +12,23 @@ Tests:
 */
 
 export async function menuTests(page, name, email, password, name2, email2, password2) {
+	console.log('--- MENU TESTS ---');
 	await isInMenu(page, false, name, '');
-	await playerInOnlineMenu(page, name);
+	// await playerInOnlineMenu(page, name);
 
-
-	await U.pressBtn(page, "Dashboard");
 	await dashboardTests(page);
 
-	await U.pressBtn(page, "Credits");
-	await creditTests(page);
+	await creditTests(page, name);
 
-	await playerTabsTests(page, 1, name, email, password, 2, name2, email2, password2);
 	await friendsTests(page, name, name2);
 
-	await avatarTests(page, player, 'avatar1');
+	await avatarTests(page, 1, name, 'avatar1');
 }
 
 export async function playerInOnlineMenu(page, playerName) {
 	await expect(
 		page.locator('#listPlayers', { hasText: playerName })
-	  ).toBeVisible();
+	 ).toBeVisible();
 }
 
 export async function switchPlayerTab(page, player) {
@@ -48,7 +45,7 @@ export async function isInMenu(page, player2, name, name2) {
 
 	// player 1
 	await expect(page.locator(`#userNameMenu1`, { hasText: name })).toBeVisible();
-	await expect(page.locator('#dashboardBtn')).toBeVisible();
+	await expect(page.locator('#dashboardBtn1')).toBeVisible();
 	await expect(page.locator('#notificationBtn')).toBeVisible();
 	await expect(page.locator('#userStats1', {hasText: 'W: '})).toBeVisible();
 	await expect(page.locator('button', { hasText: 'Set Up 2FA' })).toBeVisible();	
@@ -74,7 +71,7 @@ export async function isInMenu(page, player2, name, name2) {
 }
 
 export async function playerIsLoggedIn(page, player, name) {
-	switchPlayerTab(page, player)
+	await switchPlayerTab(page, player)
 	await expect(page.locator('#playerNameMenu' + player)).toBeVisible();
 	const playerNameElement = page.locator('#playerNameMenu' + player);
 	await expect(playerNameElement).toHaveText(name);

@@ -248,6 +248,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 	const topRightButtonContainer =  createTopRightButtonContainer();
 	if(user_info.id >= 2) {
 		const dashboard = createDashboardButton();
+		dashboard.id = 'dashboardBtn' + playerNr;
 		topRightButtonContainer.appendChild(dashboard);
 	}
 	if (playerNr === 1) {

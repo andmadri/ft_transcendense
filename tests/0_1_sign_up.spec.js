@@ -22,7 +22,7 @@ Tests:
 		+ What is email already exists?
 */
 
-async function isInSignup(page, player) {
+export async function isInSignup(page, player) {
 	await expect(page.locator('#header1TextAuth', { hasText: 'SIGN UP' })).toBeVisible();
 	await expect(page.locator('#name' + player)).toBeVisible();
 	await expect(page.locator('#email' + player)).toBeVisible();
