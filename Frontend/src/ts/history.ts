@@ -242,7 +242,9 @@ export function controlBackAndForward(event: PopStateEvent) {
 	if (!newState) {
 		newState = window.location.hash || 'Menu';
 	}
-	const { page, query } = splitHash(newState);
+	let { page, query } = splitHash(newState);
+	if (event.state && event.state.query)
+		query = event.state.query;
 
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
