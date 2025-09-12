@@ -1,4 +1,5 @@
 import { requestLeaveTournament } from './tournamentContent.js';
+import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
 
 
 //create a lobby
@@ -97,14 +98,14 @@ export function showTournamentScreen(tournamentState: any) {
 		readyBtn.addEventListener('click', () => {
 			isReady = !isReady;
 			if (isReady) {
+				readyTournamentPlayer();
 				readyBtn.style.background = 'linear-gradient(45deg, #00ff00, #32cd32)';
 				readyBtn.textContent = 'Ready!';
 			} else {
+				notReadyTournamentPlayer();
 				readyBtn.style.background = '#4a4a4a';
 				readyBtn.textContent = 'Join the Match';
 			}
-			if (onReady)
-				onReady();
 		});
 		matchBox.appendChild(player1Box);
 		matchBox.appendChild(separator);

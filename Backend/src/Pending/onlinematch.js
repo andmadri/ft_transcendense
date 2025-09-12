@@ -156,7 +156,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			return ;
 		}
 
-		startOnlineMatch(db, socket, socket2, userID, userID2, io);
+		await startOnlineMatch(db, socket, socket2, userID, userID2, io);
 
 	} else {
 		console.log("No open match found...adding player to waitinglist");

@@ -24,7 +24,7 @@ async function getNamebyUserID(db, userID) {
 }
 
 // creates a new match, init and returns id nr
-async function newMatch(db, matchnr, id, id2, mode) {
+async function newMatch(db, matchnr, id, id2, mode, tournamentContext) {
 	try {
 		const name = await getNamebyUserID(db, id);
 		const name2 = await getNamebyUserID(db, id2);

@@ -1,7 +1,7 @@
 import { db } from '../index.js';
 import { startOnlineMatch } from '../Pending/onlinematch.js';
 import { matches } from '../InitGame/match.js';
-import { state } from '../SharedBuild/enums.js';
+import { state, MF } from '../SharedBuild/enums.js';
 
 export const tournament = {
 	players: [], // [{id, name, socket, ready ...}]
@@ -33,15 +33,7 @@ function joinTournament(msg, userId, socket, io) {
 	if (!tournament.players.find(p => p.id === userId)) {
 		tournament.players.push({ id: userId, name: msg.name, socket: socket, ready: false });
 	}
-
-	if (isTournamentReadyToStart()) {
-		console.log('Tournament starting now!');
-		tournament.state = 'in_progress';
-		startFirstTournamentMatches(io);
-	} else {
-		console.log('Tournament waiting for more players...');
-	}
-
+	
 	// Broadcast updated state to all participants
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
@@ -51,6 +43,19 @@ function joinTournament(msg, userId, socket, io) {
 	
 	// Print in console for debugging
 	console.log('Player joined tournament:', msg.name, userId, getTournamentStateForFrontend());
+
+	if (isTournamentReadyToStart()) {
+		console.log('Tournament starting now!');
+		tournament.state = 'in_progress';
+
+		setInterval(() => {
+			startFirstTournamentMatches(io);
+		},100);
+
+	} else {
+		console.log('Tournament waiting for more players...');
+	}
+
 }
 
 
@@ -95,9 +100,11 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	}
 
 	console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
-	const matchId = startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io); //probably nice to start using MF.Tournament / MF.singleGame now 
+	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io); //probably nice to start using MF.Tournament / MF.singleGame now 
 	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
-	
+	console.log('current match:', matches.get(matchId));
+	console.log('Tournament matches:', tournament.matches);
+
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
@@ -138,7 +145,7 @@ export function isTournamentReadyToStart() {
 }
 
 async function startFirstTournamentMatches(io) {
-	console.log('Starting for players: ', tournament.players);
+	// console.log('Starting for players: ', tournament.players.id, tournament.players.name);
 	// Create Match 1: p1 vs p2
 	await createTournamentMatch(tournament.players[0], tournament.players[1], 1, io);
 	// Create Match 2: p3 vs p4
