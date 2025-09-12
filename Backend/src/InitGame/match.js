@@ -36,15 +36,16 @@ async function newMatch(db, matchnr, id, id2, mode) {
 		matches.set(matchnr, {
 			state: state.Start,
 			matchID: matchnr,
-			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+			matchFormat: MF.Empty,
 			intervalID: null,
 			pauseTimeOutID: null,
 			resumeTime: -1,
-			lastUpdateTime: -1,
+			lastUpdateTime: null,
 			mode: mode,
 			lastScoreID: -1,
 			tournamentId: tournamentContext?.tournamentId || null,
 			tournamentMatchNumber: tournamentContext?.matchNumber || null,
+			winnerID: null,
 			player1: {
 				ID: id,
 				name: name,
@@ -66,19 +67,19 @@ async function newMatch(db, matchnr, id, id2, mode) {
 					size: { width: 0.05, height: 0.05 },
 					pos: { x: 0.5, y: 0.75 / 2 },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.01 },
+					movement: { speed: 0.5 },
 					},
 				paddle1: { 
 					size: { width: 0.02, height: 0.14},
 					pos: { x: 0.02, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.015 },
+					movement: { speed: 0.6 },
 					},
 				paddle2: { 
 					size: { width: 0.02, height: 0.14 },
 					pos: { x: 0.98, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.015 },
+					movement: { speed: 0.6 },
 					},
 			}
 		});
@@ -116,8 +117,13 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 	if (mode === OT.ONEvsCOM)
 		userId2 = 2; // COM
 
-	if (userId2 == null) // This should not happen
-		userId2 = 1; // guest
+	if (userId2 == null)
+		userId2 = 1;
+
+	if ((userId1 == 1 && userId2 == 2) || (userId2 == 1 && userId1 == 2)) {
+		console.log(`Match Guest vs AI is not allowed!`);
+		return (-1);
+	}
 
 	try {
 		// CREATE MATCH IN DB

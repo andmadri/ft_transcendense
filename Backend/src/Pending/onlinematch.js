@@ -33,11 +33,15 @@ function findOpenMatch() {
 	return ([userInfo.socket, userInfo.userID]);
 }
 
+let now;
+let deltaTime;
+
 function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
+		now = performance.now();
+		deltaTime = (now - match.lastUpdateTime) / 600;
 		switch (match.state) {
 			case (state.Init) : {
-				// console.log(`state.Init`);
 				if (match.pauseTimeOutID == null) {
 					randomizeBallAngle(match.gameState.ball);
 					match.resumeTime = Date.now() + 4000;
@@ -50,7 +54,7 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.Playing) : {
-				updateGameState(match);
+				updateGameState(match, deltaTime);
 				sendGameStateUpdate(match, io);
 				break;
 			}
@@ -62,8 +66,8 @@ function matchInterval(match, io) {
 						match.pauseTimeOutID = null
 					}, match.resumeTime - Date.now());
 				}
-				updatePaddlePos(match.gameState.paddle1, match.gameState.field);
-				updatePaddlePos(match.gameState.paddle2, match.gameState.field);
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field, deltaTime);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field, deltaTime);
 				break;
 			}
 			case (state.Serve) : {
@@ -92,6 +96,7 @@ function matchInterval(match, io) {
 				break;
 			}
 		}
+		match.lastUpdateTime = now;
 		sendGameStateUpdate(match, io);
 	}, 40)
 }

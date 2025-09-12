@@ -16,7 +16,7 @@ export type player = {
 	ID: number
 	name: string,
 	ready: boolean,
-	input: {
+	input: { //currently not using this anymore
 		pressUP: boolean,
 		pressDOWN: boolean
 	},
@@ -37,9 +37,10 @@ export type matchInfo = {
 	matchFormat: MF,
 	pauseTimeOutID: number | null,
 	resumeTime: number,
-	lastUpdateTime: number,
+	winnerID: number | null,
 	mode: OT,
 	lastScoreID: number,
+	lastUpdateTime: number | null,
 	player1: player,
 	player2: player,
 	gameState: gameState

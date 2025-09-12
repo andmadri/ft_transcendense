@@ -1,10 +1,10 @@
 import { entity, player, matchInfo } from './types.js'
 import { state } from './enums.js'
 
-export function updateBallPos(ball: entity, field: any) {
+export function updateBallPos(ball: entity, field: any, deltaTime: number) {
 	const ballRadius = ball.size.height / 2;
-	ball.pos.x += ball.velocity.vx;
-	ball.pos.y += ball.velocity.vy;
+	ball.pos.x += ball.velocity.vx * deltaTime;
+	ball.pos.y += ball.velocity.vy * deltaTime;
 	if (ball.pos.y - ballRadius < 0)
 		ball.pos.y = ballRadius;
 	else if (ball.pos.y + ballRadius > field.size.height)
@@ -15,9 +15,9 @@ export function updateBallPos(ball: entity, field: any) {
 		ball.pos.x = field.size.width - ballRadius;
 }
 
-export function updatePaddlePos(paddle: entity, field: any) {
+export function updatePaddlePos(paddle: entity, field: any, deltaTime: number) {
 	const paddleHalfHeight = paddle.size.height / 2;
-	const nextPos = paddle.pos.y + paddle.velocity.vy;
+	const nextPos = paddle.pos.y + (paddle.velocity.vy * deltaTime);
 	paddle.pos.y = Math.max(paddleHalfHeight, Math.min(nextPos, field.size.height - paddleHalfHeight));
 }
 
@@ -108,7 +108,7 @@ function checkPaddleSides(match: matchInfo) {
 	}
 }
 
-export function updateGameState(match: matchInfo) {
+export function updateGameState(match: matchInfo, deltaTime: number) {
 	const { field, ball, paddle1, paddle2 } = match.gameState;
 	match.gameState.time = Date.now();
 	if (match.player1.score == 5 || match.player2.score == 5) {
@@ -116,9 +116,9 @@ export function updateGameState(match: matchInfo) {
 		return ;
 	}
 	if (match.state == state.Playing) {
-		updateBallPos(ball, field);
-		updatePaddlePos(paddle1, field);
-		updatePaddlePos(paddle2, field);
+		updateBallPos(ball, field, deltaTime);
+		updatePaddlePos(paddle1, field, deltaTime);
+		updatePaddlePos(paddle2, field, deltaTime);
 		handleWallBounce(ball, field);
 		checkPaddleSides(match);
 	}
