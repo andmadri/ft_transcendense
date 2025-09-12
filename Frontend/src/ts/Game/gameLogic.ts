@@ -58,7 +58,7 @@ export function game(match : matchInfo) {
 		match.lastUpdateTime = now;
 		return;
 	}
-	let deltaTime = (now - match.lastUpdateTime) / 750;
+	let deltaTime = (now - match.lastUpdateTime) / 600;
 	switch (match.mode) {
 		case OT.Online : {
 			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;

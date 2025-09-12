@@ -40,7 +40,7 @@ let deltaTime;
 function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		now = performance.now();
-		deltaTime = (now - match.lastUpdateTime) / 1000;
+		deltaTime = (now - match.lastUpdateTime) / 600;
 		switch (match.state) {
 			case (state.Init) : {
 				if (match.pauseTimeOutID == null) {

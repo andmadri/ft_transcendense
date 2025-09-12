@@ -143,4 +143,5 @@ export function saveGame() {
 	lastMatchId = Game.match.matchID;
 
 	navigateTo('GameOver'); //, {matchId: Game.match.matchID}
+	Game.match.matchID = -1;
 }
