@@ -8,8 +8,7 @@ import { db } from "../index.js";
 
 const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
-export async function quitMatch(match, msg, socket, io) {
-	const name = msg.name ? msg.name : 'unknown player';
+export async function quitMatch(match, msg, io) {
 	if (match.mode == OT.Online) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
@@ -26,7 +25,7 @@ export async function quitMatch(match, msg, socket, io) {
 	match.state = state.End;
 }
 
-export async function saveMatch(match, msg, socket) {
+export async function saveMatch(match) {
 	// Update the match in the database
 	const matchID = await handleMatchEndedDB(db, match.matchID);
 	

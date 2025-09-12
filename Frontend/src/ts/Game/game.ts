@@ -43,10 +43,6 @@ export function actionGame(data: any) {
 			log(`MatchID frontend: ${data.id}`);
 			processMatch(data);
 			break ;
-		// case 'start':
-		// 	navigateTo('Game');
-		// 	Game.match.state = state.Playing; //don't think we need this
-		// 	break ;
 		case 'gameStateUpdate':
 			applyGameStateUpdate(data);
 			break ;

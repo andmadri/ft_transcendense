@@ -1,19 +1,10 @@
-import * as S from '../structs'
 import { Game, UI, newMatch } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
-import { getGameField } from './gameContent.js';
-import { submitLogout } from '../Auth/logout.js';
-// import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
-import { startGameField } from './startGameContent.js';
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
 
 export function startGame() {
 	console.log(`function startGame() ${Game.match.mode}`);
@@ -83,6 +74,7 @@ export function changeOpponentType(option: string) {
 }
 
 export function changeMatchFormat(option: string) {
+	// Game.match = newMatch();
 	switch (option) {
 		case 'single game':
 			Game.match.matchFormat = MF.SingleGame;

@@ -3,8 +3,6 @@ import { OT, state } from '@shared/enums'
 import { matchInfo, gameState } from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
 import { aiAlgorithm } from './aiLogic.js'
-import { navigateTo } from "../history.js"
-import { sendGameState, sendServe } from './gameStateSync.js'
 import { renderGameInterpolated } from "./renderSnapshots.js"
 
 export function updateDOMElements(match : matchInfo) {
@@ -60,7 +58,7 @@ export function game(match : matchInfo) {
 		match.lastUpdateTime = now;
 		return;
 	}
-	let deltaTime = (now - match.lastUpdateTime) / 1000;
+	let deltaTime = (now - match.lastUpdateTime) / 750;
 	switch (match.mode) {
 		case OT.Online : {
 			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
@@ -79,7 +77,6 @@ export function game(match : matchInfo) {
 				updatePaddlePos(match.gameState.paddle1, match.gameState.field, deltaTime);
 				updatePaddlePos(match.gameState.paddle2, match.gameState.field, deltaTime);
 			}
-			sendGameState(); //do we need this still?
 			break;
 		}
 	}

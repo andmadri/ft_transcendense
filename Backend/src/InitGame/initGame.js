@@ -31,7 +31,7 @@ function handleStartOnlineMatch(msg, match) {
 }
 
 // From Frontend
-export function handleInitGame(db, msg, socket, userId1, userId2) {
+export function handleInitGame(db, msg, socket) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleInitGame');
 

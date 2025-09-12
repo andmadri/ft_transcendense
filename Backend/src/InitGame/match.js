@@ -36,7 +36,7 @@ async function newMatch(db, matchnr, id, id2, mode) {
 		matches.set(matchnr, {
 			state: state.Start,
 			matchID: matchnr,
-			matchFormat: MF.Empty, // for now, wasn't used in backend i guess
+			matchFormat: MF.Empty,
 			intervalID: null,
 			pauseTimeOutID: null,
 			resumeTime: -1,
@@ -117,6 +117,11 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 
 	if (userId2 == null)
 		userId2 = 1;
+
+	if ((userId1 == 1 && userId2 == 2) || (userId2 == 1 && userId1 == 2)) {
+		console.log(`Match Guest vs AI is not allowed!`);
+		return (-1);
+	}
 
 	try {
 		// CREATE MATCH IN DB

@@ -175,10 +175,6 @@ function mainLoop() {
 					getCreditsPage();
 				break ;
 			}
-			// case S.stateUI.Dashboard: {
-				
-					
-			// }
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;

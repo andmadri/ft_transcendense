@@ -25,7 +25,6 @@ export function newMatch() {
 		matchFormat: MF.Empty,
 		pauseTimeOutID: null,
 		resumeTime: -1,
-		lastUpdateTime: -1,
 		mode: OT.Empty,
 		winnerID: null,
 		lastScoreID: -1,

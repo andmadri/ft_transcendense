@@ -1,4 +1,4 @@
-import { Game, newMatch } from "../gameData.js"
+import { Game } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT } from '@shared/enums'
@@ -142,5 +142,5 @@ export function saveGame() {
 	result = getWinnerResult();
 	lastMatchId = Game.match.matchID;
 
-	navigateTo('GameOver', {matchId: Game.match.matchID});
+	navigateTo('GameOver'); //, {matchId: Game.match.matchID}
 }

@@ -1,6 +1,5 @@
 import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
-import { log } from '../logging.js'
 import { OT, state } from '@shared/enums'
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 import { reconcilePaddle } from './gameLogic.js';
@@ -19,9 +18,6 @@ export function applyGameStateUpdate(data : any) {
 			renderGameInterpolated();
 		}
 		reconcilePaddle(playerNr, data.gameState);
-		// else {
-		// 	console.log("Data is missing in applyUpdatesGameServer");
-		// }
 	}
 }
 
@@ -47,14 +43,14 @@ export function sendKeyPressUpdate(key : string) {
 	});
 }
 
-export function sendGameState() {
-	Game.socket.emit('message',{
-		action: 'game',
-		subaction: 'gameStateUpdate',
-		matchID: Game.match.matchID,
-		gameState: Game.match.gameState
-	});
-}
+// export function sendGameState() {
+// 	Game.socket.emit('message',{
+// 		action: 'game',
+// 		subaction: 'gameStateUpdate',
+// 		matchID: Game.match.matchID,
+// 		gameState: Game.match.gameState
+// 	});
+// }
 
 export function sendPadelHit() {
 	Game.socket.emit('message',{
