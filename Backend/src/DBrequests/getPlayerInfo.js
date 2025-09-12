@@ -49,7 +49,7 @@ export async function changeName(socket, db, msg) {
 	if (msg.oldName == msg.name) {
 		return (sendChangingNameMsg(socket, msg, 0, 'You are already using this name.'));
 	} else {
-		const errMsg = checkName(msg.oldName);
+		const errMsg = checkName(msg.name);
 		if (errMsg)
 			return (sendChangingNameMsg(socket, msg, 0, errMsg));
 	}
