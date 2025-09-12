@@ -11,6 +11,11 @@ export function actionTournament (data: any) {
 		tournamentGameStart(data);
 	} else if (data.subaction === 'result') {
 		tournamentResult(data);
+	} else if (data.subaction === 'left') {
+		navigateTo('Menu');
+	} else if (data.subaction === 'joinRejected') {
+		alert('Tournament join rejected: ' + (data.reason || 'Unknown reason'));
+		navigateTo('Menu');
 	} else if (data.subaction === 'error') {
 		tournamentError;
 	}
@@ -29,10 +34,27 @@ function tournamentResult(data: any) {
 	
 }
 
-
 function tournamentError(data: any) {
 	alert('Tournament error: ' + (data.reason || 'Unknown error'));
 	navigateTo('Menu');
+}
+
+export function requestUpdateTournament() {
+	Game.socket.emit('message', {
+		action: 'tournament',
+		subaction: 'getState',
+		name: UI.user1.name,
+		userId: UI.user1.ID
+	});
+}
+
+export function requestLeaveTournament() {
+	Game.socket.emit('message', {
+		action: 'tournament',
+		subaction: 'leave',
+		name: UI.user1.name,
+		userId: UI.user1.ID
+	});
 }
 
 export function joinTournament() {
@@ -43,10 +65,4 @@ export function joinTournament() {
 		userId: UI.user1.ID
 	});
 	navigateTo('Tournament');
-
-	// Request the current tournament state from backend
-	Game.socket.emit('message', {
-		action: 'tournament',
-		subaction: 'getState'
-	});
 }

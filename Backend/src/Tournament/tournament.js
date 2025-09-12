@@ -1,8 +1,8 @@
-import { createMatch } from '../InitGame/match.js';
 import { db } from '../index.js';
+import { startOnlineMatch } from '../Pending/onlinematch.js';
 
 export const tournament = {
-	players: [], // [{id, name, socketId, ...}]
+	players: [], // [{id, name, socket, ...}]
 	matches: [], // { matchNumber: 1, player1, player2, winner, loser, matchId }
 	state: 'waiting', // 'in_progress' 'finished'
 };
@@ -11,60 +11,84 @@ export const tournament = {
 function getTournamentStateForFrontend() {
 	return {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
-		matches: tournament.matches.map(m => ({
-			matchNumber: m.matchNumber,
-			player1: m.player1,
-			player2: m.player2,
-			player1Name: tournament.players.find(p => p.id === m.player1)?.name || 'TBD',
-			player2Name: tournament.players.find(p => p.id === m.player2)?.name || 'TBD',
-			winner: m.winner,
-			winnerName: tournament.players.find(p => p.id === m.winner)?.name || '',
-			finished: m.finished || false
-		})),
+		matches: tournament.matches,
 		state: tournament.state
 	};
 }
 
-export function handleTournament(db, msg, socket, io, userId) {
-	console.log('Tournament message:', msg);
-	if (msg.subaction === 'join') {
-		socket.join('tournament_1');
-		// Add player to the tournament if not already present
-		if (!tournament.players.find(p => p.id === userId)) {
-			tournament.players.push({ id: userId, name: msg.name, socketId: socket.id });
-		}
+function joinTournament(msg, userId, socket, io) {
+	socket.join('tournament_1');
+	// Add player to the tournament if not already present
+	if (!tournament.players.find(p => p.id === userId)) {
+		tournament.players.push({ id: userId, name: msg.name, socket: socket });
+	}
 
+	if (isTournamentReadyToStart()) {
+		console.log('Tournament starting now!');
+		tournament.state = 'in_progress';
+		//optionally check if players pressed Ready => store ready : boolean in players array
+		startFirstTournamentMatches(io);
+	} else {
+		console.log('Tournament waiting for more players...');
+	}
+
+	// Broadcast updated state to all participants
+	io.to('tournament_1').emit('message', {
+		action: 'tournament',
+		subaction: 'update',
+		tournamentState: getTournamentStateForFrontend()
+	});
+	
+	// Print in console for debugging
+	console.log('Player joined tournament:', msg.name, userId, getTournamentStateForFrontend());
+}
+
+
+function leaveTournament(msg, userId, socket, io) {
+	if (tournament.state === 'waiting') {
+		socket.leave('tournament_1');
+		tournament.players = tournament.players.filter(p => p.id !== userId);
 		// Broadcast updated state to all participants
 		io.to('tournament_1').emit('message', {
 			action: 'tournament',
 			subaction: 'update',
 			tournamentState: getTournamentStateForFrontend()
 		});
-	} else if (msg.subaction === 'getState') {
-		socket.emit('message', {
-			action: 'tournament',
-			subaction: 'update',
-			tournamentState: getTournamentStateForFrontend()
-		});
+	} else {
+		console.log('Tournament already in progress, cannot leave');
+		
 	}
+
+	// Confirm leaving and trigger frontend navigation
+	socket.emit('message', {
+		action: 'tournament',
+		subaction: 'left'
+	});
+
+	// Print in console for debugging
+	console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 }
 
-async function createTournamentMatch(player1Id, player2Id, matchNumber, io) {
-	const matchId = await createMatch(
-		db,
-		'tournament',
-		io,
-		player1Id,
-		player2Id,
-		{ tournamentId: 1, matchNumber }
-	);
+
+
+async function createTournamentMatch(player1, player2, matchNumber, io) {
+	if (!player1 || !player2) {
+		console.error("Tournament error => player(s) not found");
+		return;
+	}
+
+	console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
+	const matchId = startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io); //probably nice to start using MF.Tournament / MF.singleGame now 
+	tournament.matches.push({ matchNumber: matchNumber, player1: player1, player2: player2, matchId });
 	
 	// Notify all tournament participants in the room
-	io.to('tournament_1').emit('tournamentMatchStart', {
+	io.to('tournament_1').emit('message', {
+		action: 'tournament',
+		subaction: 'matchStart',
 		matchId,
 		matchNumber,
-		player1: player1Id,
-		player2: player2Id
+		player1: player1.id,
+		player2: player2.id
 	});
 	return (matchId);
 }
@@ -90,6 +114,21 @@ export async function reportTournamentMatchResult(tournamentId, matchNumber, mat
 	});
 }
 
+export function isTournamentReadyToStart() {
+	if (tournament.players.length === 4) {
+		return true;
+	}
+	return false;
+}
+
+function startFirstTournamentMatches(io) {
+	console.log('Starting for players: ', tournament.players);
+	// Create Match 1: p1 vs p2
+	createTournamentMatch(tournament.players[0], tournament.players[1], 1, io);
+	// Create Match 2: p3 vs p4
+	createTournamentMatch(tournament.players[2], tournament.players[3], 2, io);
+}
+
 export async function triggerNextTournamentMatch(tournamentId, io) {
 	// Check if both Game 1 and Game 2 are finished
 	const game1 = tournament.matches.find(m => m.matchNumber === 1);
@@ -100,7 +139,6 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 		const loser1 = game1.loser;
 		const loser2 = game2.loser;
 		const matchId = await createTournamentMatch(loser1, loser2, 3, io);
-		tournament.matches.push({ matchNumber: 3, player1: loser1, player2: loser2, matchId });
 	}
 
 	// Schedule Game 4 (winners) if not already scheduled and both games finished
@@ -108,7 +146,6 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 		const winner1 = game1.winner;
 		const winner2 = game2.winner;
 		const matchId = await createTournamentMatch(winner1, winner2, 4, io);
-		tournament.matches.push({ matchNumber: 4, player1: winner1, player2: winner2, matchId });
 	}
 
 	// Set tournament.state = 'finished' when all matches are done
@@ -122,4 +159,31 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 		subaction: 'update',
 		tournamentState: getTournamentStateForFrontend()
 	});
+}
+
+export function handleTournament(db, msg, socket, io, userId) {
+	console.log('Tournament message:', JSON.stringify(msg));
+	if (msg.subaction === 'join') {
+		if (tournament.state === 'waiting') {
+			joinTournament(msg, userId, socket, io);
+		} else {
+			console.log('Tournament already in progress, cannot join');
+			socket.emit('message', {
+				action: 'tournament',
+				subaction: 'joinRejected',
+				reason: 'Tournament already in progress'
+			});
+		}
+	} else if (msg.subaction === 'getState') {
+		socket.emit('message', {
+			action: 'tournament',
+			subaction: 'update',
+			tournamentState: getTournamentStateForFrontend()
+		});
+
+		// Print in console for debugging
+		console.log('Player updated tournament:', msg.name, userId, getTournamentStateForFrontend());
+	} else if (msg.subaction === 'leave') {
+		leaveTournament(msg, userId, socket, io);
+	}
 }
