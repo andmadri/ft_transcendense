@@ -137,8 +137,7 @@ export function getPlayBtn(): HTMLButtonElement {
 
 function getTournamentBtn(): HTMLButtonElement {
 	const tournamentBtn = document.createElement('button');
-	tournamentBtn.textContent = 'Join Tournament';
-	styleMainBtns(tournamentBtn, "Tournament");
+	styleMainBtns(tournamentBtn, "Join Tournament");
 	tournamentBtn.addEventListener('click', requestJoinTournament);
 	return tournamentBtn;
 }
