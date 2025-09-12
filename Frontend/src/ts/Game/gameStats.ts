@@ -1,3 +1,4 @@
+import { navigateTo } from '../history.js';
 import { log } from '../logging.js';
 
 let currentStatsMatchId: number | null = null;
@@ -23,6 +24,9 @@ export function getGameStats(opts?: { matchId?: number }) {
 		console.warn('getGameStats: no matchId or game stats is already loaded');
 		return ;
 	}
+
+	if (matchId == -1)
+		return navigateTo('Menu');
 
 	// // Delete old DOM containers
 	// document.getElementById("creditDiv")?.remove();

@@ -100,7 +100,7 @@ export function doRenderPage(newState: string, query: string) {
 			break ;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
-			getGameOver();
+			getGameOver(getIdFromHash(query, "matchId"));
 			break ;
 		case 'GameStats':
 			UI.state = S.stateUI.GameStats;

@@ -6,7 +6,7 @@ import { OT } from '@shared/enums'
 let result = "";
 let lastMatchId = -1;
 
-export function getGameOver() {
+export function getGameOver(matchId: number) {
 	log("Game Over!");
 	const game = document.getElementById('game');
 	if (game)
@@ -84,8 +84,8 @@ export function getGameOver() {
 	statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
 	statsButton.style.cursor = 'pointer';
 	statsButton.style.transition = 'all 0.2s ease-in-out';
-	statsButton.addEventListener('click', () => { 
-		navigateTo(`GameStats?matchId=${lastMatchId}`);
+	statsButton.addEventListener('click', () => {
+		navigateTo(`GameStats?matchId=${matchId}`);
 	});
 	gameOver.appendChild(statsButton);
 
@@ -129,6 +129,6 @@ export function saveGame() {
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
 
-	navigateTo('GameOver', {matchId: Game.match.matchID});
+	navigateTo(`GameOver?matchId=${Game.match.matchID}`);
 	Game.match.matchID = -1;
 }
