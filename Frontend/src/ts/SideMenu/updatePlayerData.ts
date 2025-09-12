@@ -10,8 +10,24 @@ export function actionPlayerInfo(data: any) {
 		return ;
 	} else if (data.subaction === 'receivePlayerData') {
 		receivePlayerData(data);
+	} else if (data.subaction == 'changeName') {
+		updateUsername(data);
 	} else {
 		console.log(`Unknown subaction in playerInfo: ${data.subaction}`);
+	}
+}
+
+function updateUsername(msg: any) {
+	if (msg.success === 1) {
+		alert('Username is successfully changed');
+		UI.user1.name = msg.msg;
+		const playerNameField = document.getElementById('userNameMenu1')
+		if (playerNameField)
+			playerNameField.textContent = msg.msg;
+
+	} else {
+		if (msg.msg)
+			alert(msg.msg);
 	}
 }
 

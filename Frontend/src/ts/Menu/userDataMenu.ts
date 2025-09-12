@@ -225,6 +225,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 	userInfoContainer.style.padding = '1rem';
 
 	const userName = document.createElement('div');
+	userName.id = `userNameMenu${playerNr}`;
 	userName.textContent = user_info.id < 2 ? "Guest" : user_info.name;
 	userName.style.fontFamily = '"Horizon", monospace';
 	userName.style.webkitTextStroke = '0.1rem #ffffff';
