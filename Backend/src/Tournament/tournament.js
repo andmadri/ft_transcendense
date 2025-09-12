@@ -1,4 +1,5 @@
 import { createMatch } from '../InitGame/match.js';
+import { startOnlineMatch } from '../Pending/onlinematch.js';
 import { db } from '../index.js';
 
 export const tournament = {
@@ -50,15 +51,23 @@ export function handleTournament(db, msg, socket, io, userId) {
 }
 
 async function createTournamentMatch(player1Id, player2Id, matchNumber, io) {
-	const matchId = await createMatch(
-		db,
-		'tournament',
-		io,
-		player1Id,
-		player2Id,
-		{ tournamentId: 1, matchNumber }
-	);
-	
+
+	const player1 = tournament.matches.find(p => p.id === player1Id);
+	const player2 = tournament.matches.find(p => p.id === player2Id);
+	if (!player1 || !player2) {
+		console.error("Tournament error => player(s) not found");
+		return;
+	}
+
+	const socket1 = io.sockets.sockets.get(player1.socketId);
+	const socket2 = io.sockets.sockets.get(player2.socketId);
+	if (!socket1 || !socket2) {
+		console.error("Tournament error => player socket not found");
+		return;
+	}
+
+	startOnlineMatch(db, socket1, socket2, player1Id, player2Id, io);
+
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('tournamentMatchStart', {
 		matchId,

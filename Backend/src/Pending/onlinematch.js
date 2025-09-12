@@ -97,13 +97,48 @@ function matchInterval(match, io) {
 	}, 40)
 }
 
+export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, io) {
+	const matchID = await createMatch(db, OT.Online, socket1, userID1, userID2);
+
+	if (matchID == -1) {
+		console.log("CreateMatch went wrong");
+		return ;
+	}
+	// add both players to the room
+	socket1.join(matchID);
+	socket2.join(matchID);
+	// matches.get(matchID).stage = state.Init;
+
+	const sockets = await io.in(matchID).allSockets();
+	assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
+
+	// CREATE START VALUES FOR GAME HERE
+	const match = matches.get(matchID);
+	if (!match) {
+		console.log(`Something went wrong!!! No match for matchID: ${matchID}`);
+		return ;
+	}
+	console.log(`handleOnlineMatch: ${matchID}:
+		${match.player1.ID} and ${match.player2.ID}`)
+
+	io.to(matchID).emit('message', {
+		action: 'initOnlineGame',
+		matchID: matchID,
+		match: match
+		// more info about the game
+	});
+
+	//set interval for online gamelogic
+	match.state = state.Init;
+	matchInterval(match, io);
+}
+
 // checks if there is already someone waiting
 // if no -> make new match
 // if so -> add second player to match and room and send msg back
 export async function handleOnlineMatch(db, socket, userID, io) {
 	const [socket2, userID2] = findOpenMatch();
 
-	
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
 		if (userID2 && userID2 == userID) {
@@ -115,40 +150,9 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			});
 			return ;
 		}
-	
-		const matchID = await createMatch(db, OT.Online, socket, userID, userID2);
 
-		if (matchID == -1) {
-			console.log("CreateMatch went wrong");
-			return ;
-		}
-		// add both players to the room
-		socket.join(matchID);
-		socket2.join(matchID);
-		// matches.get(matchID).stage = state.Init;
+		startOnlineMatch(db, socket, socket2, userID, userID2, io);
 
-		const sockets = await io.in(matchID).allSockets();
-		assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);
-
-		// CREATE START VALUES FOR GAME HERE
-		const match = matches.get(matchID);
-		if (!match) {
-			console.log(`Something went wrong!!! No match for matchID: ${matchID}`);
-			return ;
-		}
-		console.log(`handleOnlineMatch: ${matchID}:
-			${match.player1.ID} and ${match.player2.ID}`)
-
-		io.to(matchID).emit('message', {
-			action: 'initOnlineGame',
-			matchID: matchID,
-			match: match
-			// more info about the game
-		});
-
-		//set interval for online gamelogic
-		match.state = state.Init;
-		matchInterval(match, io);
 	} else {
 		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID);
