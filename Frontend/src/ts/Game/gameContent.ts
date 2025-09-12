@@ -62,6 +62,9 @@ function getQuitBtn() {
 		if (Game.match.mode != OT.Online) {
 			Game.match.state = state.End;
 		}
+		if (document.getElementById('startGame')) {
+			document.getElementById('startGame')?.remove();
+    }
 	})
 	return (quitButton);
 }
