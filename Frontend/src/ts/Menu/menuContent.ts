@@ -9,7 +9,7 @@ import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
-import { joinTournament } from "../Tournament/tournamentContent.js";
+import { requestJoinTournament } from "../Tournament/tournamentContent.js";
 
 export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
 
@@ -58,7 +58,7 @@ function getPlayBtn(): HTMLButtonElement {
 	return (playBtn);
 }
 
-function getJoinTournamentBtn(): HTMLButtonElement {
+function getrequestJoinTournamentBtn(): HTMLButtonElement {
 	const btn = document.createElement('button');
 	btn.textContent = 'Join Tournament';
 	styleElement(btn, {
@@ -69,7 +69,7 @@ function getJoinTournamentBtn(): HTMLButtonElement {
 		cursor: 'pointer',
 		borderRadius: '10px',
 	});
-	btn.addEventListener('click', joinTournament);
+	btn.addEventListener('click', requestJoinTournament);
 	return btn;
 }
 
@@ -571,7 +571,7 @@ export function getMenu() {
 	});
 	bottomButtonDiv.appendChild(getCreditBtn());
 	bottomButtonDiv.appendChild(getPlayBtn());
-	bottomButtonDiv.appendChild(getJoinTournamentBtn());
+	bottomButtonDiv.appendChild(getrequestJoinTournamentBtn());
 	bottomButtonDiv.appendChild(getDashboardBtn());
 	menu.appendChild(bottomButtonDiv);
 

@@ -103,7 +103,8 @@ export function showTournamentScreen(tournamentState: any) {
 				readyBtn.style.background = '#4a4a4a';
 				readyBtn.textContent = 'Join the Match';
 			}
-			if (onReady) onReady();
+			if (onReady)
+				onReady();
 		});
 		matchBox.appendChild(player1Box);
 		matchBox.appendChild(separator);
