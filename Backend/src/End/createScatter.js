@@ -8,4 +8,6 @@ export async function generateScatterChartForMatch(db, matchID) {
 	}
 
 	// CREATE CHART HERE
+	console.log(`--- generateScatterChartForMatch --- ${matchID}`);
+	console.table(data);
 }

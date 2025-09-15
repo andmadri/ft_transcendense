@@ -8,4 +8,6 @@ export async function generateLineChartForMatch(db, matchID) {
 	}
 
 	// CREATE CHART HERE
+	console.log(`--- generateLineChartForMatch --- ${matchID}`);
+	console.table(data);
 }
