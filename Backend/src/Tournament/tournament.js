@@ -20,6 +20,13 @@ function getTournamentStateForFrontend() {
 }
 
 function joinTournament(msg, userId, socket, io) {
+	if (tournament.players.find(p => p.id === userId)) {
+		socket.emit('message', {
+		action: 'tournament',
+		subaction: 'update',
+		tournamentState: getTournamentStateForFrontend()
+	});
+	}
 	if (tournament.state !== 'waiting') {
 		console.log('Tournament already in progress, cannot join');
 		socket.emit('message', {
@@ -48,7 +55,6 @@ function joinTournament(msg, userId, socket, io) {
 	if (isTournamentReadyToStart()) {
 		console.log('Tournament starting now!');
 		tournament.state = 'in_progress';
-
 	} else {
 		console.log('Tournament waiting for more players...');
 	}
@@ -98,7 +104,7 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 
 	console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
 
-	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament); //probably nice to start using MF.Tournament / MF.singleGame now 
+	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament); //probably nice to start using MF.Tournament / MF.singleGame now
 
 	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
 	console.log('current match:', matches.get(matchId));
@@ -180,7 +186,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 	if (!tournament.matches.find(m => m.matchNumber === 4)) {
 		const winner1 = game1.winnerID;
 		const winner2 = game2.winnerID;
-		
+
 		await createTournamentMatch(winner1, winner2, 4, io);
 	}
 
