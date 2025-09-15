@@ -1,19 +1,10 @@
-import * as S from '../structs'
-import { Game, UI } from "../gameData.js"
+import { Game, UI, newMatch } from "../gameData.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
-import { getGameField } from './gameContent.js';
-import { submitLogout } from '../Auth/logout.js';
-// import { styleElement } from '../Menu/menuContent.js';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
-import { startGameField } from './startGameContent.js';
 
-const field = Game.match.gameState.field;
-const ball = Game.match.gameState.ball;
-const paddle1 = Game.match.gameState.paddle1;
-const paddle2 = Game.match.gameState.paddle2;
 
 export function startGame() {
 	console.log(`function startGame() ${Game.match.mode}`);
@@ -33,7 +24,7 @@ export function startGame() {
 	
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
-			if (Game.match.player2.ID != -1) { // Check this!
+			if (Game.match.player2.ID != -1) {
 				navigateTo('Game');
 				Game.match.state = state.Init;
 			}
@@ -42,9 +33,7 @@ export function startGame() {
 			}
 			break ;
 		}
-		case OT.ONEvsCOM: { // Check this!
-			Game.match.player2.ID = 2; // Is not getting used - only for visability
-			Game.match.player2.name = "AI"; // Is not getting used - only for visability
+		case OT.ONEvsCOM: {
 			navigateTo('Game');
 			Game.match.state = state.Init;
 			break ;
@@ -86,6 +75,7 @@ export function changeOpponentType(option: string) {
 }
 
 export function changeMatchFormat(option: string) {
+	// Game.match = newMatch();
 	switch (option) {
 		case 'single game':
 			Game.match.matchFormat = MF.SingleGame;
@@ -107,26 +97,27 @@ export function initGameServer() {
 		const initGame = {
 			action: 'init',
 			subaction: 'createMatch',
-			playerId: Game.match.player1.ID,
-			playerName: Game.match.player1.name,
+			player1ID: Game.match.player1.ID,
+			player1Name: Game.match.player1.name,
 			mode: Game.match.mode,
-			playerId2: Game.match.player2.ID,
-			playerName2: Game.match.player2.name
+			player2ID: Game.match.player2.ID,
+			player2Name: Game.match.player2.name
 		}
-		if (Game.match.mode == OT.ONEvsCOM)
-			initGame.playerName2 = "Computer";
 		Game.socket.emit('message',initGame);
 	}
 }
 
 export function initGame() {
 	if (Game.match.mode != OT.Online) {
-		//do we need to set the ID's here
 		Game.match.player1.ID = UI.user1.ID;
 		Game.match.player1.name = UI.user1.name;
 		if (Game.match.mode != OT.ONEvsCOM) {
 			Game.match.player2.ID = UI.user2.ID;
 			Game.match.player2.name = UI.user2.name;
+		}
+		else {
+			Game.match.player2.ID = 2;
+			Game.match.player2.name = "AI";
 		}
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();

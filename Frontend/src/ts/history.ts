@@ -1,6 +1,6 @@
 import * as S from './structs.js'
 import { state } from '@shared/enums'
-import { Game, UI } from './gameData.js';
+import { Game, UI, newMatch } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
@@ -11,16 +11,16 @@ function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
 	const indexQ = cleanHash.indexOf('?');
 	if (indexQ == -1)
-		return { page: cleanHash || 'Menu', query: ''};
+		return [ cleanHash || 'Menu', ''];
 	else
-		return { page: cleanHash.slice(0, indexQ), query: cleanHash.slice(indexQ + 1)};
+		return [ cleanHash.slice(0, indexQ), cleanHash.slice(indexQ + 1)];
 }
 
 /**
  * @brief Triggered on hash change, navigates to the new state
  */
 export function onHashChange() {
-	const { page, query } = splitHash(window.location.hash);
+	const [ page, query ] = splitHash(window.location.hash);
 	console.log('onHashChange -> page:', page, 'query:', query);
 	navigateTo(page + (query ? `?${query}` : ''), true);
 };
@@ -71,7 +71,7 @@ export function renderPage (newState: string, query: string) {
  * @brief change state or shows new page
  * @param state new state
  */
-export function doRenderPage(newState: string, query: string) {
+export function doRenderPage(newState: string, query?: string) {
 	switch (newState) {
 		case 'LoginP1':
 			UI.state = S.stateUI.LoginP1;
@@ -86,6 +86,7 @@ export function doRenderPage(newState: string, query: string) {
 			UI.state = S.stateUI.Credits;
 			break ;
 		case 'OpponentMenu':
+			Game.match = newMatch(); // IDK if this is the best spot for it, but anywhere else causes issues
 			UI.state = S.stateUI.OpponentMenu;
 			break ;
 		case 'Game':
@@ -96,11 +97,14 @@ export function doRenderPage(newState: string, query: string) {
 			break ;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
-			getGameOver(Number(getIdFromHash(query, "matchId")));
+			if (query)
+				getGameOver(Number(getIdFromHash(query, "matchId")));
 			break ;
 		case 'GameStats':
 			UI.state = S.stateUI.GameStats;
-			const id = getIdFromHash(query, "matchId");
+			let id = null;
+			if (query)
+				id = getIdFromHash(query, "matchId");
 			if (id != null) {
 				requestAnimationFrame(() => getGameStats({ matchId: id }));
 			} else {
@@ -110,7 +114,9 @@ export function doRenderPage(newState: string, query: string) {
 			break;
 		case 'Dashboard':
 			UI.state = S.stateUI.Dashboard;
-			const userId = getIdFromHash(query, "userId");
+			let userId = null;
+			if (query)
+				userId = getIdFromHash(query, "userId");
 			// Add a check that the number is in range of userId
 			if (userId != null) {
 				requestAnimationFrame(() => getDashboard(userId, 1));
@@ -123,7 +129,8 @@ export function doRenderPage(newState: string, query: string) {
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
 		}
-	if (query && query != '')
+	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
+	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
 	else
 		sessionStorage.setItem("currentState", newState);
@@ -141,7 +148,7 @@ export function navigateTo(newState: any, fromHash = false) {
 		console.warn('navigateTo called with empty state');
 		return;
 	}
-	let { page, query } = splitHash(newState);
+	let [ page, query ] = splitHash(newState);
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
@@ -217,7 +224,7 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-    const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
+	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
 		'OpponentMenu', 'Dashboard', 'GameStats', 'GameOver'];
 	for (const page of allowedPages) {
 		if (page == newState) {
@@ -238,14 +245,19 @@ export function controlBackAndForward(event: PopStateEvent) {
 	if (!newState) {
 		newState = window.location.hash || 'Menu';
 	}
-	let { page, query } = splitHash(newState);
+	let [ page, query ] = splitHash(newState);
 	if (event.state && event.state.query)
 		query = event.state.query;
 
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
-	history.replaceState({ page: validState, query }, '', fullHash);
+
+	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
+	if (pagesWithQuery.includes(validState))
+		history.replaceState({ page: validState, query }, '', fullHash);
+	else
+		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
 
 	// Always go back to menu and stop game
 	if (currentState == 'Game' && validState !== 'Game') {
@@ -258,6 +270,6 @@ export function controlBackAndForward(event: PopStateEvent) {
 	if (validState) {
 		renderPage(validState, query);
 	} else {
-		renderPage('Menu', query); // fallback
+		renderPage('Menu', ''); // fallback
 	}
 }
