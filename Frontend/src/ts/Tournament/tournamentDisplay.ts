@@ -1,5 +1,6 @@
 import { requestLeaveTournament } from './tournamentContent.js';
 import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
+import { UI } from '../gameData.js';
 
 
 //create a lobby
@@ -76,7 +77,7 @@ export function showTournamentScreen(tournamentState: any) {
 	
 	const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || 'TBD';
 	
-	const createMatchBox = (player1Name: string, player2Name: string, onReady?: () => void) => {
+	const createMatchBox = (player1Name: string, player2Name: string) => {
 		const matchBox = document.createElement('div');
 		matchBox.style.display = 'flex';
 		matchBox.style.flexDirection = 'column';
@@ -113,33 +114,37 @@ export function showTournamentScreen(tournamentState: any) {
 		// player2Box.style.fontWeight = 'bold';
 		player2Box.style.fontFamily = '"RobotoCondensed", sans-serif';
 		
-		const readyBtn = document.createElement('button');
-		readyBtn.textContent = 'Join the Match';
-		readyBtn.style.border = 'none';
-		readyBtn.style.borderRadius = '5px';
-		readyBtn.style.color = 'white';
-		readyBtn.style.background = '#4a4a4a';
-		readyBtn.style.width = '80%';
-		readyBtn.style.marginTop = '0.5rem';
-		let isReady = false;
-		readyBtn.addEventListener('click', () => {
-			isReady = !isReady;
-			if (isReady) {
-				readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
-				readyBtn.style.color = 'black';
-				readyBtn.textContent = 'Ready!';
-			} else {
-				notReadyTournamentPlayer();
-				readyBtn.style.background = '#4a4a4a';
-				readyBtn.style.color = 'white';
-				readyBtn.textContent = 'Join the Match';
-			}
-		});
 		matchBox.appendChild(player1Box);
 		matchBox.appendChild(separator);
 		matchBox.appendChild(player2Box);
-		matchBox.appendChild(readyBtn);
-		return matchBox;
+		if (UI.user1.name == player1Name || UI.user1.name == player2Name) {
+			const readyBtn = document.createElement('button');
+			readyBtn.textContent = 'Ready?';
+			readyBtn.style.border = 'none';
+			readyBtn.style.borderRadius = '5px';
+			readyBtn.style.color = 'white';
+			readyBtn.style.background = '#4a4a4a';
+			readyBtn.style.width = '80%';
+			readyBtn.style.marginTop = '0.5rem';
+			let isReady = false;
+			//only if you are the player of that round you are able to click on ready
+			readyBtn.addEventListener('click', () => {
+				isReady = !isReady;
+				if (isReady) {
+					readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+					readyBtn.style.color = 'black';
+					readyBtn.textContent = 'Starting Soon';
+				} else {
+					notReadyTournamentPlayer();
+					readyBtn.style.background = '#4a4a4a';
+					readyBtn.style.color = 'white';
+					readyBtn.textContent = 'Ready?';
+				}
+			});
+			matchBox.appendChild(readyBtn);
+		}
+			return matchBox;
+		// }
 	};
 	
 	//matches are only being initialised when there is four pleople
@@ -216,9 +221,9 @@ export function showTournamentScreen(tournamentState: any) {
 	middleSection.style.flex = '1';
 	
 	//we get the information of who is playing based on the matches therefore we use the matches
-	const winnersSection = roundSection('Winners Final', 'null', 'null');
+	const winnersSection = roundSection('Winners Final', '-', '-');
 	//you have to check who won and who lost and put that in the id
-	const losersSection = roundSection('Losers Final', 'null', 'null');
+	const losersSection = roundSection('Losers Final', '-', '-');
 	
 	middleSection.appendChild(winnersSection);
 	middleSection.appendChild(losersSection);
