@@ -9,7 +9,8 @@ import { handleGame } from './Game/game.js'
 import { handleInitGame } from './InitGame/initGame.js'
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB } from './Database/sessions.js';
+// import { addUserSessionToDB } from './Database/sessions.js';
+import { onUserLogout } from './Services/sessionsService.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
@@ -36,7 +37,7 @@ function installShutdownHandlers(fastify, db) {
 			process.exit(1);
 		}
 	};
-	
+
 	process.on('SIGTERM', () => shutdown('SIGTERM'));
 	process.on('SIGINT', () => shutdown('SIGINT'));
 }
@@ -89,7 +90,7 @@ fastify.ready().then(() => {
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-	
+
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;
@@ -153,7 +154,8 @@ setInterval(async () => {
 		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 			// Mark user offline in DB
 			try {
-				await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+				// await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
+				await onUserLogout(db, userId);
 				userLastSeen.delete(userId);
 				console.log(`User ${userId} marked offline due to missed heartbeat`);
 			} catch (err) {
