@@ -5,7 +5,8 @@ all:	up
 up:
 	rm -rf Server/src
 	mkdir -p ./graphs/charts
-	chmod -R 777 ./graphs
+	chmod 777 ./graphs
+	chmod 777 ./graphs/charts
 	cp -r Frontend/* Server/
 	docker compose -f docker-compose.yml up
 
@@ -66,11 +67,11 @@ clean: stop
 	@echo "containers, images and network are removed"
 
 # re:	clean up
-re:	backend server-build-fast up
+# re:	backend server-build-fast up
+re: backend up
 
 prune: clean clean_volumes
 	docker system prune -a --volumes -f
-	rm -rf ./graphs
 
 .PHONY: all up down start stop build server backend test clean_volumes clean re prune
 

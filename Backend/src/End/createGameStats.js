@@ -8,7 +8,7 @@ export async function generateAllChartsForMatch(db, match, matchID) {
 
 	getMatchEventsDB(db, matchID);
 
-	const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
+	const idForName = String(matchID);
 	
 	const svgPath = await renderUserStateDurationsSVG(db, {
 		outDir: path.join(uploadsBase, 'charts', idForName),

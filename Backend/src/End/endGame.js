@@ -19,9 +19,10 @@ export async function quitMatch(match, msg, socket, io) {
 	match.state = state.End;
 }
 
-export async function saveMatch(match, msg, socket) {
+export async function saveMatch(match, msg, socket, matchID) {
 	// Update the match in the database
-	const matchID = await handleMatchEndedDB(db, match.matchID);
+	// console.log("\n\nsaveMatch - match.matchID.id:", match.matchID.id);
+	const matchInfo = await handleMatchEndedDB(db, matchID);
 	
 	// // Show some stats in the terminal
 	// console.table(matchID);
@@ -29,7 +30,7 @@ export async function saveMatch(match, msg, socket) {
 	// console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
 	// console.table(await getAllUserStateDurationsDB(db));
 
-	generateAllChartsForMatch(db, match, match.matchID);
+	generateAllChartsForMatch(db, matchInfo, matchID);
 	// // ADDED FOR CREATING IMAGE IN THE BACKEND - start
 	// const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
 
@@ -44,7 +45,7 @@ export async function saveMatch(match, msg, socket) {
 	// // console.log('3. Chart saved at:', svgPath);
 
 	// Delete the data in the backend
-	matches.delete(match.matchID);
+	matches.delete(matchID);
 
 	// const chartUrl = `/api/charts/user-state-durations/${idForName}`;
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - stop

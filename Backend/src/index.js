@@ -12,10 +12,13 @@ import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
 import { saveMatch } from './End/endGame.js';
+import { getMatchByID } from './Database/match.js';
 
 export const db = await createDatabase();
 
 const fastify = await initFastify();
+
+const firstMatch = await getMatchByID(db, 1);
 
 // Map to track last seen timestamps for users
 const userLastSeen = new Map();
@@ -91,9 +94,9 @@ fastify.ready().then(() => {
 		// add user to main room
 		addUserToRoom(socket, 'main');
 
-		if (showMatch) {
+		if (showMatch && firstMatch) {
 			console.log(`Going to function saveMatch`);
-			saveMatch({matchID: 1}, null, null);
+			saveMatch(null, null, null, firstMatch.id);
 			showMatch = false;
 		}
 		
