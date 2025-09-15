@@ -31,13 +31,13 @@ function handleStartOnlineMatch(msg, match) {
 }
 
 // From Frontend
-export function handleInitGame(db, msg, socket, userId1, userId2) {
+export function handleInitGame(db, msg, socket) {
 	if (!msg.subaction)
 		return console.log('no subaction in handleInitGame');
 
 	// for local games
 	if (msg.subaction == 'createMatch' && msg.mode != 3)
-		return createMatch(db, msg.mode, socket, userId1, userId2);
+		return createMatch(db, msg.mode, socket, msg.player1ID, msg.player2ID);
 
 	// receive msg that frontend is ready to play (online match)
 	if (msg.subaction == 'start') {

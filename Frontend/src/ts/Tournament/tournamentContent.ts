@@ -7,10 +7,10 @@ import { createLog, log } from '../logging.js'
 export function actionTournament (data: any) {
 	if  (data.subaction === 'update') {
 		tournamentUpdate(data);
-	} else if (data.subaction === 'gameStart') {
-		tournamentGameStart(data);
-	} else if (data.subaction === 'result') {
-		tournamentResult(data);
+	// } else if (data.subaction === 'gameStart') {
+	// 	tournamentGameStart(data);
+	// } else if (data.subaction === 'result') {
+	// 	tournamentResult(data);
 	} else if (data.subaction === 'left') {
 		navigateTo('Menu');
 	} else if (data.subaction === 'joinRejected') {
@@ -39,6 +39,25 @@ function tournamentError(data: any) {
 	navigateTo('Menu');
 }
 
+export function readyTournamentPlayer() {
+	Game.socket.emit('message', {
+		action: 'tournament',
+		subaction: 'ready',
+		name: UI.user1.name,
+		userId: UI.user1.ID
+	});
+}
+
+export function notReadyTournamentPlayer() {
+	Game.socket.emit('message', {
+		action: 'tournament',
+		subaction: 'notReady',
+		name: UI.user1.name,
+		userId: UI.user1.ID
+	});
+}
+
+
 export function requestUpdateTournament() {
 	Game.socket.emit('message', {
 		action: 'tournament',
@@ -57,7 +76,7 @@ export function requestLeaveTournament() {
 	});
 }
 
-export function joinTournament() {
+export function requestJoinTournament() {
 	Game.socket.emit('message', {
 		action: 'tournament',
 		subaction: 'join',
