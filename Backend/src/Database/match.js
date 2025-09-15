@@ -213,6 +213,9 @@ export async function getMatchEventsByMatchID(db, match_id) {
 				sql_error(err, `getMatchEventByID id=${match_id}`);
 				reject(err);
 			} else {
+				if (!rows) {
+					sql_log(`getMatchEventsByMatchID | match_id not found! match_id=${match_id}`);
+				}
 				resolve(rows || []);
 			}
 		});

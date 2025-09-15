@@ -1,4 +1,7 @@
 import { getMatchEventsDB, renderUserStateDurationsSVG } from '../Database/gamestats.js';
+import { generateBarChartForMatch } from './createBar.js';
+import { generateLineChartForMatch } from './createLine.js';
+import { generateScatterChartForMatch } from './createScatter.js';
 
 import path from 'path';
 
@@ -8,6 +11,11 @@ export async function generateAllChartsForMatch(db, match, matchID) {
 
 	getMatchEventsDB(db, matchID);
 
+	generateBarChartForMatch(db, matchID);
+	generateScatterChartForMatch(db, matchID);
+	generateLineChartForMatch(db, matchID);
+
+	// Below code can be commented
 	const idForName = String(matchID);
 	
 	const svgPath = await renderUserStateDurationsSVG(db, {

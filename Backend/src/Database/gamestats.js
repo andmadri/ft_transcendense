@@ -9,8 +9,20 @@ export async function getMatchEventsDB(db, matchId) {
 	console.table(matchEvents);
 
 	// console.log('--- matchEvents --- keys:', 
-    // matchId && typeof matchId === 'object' ? Object.keys(matchId) : null);
+	// matchId && typeof matchId === 'object' ? Object.keys(matchId) : null);
 	// console.log('--- matchEvents --- inspect:\n', inspect(matchId, { depth: null, colors: true }));
+}
+
+export async function getMatchScatterDB(db, matchId) {
+	const matchEvents = await getMatchEventsByMatchID(db, matchId);
+}
+
+export async function getMatchLineDB(db, matchId) {
+	const matchEvents = await getMatchEventsByMatchID(db, matchId);
+}
+
+export async function getMatchBarDB(db, matchId) {
+	const matchEvents = await getMatchEventsByMatchID(db, matchId);
 }
 
 
