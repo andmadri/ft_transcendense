@@ -2,6 +2,7 @@ import { Game } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT } from '@shared/enums'
+import { createBackgroundText } from "../Menu/menuContent.js";
 
 let result = "";
 let lastMatchId = -1;
@@ -118,6 +119,7 @@ export function getGameOver() {
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	createBackgroundText(body);
 	body.appendChild(gameOver);
 }
 

@@ -325,8 +325,6 @@ export function createBackgroundText(body: HTMLElement) {
 		pongSpan.textContent = 'PONG';
 		pongSpan.style.letterSpacing = '0.5rem';
 		// pongSpan.style.animation = `glitch 1s infinite`;
-		pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
-		pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
 		rowDiv.appendChild(pongSpan);
 		}
 		

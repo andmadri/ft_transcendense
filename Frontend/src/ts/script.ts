@@ -22,6 +22,7 @@ import { resetBall, updatePaddlePos } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
 import { requestUpdateTournament } from './Tournament/tournamentContent.js'
+import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
 
 createLog();
 
@@ -184,10 +185,11 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Tournament: {
-				if (!document.getElementById('tournamentScreen'))
-					requestUpdateTournament();
-				break ;
-			}
+			if (!document.getElementById('tournamentScreen'))
+					showTournamentScreen();
+				}
+				//requestUpdateTournament();
+			break ;
 			 case S.stateUI.Dashboard: {
 				if (!document.getElementById('dashboard')) {
 					getDashboard();
