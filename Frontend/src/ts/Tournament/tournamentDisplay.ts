@@ -131,6 +131,7 @@ export function showTournamentScreen(tournamentState: any) {
 			readyBtn.addEventListener('click', () => {
 				isReady = !isReady;
 				if (isReady) {
+					readyTournamentPlayer();
 					readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 					readyBtn.style.color = 'black';
 					readyBtn.textContent = 'Starting Soon';
