@@ -1,6 +1,6 @@
 import { Game, UI } from "../gameData.js"
 import { navigateTo } from "../history.js";
-import { showTournamentScreen } from './tournamentDisplay.js';
+import { showTournamentScreen, updateNameTagsTournament } from './tournamentDisplay.js';
 import { tournamentGameStart } from "./tournamentGameStart.js";
 import { createLog, log } from '../logging.js'
 
@@ -23,16 +23,17 @@ export function actionTournament (data: any) {
 
 function tournamentUpdate(data: any) {
 	console.log('Tournament update:', data);
-	document.getElementById('tournamentScreen')?.remove();
+	//document.getElementById('tournamentScreen')?.remove();
 	log('Tournament update received: ' + JSON.stringify(data.tournamentState));
-	showTournamentScreen(data.tournamentState);
+	setTimeout(() => {
+		updateNameTagsTournament(data.tournamentState);
+	}, 500);
 }
 
-function tournamentResult(data: any) {
-	tournamentUpdate(data);
-	alert('Tournament result: ' + JSON.stringify(data));
-	
-}
+// function tournamentResult(data: any) {
+// 	tournamentUpdate(data);
+// 	alert('Tournament result: ' + JSON.stringify(data));
+// }
 
 function tournamentError(data: any) {
 	alert('Tournament error: ' + (data.reason || 'Unknown error'));
@@ -56,7 +57,6 @@ export function notReadyTournamentPlayer() {
 		userId: UI.user1.ID
 	});
 }
-
 
 export function requestUpdateTournament() {
 	Game.socket.emit('message', {
