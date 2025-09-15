@@ -1,16 +1,18 @@
-import { handlePlayers, getAllPlayerInclFriends } from './DBrequests/getPlayers.js';
+import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
+import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-import { handleFriends, openFriendRequest, getFriends } from './DBrequests/getFriends.js';
-import { createDatabase } from './Database/database.js'
-import { handleGame } from './Game/game.js'
-import { handleInitGame } from './InitGame/initGame.js'
+import { handleFriends } from './DBrequests/getFriends.js';
+import { createDatabase } from './Database/database.js';
+import { handleGame } from './Game/game.js';
+import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
+import { USERLOGIN_TIMEOUT } from './structs.js';
 import { saveMatch } from './End/endGame.js';
 import { getMatchByID } from './Database/match.js';
 
@@ -96,7 +98,7 @@ fastify.ready().then(() => {
 
 		if (showMatch && firstMatch) {
 			console.log(`Going to function saveMatch`);
-			saveMatch(null, null, null, firstMatch.id);
+			saveMatch(null, firstMatch.id);
 			showMatch = false;
 		}
 		
@@ -113,14 +115,21 @@ fastify.ready().then(() => {
 					return handlePlayerInfo(msg, socket, userId1, userId2);
 				case 'matchmaking':
 					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+				case 'userDataMenu':
+					return handleUserDataMenu(msg, socket, userId1, userId2);
 				case 'players':
 					return handlePlayers(db, msg, socket, userId1);
 				case 'friends':
-					return handleFriends(msg, socket, userId1, fastify.io);
-				case 'dashboard':
-					return handleDashboardMaking(msg, socket, userId1);
+					return handleFriends(msg, socket, userId1);
+				case 'dashboard': {
+				//if there is no player id it is specify whether to use userID1 or userID2
+					if (!msg.playerId) {
+						msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
+					}
+					return handleDashboardMaking(msg, socket, msg.playerId);
+				}
 				case 'init':
-					return handleInitGame(db, msg, socket, userId1, userId2);
+					return handleInitGame(db, msg, socket);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
 				case 'error':
@@ -135,9 +144,7 @@ fastify.ready().then(() => {
 			if (userId1) {
 				userLastSeen.set(userId1, Date.now());
 				if (msg.menu === true) {
-					openFriendRequest(userId1, socket);
-					getAllPlayerInclFriends(db, userId1, socket);
-					getFriends(userId1, socket);
+					handleFriends({ subaction: 'initMenu' }, socket, userId1);
 				}
 			}
 		});
@@ -150,9 +157,8 @@ fastify.ready().then(() => {
 
 setInterval(async () => {
 	const now = Date.now();
-	const TIMEOUT = 30000; // 30 seconds
 	for (const [userId, lastSeen] of userLastSeen.entries()) {
-		if (now - lastSeen > TIMEOUT) {
+		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 			// Mark user offline in DB
 			try {
 				await addUserSessionToDB(db, { user_id: userId, state: 'logout' });

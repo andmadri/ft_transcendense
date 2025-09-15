@@ -14,19 +14,10 @@ import { updatePlayersSessionDB } from './sessionsService.js';
  * @throws {Error}                   If guest vs AI is attempted or IDs are invalid.
  */
 export async function handleMatchStartDB(db, { player_1_id, player_2_id, isTournament = false }) {
-	// Disallow Guest(1) vs AI(2)
+	// Dont allow Guest(1) vs AI(2)
 	if ((player_1_id === 1 && player_2_id === 2) ||
 		(player_1_id === 2 && player_2_id === 1))
 			throw new Error('Matches between Guest (1) and AI (2) are not allowed');
-
-	// Code below will give problems when multiple people will play against AI / Guest at the same time
-	// // Make sure neither player is already in an active match
-	// const sql = `SELECT 1 FROM Matches WHERE end_time IS NULL 
-	// 			AND (player_1_id = ? OR player_2_id = ? OR player_1_id = ? OR player_2_id = ?)
-	// 			LIMIT 1;`
-	// const active = await db.get(sql, [player_1_id, player_1_id, player_2_id, player_2_id]);
-	// if (active)
-	// 	throw new Error('One or both players are already in an active match');
 
 	// Find out the correct the match_type
 	let match_type;
@@ -87,7 +78,6 @@ export async function handleMatchEventDB(db, event) {
 		}
 		await updateMatchInDB(db, updated);
 	}
-
 	// Return the MatchEvent row
 	return MatchEventID;
 }
@@ -108,7 +98,13 @@ export async function handleMatchEndedDB(db, match_id) {
 
 	// Find out who is the winner
 	let winner_id = null;
-	if (match.player_1_score > match.player_2_score) {
+	if (match.winnerID) {
+		if (match.winnerID == -1) {
+			return;
+		}
+		winner_id = match.winnerID;
+	}
+	else if (match.player_1_score > match.player_2_score) {
 		winner_id = match.player_1_id;
 	} else if (match.player_1_score < match.player_2_score) {
 		winner_id = match.player_2_id;

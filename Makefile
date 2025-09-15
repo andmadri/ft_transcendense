@@ -1,5 +1,10 @@
 NAME	= transcendence
 
+# Generate random base64 strings for secrets
+rand_b64_32 = $(shell openssl rand -base64 32 | tr -d '\n')
+rand_b64_64 = $(shell openssl rand -base64 64 | tr -d '\n')
+
+
 all:	up
 
 up:
@@ -53,6 +58,17 @@ update-host-env:
 	else \
 		echo "HOST_DOMAIN=$$HOST_DOMAIN" >> .env; \
 	fi
+
+# Target to refresh secrets in .env file
+refresh-secrets:
+	@echo "Refreshing secrets..."
+	@sed -i '' \
+		-e 's|^JWT_SECRET=.*|JWT_SECRET=$(rand_b64_32)|' \
+		-e 's|^COOKIE_SECRET=.*|COOKIE_SECRET=$(rand_b64_32)|' \
+		-e 's|^PENDING_TWOFA_SECRET=.*|PENDING_TWOFA_SECRET=$(rand_b64_32)|' \
+		-e 's|^ENC_2FA_SECRET=.*|ENC_2FA_SECRET=$(rand_b64_32)|' \
+		.env
+	@echo "✅ Secrets refreshed in .env"
 
 clean_volumes:
 	docker compose down -v

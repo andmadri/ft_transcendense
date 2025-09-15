@@ -1,34 +1,34 @@
 import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
-import { state } from '@shared/enums'
+import { OT, state } from '@shared/enums'
 import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
 
-function styleElement(
-	element: HTMLElement,
-	width?: string,
-	height?: string,
-	position?: string,
-	top?: string,
-	right?: string,
-	left?: string,
-	backgroundColor?: string
-) {
-	if (width)
-		element.style.width = width;
-	if (height)
-		element.style.height = height;
-	if (position)
-		element.style.position = position;
-	if (top)
-		element.style.top = top;
-	if (right)
-		element.style.right = right;
-	if (left)
-		element.style.left = left;
-	if (backgroundColor)
-		element.style.backgroundColor = backgroundColor;
-}
+// function styleElement(
+// 	element: HTMLElement,
+// 	width?: string,
+// 	height?: string,
+// 	position?: string,
+// 	top?: string,
+// 	right?: string,
+// 	left?: string,
+// 	backgroundColor?: string
+// ) {
+// 	if (width)
+// 		element.style.width = width;
+// 	if (height)
+// 		element.style.height = height;
+// 	if (position)
+// 		element.style.position = position;
+// 	if (top)
+// 		element.style.top = top;
+// 	if (right)
+// 		element.style.right = right;
+// 	if (left)
+// 		element.style.left = left;
+// 	if (backgroundColor)
+// 		element.style.backgroundColor = backgroundColor;
+// }
 
 function getQuitBtn() {
 	const	quitButton = document.createElement('button');
@@ -43,14 +43,28 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		log("pushed quit button");
+		//determine winner in local game
+		//if online -> winnerID stays undefined -> backend will determine winner
+		if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
+			Game.match.winnerID = Game.match.player2.ID;
+		}
+		else if (Game.match.mode == OT.ONEvsONE) {
+			Game.match.winnerID = -1;
+		}
 		Game.socket.emit('message',{
 			action: 'game',
 			subaction: 'quit',
 			matchID: Game.match.matchID,
 			player: UI.user1.ID,
-			name: UI.user1.name
+			name: UI.user1.name,
+			winner: Game.match.winnerID
 		});
-		Game.match.state = state.End;
+		if (Game.match.mode != OT.Online) {
+			Game.match.state = state.End;
+		}
+		if (document.getElementById('startGame')) {
+			document.getElementById('startGame')?.remove();
+		}
 	})
 	return (quitButton);
 }
@@ -61,7 +75,7 @@ export function getGameField() {
 	if (!body)
 		return;
 	body.innerHTML = "";
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)'
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.style.margin = '0';
 	body.style.width = '100vw';
 	body.style.height = '100vh';

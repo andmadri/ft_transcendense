@@ -6,6 +6,7 @@ import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import { db } from '../index.js' // DELETE THIS LATER
 import { onUserLogin } from '../Services/sessionsService.js';
 import { verifyAuthCookie } from '../Auth/authToken.js';
+import { USERLOGIN_TIMEOUT } from '../structs.js';
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -18,27 +19,46 @@ import { verifyAuthCookie } from '../Auth/authToken.js';
  * It is designed to work with a database for user management and online status tracking.
  */
 export default async function userAuthRoutes(fastify) {
-	fastify.get('/api/cookie', async (request, reply) => {
-		try {
+	fastify.post('/api/refresh-token', { preHandler: verifyAuthCookie }, async (request, reply) => {
+		const playerNr = request.body.playerNr;
+		// console.log('Refreshing token for playerNr: ', playerNr);
+		if (playerNr === 2 ) {
 			const cookies = request.cookies;
-			const unsigned = fastify.unsignCookie(cookies.jwtAuthToken1);
-
-			if (!unsigned.valid) {
-				return reply.code(401).send({ ok: false });
+			const token = cookies['jwtAuthToken2'];
+			if (!token) {
+				reply.code(401).send({ error: 'Unauthorized: No token' });
+				return;
 			}
-  			const decoded = fastify.jwt.verify(unsigned.value);
-			console.log(`last page: ${request.query.lastPage}`);
-			if (request.query.lastPage && request.query.lastPage != 'LoginP1')
-				await addUserSessionToDB(db, { user_id: decoded.userId, state: 'login' });
-
-			const user = await getUserByID(db, decoded.userId);
-			console.log(`User: ${user}`);
-  			return  { ok: true, userID: decoded.userId, name: user.name};
-		} catch (err) {
-  			return reply.code(401).send({ ok: false });
+			const unsigned = fastify.unsignCookie(token);
+			if (!unsigned.valid) {
+				reply.code(401).send({ error: 'Unauthorized: Invalid token' });
+				return;
+			}
+			try {
+				const decoded = await fastify.jwt.verify(unsigned.value);
+				request.user = decoded; // Attach user info to request if needed
+			} catch (err) {
+				reply.code(401).send({ error: 'Unauthorized: Invalid token' });
+			}
 		}
-	});
 
+		const userId = request.user.userId;
+		// console.log(`Refreshing token for user ID: ${userId}`);
+		const user = await getUserByID(fastify.db || db, userId);
+		if (!user) {
+			return reply.status(401).send({ error: 'Unauthorized' });
+		}
+		const jwtToken = signFastifyJWT(user, fastify);
+		reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
+			httpOnly: true,      // Prevents JS access
+			secure: true,        // Only sent over HTTPS
+			sameSite: 'Lax',     // CSRF protection ('Strict' is even more secure)
+			signed: true,        // signed cookies
+			encode: v => v,      // Use default encoding
+			path: '/',
+			maxAge: USERLOGIN_TIMEOUT
+		}).send({ success: true });
+	});
 	fastify.post('/api/playerInfo', async (request, reply) => {
 		const cookies = request.cookies;
 		const cookie = cookies['jwtAuthToken1'];
@@ -105,7 +125,7 @@ export default async function userAuthRoutes(fastify) {
 				signed: true,        // signed cookies
 				encode: v => v,      // Use default encoding
 				path: '/',
-				maxAge: 60 * 10      // 10 minutes
+				maxAge: USERLOGIN_TIMEOUT
 			}).send({ success: true, ok: true, message: 'Two-factor authentication required', playerNr: playerNr, userId: answer.user.id, name: answer.user.name, twofaPending: true });
 		} else {
 
@@ -124,7 +144,7 @@ export default async function userAuthRoutes(fastify) {
 				signed: true,        // signed cookies
 				encode: v => v,      // Use default encoding
 				path: '/',
-				maxAge: 60 * 60      // 1 hour
+				maxAge: USERLOGIN_TIMEOUT
 			}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: answer.player, userId: answer.user.id, name: answer.user.name, twofa: answer.user.twofa_active });
 		}
 	});

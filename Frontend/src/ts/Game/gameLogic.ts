@@ -1,10 +1,8 @@
 import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
-import { matchInfo } from '@shared/types'
+import { matchInfo, gameState } from '@shared/types'
 import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
 import { aiAlgorithm } from './aiLogic.js'
-import { navigateTo } from "../history.js"
-import { sendGameState, sendServe } from './gameStateSync.js'
 import { renderGameInterpolated } from "./renderSnapshots.js"
 
 export function updateDOMElements(match : matchInfo) {
@@ -44,22 +42,44 @@ export function pauseBallTemporarily(duration: number) {
 	}, duration);
 }
 
+export function reconcilePaddle(playerNr : number, serverGameState : gameState) {
+	const paddle = playerNr == 1 ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
+	const serverPaddle = playerNr == 1 ? serverGameState.paddle1 : serverGameState.paddle2;
+
+	const diff = serverPaddle.pos.y - paddle.pos.y;
+	if (Math.abs(diff) > 0.1) {
+		paddle.pos.y += diff * 0.02;
+	}
+}
+
 export function game(match : matchInfo) {
-	if (Game.match.state !== state.Playing) {
+	let now = performance.now();
+	if (!match.lastUpdateTime) {
+		match.lastUpdateTime = now;
 		return;
 	}
-	if (match.mode == OT.Online) {
-		//update own paddle immediately in frontend
-		renderGameInterpolated();
-		const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
-		updatePaddlePos(paddle, match.gameState.field);
-	} else {
-		match.time = performance.now();
-		if (match.mode == OT.ONEvsCOM) {
+	let deltaTime = (now - match.lastUpdateTime) / 600;
+	switch (match.mode) {
+		case OT.Online : {
+			const paddle = match.player1.ID == UI.user1.ID ? match.gameState.paddle1 : match.gameState.paddle2;
+			renderGameInterpolated();
+			updatePaddlePos(paddle, match.gameState.field, deltaTime);
+			break ;
+		}
+		case OT.ONEvsCOM : {
 			aiAlgorithm(match);
 		}
-		updateGameState(match);
-		sendGameState();
+		case OT.ONEvsONE : {
+			if (match.state != state.Paused) {
+				updateGameState(match, deltaTime);
+			}
+			else {
+				updatePaddlePos(match.gameState.paddle1, match.gameState.field, deltaTime);
+				updatePaddlePos(match.gameState.paddle2, match.gameState.field, deltaTime);
+			}
+			break;
+		}
 	}
+	match.lastUpdateTime = now;
 	updateDOMElements(match);
 }

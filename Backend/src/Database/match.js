@@ -167,6 +167,9 @@ export async function getMatchByID(db, match_id) {
 				sql_error(err, `getMatchByID id=${match_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getMatchByID | match_id not found! match_id=${match_id}`);
+				}
 				resolve(row || null);
 			}
 		});
@@ -187,6 +190,9 @@ export async function getMatchEventByID(db, event_id) {
 				sql_error(err, `getMatchEventByID id=${event_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getMatchEventByID | event_id not found! event_id=${event_id}`);
+				}
 				resolve(row || null);
 			}
 		});

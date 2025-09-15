@@ -1,567 +1,384 @@
 import { UI, Game } from "../gameData.js"
 import * as S from '../structs.js'
-import { getFriendsList } from './friends.js';
-import { getPlayerList } from './players.js';
-import { getSettingsPage  } from '../SettingMenu/settings.js';
+// import { getFriendsList } from './friends.js';
+// import { getOnlineList } from './online.js';
+// import { getStatsList } from './stats.js';
+// import { getHighscores } from './highscore.js'
+// import { getSettingsPage  } from '../SettingMenu/settings.js';
 import { submitLogout } from '../Auth/logout.js';
-import { getCreditBtn } from './credits.js';
-import { getRightSideMenuWithTabs } from './menuPlayercards.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
-import { navigateTo } from "../history.js";
+import { navigateTo } from "../history.js"; //USE THIS!!!
+import { getDashboard } from "../Dashboard/dashboardContents.js";
 
-export function styleElement(e: HTMLElement, styles: Partial<CSSStyleDeclaration>) {
-
-	Object.assign(e.style, styles);
+export function styleMainBtns(button: HTMLButtonElement, text: string) {
+	button.textContent = text;
+	button.style.fontFamily = '"RobotoCondensed", sans-serif'
+	button.style.backgroundColor = '#363430';
+	button.style.cursor = 'pointer';
+	button.style.textAlign = 'center';
+	button.style.borderRadius = '10px';
+	button.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
+	button.style.padding = '0.7rem';
+	button.style.color = 'white';
+	button.style.border = 'none';
+	button.style.flex = '1';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 }
 
-function getLeftSideMenu() {
-	const menuLeft = document.createElement('div');
-	menuLeft.id = "menuLeft";
-	styleElement(menuLeft, {
-		display: 'flex',
-		flexDirection: 'column',
-		width: '40%',
-		boxSizing: 'border-box',
-		justifyContent: 'space-between',
-		height: '100%',
-		flex: '1',
-	});
-
-	const highScoreOnlineDiv = document.createElement('div');
-	highScoreOnlineDiv.id = "highScoreOnlineDiv";
-	styleElement(highScoreOnlineDiv, {
-		display: 'flex',
-		gap: '15px',
-		flexGrow: '1',
-	});
-	highScoreOnlineDiv.append(getPlayerList());
-
-	menuLeft.append(highScoreOnlineDiv);
-	return (menuLeft);
+export function styleListBtns(button: HTMLButtonElement, img_url: string) {
+	button.style.width = 'clamp(20px, 2vw, 25px)';
+	button.style.aspectRatio = '1/1';
+	button.style.borderRadius = '50%';
+	button.style.backgroundImage = img_url;
+	button.style.backgroundSize = 'cover';
+	button.style.backgroundPosition = 'center';
+	button.style.border = 'none';
+	button.style.cursor = 'pointer';
+	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 }
 
-function getPlayBtn(): HTMLButtonElement {
+export function getCreditsPage() {
+	const body = document.getElementById('body');
+	if (!body)
+		return ;
+
+	const creditDiv = document.createElement('div');
+	creditDiv.id = 'creditDiv';
+	creditDiv.style.position = 'fixed';
+	creditDiv.style.width = '100vw';
+	creditDiv.style.height = '100vh';
+	creditDiv.style.top = '0';
+	creditDiv.style.left = '0';
+	creditDiv.style.backgroundColor = 'white';
+	creditDiv.style.display = 'flex';
+	creditDiv.style.flexDirection = 'column';
+	creditDiv.style.justifyContent = 'center';
+	creditDiv.style.alignItems = 'center';
+
+	const creditImg = document.createElement('img');
+	creditImg.src = "./../images/Credits.png";
+	creditImg.style.maxWidth = '90vw';
+	creditImg.style.maxHeight = '90vh';
+	creditImg.style.objectFit = 'contain';
+
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = "CLOSE";
+	closeBtn.style.zIndex = '100000';
+	closeBtn.style.margin = '10px';
+
+	creditDiv.appendChild(creditImg);
+	creditDiv.appendChild(closeBtn);
+	body.appendChild(creditDiv);
+
+	closeBtn.addEventListener('click', () => {
+		body.removeChild(creditDiv);
+		navigateTo('Menu');
+	})
+}
+
+export function getCreditBtn(): HTMLButtonElement {
+	const creditsBtn = document.createElement('button');
+	// creditsBtn.style.flex = '1 1 25%';
+	styleMainBtns(creditsBtn, "Credits");
+
+	creditsBtn.addEventListener('click', () => {
+		// const body = document.getElementById('body');
+		// if (!body)
+		// 	return ;
+
+		// const creditDiv = document.createElement('div');
+		// creditDiv.id = 'creditDiv';
+		// creditDiv.style.position = 'fixed';
+		// creditDiv.style.width = '100vw';
+		// creditDiv.style.height = '100vh';
+		// creditDiv.style.top = '0';
+		// creditDiv.style.left = '0';
+		// creditDiv.style.backgroundColor = 'white';
+		// creditDiv.style.display = 'flex';
+		// creditDiv.style.flexDirection = 'column';
+		// creditDiv.style.justifyContent = 'center';
+		// creditDiv.style.alignItems = 'center';
+
+		// const creditImg = document.createElement('img');
+		// creditImg.src = "./../images/Credits.png";
+		// creditImg.style.maxWidth = '90vw';
+		// creditImg.style.maxHeight = '90vh';
+		// creditImg.style.objectFit = 'contain';
+
+		// const closeBtn = document.createElement('button');
+		// closeBtn.textContent = "CLOSE";
+		// closeBtn.style.zIndex = '100000';
+		// closeBtn.style.margin = '10px';
+
+		// creditDiv.appendChild(creditImg);
+		// creditDiv.appendChild(closeBtn);
+		// body.appendChild(creditDiv);
+
+		// closeBtn.addEventListener('click', () => {
+		// 	body.removeChild(creditDiv);
+		// })
+		navigateTo('Credits')
+	})
+	return (creditsBtn);
+}
+
+export function getPlayBtn(): HTMLButtonElement {
 	const playBtn = document.createElement('button');
-	playBtn.textContent = 'Play game';
-	styleElement(playBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		// width: '60%',
+	styleMainBtns(playBtn, "Play Game")
+	// playBtn.style.flex = '1 1 25%';
+	playBtn.addEventListener('click', () => {
+		navigateTo('OpponentMenu')
 	});
-	playBtn.addEventListener('click', () => { navigateTo('Settings'); });
 	return (playBtn);
 }
 
-function getDashboardBtn(): HTMLButtonElement {
-	const dashboardBtn = document.createElement('button');
-	dashboardBtn.textContent = 'Dashboard';
-	styleElement(dashboardBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		// width: '60%',
+export function getTournamentBtn(): HTMLButtonElement {
+	const tournamentBtn = document.createElement('button');
+	styleMainBtns(tournamentBtn, "Tournament");
+	tournamentBtn.addEventListener('click', () => {
+		console.log('I am tired');
+		console.log('That is okay, sleep well ;)');
 	});
+	return (tournamentBtn);
+}
+
+export function getDashboardBtn(): HTMLButtonElement {
+	const dashboardBtn = document.createElement('button');
+	styleMainBtns(dashboardBtn, "Dashboard");
 	dashboardBtn.addEventListener('click', () => {
-		navigateTo('Dashboard');
+		console.log('navigate to dashboard');
+		navigateTo(`Dashboard?userId=${UI.user1.ID}`);
 	});
 	return (dashboardBtn);
 }
 
-function getLoginBtn(playerNr: number): HTMLButtonElement {
-	if (playerNr == 1 || UI.user2.ID != 1)
-		return (getLogoutBtn(playerNr));
-	const loginBtn = document.createElement('button');
-	loginBtn.textContent = 'login';
-	styleElement(loginBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		marginLeft: 'auto',
-		marginBottom: '10px',
-		fontFamily: 'inherit'
+export function styleBlock(title_text: string, block: HTMLElement, list_id?: string) {
+
+	block.style.background = '#363430'
+	block.style.display = 'flex';
+	block.style.flexDirection = 'column';
+	block.style.alignItems = 'center';
+	block.style.padding = '1rem';
+	block.style.borderRadius = '10px';
+	block.style.position = 'relative';
+
+	const title = document.createElement('div');
+	title.textContent = title_text;
+	title.style.fontFamily = '"Horizon", sans-serif';
+	title.style.webkitTextStroke = '0.1rem #ffffff';
+	title.style.color = 'transparent';
+	title.style.fontSize = 'clamp(18px, 1vw, 20px)';
+	title.style.whiteSpace = 'nowrap';
+	title.style.display = 'inline-block';
+	title.style.textAlign = 'center';
+	title.style.marginBottom = '0.5rem';
+
+	block.appendChild(title);
+	if (list_id) {
+		const list = document.createElement('ul');
+		list.id = list_id;
+		list.style.display = 'flex';
+		list.style.flexDirection = 'column';
+		list.style.gap = '0.5rem';
+		list.style.width = '100%';
+		list.style.padding = '0';
+		list.style.margin = '0';
+		list.style.overflowY = 'auto';
+		block.appendChild(list);
+	}
+}
+
+export function styleRow(playerName: string)
+{
+	const row = document.createElement('li');
+	row.textContent = playerName ?? "";
+	row.style.padding = '0.3rem 0.5rem';
+	row.style.borderRadius = '5px';
+	row.style.backgroundColor = '#2a2927';
+	row.style.color = 'white';
+	row.style.justifyItems = 'space-between';
+	row.style.fontFamily = '"RobotoCondensed", sans-serif';
+	row.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
+	row.style.cursor = 'pointer';
+	row.style.display = 'flex';
+	row.style.listStyleType = 'none';
+	row.style.flex = '1';
+	row.style.alignItems = 'center';
+	row.style.justifyContent = 'space-between';
+	return row;
+}
+
+function styleUserTab(tab: HTMLDivElement, text: string) {
+	tab.style.background = '#363430';
+	tab.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
+	tab.style.alignItems = 'center';
+	tab.style.justifyContent = 'center';
+	tab.style.fontFamily = '"Horizon", sans-serif';
+	tab.style.webkitTextStroke = '0.1rem #ffffff';
+	tab.style.color = 'transparent';
+	tab.style.fontSize = 'clamp(18px, 3vw, 36px)';
+	tab.style.whiteSpace = 'nowrap';
+	tab.style.display = 'inline-block';
+	tab.style.textAlign = 'center';
+	tab.style.marginBottom = '0.5rem';
+}
+
+export function getUserTournamentBlock(): HTMLDivElement {
+	const users_block = document.createElement('div');
+	users_block.style.display = 'flex';
+	users_block.style.flex = '1 1 50%';
+	users_block.style.flexDirection = 'column';
+	users_block.style.gap = '1rem';
+	users_block.style.height = '100%';
+
+	const user1_block = document.createElement('div');
+	user1_block.id = 'user1_block';
+	// user1_block.style.display = 'flex';
+	// user1_block.style.height = '50%';
+	// user1_block.style.background = '#363430'
+	// user1_block.style.display = 'flex';
+	// user1_block.style.flexDirection = 'column';
+	// user1_block.style.alignItems = 'center';
+	// user1_block.style.padding = '1rem';
+	// user1_block.style.gap = '1rem';
+	// user1_block.style.borderRadius = '10px';
+	// user1_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+
+	// //have a button that changes whether is player1 or player2
+	// //playerNr = playerNr === 1 ? : 2 : 1;
+	// let playerNr = 1;
+
+	const user2_block = document.createElement('div');
+	user2_block.id = 'user2_block';
+	// user2_block.style.display = 'flex';
+	// user2_block.style.flex = '1 1 50%';
+	// user2_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	// styleBlock("Tournaments", user2_block);
+
+	users_block.appendChild(user1_block);
+	users_block.appendChild(user2_block);
+	console.log("Sending data to the backend for the USERDATAMENU!!");
+	Game.socket.emit('message', {
+		action: 'userDataMenu', 
+		subaction: 'getUserDataMenu',
+		// playerNr: 1,
 	});
-	loginBtn.addEventListener('click', () => {
-		log('Login button clicked for player ' + playerNr);
-		document.getElementById('menu')?.remove();
-		if (playerNr == 2) {
-			navigateTo('LoginP2');
-		} else { 
-			navigateTo('LoginP1');
+	return users_block;
+}
+
+function getFriendsBlock(): HTMLDivElement {
+	const friends_block = document.createElement('div');
+	friends_block.style.flex = '1 1 25%';
+	friends_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	styleBlock("Friends", friends_block, "friends_list");
+	Game.socket.emit('message', {
+		action: 'friends', 
+		subaction: 'getFriends'
+	});
+	return friends_block;
+}
+
+function getPlayersBlock(): HTMLDivElement {
+	const players_block = document.createElement('div');
+	players_block.style.flex = '1 1 25%';
+	players_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
+	styleBlock("Players", players_block, "players_list");
+	Game.socket.emit('message', {
+		action: 'players', 
+		subaction: 'getAllPlayers'
+	});
+	return players_block;
+}
+
+export function createBackgroundText(body: HTMLElement) {
+	const backgroundText = document.createElement('div');
+	backgroundText.style.position = 'fixed';
+	backgroundText.style.top = '0';
+	backgroundText.style.left = '0';
+	backgroundText.style.width = '100%';
+	backgroundText.style.height = '100%';
+	backgroundText.style.overflow = 'hidden';
+	backgroundText.style.pointerEvents = 'none';
+	backgroundText.style.zIndex = '0';
+	backgroundText.style.fontFamily = '"Horizon", monospace';
+	backgroundText.style.fontSize = 'clamp(50px, 10vw, 105px)';
+	backgroundText.style.fontWeight = 'bold';
+	backgroundText.style.color = 'rgba(0, 0, 0, 0.07)';
+	backgroundText.style.lineHeight = '1.2';
+	backgroundText.style.whiteSpace = 'nowrap';
+	backgroundText.style.userSelect = 'none';
+
+	// let pongPattern = '';
+	const rows = 200;
+	const cols = 100;
+			
+	for (let row = 0; row < rows; row++) {
+		const rowDiv = document.createElement('div');
+		rowDiv.style.display = 'flex';
+		rowDiv.style.gap = '1.5rem';
+		// rowDiv.style.marginBottom = '1rem';
+		
+		for (let col = 0; col < cols; col++) {
+		const pongSpan = document.createElement('span');
+		pongSpan.textContent = 'PONG';
+		pongSpan.style.letterSpacing = '0.5rem';
+		// pongSpan.style.animation = `glitch 1s infinite`;
+		pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
+		pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
+		rowDiv.appendChild(pongSpan);
 		}
-	});
-	return (loginBtn);
-}
-
-function getLogoutBtn(playerNr: number): HTMLButtonElement {
-	const logoutBtn = document.createElement('button');
-	logoutBtn.textContent = 'logout';
-	styleElement(logoutBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		marginLeft: 'auto',
-		marginBottom: '10px',
-		fontFamily: 'inherit'
-	});
-	logoutBtn.addEventListener('click', (e) => submitLogout(e, playerNr));
-	return (logoutBtn);
-}
-
-function get2faBtn(playerNr: number): HTMLButtonElement {
-	if (UI.user1.Twofa && playerNr == 1)
-		return (get2faDisableBtn(playerNr));
-	if (UI.user2.Twofa && playerNr == 2)
-		return (get2faDisableBtn(playerNr));
-	return (get2faSetupBtn(playerNr));
-}
-
-function get2faDisableBtn(playerNr: number): HTMLButtonElement {
-	const twofaDisableBtn = document.createElement('button');
-	twofaDisableBtn.textContent = 'Disable 2FA';
-	styleElement(twofaDisableBtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		marginLeft: 'auto',
-		marginBottom: '10px',
-		fontFamily: 'inherit'
-	});
-	twofaDisableBtn.addEventListener('click', async () => {
-		log('2FA Disable button clicked for player ' + playerNr);
-
-		// Overlay
-		const overlay = document.createElement('div');
-		overlay.style.position = 'fixed';
-		overlay.style.top = '0';
-		overlay.style.left = '0';
-		overlay.style.width = '100vw';
-		overlay.style.height = '100vh';
-		overlay.style.background = 'rgba(0,0,0,0.7)';
-		overlay.style.display = 'flex';
-		overlay.style.flexDirection = 'column';
-		overlay.style.justifyContent = 'center';
-		overlay.style.alignItems = 'center';
-		overlay.style.zIndex = '1000';
-
-		const closeBtn = document.createElement('button');
-		closeBtn.textContent = 'X';
-		closeBtn.style.position = 'absolute';
-		closeBtn.style.top = '30px';
-		closeBtn.style.right = '30px';
-		closeBtn.style.fontSize = '2em';
-		closeBtn.style.background = 'transparent';
-		closeBtn.style.border = 'none';
-		closeBtn.style.color = 'white';
-		closeBtn.style.cursor = 'pointer';
-		closeBtn.addEventListener('click', () => overlay.remove());
-		overlay.appendChild(closeBtn);
-
-		const formDiv = document.createElement('div');
-		formDiv.style.background = 'white';
-		formDiv.style.padding = '30px';
-		formDiv.style.borderRadius = '10px';
-		formDiv.style.display = 'flex';
-		formDiv.style.flexDirection = 'column';
-		formDiv.style.alignItems = 'center';
-
-		const label = document.createElement('div');
-		label.textContent = 'Enter your 6-digit 2FA code to disable:';
-		label.style.marginBottom = '10px';
-		formDiv.appendChild(label);
-
-		const form = document.createElement('form');
-		form.style.display = 'flex';
-		form.style.flexDirection = 'column';
-		form.style.alignItems = 'center';
-
-		const codeInput = document.createElement('input');
-		codeInput.type = 'text';
-		codeInput.maxLength = 6;
-		codeInput.pattern = '\\d{6}';
-		codeInput.autocomplete = 'one-time-code';
-		codeInput.style.fontSize = '1.5em';
-		codeInput.style.textAlign = 'center';
-		codeInput.style.margin = '10px 0';
-		form.appendChild(codeInput);
-
-		const submitBtn = document.createElement('button');
-		submitBtn.type = 'submit';
-		submitBtn.textContent = 'Disable 2FA';
-		submitBtn.style.fontSize = '1em';
-		form.appendChild(submitBtn);
-
-		form.addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const code = codeInput.value.trim();
-			if (!/^\d{6}$/.test(code)) {
-				alert('Please enter a valid 6-digit code.');
-				return;
-			}
-			try {
-				const res = await fetch('/api/2fa/disable', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ playerNr, token: code }),
-					credentials: 'include'
-				});
-				const data = await res.json();
-				if (data.success) {
-					label.textContent = '2FA disabled successfully!';
-					form.remove();
-					if (data.playerNr == 1)
-						UI.user1.Twofa = false;
-					else
-						UI.user2.Twofa = false;
-					setTimeout(() => overlay.remove(), 1000);
-					document.getElementById('menu')?.remove();
-				} else {
-					alert(data.message || 'Failed to disable 2FA.');
-				}
-			} catch (err) {
-				alert('Error disabling 2FA.');
-			}
-		});
-
-		formDiv.appendChild(form);
-		overlay.appendChild(formDiv);
-		const body = document.getElementById('body');
-		body?.appendChild(overlay);
-	});
-	return twofaDisableBtn;
-}
-
-function get2faSetupBtn(playerNr: number): HTMLButtonElement {
-	const twoFABtn = document.createElement('button');
-	twoFABtn.textContent = '2FA';
-	styleElement(twoFABtn, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		marginLeft: 'auto',
-		marginBottom: '10px',
-		fontFamily: 'inherit'
-	});
-	twoFABtn.addEventListener('click', async () => {
-		log('2FA button clicked for player ' + playerNr);
-
-		// Create overlay
-		const overlay = document.createElement('div');
-		overlay.style.position = 'fixed';
-		overlay.style.top = '0';
-		overlay.style.left = '0';
-		overlay.style.width = '100vw';
-		overlay.style.height = '100vh';
-		overlay.style.background = 'rgba(0,0,0,0.7)';
-		overlay.style.display = 'flex';
-		overlay.style.flexDirection = 'column';
-		overlay.style.justifyContent = 'center';
-		overlay.style.alignItems = 'center';
-		overlay.style.zIndex = '1000';
-
-		const closeBtn = document.createElement('button');
-		closeBtn.textContent = 'X';
-		closeBtn.style.position = 'absolute';
-		closeBtn.style.top = '30px';
-		closeBtn.style.right = '30px';
-		closeBtn.style.fontSize = '2em';
-		closeBtn.style.background = 'transparent';
-		closeBtn.style.border = 'none';
-		closeBtn.style.color = 'white';
-		closeBtn.style.cursor = 'pointer';
-		closeBtn.addEventListener('click', () => overlay.remove());
-		overlay.appendChild(closeBtn);
-
-		const qrDiv = document.createElement('div');
-		qrDiv.style.background = 'white';
-		qrDiv.style.padding = '30px';
-		qrDiv.style.borderRadius = '10px';
-		qrDiv.style.display = 'flex';
-		qrDiv.style.flexDirection = 'column';
-		qrDiv.style.alignItems = 'center';
-
-		const qrLabel = document.createElement('div');
-		qrLabel.textContent = 'Scan this QR code with your Authenticator app:';
-		qrLabel.style.marginBottom = '10px';
-		qrDiv.appendChild(qrLabel);
-
-		const qrImg = document.createElement('img');
-		qrImg.style.width = '200px';
-		qrImg.style.height = '200px';
-		qrImg.style.marginBottom = '20px';
-		qrDiv.appendChild(qrImg);
-
-		// Fetch QR code from backend
-		try {
-			const res = await fetch('/api/2fa/generate', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ playerNr })
-			});
-			const data = await res.json();
-			if (data.success === false) {
-				alert(data.message || 'Failed to generate QR code.');
-				return;
-			} else if (data.qrCodeDataURL) {
-				qrImg.src = data.qrCodeDataURL;
-			} else {
-				qrLabel.textContent = 'Failed to load QR code.';
-			}
-		} catch (err) {
-			qrLabel.textContent = 'Error loading QR code.';
-		}
-
-		// 2FA code input form
-		const form = document.createElement('form');
-		form.style.display = 'flex';
-		form.style.flexDirection = 'column';
-		form.style.alignItems = 'center';
-		form.style.marginTop = '10px';
-
-		const codeLabel = document.createElement('label');
-		codeLabel.textContent = 'Enter 6-digit code:';
-		codeLabel.htmlFor = 'twofaCodeInput';
-		form.appendChild(codeLabel);
-
-		const codeInput = document.createElement('input');
-		codeInput.type = 'text';
-		codeInput.id = 'twofaCodeInput';
-		codeInput.maxLength = 6;
-		codeInput.pattern = '\\d{6}';
-		codeInput.autocomplete = 'one-time-code';
-		codeInput.style.fontSize = '1.5em';
-		codeInput.style.textAlign = 'center';
-		codeInput.style.margin = '10px 0';
-		form.appendChild(codeInput);
-
-		const submitBtn = document.createElement('button');
-		submitBtn.type = 'submit';
-		submitBtn.textContent = 'activate 2FA';
-		submitBtn.style.fontSize = '1em';
-		form.appendChild(submitBtn);
-
-		form.addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const code = codeInput.value.trim();
-			if (!/^\d{6}$/.test(code)) {
-				alert('Please enter a valid 6-digit code.');
-				return;
-			}
-			try {
-				const res = await fetch('/api/2fa/activate', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ token: code })
-				});
-				const data = await res.json();
-				if (data.success) {
-					qrImg.remove();
-					qrLabel.textContent = '2FA activated successfully!';
-					form.remove();
-					UI.user1.Twofa = playerNr === 1 ? true : UI.user1.Twofa;
-					setTimeout(() => {
-						overlay.remove();
-					}, 1000); // 1000 ms = 1 second
-					document.getElementById('menu')?.remove();
-					// Optionally update UI or state here
-				} else {
-					alert(data.message || '2FA verification failed.');
-				}
-			} catch (err) {
-				alert('Error verifying 2FA.');
-			}
-		});
-
-		qrDiv.appendChild(form);
-		overlay.appendChild(qrDiv);
-		const body = document.getElementById('body')
-		body?.appendChild(overlay);
-	});
-	return (twoFABtn);
-}
-
-function getAvatarBtn(playerNr: number): HTMLLabelElement {
-	const fileInput = document.createElement('input');
-	fileInput.type = 'file';
-	fileInput.accept = 'image/*';
-	fileInput.style.display = 'none';
-	fileInput.addEventListener('change', (e) => {
-		const file = fileInput.files?.[0];
-		if (file)
-			changeAvatar(file, playerNr);
-	});
-
-	const label = document.createElement('label');
-	label.textContent = 'Change Avatar';
-	label.htmlFor = fileInput.id = `avatarUpload${playerNr}`;
-
-	styleElement(label, {
-		backgroundColor: '#d9f0ff',
-		border: '2px solid #d9f0ff',
-		padding: '15px',
-		fontSize: '1em',
-		cursor: 'pointer',
-		borderRadius: '10px',
-		marginLeft: 'auto',
-		display: 'inline-block',
-		fontFamily: 'inherit'
-	});
-	label.appendChild(fileInput);
-	return (label);
-}
-
-export function getRightSideMenu(playerNr: number) {
-	const profile = document.createElement('div');
-	profile.id = 'profile';
-	styleElement(profile, {
-		display: 'flex',
-		flexDirection: 'column',
-		gap: '10px',
-		padding: '15px',
-		width: '100%',
-		boxSizing: 'border-box',
-		backgroundColor: 'white',
-		flex: '1.5',
-		borderRadius: '10px',
-		alignItems: 'stretch'
-	});
-
-	const player = document.createElement('div');
-	styleElement(player, {
-		display: 'flex',
-		width: '100%',
-		alignItems: 'center',
-		gap: '10px'
-	})
-
-	const avatarDiv = document.createElement('div');
-	styleElement(avatarDiv, {
-		flex: '0 0 25%',
-		textAlign: 'center',
-	})
-
-	const avatarImg = document.createElement('img');
-	const userId = playerNr === 1 ? UI.user1.ID : UI.user2.ID;
-	avatarImg.id = `avatar${playerNr}`;
-	avatarImg.src = `/api/avatar/${userId}?ts=${Date.now()}`
-	styleElement(avatarImg, {
-		maxWidth: '120px',
-		maxHeight: '120px',
-		width: '100%',
-		height: 'auto',
-		objectFit: 'cover',
-		// borderRadius: '50%', // optional: makes the avatar round
-	});
-	avatarDiv.appendChild(avatarImg);
-
-	const playernameAndButtons = document.createElement('div');
-	styleElement(playernameAndButtons, {
-		flex: '1',
-		display: 'flex',
-		gap: '5px',
-	});
-
-	const playername = document.createElement('div');
-	playername.id = "playerNameMenu" + playerNr;
-	if (playerNr == 1)
-		playername.textContent = UI.user1.name;
-	else
-		playername.textContent = UI.user2.name;
-	playername.style.fontSize = '1.5em';
-
-	const buttons = document.createElement('div');
-	styleElement(buttons, {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'space-between',
-		padding: '15px',
-		marginLeft: 'auto'
-	});
-	if (playerNr == 1)
-		buttons.append(getLoginBtn(playerNr), get2faBtn(playerNr), getAvatarBtn(playerNr));
-	else
-		buttons.append(getLoginBtn(playerNr), getAvatarBtn(playerNr));
-
-	playernameAndButtons.append(playername, buttons);
-	player.append(avatarDiv, playernameAndButtons);
-
-	const statsFriendsDiv = document.createElement('div');
-	styleElement(statsFriendsDiv, {
-		display: 'flex',
-		gap: '20px',
-		alignItems: 'stretch'
-	});
-	statsFriendsDiv.append(getFriendsList(playerNr));
-
-	profile.append(player, statsFriendsDiv);
-	return (profile);
+		
+		backgroundText.appendChild(rowDiv);
+	}
+	body.appendChild(backgroundText);
 }
 
 export function getMenu() {
-	const menu = document.createElement('div');
-	menu.id = 'menu';
-	styleElement(menu, {
-		display: 'flex',
-		flexDirection: 'column',
-		backgroundColor: '#ffd400',
-		padding: '20px',
-		height: '100%',
-		width: '100%',
-		boxSizing: 'border-box'
-	});
-	const titleMenu = document.createElement('h2');
-	titleMenu.textContent = 'Menu';
-	titleMenu.style.marginTop = '10px';
-
-	const leftRight = document.createElement('div');
-	styleElement(leftRight, {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		gap: '20px',
-		flex: '1'
-	})
-
-	leftRight.append(getLeftSideMenu(), getRightSideMenuWithTabs());
-	menu.append(titleMenu, leftRight);
-
-	// Add Play button under the right menu, styled like the Credit button
-	const bottomButtonDiv = document.createElement('div');
-	styleElement(bottomButtonDiv, {
-		display: 'flex',
-		justifyContent: 'space-between',
-		width: '100%',
-		marginTop: '10px',
-	});
-	bottomButtonDiv.appendChild(getCreditBtn());
-	bottomButtonDiv.appendChild(getPlayBtn());
-	bottomButtonDiv.appendChild(getDashboardBtn());
-	menu.appendChild(bottomButtonDiv);
-
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
-	body.removeAttribute('style');
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
-	body.appendChild(menu);
-	Game.socket.emit('message',{action: 'friends', subaction: 'openFriendRequests', id: UI.user1.ID, playerNr: 1});
+
+	createBackgroundText(body);
+
+	const menuContainer = document.createElement('div');
+	menuContainer.id = 'menu';
+	menuContainer.style.position = 'relative';
+	menuContainer.style.alignItems = 'center';
+	menuContainer.style.justifyContent = 'center';
+	menuContainer.style.display = 'flex';
+	menuContainer.style.flexDirection = 'column';
+	menuContainer.style.gap = '1rem';
+	menuContainer.style.width = '100%';
+	menuContainer.style.height = '100%';
+
+	const menuBlocks = document.createElement('div');
+	menuBlocks.style.display = 'flex';
+	menuBlocks.style.flexDirection = 'row';
+	menuBlocks.style.gap = '1rem';
+	menuBlocks.style.height = 'clamp(400px, 50vh, 800px)';
+	menuBlocks.style.width = 'clamp(1000px, 90vw, 1500px)';
+	menuBlocks.appendChild(getUserTournamentBlock());
+	menuBlocks.appendChild(getFriendsBlock());
+	menuBlocks.appendChild(getPlayersBlock());
+
+	const menuButtons = document.createElement('div');
+	menuButtons.id = 'menuButtons';
+	menuButtons.style.display = 'flex';
+	menuButtons.style.flexDirection = 'row';
+	menuButtons.style.gap = '1rem';
+	menuButtons.style.justifyContent = 'center';
+	menuButtons.style.width = 'clamp(1000px, 90vw, 1500px)';
+	menuButtons.appendChild(getTournamentBtn());
+	menuButtons.appendChild(getPlayBtn());
+	menuButtons.appendChild(getCreditBtn());
+
+	menuContainer.appendChild(menuBlocks);
+	menuContainer.appendChild(menuButtons);
+	body.appendChild(menuContainer);
 }

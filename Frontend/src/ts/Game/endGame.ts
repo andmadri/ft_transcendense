@@ -6,6 +6,27 @@ import { OT } from '@shared/enums'
 let result = "";
 let lastMatchId = -1;
 
+function getWinnerResult() {
+	let winnerName = null;
+	console.log(`winner ID ${Game.match.winnerID}`);
+	if (Game.match.winnerID == -1) {
+		return "Match interrupted..."
+	}
+	else if (Game.match.winnerID) {
+		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
+	}
+	else if (Game.match.player1.score > Game.match.player2.score) {
+		winnerName = Game.match.player1.name;
+	}
+	else if (Game.match.player1.score < Game.match.player2.score) {
+		winnerName = Game.match.player2.name;
+	}
+	else {
+		winnerName = null;
+	}
+	return winnerName ? `${winnerName} Wins!` : "It is a Tie!";
+}
+
 export function getGameOver() {
 	log("Game Over!");
 	const game = document.getElementById('game');
@@ -23,6 +44,7 @@ export function getGameOver() {
 	gameOver.style.fontFamily = '"Horizon", monospace';
 	gameOver.style.textAlign = 'center';
 	gameOver.style.width = '100%';
+	gameOver.style.height = '100%';
 
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
 	// gameOver.style.height = '100%';
@@ -92,6 +114,10 @@ export function getGameOver() {
 	if (!body)
 		return ;
 	// body.innerHTML = '';
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.appendChild(gameOver);
 }
 
@@ -111,19 +137,11 @@ export function saveGame() {
 		clearTimeout(Game.match.pauseTimeOutID);
 		Game.match.pauseTimeOutID = null;
 	}
-
+	
 	// Save the result to show in the GameOver function
-	if (Game.match.player1.score > Game.match.player2.score)
-		result = "Left Player Wins!";
-	else if (Game.match.player1.score < Game.match.player2.score)
-  		result = "Right Player Wins!"; 
-	else
-		result = "It is a Tie!"
+	result = getWinnerResult();
 	lastMatchId = Game.match.matchID;
 
-	Game.match.player1.score = 0;
-	Game.match.player2.score = 0;
-
-	navigateTo('GameOver', {matchId: Game.match.matchID});
+	navigateTo('GameOver'); //, {matchId: Game.match.matchID}
 	Game.match.matchID = -1;
 }

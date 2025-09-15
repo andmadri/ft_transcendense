@@ -1,23 +1,23 @@
 import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
-import { log } from '../logging.js'
 import { OT, state } from '@shared/enums'
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
+import { reconcilePaddle } from './gameLogic.js';
 
 export function applyGameStateUpdate(data : any) {
 	if (Game.match.mode == OT.Online) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
-		Game.match.state = data.state;
+		if (Game.match.state != state.Hit && Game.match.state != state.Serve) {
+			Game.match.state = data.state;
+		}
 		Game.match.resumeTime = data.resumeTime;
-		if (data.gameState && Game.match.state == state.Playing) {
+		if (data.gameState && Game.match.state == state.Playing || Game.match.state == state.Paused) {
 			makeSnapshot(data.gameState, playerNr);
 		}
-		if (Game.match.state != state.Playing) {
+		if (Game.match.state == state.Score) {
 			renderGameInterpolated();
 		}
-		// else {
-		// 	console.log("Data is missing in applyUpdatesGameServer");
-		// }
+		reconcilePaddle(playerNr, data.gameState);
 	}
 }
 
@@ -43,14 +43,14 @@ export function sendKeyPressUpdate(key : string) {
 	});
 }
 
-export function sendGameState() {
-	Game.socket.emit('message',{
-		action: 'game',
-		subaction: 'gameStateUpdate',
-		matchID: Game.match.matchID,
-		gameState: Game.match.gameState
-	});
-}
+// export function sendGameState() {
+// 	Game.socket.emit('message',{
+// 		action: 'game',
+// 		subaction: 'gameStateUpdate',
+// 		matchID: Game.match.matchID,
+// 		gameState: Game.match.gameState
+// 	});
+// }
 
 export function sendPadelHit() {
 	Game.socket.emit('message',{

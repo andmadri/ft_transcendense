@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
-import * as userDB from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { db } from '../index.js'
-import { addUser2faSecretToDB, getUserSecretDB } from '../Services/twofa.js';
+import { db } from '../index.js';
+import { addUserToDB, getUserByID, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
+import { USERLOGIN_TIMEOUT } from '../structs.js';
 
 /**
  * Handles the Google authentication process.
@@ -21,37 +21,34 @@ import { onUserLogin } from '../Services/sessionsService.js';
 async function handleGoogleAuth(user) {
 	try {
 		if (!user || !user.email) {
-			console.log('Invalid user data from Google!');
+			console.error('Invalid user data from Google!');
 			return null;
 		}
 
-		const exists = await userDB.getUserByEmail(db, user.email);
+		const exists = await getUserByEmail(db, user.email);
 		if (exists) {
 			console.log('User: ', user.name, ' already exists');
 			const isValidPassword = await bcrypt.compare(user.id, exists.password);
 			if (!isValidPassword) {
-				console.log('User: ', user.name, ' Invalid google ID!');
+				console.log(`User: ${user.name} - Invalid google ID!`);
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
-				console.log('Updating user: ', user.name, ' in DB!');
 				exists.name = user.name;
 				exists.avatar_url = user.picture;
-				await userDB.updateUserInDB(db, exists);
+				// CHECK FOR 2FA KEY? AND SET IT TO GOOGLE?
+				await updateUserInDB(db, exists);
 			}
-			const dbUserObj = await userDB.getUserByEmail(db, user.email);
-			return dbUserObj;
 		} else {
-			await userDB.addUserToDB(db, {
+			await addUserToDB(db, {
 				email: user.email,
 				name: user.name,
 				password: user.id,
-				avatar_url: user.picture
+				avatar_url: user.picture,
+				twofa_secret: 'google'
 			});
-			console.log('User: ', user.name, ' is created');
-			const dbUserObj = await userDB.getUserByEmail(db, user.email);
-			return dbUserObj;
 		}
+		return await getUserByID(db, user.id);
 	} catch (err) {
 		console.error('Error during Google authentication:', err);
 		return null;
@@ -75,16 +72,13 @@ async function handleGoogleAuth(user) {
  * This function is intended to be used as a Fastify plugin.
  * 	@throws {Error} - Throws an error if the authentication process fails.
  */
-export default async function googleAuthRoutes(fastify, opts) {
+export default async function googleAuthRoutes(fastify) {
 	fastify.get('/api/auth/google', async (request, reply) => {
 		const playerNr = request.query.playerNr || '1';
-
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
-		// console.log('Redirect URI:', redirectUri);
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
 		const playerNrEncoded = encodeURIComponent(playerNr);
-
 		const redirectURL = `${baseURL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=consent&state=${playerNrEncoded}`;
 		reply.redirect(redirectURL);
 	});
@@ -93,21 +87,18 @@ export default async function googleAuthRoutes(fastify, opts) {
 		const { code, state } = request.query;
 		const playerNr = state || '1';
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
-		// console.log('playerNr:', playerNr);
-		// console.log('Redirect URI:', redirectUri);
 		try {
 			const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
-			code,
-			client_id: process.env.GOOGLE_CLIENT_ID,
-			client_secret: process.env.GOOGLE_CLIENT_SECRET,
-			redirect_uri: redirectUri,
-			grant_type: 'authorization_code'
+				code,
+				client_id: process.env.GOOGLE_CLIENT_ID,
+				client_secret: process.env.GOOGLE_CLIENT_SECRET,
+				redirect_uri: redirectUri,
+				grant_type: 'authorization_code'
 			});
 
 			if (!tokenRes || !tokenRes.data || !tokenRes.data.access_token) {
-				console.log('Invalid token response from Google!');
-				reply.code(500).send('OAuth login failed.');
-				return;
+				console.error('Invalid token response from Google!');
+				return reply.code(500).send('OAuth login failed.');
 			}
 
 			const { access_token } = tokenRes.data;
@@ -116,36 +107,33 @@ export default async function googleAuthRoutes(fastify, opts) {
 				headers: { Authorization: `Bearer ${access_token}` }
 			});
 			if (!userRes || !userRes.data || !userRes.data.email) {
-				console.log('Invalid user data from Google!');
-				reply.code(500).send('OAuth login failed.');
-				return;
+				console.error('Invalid user data from Google!');
+				return reply.code(500).send('OAuth login failed.');
 			}
 
-			const dbUserObj = await handleGoogleAuth(userRes.data);
-			if (!dbUserObj) {
-				console.log('dbUserObj returned:', dbUserObj);
-				reply.code(500).send('OAuth login failed.');
-				return;
+			const user = await handleGoogleAuth(userRes.data);
+			if (!user) {
+				console.error('user returned:', user);
+				return reply.code(500).send('OAuth login failed.');
 			}
 
 			try {
-				await addUser2faSecretToDB(db, dbUserObj.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
-				const test = await getUserSecretDB(db, dbUserObj.id);
-				console.log(`getUserSecretDB returned: ${test}`);
+				// CHRISS LOOK AT THIS!! addUser2faSecretToDB is deleted, but this { google: 'true' } didn't make sense before as well
+				await updateUserInDB(db, { user_id: user.id, twofa_secret:  'google' });
+				// await addUser2faSecretToDB(db, user.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
 			} catch (err) {
 				console.error('Error adding 2FA secret for Google user:', err);
-				reply.code(500).send('OAuth login failed.');
-				return;
+				return reply.code(500).send('OAuth login failed.');
 			}
 
 			try {
-				await onUserLogin(db, dbUserObj.id);
+				await onUserLogin(db, user.id);
 			} catch(err) {
 				console.error(err.msg);
 				return ({ error: 'Database error' });
 			}
 
-			const jwtToken = signFastifyJWT(dbUserObj, fastify);
+			const jwtToken = signFastifyJWT(user, fastify);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
@@ -153,7 +141,7 @@ export default async function googleAuthRoutes(fastify, opts) {
 				signed: true,        // signed cookies
 				encode: v => v,      // Use default encoding
 				path: '/',
-				maxAge: 60 * 60      // 1 hour
+				maxAge: USERLOGIN_TIMEOUT
 			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);

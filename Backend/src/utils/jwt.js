@@ -1,3 +1,4 @@
+import { USERLOGIN_TIMEOUT } from '../structs.js';
 
 /**
  * Utility function to sign a JWT token using Fastify's JWT plugin.
@@ -17,7 +18,7 @@ export function signFastifyJWT(user, fastify) {
 
 	return fastify.jwt.sign(payload, {
 		algorithm: 'HS256',
-		expiresIn: '1h'
+		expiresIn: `${USERLOGIN_TIMEOUT}s`
 	});
 }
 
