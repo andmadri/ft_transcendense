@@ -4,9 +4,10 @@ import { matches } from '../InitGame/match.js';
 import { state, MF } from '../SharedBuild/enums.js';
 
 export const tournament = {
-	players: [], // [{id, name, socket, ready ...}]
-	matches: [], // { matchNumber: 1, matchObj }
-	state: 'waiting', // 'in_progress' 'finished'
+	players: [],		// [{id, name, socket, ready ...}]
+	matches: [],		// { matchNumber: 1, matchObj }
+	state: 'waiting',	// 'in_progress' 'finished'
+	io: null			// will be set when handleTournament is first called
 };
 
 // Helper to format the state for the frontend
@@ -33,14 +34,14 @@ function joinTournament(msg, userId, socket, io) {
 	if (!tournament.players.find(p => p.id === userId)) {
 		tournament.players.push({ id: userId, name: msg.name, socket: socket, ready: false });
 	}
-	
+
 	// Broadcast updated state to all participants
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
 		subaction: 'update',
 		tournamentState: getTournamentStateForFrontend()
 	});
-	
+
 	// Print in console for debugging
 	console.log('Player joined tournament:', msg.name, userId, getTournamentStateForFrontend());
 
@@ -59,7 +60,7 @@ function joinTournament(msg, userId, socket, io) {
 }
 
 
-function leaveTournament(msg, userId, socket, io) {
+export function leaveTournament(msg, userId, socket, io) {
 	if (tournament.state === 'waiting') {
 		socket.leave('tournament_1');
 		tournament.players = tournament.players.filter(p => p.id !== userId);
@@ -71,7 +72,7 @@ function leaveTournament(msg, userId, socket, io) {
 		});
 	} else {
 		console.log('Tournament already in progress, cannot leave');
-		
+
 	}
 
 	// Confirm leaving and trigger frontend navigation
@@ -100,7 +101,7 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	}
 
 	console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
-	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io); //probably nice to start using MF.Tournament / MF.singleGame now 
+	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io); //probably nice to start using MF.Tournament / MF.singleGame now
 	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
 	console.log('current match:', matches.get(matchId));
 	console.log('Tournament matches:', tournament.matches);
@@ -180,7 +181,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 	if (!tournament.matches.find(m => m.matchNumber === 4)) {
 		const winner1 = game1.winner;
 		const winner2 = game2.winner;
-		
+
 		await createTournamentMatch(winner1, winner2, 4, io);
 	}
 
@@ -188,7 +189,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 	if (tournament.matches.length === 4 && tournament.matches.every(m => m.match.state.End)) {
 		tournament.state = 'finished';
 	}
-	
+
 	// After scheduling or finishing, broadcast state
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
@@ -198,6 +199,8 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 }
 
 export function handleTournament(db, msg, socket, io, userId) {
+	if (!tournament.io)
+		tournament.io = io;
 	console.log('Tournament message:', JSON.stringify(msg));
 	if (msg.subaction === 'join') {
 		joinTournament(msg, userId, socket, io);

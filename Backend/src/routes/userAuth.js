@@ -1,6 +1,7 @@
 import { addUser, validateLogin } from '../Auth/userValidation.js';
 import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
-import { addUserSessionToDB } from '../Database/sessions.js';
+// import { addUserSessionToDB } from '../Database/sessions.js';
+import { onUserLogout } from '../Services/sessionsService.js';
 import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import { db } from '../index.js';
@@ -170,7 +171,8 @@ export default async function userAuthRoutes(fastify) {
 			const decoded = fastify.jwt.verify(unsigned.value);
 
 			const user = await getUserByID(db, decoded.userId);
-			await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
+			// await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
+			await onUserLogout(db, user.id);
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,
 				secure: true,
