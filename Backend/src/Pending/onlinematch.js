@@ -1,5 +1,5 @@
 import { waitlist, matches } from "../InitGame/match.js";
-import { OT, state } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall } from "../SharedBuild/gameLogic.js";
@@ -101,8 +101,8 @@ function matchInterval(match, io) {
 	}, 40)
 }
 
-export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, io) {
-	const matchID = await createMatch(db, OT.Online, socket1, userID1, userID2);
+export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, io, tournamentContext, mf) {
+	const matchID = await createMatch(db, OT.Online, socket1, userID1, userID2, tournamentContext, mf);
 
 	if (matchID == -1) {
 		console.log("CreateMatch went wrong");
@@ -156,7 +156,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			return ;
 		}
 
-		await startOnlineMatch(db, socket, socket2, userID, userID2, io);
+		await startOnlineMatch(db, socket, socket2, userID, userID2, io, null, MF.SingleGame);
 
 	} else {
 		console.log("No open match found...adding player to waitinglist");

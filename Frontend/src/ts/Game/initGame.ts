@@ -152,6 +152,7 @@ export function actionInitOnlineGame(data: any) {
 	//getGameField();
 
 	Game.match = match;
+	console.log(`actionINitOnlineGame() MatchFormat = ${Game.match.matchFormat}`);
 	// Function to set all data sync with match in game...
 
 	navigateTo('Game'); //think we don't need this
