@@ -170,7 +170,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 	const game1 = tournament.matches.find(m => m.matchNumber === 1);
 	const game2 = tournament.matches.find(m => m.matchNumber === 2);
 
-	if (game1?.match.state !== state.End && game2?.match.state !== state.End) {
+	if (game1?.match.state !== state.End || game2?.match.state !== state.End) {
 		return ;
 	}
 
