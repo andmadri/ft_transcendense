@@ -9,11 +9,11 @@ const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
 export async function generateAllChartsForMatch(db, match, matchID) {
 
-	getMatchEventsDB(db, matchID);
+	await getMatchEventsDB(db, matchID);
 
-	generateBarChartForMatch(db, matchID);
-	generateScatterChartForMatch(db, matchID);
-	generateLineChartForMatch(db, matchID);
+	await generateBarChartForMatch(db, matchID);
+	await generateScatterChartForMatch(db, matchID);
+	await generateLineChartForMatch(db, matchID);
 
 	// Below code can be commented
 	const idForName = String(matchID);
