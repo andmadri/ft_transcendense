@@ -1,6 +1,6 @@
 import * as S from './structs.js'
 import { state } from '@shared/enums'
-import { Game, UI } from './gameData.js';
+import { Game, UI, newMatch } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
@@ -90,6 +90,7 @@ export function doRenderPage(newState: string, query: string) {
 			UI.state = S.stateUI.Credits;
 			break ;
 		case 'OpponentMenu':
+			Game.match = newMatch(); // IDK if this is the best spot for it, but anywhere else causes issues
 			UI.state = S.stateUI.OpponentMenu;
 			break ;
 		case 'Pending':

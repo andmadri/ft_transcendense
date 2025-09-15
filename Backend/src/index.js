@@ -116,7 +116,7 @@ fastify.ready().then(() => {
 					return handleDashboardMaking(msg, socket, msg.playerId);
 				}
 				case 'init':
-					return handleInitGame(db, msg, socket, userId1, userId2);
+					return handleInitGame(db, msg, socket);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
 				case 'error':

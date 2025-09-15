@@ -26,15 +26,30 @@ export function initFriendRequestsContainer() {
 	body.appendChild(friendRequestsDiv);
 }
 
-function updateNotificationBadge(count: number) {
+function updateNotificationBadge(count: number, removed: boolean) {
 	const badge = document.getElementById('notificationBadge');
 	if (!badge)
 		return;
-	if (count > 0) {
-		badge.style.display = 'flex';
-		badge.textContent = count >  99 ? '99+' : count.toString();
+	if (!removed) {
+		if (count > 0) {
+			badge.style.display = 'flex';
+			badge.textContent = count >  99 ? '99+' : count.toString();
+		} else {
+			badge.style.display = 'none';
+		}
 	} else {
-		badge.style.display = 'none';
+		const notificationBtn = document.getElementById('notificationBtn');
+		if (!notificationBtn || badge.style.display == 'none')
+			return ;
+		if (badge.textContent == '+99')
+			badge.textContent = '98';
+		else {
+			const amount = Number(badge.textContent);
+			if (amount == 1)
+				badge.style.display = 'none';
+			else
+				updateNotificationBadge(amount - 1, false);
+		}
 	}
 }
 
@@ -46,11 +61,12 @@ export function showFriendRequests(requests: any) {
 	notificationBtnList.style.gap = '0.5rem';
 	notificationBtnList.style.overflowY = 'auto';
 
-	updateNotificationBadge(requests.length);
+	updateNotificationBadge(requests.length, false);
 
-	 for (const req of requests) {
+	for (const req of requests) {
 
 		const row = document.createElement('li');
+		row.id = `row${req.ID}`;
 		row.style.fontFamily = '"RobotoCondensed", sans-serif';
 		row.style.background = 'transparent';
 		row.style.padding = '12px 16px';
@@ -94,7 +110,11 @@ export function showFriendRequests(requests: any) {
 		acceptBtn.style.fontFamily = '"Horizon", sans-serif';
 		acceptBtn.style.background = '#ffc233'
 		acceptBtn.style.border = 'none';
-		acceptBtn.onclick = () => handleFriendRequest(req.id, 'accept');
+		acceptBtn.onclick = () => {
+			handleFriendRequest(req.id, 'accept')
+			document.getElementById(`row${req.ID}`)?.remove();
+			updateNotificationBadge(0, true);
+		};
 
 		const denyBtn = document.createElement('button');
 		denyBtn.textContent = '✗';
@@ -102,8 +122,11 @@ export function showFriendRequests(requests: any) {
 		denyBtn.style.borderRadius = '"Horizon", sans-serif';
 		denyBtn.style.background = '#ffc233'
 		denyBtn.style.border = 'none';
-		denyBtn.onclick = () => handleFriendRequest(req.id, 'deny');
-
+		denyBtn.onclick = () => {
+			handleFriendRequest(req.id, 'deny');
+			document.getElementById(`row${req.ID}`)?.remove();
+			updateNotificationBadge(0, true);
+		}
 		buttonContainer.append(acceptBtn, denyBtn);
 		row.appendChild(buttonContainer);
 		notificationBtnList.appendChild(row);

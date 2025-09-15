@@ -79,12 +79,10 @@ function gameLoop() {
 		case state.Init: {
 			let startDuration;
 			if (!document.getElementById('game')) {
-				log('getGameField()');
 				getGameField();
 			}
 			if (!document.getElementById('startGame')) {
 				if (Game.match.mode == OT.Online) {
-					console.log(`resumeTime = ${Game.match.resumeTime}`);
 					startDuration = Game.match.resumeTime - Date.now();
 				}
 				else {
@@ -98,25 +96,20 @@ function gameLoop() {
 		case state.Paused: {
 			let pauseDuration;
 			if (Game.match.mode == OT.Online) {
-				const paddle = Game.match.player1.ID == UI.user1.ID ? Game.match.gameState.paddle1 : Game.match.gameState.paddle2;
-				updatePaddlePos(paddle, Game.match.gameState.field);
 				pauseDuration = Game.match.resumeTime - Date.now();
 			}
 			else {
-				updatePaddlePos(Game.match.gameState.paddle1, Game.match.gameState.field);
-				updatePaddlePos(Game.match.gameState.paddle2, Game.match.gameState.field);
 				pauseDuration = 3000;
 			}
 			if (Game.match.pauseTimeOutID === null) {
 				pauseBallTemporarily(pauseDuration);
 			}
-			renderGameInterpolated();
-			updateDOMElements(Game.match);
+			game(Game.match);
 			break ;
 		}
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
-			document.getElementById('auth2')?.remove();
+			document.getElementById('auth2')?.remove(); //do we need this here still?
 			game(Game.match);
 			break ;
 		}
@@ -182,10 +175,6 @@ function mainLoop() {
 					getCreditsPage();
 				break ;
 			}
-			// case S.stateUI.Dashboard: {
-				
-					
-			// }
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;

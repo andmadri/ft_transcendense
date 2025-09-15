@@ -3,7 +3,6 @@ import { state } from "../SharedBuild/enums.js"
 export function updateBall(match, msg, socket) {
 	if (match.state != state.Playing)
 		return ;
-	// console.log("THIS ONLY HAPPENS ON A HIT!!");
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
