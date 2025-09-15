@@ -9,12 +9,14 @@ import { db } from "../index.js";
 const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
 export async function quitMatch(match, msg, io) {
+	console.log(`match quit by ${msg.player}`);
 	if (match.mode == OT.Online) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
 	else {
 		match.winnerID = msg.winnerID
 	}
+	console.log(`WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
