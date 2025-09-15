@@ -80,10 +80,6 @@ export function doRenderPage(newState: string, query: string) {
 			UI.state = S.stateUI.LoginP2;
 			break;
 		case 'Menu':
-			document.getElementById("creditDiv")?.remove();
-			document.getElementById("containerDashboard")?.remove();
-			document.getElementById("oppponentMenu")?.remove();
-			document.getElementById("gameOver")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Credits':
@@ -92,15 +88,15 @@ export function doRenderPage(newState: string, query: string) {
 		case 'OpponentMenu':
 			UI.state = S.stateUI.OpponentMenu;
 			break ;
-		case 'Pending':
-			Game.match.state = state.Pending;
-			break ;
 		case 'Game':
 			UI.state = S.stateUI.Game;
 			break ;
+		case 'Pending':
+			Game.match.state = state.Pending;
+			break ;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
-			getGameOver(getIdFromHash(query, "matchId"));
+			getGameOver(Number(getIdFromHash(query, "matchId")));
 			break ;
 		case 'GameStats':
 			UI.state = S.stateUI.GameStats;

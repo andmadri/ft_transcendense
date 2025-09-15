@@ -168,6 +168,9 @@ function mainLoop() {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
 				document.getElementById('opponentMenu')?.remove();
+				document.getElementById("creditDiv")?.remove();
+				document.getElementById("containerDashboard")?.remove();
+				document.getElementById("gameOver")?.remove();
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
@@ -182,10 +185,6 @@ function mainLoop() {
 					getCreditsPage();
 				break ;
 			}
-			// case S.stateUI.Dashboard: {
-				
-					
-			// }
 			case S.stateUI.Game: {
 				gameLoop();
 				break ;

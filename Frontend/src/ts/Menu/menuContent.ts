@@ -55,6 +55,7 @@ export function getCreditsPage() {
 	creditDiv.style.flexDirection = 'column';
 	creditDiv.style.justifyContent = 'center';
 	creditDiv.style.alignItems = 'center';
+	creditDiv.style.zIndex = '105';
 
 	const creditImg = document.createElement('img');
 	creditImg.src = "./../images/Credits.png";
@@ -64,7 +65,7 @@ export function getCreditsPage() {
 
 	const closeBtn = document.createElement('button');
 	closeBtn.textContent = "CLOSE";
-	closeBtn.style.zIndex = '100000';
+	closeBtn.style.zIndex = '110';
 	closeBtn.style.margin = '10px';
 
 	creditDiv.appendChild(creditImg);
