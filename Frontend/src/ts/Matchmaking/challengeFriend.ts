@@ -1,5 +1,9 @@
 import { Game, UI } from "../gameData.js"
 import { log } from "../logging.js";
+import * as S from '../structs.js' 
+import { state } from '@shared/enums'
+
+export let friendInvites: Map<string, any> = new Map();
 
 // STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
@@ -18,39 +22,41 @@ function isChallenged(ID: number): boolean {
 }
 
 // STEP: 4: send back response to server
-function responseChallenge(answer: boolean, roomname: string) {
+export function responseChallenge(answer: boolean, req: any) {
+	if (answer == true) {
+		UI.state = S.stateUI.Game;
+		Game.match.state = state.Pending;
+	}
 	Game.socket.emit('message',{
 		action: 'matchmaking',
 		subaction: 'challengeFriendAnswer',
 		answer: answer,
-		roomname: roomname, 
-		responder: UI.user1.ID
+		tempMatchID: req.id,
+		responder: UI.user1.ID,
+		challenger: req.challenger
 	});
+	friendInvites.delete(req.id);
 }
 
 // STEP 3: create popup on screen responder that has accept of deny buttons
 export function acceptOnlineChallenge(msg: any) {
-	if (!isChallenged(msg.friendID))
+	console.log("You are challenged by " + msg.requester_name);
+	if (!isChallenged(msg.responder))
 		return ; // msg not for me
 
-	alert(`${msg.challenger} is challenge you`);
-	// create popup with USERNAME is challenging YOU...
-	const btnAccept = document.createElement('button');
-	const btnDeny = document.createElement('button');
-	btnAccept.addEventListener('click', () => {
-		responseChallenge(true, msg.roomname);
-	})
-	btnDeny.addEventListener('click', () => {
-		responseChallenge(false, msg.roomname);
-	})
+	console.log("Add to friendInvites array");
+	friendInvites.set(msg.responder, msg);
 }
 
 // STEP 6: receive answer from responder
 export function receiveAnswerResponder(msg: any) {
 	if (msg.response == true) {
-		alert("Challenge is accepted");
+		// nothing?
 	} else {
 		alert("Challenge is denied");
+		if (msg.challenger == UI.user1.ID) {
+			friendInvites.delete(msg.responder);
+		}
 	}
 }
 
