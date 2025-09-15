@@ -1,18 +1,27 @@
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
-import { addUser2faSecretToDB, toggleUser2faDB, getUserSecretDB } from '../Services/twofa.js';
 import { encryptSecret, decryptSecret } from '../utils/encryption.js';
 import { verifyAuthCookie, verifyPendingTwofaCookie } from '../Auth/authToken.js';
 import { signFastifyJWT } from "../utils/jwt.js";
-import { getUserByID } from '../Database/users.js';
+import { getUserByID, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
-import { db } from '../index.js' // DELETE THIS LATER
+import { db } from '../index.js';
+
+function normalizeJSON(json) {
+	if (typeof json === 'string') {
+		JSON.parse(json);
+		return json;
+	}
+	if (typeof json === 'object' && json !== null) {
+		return JSON.stringify(json);
+	}
+	throw new Error('2FA secret must be a JSON string or object');
+}
 
 /**
  * Handles the Two-Factor Authentication (2FA) routes.
  * @param {Object} fastify - The Fastify instance.
- * @param {Object} opts - Options for the Fastify plugin.
  * @returns {Promise<void>} - Returns a promise that resolves when the routes are registered.
  * @description
  * This function registers the 2FA routes for generating, activating, disabling, and verifying 2FA.
@@ -22,33 +31,52 @@ import { db } from '../index.js' // DELETE THIS LATER
  * - POST /api/2fa/disable: Disables 2FA for the user by verifying the provided token.
  * - POST /api/2fa/verify: Verifies the provided token and logs in the user if successful.
  *  */
-export default async function twoFactor(fastify, opts) {
+export default async function twoFactor(fastify) {
 	fastify.post('/api/2fa/generate', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
-		console.log('Generating 2FA secret for user:', request.user);
-		const userId = request.user.userId;
-		console.log(`Generating 2FA secret for user ID: ${userId}`);
+		if (!request || !request.user || !request.user.userId) {
+			console.error(`Stopping generate 2FA, becasue can not find request or user`);
+			return reply.status(404).send({ success: false, message: 'Invalid input - generate 2FA' });
+		}
 		try {
-			const secret = speakeasy.generateSecret({
-				name: `Penguins (${request.user.email})`,
-				length: 20,
-			});
-
-			const userSecretStr = await getUserSecretDB(db, userId);
-			if (userSecretStr) {
-				const userSecret = JSON.parse(userSecretStr);
-				console.log(`User secret: ${userSecret}`);
-				if (userSecret.google == "true") {
-					return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
-				}
+			const user = await getUserByID(db, request.user.userId);
+			if (!user) {
+				console.error('Stopping generate 2FA, becasue can not find user (invalid userId): ', request.user);
+				return reply.status(404).send({ success: false, message: 'User not found' });
 			}
 
+			const secret = speakeasy.generateSecret({
+				name: `Penguins (${user.email})`,
+				length: 20
+			});
+
+			if (user.twofa_secret === 'google') {
+				return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+			}
+			// console.log(`user.twofa_secret: ${user.twofa_secret}`);
+			// if (user.twofa_secret) {
+			// 	console.log(`user.twofa_secret: ${user.twofa_secret}`);
+			// 	const userSecret = JSON.parse(user.twofa_secret);
+			// 	console.log(`userSecret: ${userSecret}`);
+
+			// 	// IF THESE LOGS ABOVE ARE THE SAME THEN THIS STATEMENT CAN GO SEPERATE AND THE OTHER CODE CAN BE DELETED!
+			// 	if (user.twofa_secret === 'google') {
+			// 		console.log(`PLEASE DELETE SOME CODE HERE!! - Not this current ifstatement, but the nested ifstatement`);
+			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+			// 	}
+
+
+			// 	if (userSecret.google == "true") {
+			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
+			// 	}
+			// }
+			
+
 			const encryptedSecret = encryptSecret(secret.base32);
-			await addUser2faSecretToDB(db, userId, encryptedSecret);
+			await updateUserInDB(db, { user_id: user.id, twofa_secret: normalizeJSON(encryptedSecret) });
 
 			const qrCodeDataURL = await qrcode.toDataURL(secret.otpauth_url);
-			console.log(`2FA secret generated for user ${userId}: qrCodeDataURL=${qrCodeDataURL}`);
 			return reply.send({ qrCodeDataURL });
 		} catch (err) {
 			return reply.status(500).send({ success: false, message: 'Failed to generate 2FA secret' + `: ${err.message}` });
@@ -58,17 +86,27 @@ export default async function twoFactor(fastify, opts) {
 	fastify.post('/api/2fa/activate', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
+		if (!request || !request.user || !request.user.userId || !request.body) {
+			console.error(`Stopping activate 2FA, becasue can not find request or user`);
+			return reply.status(404).send({ success: false, message: 'Invalid input - activate 2FA' });
+		}
+
 		const { token } = request.body;
-		const userId = request.user.userId;
+		const user = await getUserByID(db, request.user.userId);
+		if (!user) {
+			console.error('Stopping activate 2FA, becasue can not find user (invalid userId): ', request.user);
+			return reply.status(404).send({ success: false, message: 'User not found' });
+		}
+		if (!user.twofa_secret) {
+			console.error('Stopping activate 2FA, becasue can not find twofa_secret: ', request.user);
+			return reply.status(404).send({ success: false, message: 'User have no 2FA secret' });
+		}
 
-		const encyptedUserSecret = await getUserSecretDB(db, userId);
-		console.log(`user encyptedUserSecret: ${encyptedUserSecret}`);
-		const userSecret = decryptSecret(JSON.parse(encyptedUserSecret));
-		console.log(`user userSecret: ${userSecret}`);
-
+		const userSecret = decryptSecret(JSON.parse(user.twofa_secret));
 		if (!userSecret) {
 			return reply.status(400).send({ success: false, message: '2FA secret not set' });
 		}
+		console.log(`user encyptedUserSecret: ${user.twofa_secret}\nuser userSecret: ${userSecret}`);
 
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,
@@ -81,21 +119,31 @@ export default async function twoFactor(fastify, opts) {
 			return reply.status(401).send({ success: false, message: 'Invalid token' });
 		}
 
-		await toggleUser2faDB(db, userId, true);
-
+		await updateUserInDB(db, { user_id: user.id, twofa_active: 1 });
 		return { success: true };
 	});
 
 	fastify.post('/api/2fa/disable', {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
+		if (!request || !request.user || !request.user.userId || !request.body || !request.body.token || !request.body.playerNr) {
+			console.error(`Stopping disable 2FA, becasue can not find request, user or body`);
+			return reply.status(404).send({ success: false, message: 'Invalid input - disable 2FA' });
+		}
+
 		const token = request.body.token;
-		const userId = request.user.userId;
 		const playerNr = request.body.playerNr;
+		const user = await getUserByID(db, request.user.userId);
+		if (!user) {
+			console.error('Stopping disable 2FA, becasue can not find user (invalid userId): ', request.user);
+			return reply.status(404).send({ success: false, message: 'User not found' });
+		}
+		if (!user.twofa_secret) {
+			console.error('Stopping disable 2FA, becasue can not find twofa_secret: ', request.user);
+			return reply.status(404).send({ success: false, message: 'User have no 2FA secret' });
+		}
 
-		const encyptedUserSecret = await getUserSecretDB(db, userId);
-		const userSecret = decryptSecret(JSON.parse(encyptedUserSecret));
-
+		const userSecret = decryptSecret(JSON.parse(user.twofa_secret));
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,
 			encoding: 'base32',
@@ -107,37 +155,36 @@ export default async function twoFactor(fastify, opts) {
 			return reply.status(401).send({ success: false, message: 'Invalid token' });
 		}
 
-		await toggleUser2faDB(db, userId, false);
-
-		return { success: true, message: '2FA disabled successfully', playerNr: playerNr, userId: userId };
+		await updateUserInDB(db, { user_id: user.id, twofa_active: 0 });
+		return { success: true, message: '2FA disabled successfully', playerNr: playerNr, userId: user.id };
 	});
 
 	fastify.post('/api/2fa/verify', {
 		preHandler: verifyPendingTwofaCookie
 	}, async (request, reply) => {
+		if (!request || !request.body || !request.body.userId || !request.body.token || !request.body.playerNr) {
+			console.error(`Stopping verify 2FA, becasue can not find request, user or body`);
+			return reply.status(404).send({ success: false, message: 'Invalid input - verify 2FA' });
+		}
+
 		const token = request.body.token;
-		const userId = request.body.userId;
 		const playerNr = request.body.playerNr;
-
-		const encyptedUserSecret = await getUserSecretDB(db, userId);
-		const userSecret = decryptSecret(JSON.parse(encyptedUserSecret));
-
+		const user = await getUserByID(db, request.body.userId);
+		if (!user) {
+			console.error('Stopping verify 2FA, becasue can not find user (invalid userId): ', request.user);
+			return reply.status(404).send({ success: false, message: 'User not found' });
+		}
+		
+		const userSecret = decryptSecret(JSON.parse(user.twofa_secret));
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,
 			encoding: 'base32',
 			token,
-			window: 1,          // allow a little drift on the current timeslot
+			window: 1, // allow a little drift on the current timeslot
 		});
-
 		if (!verified) {
 			return reply.status(401).send({ success: false, message: 'Invalid token' });
 		}
-
-		const user = await getUserByID(db, userId);
-		if (!user) {
-			return reply.status(404).send({ success: false, message: 'User not found' });
-		}
-
 		try {
 			await onUserLogin(db, user.id);
 		} catch(err) {
@@ -155,7 +202,7 @@ export default async function twoFactor(fastify, opts) {
 			encode: v => v,      // Use default encoding
 			path: '/',
 			maxAge: USERLOGIN_TIMEOUT
-		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: userId, name: user.name, twofa: user.twofa_active });
+		}).send({ success: true, ok: true, message: 'User logged in successfully', playerNr: playerNr, userId: user.id, name: user.name, twofa: user.twofa_active });
 
 
 		return { success: true };

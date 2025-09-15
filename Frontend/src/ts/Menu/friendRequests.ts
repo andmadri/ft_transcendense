@@ -1,5 +1,4 @@
 import { Game } from "../gameData.js";
-// import { getFriendsList } from "./friends.js";
 
 let friendRequestsDiv: HTMLDivElement | null = null;
 
@@ -55,7 +54,6 @@ function updateNotificationBadge(count: number, removed: boolean) {
 }
 
 export function showFriendRequests(requests: any) {
-	const notificationBtn = document.getElementById('notificationBtn');
 	const notificationBtnList = document.getElementById('notificationBtnList');
 	if (!notificationBtnList)
 		return ;
@@ -155,6 +153,4 @@ function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 		const container = document.getElementById('friendRequestsDiv');
 		container?.remove();
 	}
-
-	// getFriendsList(1);
 }

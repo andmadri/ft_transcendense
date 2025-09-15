@@ -51,18 +51,14 @@ export async function createNewUserToDB(db, user = {}) {
 /**
  * @brief Updates one or more fields of a user’s profile.
  *
- * Only these keys can be changed:
- *   • name
- *   • email
- *   • password (will be hashed if provided)
- *   • avatar_url
- *
  * @param {sqlite3.Database} db
  * @param {Object} userUpdates
  * @param {number} userUpdates.user_id           – the user’s ID (required)
  * @param {string} [userUpdates.name]            – new display name
  * @param {string} [userUpdates.email]           – new email address
  * @param {string} [userUpdates.password]        – new raw password
+ * @param {string} [userUpdates.twofa_secret]    – set or now 2FA secret
+ * @param {string} [userUpdates.twofa_active]    – activate or disable 2FA
  * @param {string|null} [userUpdates.avatar_url] – new avatar URL (or empty to clear)
  *
  * @returns {Promise<void>}
@@ -82,22 +78,37 @@ export async function updateUserInDB(db, user) {
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];
+		const changes = [];
 
 		if (user.name !== undefined) {
 			updates.push("name = ?");
 			values.push(user.name);
+			changes.push(`name = ${user.name}\n`);
 		}
 		if (user.email !== undefined) {
 			updates.push("email = ?");
 			values.push(user.email);
+			changes.push(`email = ${user.email}\n`);
 		}
 		if (user.password !== undefined) {
 			updates.push("password = ?");
 			values.push(user.password);
+			changes.push(`password = ${user.password}\n`);
+		}
+		if (user.twofa_secret !== undefined) {
+			updates.push("twofa_secret = ?");
+			values.push(user.twofa_secret);
+			changes.push(`twofa_secret = ${user.twofa_secret}\n`);
+		}
+		if (user.twofa_active !== undefined) {
+			updates.push("twofa_active = ?");
+			values.push(user.twofa_active);
+			changes.push(`twofa_active = ${user.twofa_active}\n`);
 		}
 		if (user.avatar_url !== undefined) {
 			updates.push("avatar_url = ?");
 			values.push(user.avatar_url);
+			changes.push(`avatar_url = ${user.avatar_url}\n`);
 		}
 
 		if (updates.length === 0) {
@@ -115,45 +126,11 @@ export async function updateUserInDB(db, user) {
 				sql_error(err, `updateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				sql_log(`User updated: [${user.user_id}] ${user.name} (${user.email})`);
-				resolve();
+				sql_log(`User updated: [${user.user_id}] ${existing.name} | Number of changes=${this.changes}\n${changes}`);
+				resolve(this.changes);
 			}
 		});
 	});
-}
-
-// *************************************************************************** //
-//                          DELETE ROW FROM SQL TABLE                          //
-// *************************************************************************** //
-
-/**
- * @brief Soft-deletes a user (marks them deleted + logs them out).
- *
- * @param {sqlite3.Database} db
- * @param {number} user_id
- * @returns {Promise<void>}
- * @throws {Error}
- */
-export async function deactivateUserInDB(db, user_id) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
-	
-	await new Promise((resolve, reject) => {
-		const sql = `UPDATE Users SET is_deleted = 1, last_edited = CURRENT_TIMESTAMP WHERE id = ?`;
-		db.run(sql, [user_id], function (err) {
-			if (err) {
-				sql_error(err, `deactivateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
-				reject(err);
-			} else {
-				sql_log(`User deactivated: [${user.user_id}] ${existing.name} (${existing.email})`);
-				resolve();
-			}
-		});
-	});
-
-	await addUserSessionToDB(db, { user_id, state: 'logout' });
 }
 
 // *************************************************************************** //
@@ -174,6 +151,9 @@ export async function getUserByID(db, user_id) {
 				sql_error(err, `getUserByID | id=${user_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getUserByID | user_id not found! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});
@@ -194,6 +174,9 @@ export async function getUserByEmail(db, email) {
 				sql_error(err, `getUserByEmail | email=${email}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getUserByEmail | email not found! email=${email}`);
+				}
 				resolve(row || null);
 			}
 		});
