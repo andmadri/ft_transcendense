@@ -2,12 +2,12 @@ import { navigateTo } from '../history.js';
 
 // let currentStatsMatchId: number | null = null;
 
-function ensureStatsChartElement(): HTMLImageElement {
-	let img = document.getElementById('statsChart') as HTMLImageElement | null;
+function ensureStatsChartElement(id: string, alt: string): HTMLImageElement {
+	let img = document.getElementById(id) as HTMLImageElement | null;
 	if (!img) {
 		img = document.createElement('img');
-		img.id = 'statsChart';
-		img.alt = 'User state durations';
+		img.id = id;
+		img.alt = alt;
 		img.style.maxWidth = '100%';
 		img.style.display = 'block';
 	}
@@ -41,14 +41,23 @@ export function getGameStats(matchId: number) {
 	page.style.height = '100vh';
 	page.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	page.style.display = 'flex';
+	page.style.flexDirection = 'column';
 	page.style.alignItems = 'flex-start';
+
 	page.style.justifyContent = 'center';
 	page.style.padding = '24px';
 
-	const img = ensureStatsChartElement();
+	// USERSTATS CHART
+	const img = ensureStatsChartElement('statsChart', 'User state durations');
 	img.onload = () => console.log('Chart loaded', img.naturalWidth, img.naturalHeight);
 	img.onerror = (e) => console.warn('Chart failed to load', e);
 	img.src = `/api/charts/user-state-durations/${matchId}?t=${Date.now()}`;
+
+	// BAR CHART
+	const img2 = ensureStatsChartElement('statsChart2', 'Amount hits per goal');
+	img2.onload = () => console.log('Chart loaded', img2.naturalWidth, img2.naturalHeight);
+	img2.onerror = (e) => console.warn('Chart failed to load', e);
+	img2.src = `/api/charts/bar_chart/${matchId}?t=${Date.now()}`;
 
 	const exitButton = document.createElement('button');
 	exitButton.id = 'exitButton';
@@ -72,7 +81,7 @@ export function getGameStats(matchId: number) {
 	});
 
 	page.appendChild(exitButton);
-	page.appendChild(img);
+	page.append(img, img2);
 	body.replaceChildren(page);
 
 	// currentStatsMatchId = matchId;

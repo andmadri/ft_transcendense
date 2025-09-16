@@ -28,4 +28,25 @@ export default async function chartRoutes(fastify) {
 		reply.type('image/svg+xml');
 		return fs.createReadStream(file);
 	});
+
+	fastify.get('/api/charts/bar_chart/:matchId', {
+		preHandler: verifyAuthCookie
+	}, async (request, reply) => {
+		const { matchId } = request.params;
+
+		// Whitelist: only digits to avoid path traversal
+		if (!/^\d+$/.test(String(matchId))) {
+			return reply.code(400).send({ error: 'Invalid match id' });
+		}
+
+		const dir = path.join(UPLOADS_BASE, 'charts', String(matchId));
+		const file = path.join(dir, `bar_chart_${matchId}.svg`);
+
+		if (!fs.existsSync(file)) {
+			return reply.code(404).send({ error: 'Chart not found' });
+		}
+
+		reply.type('image/svg+xml');
+		return fs.createReadStream(file);
+	});
 }

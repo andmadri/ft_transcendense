@@ -265,6 +265,8 @@ export async function renderUserStateDurationsSVG(db, opts = {}) {
 		margin = { top: 50, right: 30, bottom: 40, left: 180 }
 	} = opts;
 
+	console.log('opts stats: ', opts);
+
 	const rows = await dbAll(db, SQL);
 
 	// Prepare data in minutes
@@ -356,22 +358,23 @@ export async function renderUserStateDurationsSVG(db, opts = {}) {
 	${tickSvg}
 	${rowsSvg}
 	</svg>`;
+	return (svg);
 
-	let targetDir = outDir;
-	try {
-		fs.mkdirSync(targetDir, { recursive: true });
-	} catch (e) {
-		if (e.code === 'EACCES') {
-			const fallbackBase = process.env.UPLOADS_DIR || '/tmp/uploads';
-			targetDir = path.join(fallbackBase, 'charts');
-			fs.mkdirSync(targetDir, { recursive: true });
-			console.warn('[charts] EACCES creating', outDir, '— fell back to', targetDir);
-		} else {
-			throw e;
-		}
-	}
-	const fname = fileName || `user_state_durations_${Date.now()}.svg`;
-	const outPath = path.isAbsolute(outDir) ? path.join(outDir, fname) : path.join(process.cwd(), outDir, fname);
-	fs.writeFileSync(outPath, svg, 'utf8');
-	return outPath;
+	// let targetDir = outDir;
+	// try {
+	// 	fs.mkdirSync(targetDir, { recursive: true });
+	// } catch (e) {
+	// 	if (e.code === 'EACCES') {
+	// 		const fallbackBase = process.env.UPLOADS_DIR || '/tmp/uploads';
+	// 		targetDir = path.join(fallbackBase, 'charts');
+	// 		fs.mkdirSync(targetDir, { recursive: true });
+	// 		console.warn('[charts] EACCES creating', outDir, '— fell back to', targetDir);
+	// 	} else {
+	// 		throw e;
+	// 	}
+	// }
+	// const fname = fileName || `user_state_durations_${Date.now()}.svg`;
+	// const outPath = path.isAbsolute(outDir) ? path.join(outDir, fname) : path.join(process.cwd(), outDir, fname);
+	// fs.writeFileSync(outPath, svg, 'utf8');
+	// return outPath;
 }
