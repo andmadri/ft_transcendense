@@ -9,7 +9,7 @@ function ensureStatsChartElement(id: string, alt: string): HTMLImageElement {
 		img.id = id;
 		img.alt = alt;
 		img.style.maxWidth = '100%';
-		img.style.display = 'block';
+		img.style.display = 'flex';
 	}
 	return img;
 }

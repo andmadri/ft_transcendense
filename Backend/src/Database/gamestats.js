@@ -359,22 +359,4 @@ export async function renderUserStateDurationsSVG(db, opts = {}) {
 	${rowsSvg}
 	</svg>`;
 	return (svg);
-
-	// let targetDir = outDir;
-	// try {
-	// 	fs.mkdirSync(targetDir, { recursive: true });
-	// } catch (e) {
-	// 	if (e.code === 'EACCES') {
-	// 		const fallbackBase = process.env.UPLOADS_DIR || '/tmp/uploads';
-	// 		targetDir = path.join(fallbackBase, 'charts');
-	// 		fs.mkdirSync(targetDir, { recursive: true });
-	// 		console.warn('[charts] EACCES creating', outDir, '— fell back to', targetDir);
-	// 	} else {
-	// 		throw e;
-	// 	}
-	// }
-	// const fname = fileName || `user_state_durations_${Date.now()}.svg`;
-	// const outPath = path.isAbsolute(outDir) ? path.join(outDir, fname) : path.join(process.cwd(), outDir, fname);
-	// fs.writeFileSync(outPath, svg, 'utf8');
-	// return outPath;
 }

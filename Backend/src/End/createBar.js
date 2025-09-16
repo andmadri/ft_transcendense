@@ -28,14 +28,15 @@ export async function generateBarChartForMatch(db, matchID) {
 
 	const background = `<rect x="0" y="0" width="${visual.chartWidth}" height="${visual.chartHeight}" fill="${visual.colors.gr}" />`;
 	const title = `<text x="10" y="20" font-size="16" fill="#fff">Hits per goal</text>`
-	let svgFile = `
-		<?xml version="1.0" encoding="UTF-8"?>
-		<svg width="${visual.chartWidth}" height="${visual.chartHeight}" viewBox="0 0 ${visual.chartWidth} ${visual.chartHeight}" xmlns="http://www.w3.org/2000/svg" role="img">
+
+	let svg = `
+		<?xml version="1.1" encoding="UTF-8"?>
+		<svg width="${visual.chartWidth}" height="${visual.chartHeight}" viewBox="0 0 ${visual.chartWidth} ${visual.chartHeight}" xmlns="http://www.w3.org/2000/svg">
 			${background}
 			${bars}
 			${title}
 		</svg>
 	`;
 
-	return (svgFile);
+	return (svg);
 }
