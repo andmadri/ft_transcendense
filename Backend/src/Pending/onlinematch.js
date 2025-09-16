@@ -93,7 +93,7 @@ function matchInterval(match, io) {
 			}
 			case (state.End) : {
 				if (match.matchFormat == MF.Tournament) {
-					reportTournamentMatchResult(match, io);
+					reportTournamentMatchResult(match);
 				}
 				setWinner(match);
 				sendWinnerResult(match, io);
