@@ -8,13 +8,17 @@ import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
 import * as Navigation from './navigation.spec.js'
 
+// TESTER:
+// npx install --save-dev @playwright/test
+// npx playwright install
+// npx playwright test --ui (IN VSC)
 
 const URL = 'https://localhost:8443';
 
 const name = `U${Math.floor(Math.random() * 1000000)}`;
 const email = `${name}@codam.com`;
 const password = `Hallo123`;
-const name2 = `User${Math.floor(Math.random() * 1000000)}`;
+const name2 = `U${Math.floor(Math.random() * 1000000)}`;
 const email2 = `${name2}@codam.com`;
 const password2 = `Hallo123`;
 
@@ -38,7 +42,7 @@ test('One vs One', async ({ browser }) => {
 	const page = await U.createNewPage(browser);
 	await page.goto(URL);
 	await signup_login_byPlayer(page, 1, name + 'o', 'o' + email, password);
-	await isInMenu(page, false, name, '');
+	await isInMenu(page, false, name + 'o', '');
 	await OneVSone.oneVsOne(page, name + 'o', name2, email2, password2);
 });
 

@@ -16,7 +16,35 @@ export async function StartOneVsCom(page, name) {
 	const playBtn = await page.locator('#settingContainer').getByRole('button', { name: 'Play Game' });
 	await expect(playBtn).toBeVisible();
 	await playBtn.click();
-	await page.waitForTimeout(3000);
+	await page.waitForTimeout(5000);
+
+	// Ball is moving
+	const ball = await page.locator('#ball');
+	expect(await ball.isVisible()).toBeTruthy();
+	const ballRect = await ball.boundingBox();
+	let ballHasMoved = false;
+	
+	const paddle = await page.locator('#lPlayer');
+	expect(await paddle.isVisible()).toBeTruthy();
+	let paddleHasMoved = false;
+
+	const startTime = Date.now();
+	const paddleRect = await paddle.boundingBox();
+	while (Date.now() - startTime < 10000) {
+		await page.keyboard.press('ArrowDown');
+		await page.waitForTimeout(200);
+		const newRectBall = await ball.boundingBox();
+		if (newRectBall && ballRect && (newRectBall.x !== ballRect.x || newRectBall.y !== ballRect.y)) {
+			ballHasMoved = true;
+		}
+		const newRectPaddle = await paddle.boundingBox();
+		if (newRectPaddle && paddleRect && (newRectPaddle.x !== paddleRect.x || newRectPaddle.y !== paddleRect.y)) {
+			paddleHasMoved = true;
+		}
+
+	}
+	expect(ballHasMoved).toBeTruthy();
+	expect(paddleHasMoved).toBeTruthy;
 
 	await U.pressBtn(page, "QUIT");
 	await page.waitForTimeout(1000);

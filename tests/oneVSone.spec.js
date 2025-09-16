@@ -25,6 +25,36 @@ export async function oneVsOne(page, name, name2, email2, password2) {
 	// await Login.signup_login_byPlayer(page, 2, name2, email2, password2);
 	
 	await StartOneVsOne(page);
+	await page.waitForTimeout(5000);
+
+	// Ball is moving
+	const ball = await page.locator('#ball');
+	expect(await ball.isVisible()).toBeTruthy();
+	const ballRect = await ball.boundingBox();
+	let ballHasMoved = false;
+	
+	const paddle = await page.locator('#lPlayer');
+	expect(await paddle.isVisible()).toBeTruthy();
+	let paddleHasMoved = false;
+
+	const startTime = Date.now();
+	const paddleRect = await paddle.boundingBox();
+	while (Date.now() - startTime < 10000) {
+		await page.keyboard.press('KeyW');
+		await page.waitForTimeout(200);
+		const newRectBall = await ball.boundingBox();
+		if (newRectBall && ballRect && (newRectBall.x !== ballRect.x || newRectBall.y !== ballRect.y)) {
+			ballHasMoved = true;
+		}
+		const newRectPaddle = await paddle.boundingBox();
+		if (newRectPaddle && paddleRect && (newRectPaddle.x !== paddleRect.x || newRectPaddle.y !== paddleRect.y)) {
+			paddleHasMoved = true;
+		}
+
+	}
+	expect(ballHasMoved).toBeTruthy();
+	expect(paddleHasMoved).toBeTruthy;
+
 	await page.waitForTimeout(10000);
 	await Game.quitGame(page);
 	await U.pressBtn(page, 'BACK TO MENU');

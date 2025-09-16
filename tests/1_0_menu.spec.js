@@ -13,6 +13,7 @@ Tests:
 
 export async function menuTests(page, name, email, password, name2, email2, password2) {
 	console.log('--- MENU TESTS ---');
+	await page.waitForTimeout(200);
 	await isInMenu(page, false, name, '');
 	// await playerInOnlineMenu(page, name);
 
