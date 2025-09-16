@@ -29,7 +29,7 @@ export async function quitMatch(match, msg, io) {
 
 export async function saveMatch(match) {
 	// Update the match in the database
-	const matchID = await handleMatchEndedDB(db, match.matchID);
+	const matchID = await handleMatchEndedDB(match, db, match.matchID);
 	
 	// Show some stats in the terminal
 	console.table(matchID);

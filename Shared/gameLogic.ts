@@ -123,3 +123,9 @@ export function updateGameState(match: matchInfo, deltaTime: number) {
 		checkPaddleSides(match);
 	}
 }
+
+export function setWinner(match: matchInfo) {
+	if (!match.winnerID) {
+		match.winnerID = match.player1.score > match.player2.score ? match.player1.ID : match.player2.ID;
+	}
+}

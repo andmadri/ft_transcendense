@@ -2,9 +2,10 @@ import { waitlist, matches } from "../InitGame/match.js";
 import { OT, state, MF } from '../SharedBuild/enums.js'
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
-import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall } from "../SharedBuild/gameLogic.js";
-import { sendGameStateUpdate, sendScoreUpdate, sendPadelHit, sendServe, updateMatchEventsDB } from "../Game/gameStateSync.js";
+import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall, setWinner } from "../SharedBuild/gameLogic.js";
+import { sendGameStateUpdate, sendScoreUpdate, sendWinnerResult, updateMatchEventsDB } from "../Game/gameStateSync.js";
 import { saveMatch } from "../End/endGame.js";
+import { reportTournamentMatchResult } from "../Tournament/tournament.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
@@ -91,6 +92,11 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.End) : {
+				if (match.matchFormat == MF.Tournament) {
+					reportTournamentMatchResult(match, io);
+				}
+				setWinner(match);
+				sendWinnerResult(match, io);
 				saveMatch(match, null, null);
 				clearInterval(match.intervalID);
 				break;

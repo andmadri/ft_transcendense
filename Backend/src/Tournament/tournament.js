@@ -14,7 +14,12 @@ export const tournament = {
 function getTournamentStateForFrontend() {
 	return {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
-		matches: tournament.matches.filter(m => m.state === state.End),
+		matches: tournament.matches.filter(m => m.match.state === state.End).map(m => ({
+			matchNumber: m.matchNumber,
+			player1: m.match.player1.ID,
+			player2: m.match.player2.ID,
+			winnerID: m.match.winnerID
+		})),
 		state: tournament.state
 	};
 }
@@ -58,7 +63,6 @@ function joinTournament(msg, userId, socket, io) {
 	} else {
 		console.log('Tournament waiting for more players...');
 	}
-
 }
 
 
@@ -107,8 +111,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament); //probably nice to start using MF.Tournament / MF.singleGame now
 
 	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
-	console.log('current match:', matches.get(matchId));
-	console.log('Tournament matches:', tournament.matches);
+	player1.ready = false;
+	player2.ready = false;
 
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {
@@ -122,15 +126,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 }
 
 
-export async function reportTournamentMatchResult(tournamentId, matchNumber, match) {
-	// Find the match in the tournament
-	const tMatch = tournament.matches.find(m => m.matchNumber === matchNumber);
-	if (!tMatch) return;
-
+export function reportTournamentMatchResult(match, io) {
 	// Update winner/loser
-	if (!tMatch.winnerID) {
-		tMatch.winnerID = match.player1.score > match.player2.score ? match.player1.ID : match.player2.ID;
-	}
 
 	// Broadcast updated state
 	io.to('tournament_1').emit('message', {
@@ -153,16 +150,6 @@ async function startFirstTournamentMatches(io) {
 	await createTournamentMatch(tournament.players[0], tournament.players[1], 1, io);
 	// Create Match 2: p3 vs p4
 	await createTournamentMatch(tournament.players[2], tournament.players[3], 2, io);
-
-	const game1 = tournament.matches.find(m => m.matchNumber === 1);
-	const game2 = tournament.matches.find(m => m.matchNumber === 2);
-
-	if (game1 && game2) {
-		tournament.players.forEach(player => {
-			player.ready = false;
-		})
-		triggerNextTournamentMatch(null, io) //pass tournamentId
-	}
 }
 
 export async function triggerNextTournamentMatch(tournamentId, io) {
@@ -213,7 +200,12 @@ export function handleTournament(db, msg, socket, io, userId) {
 		const player = tournament.players.find(p => p.id === userId);
 		if (player) {
 			player.ready = true;
-			startFirstTournamentMatches(io);
+			if (tournament.matches.length < 2) {
+				startFirstTournamentMatches(io);
+			}
+			else {
+				triggerNextTournamentMatch(null, io) //pass tournamentId
+			}
 		}
 	} else if (msg.subaction === 'notReady') {
 		const player = tournament.players.find(p => p.id === userId);
