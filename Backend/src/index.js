@@ -13,6 +13,7 @@ import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
+import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 
 export const db = await createDatabase();
 
@@ -138,6 +139,7 @@ fastify.ready().then(() => {
 
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
+			checkChallengeFriendsInvites(socket, userId1);
 		});
 	});
 });

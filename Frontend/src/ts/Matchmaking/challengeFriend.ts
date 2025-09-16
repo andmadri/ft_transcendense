@@ -34,6 +34,11 @@ function challengeDeclined() {
 	navigateTo('Menu', false);
 }
 
+function msgMatchIsRemoved() {
+	alert('This challenge is removed');
+	navigateTo('Menu', false);
+}
+
 export function actionMatchmaking(msg: any) {
 	if (!msg.subaction)
 		return ;
@@ -41,6 +46,9 @@ export function actionMatchmaking(msg: any) {
 	switch(msg.subaction) {
 		case 'challengeDeclined':
 			challengeDeclined();
+			break ;
+		case 'matchIsRemoved':
+			msgMatchIsRemoved();
 			break ;
 		default:
 			log(`subaction ${msg.subaction} not found in handleMatchmaking`);

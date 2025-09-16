@@ -30,6 +30,7 @@ function insertFriends(friends: any) {
 			challengeFriendBtn.addEventListener("click", () => {
 				UI.state = S.stateUI.Game;
 				Game.match.state = state.Pending;
+				Game.pendingState = S.pendingState.Friend;
 				Game.socket.emit('message', {
 					action: 'matchmaking',
 					subaction: 'challengeFriend',

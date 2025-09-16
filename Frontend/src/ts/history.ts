@@ -247,6 +247,7 @@ export function controlBackAndForward(event: PopStateEvent) {
 
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
+	console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 	history.replaceState({ page: validState, query }, '', fullHash);
 
