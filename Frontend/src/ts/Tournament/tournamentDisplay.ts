@@ -3,73 +3,106 @@ import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentCon
 import { UI } from '../gameData.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
 
+function createButton():HTMLButtonElement {
+	const readyBtn = document.createElement('button');
+	readyBtn.textContent = 'Ready?';
+	readyBtn.style.border = 'none';
+	readyBtn.style.borderRadius = '5px';
+	readyBtn.style.color = 'white';
+	readyBtn.style.background = '#4a4a4a';
+	readyBtn.style.width = '80%';
+	readyBtn.style.marginTop = '0.5rem';
+
+	let isReady = false;
+
+	readyBtn.addEventListener('click', () => {
+		isReady = !isReady;
+		if (isReady) {
+			readyTournamentPlayer();
+			readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+			readyBtn.style.color = 'black';
+			readyBtn.textContent = 'Starting Soon';
+		} else {
+			notReadyTournamentPlayer();
+			readyBtn.style.background = '#4a4a4a';
+			readyBtn.style.color = 'white';
+			readyBtn.textContent = 'Ready?';
+		}
+	});
+	return readyBtn;
+}
+
+function updateButton(player: any, match:any, box: HTMLElement) {
+	const parent = box.parentElement;
+	if (!parent)
+		return;
+	const existingBtn = parent.querySelector('button');
+	const isUserInMathc = UI.user1.ID === match?.player1.ID || UI.user1.ID === match?.player2.ID;
+	console.log(`This is the match: ${match}`);
+	if (existingBtn && isUserInMathc) {
+		existingBtn.remove();
+		return;
+	}
+
+	if (player?.name === UI.user1.name && !existingBtn) {
+		parent.appendChild(createButton());
+	}
+}
 
 export function updateNameTagsTournament(tournamentState: any) {
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
+	const matches = tournamentState.matches || [];
 
 	const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
 
 	playerBoxIds.forEach((boxId, index) => {
-		const box = document.getElementById(boxId.toString());
-		console.log(boxId);
-		console.log(index);
+		const box = document.getElementById(boxId);
+		// console.log(boxId);
+		// console.log(index);
 		const player = players[index];
-		if (!box)
-			console.log('Box does not exist');
+		const match = matches[index];
 		if (box) {
 			console.log('box exist');
 			box.textContent = player?.name || 'Waiting...';
-			if (player?.name === UI.user1.name && !box.parentElement?.querySelector('button')) {
-				const readyBtn = document.createElement('button');
-				readyBtn.textContent = 'Ready?';
-				readyBtn.style.border = 'none';
-				readyBtn.style.borderRadius = '5px';
-				readyBtn.style.color = 'white';
-				readyBtn.style.background = '#4a4a4a';
-				readyBtn.style.width = '80%';
-				readyBtn.style.marginTop = '0.5rem';
-
-				let isReady = false;
-
-				readyBtn.addEventListener('click', () => {
-					isReady = !isReady;
-					if (isReady) {
-						readyTournamentPlayer();
-						readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
-						readyBtn.style.color = 'black';
-						readyBtn.textContent = 'Starting Soon';
-					} else {
-						notReadyTournamentPlayer();
-						readyBtn.style.background = '#4a4a4a';
-						readyBtn.style.color = 'white';
-						readyBtn.textContent = 'Ready?';
-					}
-				});
-
-				box.parentElement?.appendChild(readyBtn);
-			}
+			updateButton(player, match, box);
 		}
 	});
-	const matches = tournamentState.matches;
+
 	const winner1Box = document.getElementById('winner1Box');
 	if (winner1Box) {
-		winner1Box.textContent = getName(matches[0]?.winnerId);
+		const winner1ID = matches[0]?.winnerId;
+		const winner1Player = players.find((p: any) => p.id === winner1ID);
+		winner1Box.textContent = getName(winner1ID);
+		updateButton(winner1Player, matches[4], winner1Box);
 	}
+
 	const winner2Box = document.getElementById('winner2Box');
 	if (winner2Box) {
-		winner2Box.textContent = getName(matches[1]?.winnerId);
+		const winner2ID = matches[1]?.winnerId;
+		const winner2Player = players.find((p: any) => p.id === winner2ID);
+		winner2Box.textContent = getName(winner2ID);
+		updateButton(winner2Player, matches[4], winner2Box); 
 	}
+
 	const loser1Box = document.getElementById('loser1Box');
 	if (loser1Box) {
-		const loser1ID = matches[0]?.winnerId == matches[0]?.player1.ID ? matches[0]?.player2.ID : matches[0]?.player1.ID;
+		const loser1ID = matches[0]?.winnerId === matches[0]?.player1.ID
+			? matches[0]?.player2.ID
+			: matches[0]?.player1.ID;
+		const loser1Player = players.find((p: any) => p.id === loser1ID);
 		loser1Box.textContent = getName(loser1ID);
+		updateButton(loser1Player, matches[3], loser1Box);
 	}
 
 	const loser2Box = document.getElementById('loser2Box');
 	if (loser2Box) {
-		const loser2ID = matches[1]?.winnerId == matches[1]?.player1.ID ? matches[1]?.player2.ID : matches[1]?.player1.ID;
+		const loser2ID = matches[1]?.winnerId === matches[1]?.player1.ID
+				? matches[1]?.player2.ID
+				: matches[1]?.player1.ID;
+		const loser2Player = players.find((p: any) => p.id === loser2ID);
 		loser2Box.textContent = getName(loser2ID);
+		updateButton(loser2Player, matches[3], loser2Box); 
 	}
 }
 
@@ -100,7 +133,6 @@ export function showTournamentScreen() {
 	tournamentContainer.style.flexDirection = 'row';
 	tournamentContainer.style.position = 'relative';
 
-
 	const title = document.createElement('div');
 	title.textContent = `Tournament`;
 	title.style.fontFamily = '"Horizon", sans-serif';
@@ -119,16 +151,14 @@ export function showTournamentScreen() {
 	bracketContainer.style.gap = '2rem';
 	bracketContainer.style.padding = '0.2rem';
 	bracketContainer.style.position = 'relative';
-	
-	// const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || 'TBD';
-	
+
 	const createMatchBox = (player1BoxId: string, player2BoxId: string) => {
 		const matchBox = document.createElement('div');
 		matchBox.style.display = 'flex';
 		matchBox.style.flexDirection = 'column';
 		matchBox.style.gap = '0.5rem';
 		matchBox.style.alignItems = 'center';
-		
+
 		const player1Box = document.createElement('div');
 		player1Box.id = player1BoxId;
 		player1Box.textContent = 'Waiting...';
@@ -139,14 +169,14 @@ export function showTournamentScreen() {
 		player1Box.style.textAlign = 'center';
 		player1Box.style.minWidth = '120px';
 		player1Box.style.fontFamily = '"RobotoCondensed", sans-serif';
-		
+
 		const separator = document.createElement('div');
 		separator.textContent = 'VS';
 		separator.style.color = 'transparent';
 		separator.style.fontSize = '0.8rem';
 		separator.style.webkitTextStroke = '0.05rem #ffc433'
 		separator.style.fontFamily = '"Horizon", sans-serif';
-		
+
 		const player2Box = document.createElement('div');
 		player2Box.id = player2BoxId;
 		player2Box.textContent = 'Waiting...';
@@ -157,40 +187,13 @@ export function showTournamentScreen() {
 		player2Box.style.textAlign = 'center';
 		player2Box.style.minWidth = '120px';
 		player2Box.style.fontFamily = '"RobotoCondensed", sans-serif';
-		
+
 		matchBox.appendChild(player1Box);
 		matchBox.appendChild(separator);
 		matchBox.appendChild(player2Box);
-		// if (UI.user1.name == player1Name || UI.user1.name == player2Name) {
-		// 	const readyBtn = document.createElement('button');
-		// 	readyBtn.textContent = 'Ready?';
-		// 	readyBtn.style.border = 'none';
-		// 	readyBtn.style.borderRadius = '5px';
-		// 	readyBtn.style.color = 'white';
-		// 	readyBtn.style.background = '#4a4a4a';
-		// 	readyBtn.style.width = '80%';
-		// 	readyBtn.style.marginTop = '0.5rem';
-		// 	let isReady = false;
-		// 	readyBtn.addEventListener('click', () => {
-		// 		isReady = !isReady;
-		// 		if (isReady) {
-		// 			readyTournamentPlayer();
-		// 			readyBtn.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
-		// 			readyBtn.style.color = 'black';
-		// 			readyBtn.textContent = 'Starting Soon';
-		// 		} else {
-		// 			notReadyTournamentPlayer();
-		// 			readyBtn.style.background = '#4a4a4a';
-		// 			readyBtn.style.color = 'white';
-		// 			readyBtn.textContent = 'Ready?';
-		// 		}
-		// 	});
-		// 	matchBox.appendChild(readyBtn);
-		// }
 		return matchBox;
 	};
 
-	// const roundSection = (roundTitle: string, player1Name: string, player2Name: string) => {
 	const roundSection = (roundTitle: string, player1BoxId: string, player2BoxId: string) => {
 		const section = document.createElement('div');
 		section.style.display = 'flex';
@@ -208,8 +211,6 @@ export function showTournamentScreen() {
 		title.style.textAlign = 'center';
 		
 		section.appendChild(title);
-		// player1Name = player1Name ? player1Name : 'Waiting...';
-		// player2Name = player2Name ? player2Name : 'Waiting...';
 		const matchBox = createMatchBox(player1BoxId, player2BoxId);
 		section.appendChild(matchBox);
 		return section;
@@ -259,7 +260,6 @@ export function showTournamentScreen() {
 	middleSection.style.gap = '3rem';
 	middleSection.style.flex = '1';
 
-	//this should render the name of the players
 	const winnersSection = roundSection('Winners Final', 'winner1Box', 'winner2Box');
 
 	const losersSection = roundSection('Losers Final', 'loser1Box', 'loser2Box');
