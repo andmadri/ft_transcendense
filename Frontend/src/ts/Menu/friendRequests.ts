@@ -1,6 +1,5 @@
 import { get } from "http";
 import { Game, UI } from "../gameData.js";
-import { friendInvites } from "../Matchmaking/challengeFriend.js";
 import { responseChallenge } from "../Matchmaking/challengeFriend.js";
 
 let friendRequestsDiv: HTMLDivElement | null = null;
@@ -72,7 +71,7 @@ function getTitleRow(text: string): HTMLLIElement {
 	return (row);
 }
 
-function getRow(req: any): HTMLLIElement {
+function getRow(req: any, isFriendRequest: boolean): HTMLLIElement {
 	const row = document.createElement('li');
 	row.id = `row${req.id}`;
 	row.style.fontFamily = '"RobotoCondensed", sans-serif';
@@ -106,10 +105,10 @@ function getRow(req: any): HTMLLIElement {
 	acceptBtn.style.background = '#ffc233'
 	acceptBtn.style.border = 'none';
 	acceptBtn.onclick = () => {
-		if (req.subaction == 'challengeFriend') {
-			responseChallenge(true, req);
-		} else {
+		if (isFriendRequest) {
 			handleFriendRequest(req.id, 'accept');
+		} else {
+			responseChallenge(true, req);
 		}
 		document.getElementById(`row${req.id}`)?.remove();
 		updateNotificationBadge(0, true);
@@ -122,10 +121,10 @@ function getRow(req: any): HTMLLIElement {
 	denyBtn.style.background = '#ffc233'
 	denyBtn.style.border = 'none';
 	denyBtn.onclick = () => {
-		if (req.subaction == 'challengeFriend') {
-			responseChallenge(false, req);
-		} else {
+		if (isFriendRequest) {
 			handleFriendRequest(req.id, 'deny');
+		} else {
+			responseChallenge(false, req);
 		}
 		document.getElementById(`row${req.id}`)?.remove();
 		updateNotificationBadge(0, true);
@@ -135,7 +134,7 @@ function getRow(req: any): HTMLLIElement {
 	return (row);
 }
 
-export function showFriendAndChallengeRequests(requests: any) {
+export function showFriendAndChallengeRequests(friendRequest: any, invites: any) {
 	const notificationBtnList = document.getElementById('notificationBtnList');
 	if (!notificationBtnList)
 		return ;
@@ -143,23 +142,23 @@ export function showFriendAndChallengeRequests(requests: any) {
 	notificationBtnList.style.gap = '0.5rem';
 	notificationBtnList.style.overflowY = 'auto';
 
-	updateNotificationBadge(requests.length + friendInvites.size, false);
+	updateNotificationBadge(friendRequest.length + invites.length, false);
 
-	if (requests.length > 0) {
+	if (friendRequest.length > 0) {
 		const rowForFriendRequests = getTitleRow('Friend Requests:');
 		notificationBtnList.appendChild(rowForFriendRequests);
-		for (const req of requests) {
-			const row = getRow(req);
+		for (const req of friendRequest) {
+			const row = getRow(req, true);
 			notificationBtnList.appendChild(row);
 		}
 	}
 
-	if (friendInvites.size > 0) {
+	if (invites.length > 0) {
 		const rowForChallengeRequests = getTitleRow('Game Challenges:');
 
 		notificationBtnList.appendChild(rowForChallengeRequests);
-		for (const friendInvite of friendInvites.values()) {
-			const row = getRow(friendInvite);
+		for (const friendInvite of invites.values()) {
+			const row = getRow(friendInvite, false);
 			notificationBtnList.appendChild(row);
 		}
 	}
@@ -171,7 +170,7 @@ function handleFriendRequest(requestId: number, acceptOrDeny: string) {
 		action: 'friends',
 		subaction: acceptOrDeny + 'FriendRequest',
 		requestId,
-		playerNr: 1	
+		playerNr: 1
 	})
 	if (!friendRequestsDiv)
 		return;

@@ -82,7 +82,7 @@ export function actionFriends(data: any) {
 			insertFriends(data);
 			break ;
 		case 'openRequests':
-			showFriendAndChallengeRequests(data.content);
+			showFriendAndChallengeRequests(data.friendRequests, data.invites);
 			break ;
 		case 'error':
 			alert(data.content);
