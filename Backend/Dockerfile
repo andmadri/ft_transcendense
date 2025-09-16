@@ -6,7 +6,7 @@ COPY Backend/package*.json Backend/tsconfig*.json ./
 COPY Backend/src ./src
 COPY Shared ./src/Shared
 
-RUN apk add --no-cache sqlite sqlite-libs sqlite-dev 
+RUN apk add --no-cache sqlite sqlite-libs sqlite-dev python3 py3-pip
 
 # Install npm dependencies
 RUN npm install fastify-socket.io
