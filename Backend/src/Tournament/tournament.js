@@ -126,11 +126,11 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 }
 
 
-export function reportTournamentMatchResult(match, io) {
+export function reportTournamentMatchResult(match) {
 	// Update winner/loser
 
 	// Broadcast updated state
-	io.to('tournament_1').emit('message', {
+	tournament.io.to('tournament_1').emit('message', {
 		action: 'tournament',
 		subaction: 'update',
 		tournamentState: getTournamentStateForFrontend()
