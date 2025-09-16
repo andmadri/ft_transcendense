@@ -37,9 +37,10 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 	if (!parent)
 		return;
 	const existingBtn = parent.querySelector('button');
-	const isUserInMathc = UI.user1.ID === match?.player1.ID || UI.user1.ID === match?.player2.ID;
+	const isUserInMathc = match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
 	console.log(`This is the match: ${match}`);
 	if (existingBtn && isUserInMathc) {
+		console.log('This button should be removed');
 		existingBtn.remove();
 		return;
 	}
