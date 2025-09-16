@@ -72,7 +72,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 
 	const winner1Box = document.getElementById('winner1Box');
 	if (winner1Box) {
-		const winner1ID = matches[0]?.winnerId;
+		const winner1ID = matches[0]?.winnerID;
 		const winner1Player = players.find((p: any) => p.id === winner1ID);
 		winner1Box.textContent = getName(winner1ID);
 		updateButton(winner1Player, matches[4], winner1Box);
@@ -80,7 +80,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 
 	const winner2Box = document.getElementById('winner2Box');
 	if (winner2Box) {
-		const winner2ID = matches[1]?.winnerId;
+		const winner2ID = matches[1]?.winnerID;
 		const winner2Player = players.find((p: any) => p.id === winner2ID);
 		winner2Box.textContent = getName(winner2ID);
 		updateButton(winner2Player, matches[4], winner2Box); 
@@ -88,9 +88,9 @@ export function updateNameTagsTournament(tournamentState: any) {
 
 	const loser1Box = document.getElementById('loser1Box');
 	if (loser1Box) {
-		const loser1ID = matches[0]?.winnerId === matches[0]?.player1.ID
-			? matches[0]?.player2.ID
-			: matches[0]?.player1.ID;
+		const loser1ID = matches[0]?.winnerID === matches[0]?.player1
+			? matches[0]?.player2
+			: matches[0]?.player1;
 		const loser1Player = players.find((p: any) => p.id === loser1ID);
 		loser1Box.textContent = getName(loser1ID);
 		updateButton(loser1Player, matches[3], loser1Box);
@@ -98,9 +98,9 @@ export function updateNameTagsTournament(tournamentState: any) {
 
 	const loser2Box = document.getElementById('loser2Box');
 	if (loser2Box) {
-		const loser2ID = matches[1]?.winnerId === matches[1]?.player1.ID
-				? matches[1]?.player2.ID
-				: matches[1]?.player1.ID;
+		const loser2ID = matches[1]?.winnerID === matches[1]?.player1
+				? matches[1]?.player2
+				: matches[1]?.player1;
 		const loser2Player = players.find((p: any) => p.id === loser2ID);
 		loser2Box.textContent = getName(loser2ID);
 		updateButton(loser2Player, matches[3], loser2Box); 
