@@ -18,7 +18,7 @@ import { getMenu , getCreditsPage } from './Menu/menuContent.js'
 import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
-import { resetBall, updatePaddlePos } from '@shared/gameLogic'
+import { resetBall, setWinner } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
 import { requestUpdateTournament } from './Tournament/tournamentContent.js'
@@ -142,7 +142,12 @@ function gameLoop() {
 			break ;
 		}
 		case state.End: {
-			saveGame();
+			if (Game.match.winnerID) {
+				saveGame();
+			}
+			else if (Game.match.mode !== OT.Online){
+				setWinner(Game.match);
+			}
 			break ;
 		}
 		default:

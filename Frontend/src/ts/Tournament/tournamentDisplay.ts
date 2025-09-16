@@ -5,6 +5,7 @@ import { createBackgroundText } from '../Menu/menuContent.js';
 
 
 export function updateNameTagsTournament(tournamentState: any) {
+	console.log(`updateNameTag()`);
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
 
@@ -15,10 +16,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 		console.log(boxId);
 		console.log(index);
 		const player = players[index];
-		if (!box)
-			console.log('Box does not exist');
 		if (box) {
-			console.log('box exist');
 			box.textContent = player?.name || 'Waiting...';
 			if (player?.name === UI.user1.name && !box.parentElement?.querySelector('button')) {
 				const readyBtn = document.createElement('button');
@@ -52,23 +50,24 @@ export function updateNameTagsTournament(tournamentState: any) {
 		}
 	});
 	const matches = tournamentState.matches;
+	console.log("Tournament matches:", matches);
 	const winner1Box = document.getElementById('winner1Box');
 	if (winner1Box) {
-		winner1Box.textContent = getName(matches[0]?.winnerId);
+		winner1Box.textContent = getName(matches[0]?.winnerID);
 	}
 	const winner2Box = document.getElementById('winner2Box');
 	if (winner2Box) {
-		winner2Box.textContent = getName(matches[1]?.winnerId);
+		winner2Box.textContent = getName(matches[1]?.winnerID);
 	}
 	const loser1Box = document.getElementById('loser1Box');
 	if (loser1Box) {
-		const loser1ID = matches[0]?.winnerId == matches[0]?.player1.ID ? matches[0]?.player2.ID : matches[0]?.player1.ID;
+		const loser1ID = matches[0]?.winnerID == matches[0]?.player1.ID ? matches[0]?.player2.ID : matches[0]?.player1.ID;
 		loser1Box.textContent = getName(loser1ID);
 	}
 
 	const loser2Box = document.getElementById('loser2Box');
 	if (loser2Box) {
-		const loser2ID = matches[1]?.winnerId == matches[1]?.player1.ID ? matches[1]?.player2.ID : matches[1]?.player1.ID;
+		const loser2ID = matches[1]?.winnerID == matches[1]?.player1.ID ? matches[1]?.player2.ID : matches[1]?.player1.ID;
 		loser2Box.textContent = getName(loser2ID);
 	}
 }

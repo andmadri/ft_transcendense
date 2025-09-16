@@ -16,16 +16,7 @@ function getWinnerResult() {
 	else if (Game.match.winnerID) {
 		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
 	}
-	else if (Game.match.player1.score > Game.match.player2.score) {
-		winnerName = Game.match.player1.name;
-	}
-	else if (Game.match.player1.score < Game.match.player2.score) {
-		winnerName = Game.match.player2.name;
-	}
-	else {
-		winnerName = null;
-	}
-	return winnerName ? `${winnerName} Wins!` : "It is a Tie!";
+	return winnerName ? `${winnerName} Wins!` : "NO WINNER :(";
 }
 
 export function getGameOver() {
