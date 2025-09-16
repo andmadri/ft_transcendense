@@ -2,6 +2,7 @@ import { requestLeaveTournament, requestUpdateTournament } from './tournamentCon
 import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
 import { UI } from '../gameData.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
+import { pressButton } from '../windowEvents.js';
 
 function createButton():HTMLButtonElement {
 	const readyBtn = document.createElement('button');
@@ -32,14 +33,20 @@ function createButton():HTMLButtonElement {
 	return readyBtn;
 }
 
+function isUserInMatch(match: any) {
+	return match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
+}
+
+function isMatchFinished(match: any) {
+	return match && match.winnerID !== null && match.winnerID !== undefined;
+}
+
 function updateButton(player: any, match:any, box: HTMLElement) {
 	const parent = box.parentElement;
 	if (!parent)
 		return;
 	const existingBtn = parent.querySelector('button');
-	const isUserInMathc = match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
-	console.log(`This is the match: ${match}`);
-	if (existingBtn && isUserInMathc) {
+	if (existingBtn && isMatchFinished(match)) {
 		console.log('This button should be removed');
 		existingBtn.remove();
 		return;
@@ -54,19 +61,30 @@ export function updateNameTagsTournament(tournamentState: any) {
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
 	const matches = tournamentState.matches || [];
+	const round1 = matches[0] || [];
+	const round2 = matches[1] || [];
 
 	const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
 
 	playerBoxIds.forEach((boxId, index) => {
 		const box = document.getElementById(boxId);
-		// console.log(boxId);
-		// console.log(index);
 		const player = players[index];
-		const match = matches[index];
+		let playerMatch = [];
+		if (player.id === round1.player1 || player.id === round1.player2)
+			playerMatch = round1;
+		else
+			playerMatch = round2;
 		if (box) {
 			console.log('box exist');
 			box.textContent = player?.name || 'Waiting...';
-			updateButton(player, match, box);
+			if (players.length == 4) {
+				//only if there are four players you should have a button otherwise weird things happen if someone presses the button and there are no four players
+				updateButton(player, playerMatch, box);
+			}
+			else {
+				//if there were four people but someone leaves
+				box.parentElement?.querySelector('button')?.remove();
+			}
 		}
 	});
 
