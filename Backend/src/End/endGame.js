@@ -16,6 +16,7 @@ export async function quitMatch(match, msg, io) {
 	else {
 		match.winnerID = msg.winnerID
 	}
+	match.state = state.End;
 	console.log(`WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
@@ -24,7 +25,6 @@ export async function quitMatch(match, msg, io) {
 		winner: match.winnerID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.state = state.End;
 }
 
 export async function saveMatch(match) {

@@ -12,9 +12,10 @@ export const tournament = {
 
 // Helper to format the state for the frontend
 function getTournamentStateForFrontend() {
+	console.log(`tournament matches:`, tournament.matches);
 	return {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
-		matches: tournament.matches.filter(m => m.match.state === state.End).map(m => ({
+		matches: tournament.matches.map(m => ({
 			matchNumber: m.matchNumber,
 			player1: m.match.player1.ID,
 			player2: m.match.player2.ID,
@@ -163,18 +164,24 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 
 	// Schedule Game 3 (losers) if not already scheduled and both games finished
 	if (!tournament.matches.find(m => m.matchNumber === 3)) {
-		const loser1 = game1.winnerID === game1.player1.ID ? game1.player2.ID : game1.player1.ID;
-		const loser2 = game2.winnerID === game2.player1.ID ? game2.player2.ID : game2.player1.ID;
+		const loser1ID = game1.match.winnerID === game1.match.player1.ID ? game1.match.player2.ID : game1.match.player1.ID;
+		const loser2ID = game2.match.winnerID === game2.match.player1.ID ? game2.match.player2.ID : game2.match.player1.ID;
 
-		await createTournamentMatch(loser1, loser2, 3, io);
+		const player1 = tournament.players.find(p => p.id === loser1ID);
+		const player2 = tournament.players.find(p => p.id === loser2ID);
+
+		await createTournamentMatch(player1, player2, 3, io);
 	}
 
 	// Schedule Game 4 (winners) if not already scheduled and both games finished
 	if (!tournament.matches.find(m => m.matchNumber === 4)) {
-		const winner1 = game1.winnerID;
-		const winner2 = game2.winnerID;
+		const winner1ID = game1.match.winnerID;
+		const winner2ID = game2.match.winnerID;
 
-		await createTournamentMatch(winner1, winner2, 4, io);
+		const player1 = tournament.players.find(p => p.id === winner1ID);
+		const player2 = tournament.players.find(p => p.id === winner2ID);
+
+		await createTournamentMatch(player1, player2, 4, io);
 	}
 
 	// Set tournament.state = 'finished' when all matches are done
