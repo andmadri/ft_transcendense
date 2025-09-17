@@ -12,7 +12,7 @@ export const tournament = {
 
 // Helper to format the state for the frontend
 function getTournamentStateForFrontend() {
-	console.log(`tournament matches:`, tournament.matches);
+	// console.log(`tournament matches:`, tournament.matches);
 	return {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
 		matches: tournament.matches.map(m => ({

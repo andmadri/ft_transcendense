@@ -1,8 +1,9 @@
 import { requestLeaveTournament, requestUpdateTournament } from './tournamentContent.js';
 import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
 import { UI } from '../gameData.js';
+import * as S from '../structs.js'
 import { createBackgroundText } from '../Menu/menuContent.js';
-import { pressButton } from '../windowEvents.js';
+// import { pressButton } from '../windowEvents.js';
 
 function createButton():HTMLButtonElement {
 	const readyBtn = document.createElement('button');
@@ -71,7 +72,127 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 	}
 }
 
+function drawPointer(fromX: number, fromY: number, toX: number, toY: number) {
+	// Bounding box for the pointer: top-left at the min coords, sized to the deltas
+	const minX = Math.min(fromX, toX);
+	const minY = Math.min(fromY, toY);
+	const width = Math.abs(toX - fromX);
+	const height = Math.abs(toY - fromY);
+
+	const container = document.createElement('div');
+	container.style.position = 'absolute';
+	container.style.left = `${minX}px`;
+	container.style.top = `${minY}px`;
+	container.style.width = `${width}px`;
+	container.style.height = `${height}px`;
+	container.style.pointerEvents = 'none'; // keep it non-interactive
+
+	// Compute angle from start → end
+	const deltaX = toX - fromX;
+	const deltaY = toY - fromY;
+	const angleDeg = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+	// Position of the glyph inside the container at the midpoint
+	const glyphX = width / 2;
+	const glyphY = height / 2;
+
+	const glyph = document.createElement('div');
+	glyph.textContent = '>';
+	glyph.style.position = 'absolute';
+	glyph.style.left = `${glyphX}px`;
+	glyph.style.top = `${glyphY}px`;
+	glyph.style.margin = '0';
+	glyph.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
+	glyph.style.transformOrigin = '50% 50%';
+	glyph.style.textAlign = 'center';
+	glyph.style.fontFamily = '"Horizon", sans-serif';
+	glyph.style.fontSize = 'clamp(32px, 48px, 56px)';
+	glyph.style.color = 'transparent';
+	(glyph.style as any).webkitTextStroke = '0.05rem #ffffffff';
+
+	container.appendChild(glyph);
+	return container;
+}
+
+function getPointerPos(fromBox: HTMLElement, toBox: HTMLElement | null) {
+	if (!toBox) return;
+	const container = document.getElementById('tournamentScreen');
+	if (!container) return;
+
+	// Get bounding rectangles
+	const fromRect = fromBox.getBoundingClientRect();
+	const toRect = toBox.getBoundingClientRect();
+	const containerRect = container.getBoundingClientRect();
+
+	// Compute centers relative to container
+	const fromX = (fromRect.left + fromRect.right) / 2 - containerRect.left;
+	const fromY = (fromRect.top + fromRect.bottom) / 2 - containerRect.top;
+	const toX = (toRect.left + toRect.right) / 2 - containerRect.left;
+	const toY = (toRect.top + toRect.bottom) / 2 - containerRect.top;
+
+	// Pass pure numbers
+	const pointer = drawPointer(fromX, fromY, toX, toY);
+	container.appendChild(pointer);
+
+	return pointer;
+}
+
+
+
+function updateBoxBorder(matches:any, players:any) {
+	let box1: HTMLElement | null;
+	let box2: HTMLElement | null;
+	// const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box', 'loser1Box', 'loser2Box', 'winner1Box', 'winner2Box'];
+	matches.forEach((match: any) => {
+		console.log('Match:', match, 'match.matchNumber:', match.matchNumber);
+		if (match && (match.matchNumber === 1 || match.matchNumber === 2)) {
+			box1 = document.getElementById('player' + (match.matchNumber * 2 - 1) + 'Box');
+			box2 = document.getElementById('player' + (match.matchNumber * 2) + 'Box');
+		} else if (match && match.matchNumber === 3) {
+			box1 = document.getElementById('loser1Box');
+			box2 = document.getElementById('loser2Box');
+		} else if (match && match.matchNumber === 4) {
+			box1 = document.getElementById('winner1Box');
+			box2 = document.getElementById('winner2Box');
+		}
+		console.log(`box1: ${box1?.id} - box2: ${box2?.id}`, box1, box2);
+		if (match && match.winnerID) {
+			if (box1 && box2) {
+				const winner1 = players.find((p: any) => p.id === match.winnerID);
+
+				if (winner1?.name === box1.textContent) {
+					box1.style.border = '2px solid #00ff00';
+					box2.style.border = '2px solid #ff4444';
+					if (match.matchNumber === 1) {
+						getPointerPos(box1, document.getElementById('winner1Box'));
+						getPointerPos(box2, document.getElementById('loser1Box'));
+					} else if (match.matchNumber === 2) {
+						getPointerPos(box1, document.getElementById('winner2Box'));
+						getPointerPos(box2, document.getElementById('loser2Box'));
+					}
+				} else if (winner1?.name === box2.textContent) {
+					box2.style.border = '2px solid #00ff00';
+					box1.style.border = '2px solid #ff4444';
+					if (match.matchNumber === 1) {
+						getPointerPos(box2, document.getElementById('winner1Box'));
+						getPointerPos(box1, document.getElementById('loser1Box'));
+					} else if (match.matchNumber === 2) {
+						getPointerPos(box2, document.getElementById('winner2Box'));
+						getPointerPos(box1, document.getElementById('loser2Box'));
+					}
+				}
+			}
+		} else if (box1 && box2) {
+			box1.style.border = '2px solid #afafafff';
+			box2.style.border = '2px solid #afafafff';
+		}
+	});
+}
+
 export function updateNameTagsTournament(tournamentState: any) {
+	// if (document.getElementById('tournamentScreen') === null && UI.state === S.stateUI.Tournament) {
+	// 	showTournamentScreen();
+	// }
 	//check if the matches array length is bigger than 2 and if so check if the
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
@@ -85,14 +206,14 @@ export function updateNameTagsTournament(tournamentState: any) {
 		const box = document.getElementById(boxId);
 		const player = players[index];
 		let playerMatch = null;
-			console.log('round1 and round2 exist');
-			if (round1 && (player.id === round1.player1 || player.id === round1.player2))
-				playerMatch = round1;
-			else if (round2 && (player.id === round2.player1 || player.id === round2.player2)) {
-				playerMatch = round2;
-			}
+		console.log('round1 and round2 exist');
+		if (round1 && (player.id === round1.player1 || player.id === round1.player2))
+			playerMatch = round1;
+		else if (round2 && (player.id === round2.player1 || player.id === round2.player2)) {
+			playerMatch = round2;
+		}
 		if (box) {
-			box.textContent = player?.name || 'Waiting...';
+			box.textContent = player?.name || '-';
 			if (players.length == 4) {
 				console.log(`box exists - playedID = ${player.id} - boxID = ${boxId}`);
 				//only if there are four players you should have a button otherwise weird things happen if someone presses the button and there are no four players
@@ -163,6 +284,8 @@ export function updateNameTagsTournament(tournamentState: any) {
 			losers_match = matches[2];
 		updateButton(loser2Player, losers_match, loser2Box); 
 	}
+
+	updateBoxBorder(matches, players);
 }
 
 export function showTournamentScreen() {
@@ -275,36 +398,7 @@ export function showTournamentScreen() {
 		return section;
 	};
 
-	const createArrow = (fromX: string, fromY: string, toX: string, toY: string, color: string = '#ffc433') => {
-		const arrow = document.createElement('div');
-		arrow.style.position = 'absolute';
-		arrow.style.left = fromX;
-		arrow.style.top = fromY;
-		arrow.style.width = `calc(${toX} - ${fromX})`;
-		arrow.style.height = '2px';
-		arrow.style.background = color;
-		arrow.style.transformOrigin = 'left center';
-		const deltaX = parseFloat(toX.replace('%', '')) - parseFloat(fromX.replace('%', ''));
-		const deltaY = parseFloat(toY.replace('%', '')) - parseFloat(fromY.replace('%', ''));
-		const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-		const length = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-		arrow.style.width = length + '%';
-		arrow.style.transform = `rotate(${angle}deg)`;
-
-		const arrowhead = document.createElement('div');
-		arrowhead.style.position = 'absolute';
-		arrowhead.style.right = '-6px';
-		arrowhead.style.top = '-4px';
-		arrowhead.style.width = '0';
-		arrowhead.style.height = '0';
-		arrowhead.style.borderLeft = `6px solid ${color}`;
-		arrowhead.style.borderTop = '4px solid transparent';
-		arrowhead.style.borderBottom = '4px solid transparent';
-		
-		arrow.appendChild(arrowhead);
-		return arrow;
-	};
 
 	const round1Section = roundSection('Round 1', 'player1Box', 'player2Box');
 	round1Section.style.flex ='1';
@@ -335,21 +429,21 @@ export function showTournamentScreen() {
 	leaveBtn.style.background = '#4a4a4a';
 	leaveBtn.onclick = () => requestLeaveTournament();
 
-	// Arrow from Round 1 to Winners (winner arrow - green)
-	const arrow1ToWinners = createArrow('25%', '35%', '42%', '25%', '#00ff00');
-	bracketContainer.appendChild(arrow1ToWinners);
+	// // Arrow from Round 1 to Winners (winner arrow - green)
+	// const arrow1ToWinners = createArrow('25%', '35%', '42%', '25%', '#00ff00');
+	// bracketContainer.appendChild(arrow1ToWinners);
 	
-	// Arrow from Round 1 to Losers (loser arrow - red)
-	const arrow1ToLosers = createArrow('25%', '65%', '42%', '75%', '#ff4444');
-	bracketContainer.appendChild(arrow1ToLosers);
+	// // Arrow from Round 1 to Losers (loser arrow - red)
+	// const arrow1ToLosers = createArrow('25%', '65%', '42%', '75%', '#ff4444');
+	// bracketContainer.appendChild(arrow1ToLosers);
 	
-	// Arrow from Round 2 to Winners (winner arrow - green)
-	const arrow2ToWinners = createArrow('75%', '35%', '58%', '25%', '#00ff00');
-	bracketContainer.appendChild(arrow2ToWinners);
+	// // Arrow from Round 2 to Winners (winner arrow - green)
+	// const arrow2ToWinners = createArrow('75%', '35%', '58%', '25%', '#00ff00');
+	// bracketContainer.appendChild(arrow2ToWinners);
 	
-	// Arrow from Round 2 to Losers (loser arrow - red)
-	const arrow2ToLosers = createArrow('75%', '65%', '58%', '75%', '#ff4444');
-	bracketContainer.appendChild(arrow2ToLosers);
+	// // Arrow from Round 2 to Losers (loser arrow - red)
+	// const arrow2ToLosers = createArrow('75%', '65%', '58%', '75%', '#ff4444');
+	// bracketContainer.appendChild(arrow2ToLosers);
 
 	tournamentContainer.appendChild(leaveBtn);
 	bracketContainer.appendChild(round1Section);
