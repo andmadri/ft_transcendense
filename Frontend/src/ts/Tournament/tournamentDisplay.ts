@@ -3,6 +3,8 @@ import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentCon
 import { UI } from '../gameData.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
 import { pressButton } from '../windowEvents.js';
+import { navigateTo } from '../history.js';
+import { styleSettingTitle } from '../opponentTypeMenu/opponentType.js';
 
 function createButton():HTMLButtonElement {
 	const readyBtn = document.createElement('button');
@@ -71,6 +73,10 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 	}
 }
 
+function getName(id: number, players: any) {
+	return players.find((p: any) => p.id === id)?.name || '';
+}
+
 export function updateNameTagsTournament(tournamentState: any) {
 	//check if the matches array length is bigger than 2 and if so check if the
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
@@ -79,7 +85,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 	const round1 = matches[0] || null ;
 	const round2 = matches[1] || null ;
 
-	const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
+	// const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
 
 	playerBoxIds.forEach((boxId, index) => {
 		const box = document.getElementById(boxId);
@@ -109,7 +115,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 	if (winner1Box) {
 		const winner1ID = matches[0]?.winnerID;
 		const winner1Player = players.find((p: any) => p.id === winner1ID);
-		winner1Box.textContent = getName(winner1ID);
+		winner1Box.textContent = getName(winner1ID, tournamentState.players);
 		let winner_match = null;
 		if (matches[3] && matches[3].matchNumber === 4)
 			winner_match = matches[3];
@@ -124,7 +130,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 	if (winner2Box) {
 		const winner2ID = matches[1]?.winnerID;
 		const winner2Player = players.find((p: any) => p.id === winner2ID);
-		winner2Box.textContent = getName(winner2ID);
+		winner2Box.textContent = getName(winner2ID, tournamentState.players);
 		//function to find the match for corresponding match number
 		let winner_match = null;
 		if (matches[3] && matches[3].matchNumber === 4)
@@ -140,7 +146,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 			? matches[0]?.player2
 			: matches[0]?.player1;
 		const loser1Player = players.find((p: any) => p.id === loser1ID);
-		loser1Box.textContent = getName(loser1ID);
+		loser1Box.textContent = getName(loser1ID, tournamentState.players);
 		let losers_match = null;
 		if (matches[3] && matches[3].matchNumber === 3)
 			losers_match = matches[3];
@@ -155,7 +161,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 				? matches[1]?.player2
 				: matches[1]?.player1;
 		const loser2Player = players.find((p: any) => p.id === loser2ID);
-		loser2Box.textContent = getName(loser2ID);
+		loser2Box.textContent = getName(loser2ID, tournamentState.players);
 		let losers_match = null;
 		if (matches[3] && matches[3].matchNumber === 3)
 			losers_match = matches[3];
@@ -360,16 +366,95 @@ export function showTournamentScreen() {
 	requestUpdateTournament();
 }
 
-// function findMatchNumber(matches: any, matchNumber: number) {
-// 	matches.forEach(() => {
 
-// 	});
-// }
+function styleText(playerName: string): HTMLDivElement {
+	const playerNamePodium = document.createElement('div');
+	playerNamePodium.textContent = playerName
+	playerNamePodium.style.fontFamily = '"Horizon", sans-serif';
+	playerNamePodium.style.fontSize = 'clamp(13px, 1.7vw, 18px)';
+	playerNamePodium.style.textAlign = 'center';
+	playerNamePodium.style.alignItems = 'center';
+	playerNamePodium.style.justifyContent = 'flex-start';
+	playerNamePodium.style.color = 'black';
+	return playerNamePodium;
+}
 
-// export function showTournamentEndScreen(tournamentState: any) {
-// 	const winner1Name = tournamentState
-// 	const winner2Name = 
-// 	const Loser1Name = 
-// 	const Loser2Name =
-// 	const overlay = document.createElement('div');
-// }
+export function showTournamentEndScreen(tournamentState: any) {
+	let winner_match = (tournamentState.matches[3].matchNumber == 4 ? tournamentState.matches[3] : tournamentState.matches[2]);
+	let loser_match = (tournamentState.matches[2].matchNumber == 3 ? tournamentState.matches[2] : tournamentState.matches[3]);
+
+	const winner1Name = getName(winner_match.winnerID, tournamentState.players);
+	const winner2Name = getName((winner_match.winnerID === winner_match.player1 ? winner_match.player2 : winner_match.player1), tournamentState);
+	const Loser1Name = getName(loser_match.winnerID, tournamentState.players);
+	const Loser2Name = getName((loser_match.winnerID === loser_match.player1 ? loser_match.player2 : loser_match.player1), tournamentState);
+
+	const body = document.getElementById('body');
+	if (!body)
+		return ;
+
+	if (!document.getElementById('tournamentScreen')) {
+		showTournamentScreen();
+	}
+
+	const tournamentEndScreen = document.createElement('div');
+	tournamentEndScreen.id = 'tournamentEndScreen';
+	tournamentEndScreen.style.width = '100%';
+	tournamentEndScreen.style.height = '100%';
+	tournamentEndScreen.style.margin = '0';
+	tournamentEndScreen.style.top = '0';
+	tournamentEndScreen.style.left = '0';
+	tournamentEndScreen.style.display = 'flex';
+	tournamentEndScreen.style.justifyContent = 'center';
+	tournamentEndScreen.style.alignItems = 'center';
+	tournamentEndScreen.style.backdropFilter = 'blur(6px)';
+	tournamentEndScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.25)'; 
+	tournamentEndScreen.style.position = 'fixed';
+	tournamentEndScreen.style.zIndex = '100';
+
+	tournamentEndScreen.addEventListener('click', (e) => {
+		if (e.target === tournamentEndScreen) {
+			navigateTo('Menu');
+		}
+	});
+
+	const blackContainer = document.createElement('div');
+	blackContainer.style.aspectRatio = '3 / 2';
+	blackContainer.style.width = 'clamp(350px, 40vh, 500px)';
+	blackContainer.style.borderRadius = '10px';
+	blackContainer.style.padding = '0.7rem';
+	blackContainer.style.background = 'black';
+	blackContainer.style.justifyContent = 'center';
+	blackContainer.style.gap = '0.7rem';
+	blackContainer.style.display = 'flex';
+	blackContainer.style.flexDirection = 'column';
+	blackContainer.style.borderRadius = '10px';
+	blackContainer.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.5)';
+	blackContainer.addEventListener('click', (e) => {
+		e.stopPropagation();
+	});
+
+	const playerPodium = document.createElement('div');
+	playerPodium.id = 'playerPodium';
+	playerPodium.style.borderRadius = '5px';
+	playerPodium.style.color = 'black';
+	playerPodium.style.gap = '2.5rem';
+	playerPodium.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	playerPodium.style.alignItems = 'center';
+	playerPodium.style.justifyContent = 'center';
+	playerPodium.style.flex = '1 1';
+	playerPodium.style.display = 'flex';
+	playerPodium.style.flexDirection = 'column';
+
+	const playerPodiumTitle = styleSettingTitle('Player Podium');
+	const firstPlace = styleText('#1'+ winner1Name);
+	const secondPlace = styleText('#2'+ winner2Name);
+	const thirdPlace = styleText('#3'+ Loser1Name);
+	const fourthPlace = styleText('#4'+ Loser2Name);
+	
+	playerPodium.appendChild(playerPodiumTitle);
+	playerPodium.append(firstPlace, secondPlace, thirdPlace, fourthPlace);
+	blackContainer.appendChild(playerPodium);
+
+	tournamentEndScreen.appendChild(blackContainer);
+	body.append(tournamentEndScreen);
+}

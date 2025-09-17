@@ -25,8 +25,8 @@ function tournamentUpdate(data: any) {
 	console.log('Tournament update:', data);
 	//document.getElementById('tournamentScreen')?.remove();
 	log('Tournament update received: ' + JSON.stringify(data.tournamentState));
-	// if (data.tournamentState.state === 'finished')
-	// 	showTournamentEndScreen(data.tournamentState);
+	if (data.tournamentState.state === 'finished')
+		showTournamentEndScreen(data.tournamentState);
 	setTimeout(() => {
 		updateNameTagsTournament(data.tournamentState);
 	}, 500);

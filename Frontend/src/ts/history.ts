@@ -84,6 +84,8 @@ export function doRenderPage(newState: string, query: string) {
 			document.getElementById("containerDashboard")?.remove();
 			document.getElementById("oppponentMenu")?.remove();
 			document.getElementById("gameOver")?.remove();
+			document.getElementById("tournamentScreen")?.remove();
+			document.getElementById("tournamentEndScreen")?.remove();
 			UI.state = S.stateUI.Menu;
 			break ;
 		case 'Credits':
