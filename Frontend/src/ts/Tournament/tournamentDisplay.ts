@@ -48,17 +48,17 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 	console.log(`${match}`);
 	const parent = box.parentElement;
 	if (!parent) {
-		console.log('no parent');
+		// console.log('no parent');
 		return;
 	}
 	const existingBtn = parent.querySelector('button');
-	if (existingBtn){
-		console.log(`existingBTN exists`);
-	}
-	else if (match) {
-		console.log(`existingBTN does not exist - match does`);
-		console.log(`box exists - playedID = ${player.id} - boxID = ${box}`);
-	}
+	// if (existingBtn){
+	// 	console.log(`existingBTN exists`);
+	// }
+	// else if (match) {
+	// 	console.log(`existingBTN does not exist - match does`);
+	// 	console.log(`box exists - playedID = ${player.id} - boxID = ${box}`);
+	// }
 	if (existingBtn && isMatchStarted(match)) {
 		console.log('This button should be removed');
 		existingBtn.remove();
@@ -72,6 +72,7 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 }
 
 export function updateNameTagsTournament(tournamentState: any) {
+	//check if the matches array length is bigger than 2 and if so check if the
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
 	const matches = tournamentState.matches || [];
@@ -109,15 +110,28 @@ export function updateNameTagsTournament(tournamentState: any) {
 		const winner1ID = matches[0]?.winnerID;
 		const winner1Player = players.find((p: any) => p.id === winner1ID);
 		winner1Box.textContent = getName(winner1ID);
-		updateButton(winner1Player, matches[4], winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
+		let winner_match = null;
+		if (matches[3] && matches[3].matchNumber === 4)
+			winner_match = matches[3];
+		else if (matches[2] && matches[2].matchNumber === 4)
+			winner_match = matches[2];
+		updateButton(winner1Player, winner_match, winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
 	}
 
+	//matches[3] == match.matchNumber3?
+	// matches = [Round2, round1, losers, winers]
 	const winner2Box = document.getElementById('winner2Box');
 	if (winner2Box) {
 		const winner2ID = matches[1]?.winnerID;
 		const winner2Player = players.find((p: any) => p.id === winner2ID);
 		winner2Box.textContent = getName(winner2ID);
-		updateButton(winner2Player, matches[4], winner2Box); 
+		//function to find the match for corresponding match number
+		let winner_match = null;
+		if (matches[3] && matches[3].matchNumber === 4)
+			winner_match = matches[3];
+		else if (matches[2] && matches[2].matchNumber === 4)
+			winner_match = matches[2];
+		updateButton(winner2Player, winner_match, winner2Box); 
 	}
 
 	const loser1Box = document.getElementById('loser1Box');
@@ -127,7 +141,12 @@ export function updateNameTagsTournament(tournamentState: any) {
 			: matches[0]?.player1;
 		const loser1Player = players.find((p: any) => p.id === loser1ID);
 		loser1Box.textContent = getName(loser1ID);
-		updateButton(loser1Player, matches[3], loser1Box); //losermatch is not necessarily index 3 -> -> winnermatch is matchNumber 4
+		let losers_match = null;
+		if (matches[3] && matches[3].matchNumber === 3)
+			losers_match = matches[3];
+		else if (matches[2] && matches[2].matchNumber === 3)
+			losers_match = matches[2];
+		updateButton(loser1Player, losers_match, loser1Box);
 	}
 
 	const loser2Box = document.getElementById('loser2Box');
@@ -137,7 +156,12 @@ export function updateNameTagsTournament(tournamentState: any) {
 				: matches[1]?.player1;
 		const loser2Player = players.find((p: any) => p.id === loser2ID);
 		loser2Box.textContent = getName(loser2ID);
-		updateButton(loser2Player, matches[3], loser2Box); 
+		let losers_match = null;
+		if (matches[3] && matches[3].matchNumber === 3)
+			losers_match = matches[3];
+		else if (matches[2] && matches[2].matchNumber === 3)
+			losers_match = matches[2];
+		updateButton(loser2Player, losers_match, loser2Box); 
 	}
 }
 
@@ -335,3 +359,17 @@ export function showTournamentScreen() {
 	body.appendChild(tournamentContainer);
 	requestUpdateTournament();
 }
+
+// function findMatchNumber(matches: any, matchNumber: number) {
+// 	matches.forEach(() => {
+
+// 	});
+// }
+
+// export function showTournamentEndScreen(tournamentState: any) {
+// 	const winner1Name = tournamentState
+// 	const winner2Name = 
+// 	const Loser1Name = 
+// 	const Loser2Name =
+// 	const overlay = document.createElement('div');
+// }
