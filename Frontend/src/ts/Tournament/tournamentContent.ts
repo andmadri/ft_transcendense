@@ -1,6 +1,6 @@
 import { Game, UI } from "../gameData.js"
 import { navigateTo } from "../history.js";
-import { showTournamentScreen, updateNameTagsTournament } from './tournamentDisplay.js';
+import { showTournamentScreen, updateNameTagsTournament, showTournamentEndScreen } from './tournamentDisplay.js';
 import { tournamentGameStart } from "./tournamentGameStart.js";
 import { createLog, log } from '../logging.js'
 
@@ -25,8 +25,8 @@ function tournamentUpdate(data: any) {
 	console.log('Tournament update:', data);
 	//document.getElementById('tournamentScreen')?.remove();
 	log('Tournament update received: ' + JSON.stringify(data.tournamentState));
-	// if (data.tournamentState.state === 'finished')
-	// 	showTournamentEndScreen(data.tournamentState);
+	if (data.tournamentState.state === 'finished')
+		showTournamentEndScreen(data.tournamentState);
 	// updateNameTagsTournament(data.tournamentState);
 	setTimeout(() => {
 		updateNameTagsTournament(data.tournamentState);
