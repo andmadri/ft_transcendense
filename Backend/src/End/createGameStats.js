@@ -7,10 +7,54 @@ import fs from 'fs';
 import path from 'path';
 
 export const visual = {
-	colors: {bl: 'black', wh: 'white', gr: '#363430', or: '#ff6117', ye: '#ffc433', ly: '#ffc433'},
-	chartWidth: 200,
-	chartHeight: 150,
-	margin: { top: 50, right: 10, bottom: 30, left: 30 }
+	version: `<?xml version="1.0" encoding="UTF-8"?>`,
+	xmlns: "http://www.w3.org/2000/svg",
+	colors: {
+		bl: 'black',
+		wh: 'white', 
+		gr: '#363430', 
+		or: '#ff6117', 
+		ye: '#ffc433', 
+		ly: '#ffc433'
+	},
+	width: 500,
+	height: 300,
+	margin: { 
+		top: 50,
+		right: 10,
+		bottom: 30,
+		left: 30
+	},
+	title: {
+		x: 10,
+		y: 20,
+		fontSize: 16
+	},
+	yLabel: {
+		x:  20,
+		y: 140,
+		fontSize: 12
+	},
+	xLabel: {
+		x:  20,
+		y: 140,
+		fontSize: 12
+	},
+	yLine: {
+		x1: 30,
+		y1: 50,
+		x2: 30,
+		y2: 270,
+		strokeW: 3,
+		rotate: `-90, 20, 150`,
+	},
+	xLine: {
+		x1: 30,
+		y1: 270,
+		x2: 490,
+		y2: 270,
+		strokeW: 3
+	}
 };
 
 const uploadsBase = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
