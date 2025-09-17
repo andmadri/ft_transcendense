@@ -30,14 +30,14 @@ export async function generateBarChartForMatch(db, matchID) {
 	});
 
 	const background = `<rect x="0" y="0" width="${visual.width}" height="${visual.height}" fill="${visual.colors.gr}" />`;
-	const title = `<text x="10" y="20" font-size="16" fill="${visual.colors.wh}">Hits per goal</text>`
+	const title = `<text x="${visual.title.x}" y="${visual.title.y}" font-size="${visual.title.fontSize}" fill="${visual.colors.wh}">Hits per goal</text>`
 	const axisY = `<line x1="${visual.margin.left}" y1="${visual.margin.top}" x2="${visual.margin.left}" y2="${visual.height - visual.margin.bottom}" stroke="${visual.colors.bl}" stroke-width="3"/>`;
 	const axisX = `<line x1="${visual.margin.left}" y1="${visual.height - visual.margin.bottom}" x2="${visual.width - visual.margin.right}" y2="${visual.height - visual.margin.bottom}" stroke="${visual.colors.bl}" stroke-width="3"/>`;
-	const xAsisLabel = `<text x="${visual.width / 2}" y="${visual.height - 10}" font-size="12" fill="black" text-anchor="middle">Goals</text>`;
-	const yAsisLabel = `<text x="20" y="${visual.height / 2}" font-size="12" fill="${visual.colors.wh}" text-anchor="middle" transform="rotate(-90, 20, ${visual.height / 2})">Hits</text>`;
+	const xAsisLabel = `<text x="${visual.xLabel.x}" y="${visual.xLabel.y}" font-size="${visual.xLabel.fontSize}" fill="black" text-anchor="middle">Goals</text>`;
+	const yAsisLabel = `<text x="${visual.yLabel.x}" y="${visual.yLabel.y}" font-size="${visual.yLabel.fontSize}" fill="${visual.colors.wh}" text-anchor="middle" transform="${visual.yLine.transform}">Hits</text>`;
 	
-	let svg = `<?xml version="1.0" encoding="UTF-8"?>
-		<svg width="${visual.width}" height="${visual.height}" viewBox="0 0 ${visual.width} ${visual.height}" xmlns="http://www.w3.org/2000/svg">
+	let svg = `${visual.version}
+		<svg width="${visual.width}" height="${visual.height}" viewBox="${visual.viewbox} ${visual.height}" xmlns="${visual.xmlns}">
 			${background}
 			${axisY}
 			${axisX}

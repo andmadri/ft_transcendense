@@ -9,6 +9,7 @@ import path from 'path';
 export const visual = {
 	version: `<?xml version="1.0" encoding="UTF-8"?>`,
 	xmlns: "http://www.w3.org/2000/svg",
+	viewbox: "0 0 500 300",
 	colors: {
 		bl: 'black',
 		wh: 'white', 
@@ -38,7 +39,8 @@ export const visual = {
 	xLabel: {
 		x:  20,
 		y: 140,
-		fontSize: 12
+		fontSize: 12,
+		transform: `rotate(-90, 20, 150)`
 	},
 	yLine: {
 		x1: 30,
@@ -46,7 +48,6 @@ export const visual = {
 		x2: 30,
 		y2: 270,
 		strokeW: 3,
-		rotate: `-90, 20, 150`,
 	},
 	xLine: {
 		x1: 30,
