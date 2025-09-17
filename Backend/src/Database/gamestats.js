@@ -212,7 +212,7 @@ export async function getMatchBarDB(db, match_id) {
 import fs from 'fs';
 import path from 'path';
 
-const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
+const uploadsBase = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
 
 const SQL = `
 	SELECT u.name,

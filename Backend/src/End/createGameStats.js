@@ -13,7 +13,7 @@ export const visual = {
 	margin: { top: 50, right: 30, bottom: 40, left: 180 }
 };
 
-const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
+const uploadsBase = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
 
 async function generateSVG(outDir, fileName, svg) {
 	let targetDir = outDir;

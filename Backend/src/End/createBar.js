@@ -3,9 +3,9 @@ import { visual } from './createGameStats.js';
 
 export async function generateBarChartForMatch(db, matchID) {
 	const data = await getMatchBarDB(db, matchID);
-	if (!data) {
+	if (!data || data.length === 0) {
 		console.log(`No data from getMatchBarDB - matchID: ${matchID}`);
-		return ;
+		return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${visual.chartWidth}" height="${visual.chartHeight}" viewBox="0 0 ${visual.chartWidth} ${visual.chartHeight}" xmlns="http://www.w3.org/2000/svg">\n<rect x="0" y="0" width="${visual.chartWidth}" height="${visual.chartHeight}" fill="${visual.colors.gr}" />\n<text x="10" y="20" font-size="16" fill="#fff">No data</text>\n</svg>`;
 	}
 
 	// CREATE CHART HERE
@@ -14,10 +14,11 @@ export async function generateBarChartForMatch(db, matchID) {
 
 	let bars = '';
 	const goals = data.length;
-	const maxHits = Math.max(...data.map(row => row.hits));
+	const maxHits = Math.max(1, ...data.map(row => Number(row.hits) || 0));
 
 	data.forEach((row, index) => {
-		const h = row.hits * visual.chartHeight / maxHits;
+		const hits = Number(row.hits) || 0;
+		const h = hits * visual.chartHeight / maxHits;
 		const w = visual.chartWidth / goals;
 		const x = index * w;
 		const y = visual.chartHeight - h;
@@ -29,14 +30,12 @@ export async function generateBarChartForMatch(db, matchID) {
 	const background = `<rect x="0" y="0" width="${visual.chartWidth}" height="${visual.chartHeight}" fill="${visual.colors.gr}" />`;
 	const title = `<text x="10" y="20" font-size="16" fill="#fff">Hits per goal</text>`
 
-	let svg = `
-		<?xml version="1.1" encoding="UTF-8"?>
-		<svg width="${visual.chartWidth}" height="${visual.chartHeight}" viewBox="0 0 ${visual.chartWidth} ${visual.chartHeight}" xmlns="http://www.w3.org/2000/svg">
-			${background}
-			${bars}
-			${title}
-		</svg>
-	`;
+	let svg = `<?xml version="1.0" encoding="UTF-8"?>
+	<svg width="${visual.chartWidth}" height="${visual.chartHeight}" viewBox="0 0 ${visual.chartWidth} ${visual.chartHeight}" xmlns="http://www.w3.org/2000/svg">
+		${background}
+		${bars}
+		${title}
+	</svg>`;
 
 	return (svg);
 }
