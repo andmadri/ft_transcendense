@@ -17,6 +17,7 @@ function getTournamentStateForFrontend() {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
 		matches: tournament.matches.map(m => ({
 			matchNumber: m.matchNumber,
+			state: m.match.state,
 			player1: m.match.player1.ID,
 			player2: m.match.player2.ID,
 			winnerID: m.match.winnerID
@@ -77,19 +78,19 @@ export function leaveTournament(msg, userId, socket, io) {
 			subaction: 'update',
 			tournamentState: getTournamentStateForFrontend()
 		});
+		socket.emit('message', {
+			action: 'tournament',
+			subaction: 'left'
+		});
+		// Confirm leaving and trigger frontend navigation
+	
+		// Print in console for debugging
+		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else {
+		// -> alert player they can't leave / lose the tournament
 		console.log('Tournament already in progress, cannot leave');
 
 	}
-
-	// Confirm leaving and trigger frontend navigation
-	socket.emit('message', {
-		action: 'tournament',
-		subaction: 'left'
-	});
-
-	// Print in console for debugging
-	console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 }
 
 
@@ -109,7 +110,7 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 
 	console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
 
-	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament); //probably nice to start using MF.Tournament / MF.singleGame now
+	const matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament);
 
 	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
 	player1.ready = false;
@@ -118,11 +119,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
-		subaction: 'matchStart',
-		matchId,
-		matchNumber,
-		player1: player1.id,
-		player2: player2.id
+		subaction: 'update',
+		tournamentState: getTournamentStateForFrontend(),
 	});
 }
 

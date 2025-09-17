@@ -37,22 +37,36 @@ function isUserInMatch(match: any) {
 	return match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
 }
 
-function isMatchFinished(match: any) {
-	return match && match.winnerID !== null && match.winnerID !== undefined;
+function isMatchStarted(match: any) {
+	if (match) {
+		console.log('match exists');
+	}
+	return match;
 }
 
 function updateButton(player: any, match:any, box: HTMLElement) {
+	console.log(`${match}`);
 	const parent = box.parentElement;
-	if (!parent)
+	if (!parent) {
+		console.log('no parent');
 		return;
+	}
 	const existingBtn = parent.querySelector('button');
-	if (existingBtn && isMatchFinished(match)) {
+	if (existingBtn){
+		console.log(`existingBTN exists`);
+	}
+	else if (match) {
+		console.log(`existingBTN does not exist - match does`);
+		console.log(`box exists - playedID = ${player.id} - boxID = ${box}`);
+	}
+	if (existingBtn && isMatchStarted(match)) {
 		console.log('This button should be removed');
 		existingBtn.remove();
 		return;
 	}
 
-	if (player?.name === UI.user1.name && !existingBtn) {
+	if (player?.name === UI.user1.name && !existingBtn && !match) {
+		console.log('Button created');
 		parent.appendChild(createButton());
 	}
 }
@@ -61,23 +75,25 @@ export function updateNameTagsTournament(tournamentState: any) {
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
 	const matches = tournamentState.matches || [];
-	const round1 = matches[0] || [];
-	const round2 = matches[1] || [];
+	const round1 = matches[0] || null ;
+	const round2 = matches[1] || null ;
 
 	const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
 
 	playerBoxIds.forEach((boxId, index) => {
 		const box = document.getElementById(boxId);
 		const player = players[index];
-		let playerMatch = [];
-		if (player.id === round1.player1 || player.id === round1.player2)
-			playerMatch = round1;
-		else
-			playerMatch = round2;
+		let playerMatch = null;
+			console.log('round1 and round2 exist');
+			if (round1 && (player.id === round1.player1 || player.id === round1.player2))
+				playerMatch = round1;
+			else if (round2 && (player.id === round2.player1 || player.id === round2.player2)) {
+				playerMatch = round2;
+			}
 		if (box) {
-			console.log('box exist');
 			box.textContent = player?.name || 'Waiting...';
 			if (players.length == 4) {
+				console.log(`box exists - playedID = ${player.id} - boxID = ${boxId}`);
 				//only if there are four players you should have a button otherwise weird things happen if someone presses the button and there are no four players
 				updateButton(player, playerMatch, box);
 			}
@@ -93,7 +109,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 		const winner1ID = matches[0]?.winnerID;
 		const winner1Player = players.find((p: any) => p.id === winner1ID);
 		winner1Box.textContent = getName(winner1ID);
-		updateButton(winner1Player, matches[4], winner1Box);
+		updateButton(winner1Player, matches[4], winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
 	}
 
 	const winner2Box = document.getElementById('winner2Box');
@@ -111,7 +127,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 			: matches[0]?.player1;
 		const loser1Player = players.find((p: any) => p.id === loser1ID);
 		loser1Box.textContent = getName(loser1ID);
-		updateButton(loser1Player, matches[3], loser1Box);
+		updateButton(loser1Player, matches[3], loser1Box); //losermatch is not necessarily index 3 -> -> winnermatch is matchNumber 4
 	}
 
 	const loser2Box = document.getElementById('loser2Box');
