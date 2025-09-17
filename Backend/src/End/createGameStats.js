@@ -10,7 +10,7 @@ export const visual = {
 	colors: {bl: 'black', wh: 'white', gr: '#363430', or: '#ff6117', ye: '#ffc433', ly: '#ffc433'},
 	chartWidth: 200,
 	chartHeight: 150,
-	margin: { top: 50, right: 30, bottom: 40, left: 180 }
+	margin: { top: 50, right: 10, bottom: 30, left: 30 }
 };
 
 const uploadsBase = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
