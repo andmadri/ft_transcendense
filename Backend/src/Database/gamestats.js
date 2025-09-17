@@ -31,6 +31,7 @@ export async function getMatchEventsDB(db, matchId) {
 	console.log(`--- goalData --- ${matchId}`);
 	console.table(goalData);
 
+	return goalData;
 	// console.log('--- matchEvents --- keys:', 
 	// matchId && typeof matchId === 'object' ? Object.keys(matchId) : null);
 	// console.log('--- matchEvents --- inspect:\n', inspect(matchId, { depth: null, colors: true }));
