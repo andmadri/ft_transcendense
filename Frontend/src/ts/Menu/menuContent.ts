@@ -168,7 +168,7 @@ export function styleRow(playerName: string)
 	row.style.borderRadius = '5px';
 	row.style.backgroundColor = '#2a2927';
 	row.style.color = 'white';
-	row.style.justifyItems = 'space-between';
+	// row.style.justifyItems = 'space-between';
 	row.style.fontFamily = '"RobotoCondensed", sans-serif';
 	row.style.fontSize = 'clamp(10px, 1.5vw, 17px)';
 	row.style.cursor = 'pointer';

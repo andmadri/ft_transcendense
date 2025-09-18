@@ -68,7 +68,6 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 		navigateTo('LoginP1');
 });
 
-
 function gameLoop() {
 	switch (Game.match.state) {
 		case state.Pending: {

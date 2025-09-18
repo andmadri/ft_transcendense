@@ -37,7 +37,7 @@ function findOpenMatch() {
 let now;
 let deltaTime;
 
-function matchInterval(match, io) {
+export function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		now = performance.now();
 		deltaTime = (now - match.lastUpdateTime) / 600;

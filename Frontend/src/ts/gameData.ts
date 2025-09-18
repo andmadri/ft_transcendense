@@ -74,6 +74,7 @@ export const Game : S.Game = {
 		transports: ['websocket'],
 		secure: true,
 	}),
+	pendingState: S.pendingState.Online,
 	match: newMatch(),
 	colletedSteps: [], //not used i think
 }
