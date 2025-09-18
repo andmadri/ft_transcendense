@@ -54,12 +54,13 @@ function getDurationInSec(data) {
 function getGameStatsSVG(data, players) {
 	const {player1, player2} = players;
 	const match_duration = getDurationInSec(data);
+	const winner = data.player_1_id == data.winner_id ? player1 : player2;
 
 	const gameStatsSVG = `
-		${getLineSVG(24, 'vs', 490, 175)}
-		${getLineSVG(24, `data: ${data.start_time}`, 80, 400)}
-		${getLineSVG(24, `playing time: ${match_duration}`, 80, 450)}
-		${getLineSVG(24, `winner: ${data.winner_id}`, 80, 500)}
+		${getLineSVG(40, 'vs', 480, 175)}
+		${getLineSVG(40, `data: ${data.start_time}`, 80, 400)}
+		${getLineSVG(40, `playing time: ${match_duration}`, 80, 460)}
+		${getLineSVG(40, `winner: ${winner}`, 80, 520)}
 	`;
 	return (gameStatsSVG);
 }
@@ -71,10 +72,6 @@ export async function generateMatchInfo(matchID, data, players, colorOf) {
 		console.log(`No data from getMatchInfoDB - matchID: ${matchID}`);
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
-
-	// CREATE CHART HERE
-	console.log(`--- generateMatchInfo --- ${matchID}`);
-	console.table(data);
 
 	const min_x = 0;
 	const min_y = 0;

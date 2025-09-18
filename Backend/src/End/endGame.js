@@ -22,10 +22,10 @@ export async function quitMatch(match, msg, io) {
 	match.state = state.End;
 }
 
-export async function saveMatch(match, matchID) {
+export async function saveMatch(socket, matchID) {
 	const matchInfo = await handleMatchEndedDB(db, matchID);
 	console.log('matchInfo:', matchInfo);
-	generateAllChartsForMatch(db, matchInfo, matchID);
+	// generateAllChartsForMatch(db, matchInfo, matchID);
 
 	// Delete the data in the backend
 	matches.delete(matchID);

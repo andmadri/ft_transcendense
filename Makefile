@@ -9,9 +9,6 @@ all:	up
 
 up:
 	rm -rf Server/src
-	mkdir -p ./graphs/charts
-	chmod 777 ./graphs
-	chmod 777 ./graphs/charts
 	cp -r Frontend/* Server/
 	docker compose -f docker-compose.yml up
 

@@ -1,80 +1,54 @@
-import { match } from 'assert';
-import { getMatchEventsDB, renderUserStateDurationsSVG } from '../Database/gamestats.js';
 import { generateBarChartForMatch } from './createBar.js';
 import { generateLineChartForMatch } from './createLine.js';
 import { generateScatterChartForMatch } from './createScatter.js';
 import { generateMatchInfo } from './createMatchInfo.js';
 import { getMatchByID } from '../Database/match.js';
 import { getUsersByIDs } from '../Database/users.js';
-import fs from 'fs';
-import path from 'path';
 
-const uploadsBase = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
-
-async function generateSVG(outDir, fileName, svg) {
-	let targetDir = outDir;
-
-	try {
-		fs.mkdirSync(targetDir, { recursive: true });
-	} catch (e) {
-		if (e.code === 'EACCES') {
-			const fallbackBase = process.env.UPLOADS_DIR || '/tmp/uploads';
-			targetDir = path.join(fallbackBase, 'charts');
-			fs.mkdirSync(targetDir, { recursive: true });
-			console.warn('[charts] EACCES creating', outDir, '— fell back to', targetDir);
-		} else {
-			throw e;
-		}
-	}
-	const fname = fileName;
-	const outPath = path.isAbsolute(outDir) ? path.join(outDir, fname) : path.join(process.cwd(), outDir, fname);
-	if (typeof svg !== 'string') {
-		throw new TypeError(`generateSVG expected a string, got ${typeof svg}`);
-	}
-	fs.writeFileSync(outPath, svg, 'utf8');
-	return outPath;
-}
-
-export async function generateAllChartsForMatch(db, match, matchID) {
+export async function generateAllChartsForMatch(db, socket, msg) {
+	const matchID = msg.matchID;
 	const matchinfo = await getMatchByID(db, matchID);
 	const players = await getUsersByIDs(db, matchinfo.player_1_id, matchinfo.player_2_id);
-	const outDir = path.join(uploadsBase, 'charts', String(matchID));
 
 	// COLOR FOR THE USERS
 	const palette = ['#f96216', '#f9d716'];
 	const user_ids = [matchinfo.player_1_id, matchinfo.player_2_id]; 
 	const colorOf = new Map(user_ids.map((u, i) => [u, palette[i % palette.length]]));
-	const {p1, p2} = players;
 
-	// MATCHINFO
-	const infoChartSVG = await generateMatchInfo(matchID, matchinfo, players, colorOf);
-	const svgInfoChart = await generateSVG(outDir, `info_chart_${String(matchID)}.svg`, infoChartSVG);
-	console.log('Chart saved at:', svgInfoChart);
+	try {
+		const infoChartSVG = await generateMatchInfo(matchID, matchinfo, players, colorOf);
+		const barChartSVG = await generateBarChartForMatch(db, matchID, colorOf);
+		const scatterChartSVG = await generateScatterChartForMatch(db, matchID, colorOf);
+		const lineChartSVG = await generateLineChartForMatch(db, matchID, colorOf);
+		
+		// Send SVGs to frontend
+		socket.emit('message', {
+			action: 'gameStats',
+			matchID,
+			infoChartSVG,
+			barChartSVG,
+			scatterChartSVG,
+			lineChartSVG,
+		});
+	} catch (err) {
+		const fallback = `
+			<?xml version="1.0" encoding="UTF-8"?>
+			<svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+			<rect x="0" y="0" width="200" height="100" fill="#333"/>
+			<text x="100" y="55" font-size="16" fill="#fff" text-anchor="middle">No data</text>
+			</svg>
+		`
+		console.error(err, 'generating Charts');
 
-	// BAR CHART
-	const barChartSVG = await generateBarChartForMatch(db, matchID, colorOf);
-	const svgBarChart = await generateSVG(outDir, `bar_chart_${String(matchID)}.svg`, barChartSVG);
-	console.log('Chart saved at:', svgBarChart);
-
-	// SCATTER CHART
-	const scatterChartSVG = await generateScatterChartForMatch(db, matchID, colorOf);
-	const svgScatterChart = await generateSVG(outDir, `scatter_chart_${String(matchID)}.svg`, scatterChartSVG);
-	console.log('Chart saved at:', svgScatterChart);
-
-	// LINE CHART
-	const lineChartSVG = await generateLineChartForMatch(db, matchID, colorOf);
-	const svgLineChart = await generateSVG(outDir, `line_chart_${String(matchID)}.svg`, lineChartSVG);
-	console.log('Chart saved at:', svgLineChart);
+		socket.emit('message', {
+			action: 'gameStats',
+			matchID,
+			infoChartSVG: fallback,
+			barChartSVG: fallback,
+			scatterChartSVG: fallback,
+			lineChartSVG: fallback,
+		});
+	}
 
 
-
-	// EXAMPLE USERSTATE DURATION
-	// const svgPath = await renderUserStateDurationsSVG(db, {
-	// 	outDir: path.join(uploadsBase, 'charts', String(matchID)),
-	// 	fileName: `user_state_durations_match_${String(matchID)}.svg`,
-	// 	width: 1000,
-	// 	barHeight: 26
-	// });
-	// const svgChart = await generateSVG(outDir, `user_state_durations_match_${String(matchID)}.svg`, svgPath);
-	// console.log('Chart 1 saved at:', svgChart);
 }
