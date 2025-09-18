@@ -36,7 +36,9 @@ export function pauseBallTemporarily(duration: number) {
 		return;
 	ballDiv.style.animation = 'twinkle 1s ease-in-out infinite';
 	Game.match.pauseTimeOutID = setTimeout(() => {
-		Game.match.state = state.Serve;
+		if (Game.match.state != state.End) {
+			Game.match.state = state.Serve;
+		}
 		ballDiv.style.animation = 'none';
 		Game.match.pauseTimeOutID = null;
 	}, duration);

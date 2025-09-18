@@ -63,7 +63,9 @@ function matchInterval(match, io) {
 				if (match.pauseTimeOutID == null) {
 					match.resumeTime = match.gameState.time + 3000;
 					match.pauseTimeOutID = setTimeout(() => {
-						match.state = state.Serve;
+						if (match.state != state.End) {
+							match.state = state.Serve;
+						}
 						match.pauseTimeOutID = null
 					}, match.resumeTime - Date.now());
 				}
