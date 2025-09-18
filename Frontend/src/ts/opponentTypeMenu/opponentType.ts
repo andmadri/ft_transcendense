@@ -122,8 +122,7 @@ export function getOpponentMenu() {
 	opponentMenu.style.zIndex = '100';
 
 	opponentMenu.addEventListener('click', (e) => {
-		changeOpponentType('empty');
-		changeMatchFormat('empty');
+		changeOpponentType('Empty');
 		if (e.target === opponentMenu) {
 			navigateTo('Menu');
 		}
