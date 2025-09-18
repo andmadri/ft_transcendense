@@ -6,6 +6,7 @@ import { createBackgroundText } from '../Menu/menuContent.js';
 import { pressButton } from '../windowEvents.js';
 import { navigateTo } from '../history.js';
 import { styleSettingTitle } from '../opponentTypeMenu/opponentType.js';
+import { log } from '../logging.js';
 
 function createButton():HTMLButtonElement {
 	const readyBtn = document.createElement('button');
@@ -48,7 +49,7 @@ function isMatchStarted(match: any) {
 }
 
 function updateButton(player: any, match:any, box: HTMLElement) {
-	console.log(`${match}`);
+	// console.log(`${match}`);
 	const parent = box.parentElement;
 	if (!parent) {
 		// console.log('no parent');
@@ -75,73 +76,73 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 }
 
 function getName(id: number, players: any) {
-	return players.find((p: any) => p.id === id)?.name || '';
+	return players.find((p: any) => p.id === id)?.name || '-';
 }
 
-function drawPointer(fromX: number, fromY: number, toX: number, toY: number) {
-	// Bounding box for the pointer: top-left at the min coords, sized to the deltas
-	const minX = Math.min(fromX, toX);
-	const minY = Math.min(fromY, toY);
-	const width = Math.abs(toX - fromX);
-	const height = Math.abs(toY - fromY);
+// function drawPointer(fromX: number, fromY: number, toX: number, toY: number) {
+// 	// Bounding box for the pointer: top-left at the min coords, sized to the deltas
+// 	const minX = Math.min(fromX, toX);
+// 	const minY = Math.min(fromY, toY);
+// 	const width = Math.abs(toX - fromX);
+// 	const height = Math.abs(toY - fromY);
 
-	const container = document.createElement('div');
-	container.style.position = 'absolute';
-	container.style.left = `${minX}px`;
-	container.style.top = `${minY}px`;
-	container.style.width = `${width}px`;
-	container.style.height = `${height}px`;
-	container.style.pointerEvents = 'none'; // keep it non-interactive
+// 	const container = document.createElement('div');
+// 	container.style.position = 'absolute';
+// 	container.style.left = `${minX}px`;
+// 	container.style.top = `${minY}px`;
+// 	container.style.width = `${width}px`;
+// 	container.style.height = `${height}px`;
+// 	container.style.pointerEvents = 'none'; // keep it non-interactive
 
-	// Compute angle from start → end
-	const deltaX = toX - fromX;
-	const deltaY = toY - fromY;
-	const angleDeg = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+// 	// Compute angle from start → end
+// 	const deltaX = toX - fromX;
+// 	const deltaY = toY - fromY;
+// 	const angleDeg = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
-	// Position of the glyph inside the container at the midpoint
-	const glyphX = width / 2;
-	const glyphY = height / 2;
+// 	// Position of the glyph inside the container at the midpoint
+// 	const glyphX = width / 2;
+// 	const glyphY = height / 2;
 
-	const glyph = document.createElement('div');
-	glyph.textContent = '>';
-	glyph.style.position = 'absolute';
-	glyph.style.left = `${glyphX}px`;
-	glyph.style.top = `${glyphY}px`;
-	glyph.style.margin = '0';
-	glyph.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
-	glyph.style.transformOrigin = '50% 50%';
-	glyph.style.textAlign = 'center';
-	glyph.style.fontFamily = '"Horizon", sans-serif';
-	glyph.style.fontSize = 'clamp(32px, 48px, 56px)';
-	glyph.style.color = 'transparent';
-	(glyph.style as any).webkitTextStroke = '0.05rem #ffffffff';
+// 	const glyph = document.createElement('div');
+// 	glyph.textContent = '--->';
+// 	glyph.style.position = 'absolute';
+// 	glyph.style.left = `${glyphX}px`;
+// 	glyph.style.top = `${glyphY}px`;
+// 	glyph.style.margin = '0';
+// 	glyph.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
+// 	glyph.style.transformOrigin = '50% 50%';
+// 	glyph.style.textAlign = 'center';
+// 	glyph.style.fontFamily = '"Horizon", sans-serif';
+// 	glyph.style.fontSize = 'clamp(32px, 48px, 56px)';
+// 	glyph.style.color = 'transparent';
+// 	(glyph.style as any).webkitTextStroke = '0.05rem #ffffffff';
 
-	container.appendChild(glyph);
-	return container;
-}
+// 	container.appendChild(glyph);
+// 	return container;
+// }
 
-function getPointerPos(fromBox: HTMLElement, toBox: HTMLElement | null) {
-	if (!toBox) return;
-	const container = document.getElementById('tournamentScreen');
-	if (!container) return;
+// function getPointerPos(fromBox: HTMLElement, toBox: HTMLElement | null, pointerId: string) {
+// 	if (!toBox) return;
+// 	const container = document.getElementById('tournamentScreen');
+// 	if (!container) return;
+// 	if (container.querySelector('#' + pointerId)) return;
+// 	// Get bounding rectangles
+// 	const fromRect = fromBox.getBoundingClientRect();
+// 	const toRect = toBox.getBoundingClientRect();
+// 	const containerRect = container.getBoundingClientRect();
 
-	// Get bounding rectangles
-	const fromRect = fromBox.getBoundingClientRect();
-	const toRect = toBox.getBoundingClientRect();
-	const containerRect = container.getBoundingClientRect();
+// 	// Compute centers relative to container
+// 	const fromX = (fromRect.left + fromRect.right) / 2 - containerRect.left;
+// 	const fromY = (fromRect.top + fromRect.bottom) / 2 - containerRect.top;
+// 	const toX = (toRect.left + toRect.right) / 2 - containerRect.left;
+// 	const toY = (toRect.top + toRect.bottom) / 2 - containerRect.top;
 
-	// Compute centers relative to container
-	const fromX = (fromRect.left + fromRect.right) / 2 - containerRect.left;
-	const fromY = (fromRect.top + fromRect.bottom) / 2 - containerRect.top;
-	const toX = (toRect.left + toRect.right) / 2 - containerRect.left;
-	const toY = (toRect.top + toRect.bottom) / 2 - containerRect.top;
+// 	const pointer = drawPointer(fromX, fromY, toX, toY);
+// 	pointer.id = pointerId;
+// 	container.appendChild(pointer);
 
-	// Pass pure numbers
-	const pointer = drawPointer(fromX, fromY, toX, toY);
-	container.appendChild(pointer);
-
-	return pointer;
-}
+// 	return pointer;
+// }
 
 
 
@@ -150,7 +151,7 @@ function updateBoxBorder(matches:any, players:any) {
 	let box2: HTMLElement | null;
 	// const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box', 'loser1Box', 'loser2Box', 'winner1Box', 'winner2Box'];
 	matches.forEach((match: any) => {
-		console.log('Match:', match, 'match.matchNumber:', match.matchNumber);
+		// console.log('Match:', match, 'match.matchNumber:', match.matchNumber);
 		if (match && (match.matchNumber === 1 || match.matchNumber === 2)) {
 			box1 = document.getElementById('player' + (match.matchNumber * 2 - 1) + 'Box');
 			box2 = document.getElementById('player' + (match.matchNumber * 2) + 'Box');
@@ -161,7 +162,7 @@ function updateBoxBorder(matches:any, players:any) {
 			box1 = document.getElementById('winner1Box');
 			box2 = document.getElementById('winner2Box');
 		}
-		console.log(`box1: ${box1?.id} - box2: ${box2?.id}`, box1, box2);
+		// console.log(`box1: ${box1?.id} - box2: ${box2?.id}`, box1, box2);
 		if (match && match.winnerID) {
 			if (box1 && box2) {
 				const winner1 = players.find((p: any) => p.id === match.winnerID);
@@ -169,23 +170,23 @@ function updateBoxBorder(matches:any, players:any) {
 				if (winner1?.name === box1.textContent) {
 					box1.style.border = '2px solid #00ff00';
 					box2.style.border = '2px solid #ff4444';
-					if (match.matchNumber === 1) {
-						getPointerPos(box1, document.getElementById('winner1Box'));
-						getPointerPos(box2, document.getElementById('loser1Box'));
-					} else if (match.matchNumber === 2) {
-						getPointerPos(box1, document.getElementById('winner2Box'));
-						getPointerPos(box2, document.getElementById('loser2Box'));
-					}
+					// if (match.matchNumber === 1) {
+					// 	getPointerPos(box1, document.getElementById('winner1Box'), 'pointer1');
+					// 	getPointerPos(box2, document.getElementById('loser1Box'), 'pointer2');
+					// } else if (match.matchNumber === 2) {
+					// 	getPointerPos(box1, document.getElementById('winner2Box'), 'pointer1');
+					// 	getPointerPos(box2, document.getElementById('loser2Box'), 'pointer2');
+					// }
 				} else if (winner1?.name === box2.textContent) {
 					box2.style.border = '2px solid #00ff00';
 					box1.style.border = '2px solid #ff4444';
-					if (match.matchNumber === 1) {
-						getPointerPos(box2, document.getElementById('winner1Box'));
-						getPointerPos(box1, document.getElementById('loser1Box'));
-					} else if (match.matchNumber === 2) {
-						getPointerPos(box2, document.getElementById('winner2Box'));
-						getPointerPos(box1, document.getElementById('loser2Box'));
-					}
+					// if (match.matchNumber === 1) {
+					// 	getPointerPos(box2, document.getElementById('winner1Box'), 'pointer3');
+					// 	getPointerPos(box1, document.getElementById('loser1Box'), 'pointer4');
+					// } else if (match.matchNumber === 2) {
+					// 	getPointerPos(box2, document.getElementById('winner2Box'), 'pointer3');
+					// 	getPointerPos(box1, document.getElementById('loser2Box'), 'pointer4');
+					// }
 				}
 			}
 		} else if (box1 && box2) {
@@ -232,63 +233,65 @@ export function updateNameTagsTournament(tournamentState: any) {
 		}
 	});
 
-	const winner1Box = document.getElementById('winner1Box');
-	if (winner1Box) {
-		const winner1ID = matches[0]?.winnerID;
-		const winner1Player = players.find((p: any) => p.id === winner1ID);
-		winner1Box.textContent = getName(winner1ID, tournamentState.players);
-		let winner_match = null;
-		if (matches[3] && matches[3].matchNumber === 4)
-			winner_match = matches[3];
-		else if (matches[2] && matches[2].matchNumber === 4)
-			winner_match = matches[2];
-		updateButton(winner1Player, winner_match, winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
-	}
+	if (matches[0]?.winnerID) {
+		const winner1Box = document.getElementById('winner1Box');
+		if (winner1Box) {
+			const winner1ID = matches[0]?.winnerID;
+			const winner1Player = players.find((p: any) => p.id === winner1ID);
+			winner1Box.textContent = getName(winner1ID, tournamentState.players);
+			let winner_match = null;
+			if (matches[3] && matches[3].matchNumber === 4)
+				winner_match = matches[3];
+			else if (matches[2] && matches[2].matchNumber === 4)
+				winner_match = matches[2];
+			updateButton(winner1Player, winner_match, winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
+		}
 
-	//matches[3] == match.matchNumber3?
-	// matches = [Round2, round1, losers, winers]
-	const winner2Box = document.getElementById('winner2Box');
-	if (winner2Box) {
-		const winner2ID = matches[1]?.winnerID;
-		const winner2Player = players.find((p: any) => p.id === winner2ID);
-		winner2Box.textContent = getName(winner2ID, tournamentState.players);
-		//function to find the match for corresponding match number
-		let winner_match = null;
-		if (matches[3] && matches[3].matchNumber === 4)
-			winner_match = matches[3];
-		else if (matches[2] && matches[2].matchNumber === 4)
-			winner_match = matches[2];
-		updateButton(winner2Player, winner_match, winner2Box); 
-	}
-
-	const loser1Box = document.getElementById('loser1Box');
-	if (loser1Box) {
-		const loser1ID = matches[0]?.winnerID === matches[0]?.player1
+		const loser1Box = document.getElementById('loser1Box');
+		if (loser1Box) {
+			const loser1ID = matches[0]?.winnerID === matches[0]?.player1
 			? matches[0]?.player2
 			: matches[0]?.player1;
-		const loser1Player = players.find((p: any) => p.id === loser1ID);
-		loser1Box.textContent = getName(loser1ID, tournamentState.players);
-		let losers_match = null;
-		if (matches[3] && matches[3].matchNumber === 3)
-			losers_match = matches[3];
-		else if (matches[2] && matches[2].matchNumber === 3)
-			losers_match = matches[2];
-		updateButton(loser1Player, losers_match, loser1Box);
+			const loser1Player = players.find((p: any) => p.id === loser1ID);
+			loser1Box.textContent = getName(loser1ID, tournamentState.players);
+			let losers_match = null;
+			if (matches[3] && matches[3].matchNumber === 3)
+				losers_match = matches[3];
+			else if (matches[2] && matches[2].matchNumber === 3)
+				losers_match = matches[2];
+			updateButton(loser1Player, losers_match, loser1Box);
+		}
 	}
 
-	const loser2Box = document.getElementById('loser2Box');
-	if (loser2Box) {
-		const loser2ID = matches[1]?.winnerID === matches[1]?.player1
-				? matches[1]?.player2
-				: matches[1]?.player1;
-		const loser2Player = players.find((p: any) => p.id === loser2ID);
-		loser2Box.textContent = getName(loser2ID, tournamentState.players);
-		let losers_match = null;
-		if (matches[3] && matches[3].matchNumber === 3)
-			losers_match = matches[3];
-		else if (matches[2] && matches[2].matchNumber === 3)
-			losers_match = matches[2];
-		updateButton(loser2Player, losers_match, loser2Box); 
+	if (matches[1]?.winnerID) {
+		const winner2Box = document.getElementById('winner2Box');
+		if (winner2Box) {
+			const winner2ID = matches[1]?.winnerID;
+			const winner2Player = players.find((p: any) => p.id === winner2ID);
+			winner2Box.textContent = getName(winner2ID, tournamentState.players);
+			//function to find the match for corresponding match number
+			let winner_match = null;
+			if (matches[3] && matches[3].matchNumber === 4)
+				winner_match = matches[3];
+			else if (matches[2] && matches[2].matchNumber === 4)
+				winner_match = matches[2];
+			updateButton(winner2Player, winner_match, winner2Box);
+		}
+
+		const loser2Box = document.getElementById('loser2Box');
+		if (loser2Box) {
+			const loser2ID = matches[1]?.winnerID === matches[1]?.player1
+					? matches[1]?.player2
+					: matches[1]?.player1;
+			const loser2Player = players.find((p: any) => p.id === loser2ID);
+			loser2Box.textContent = getName(loser2ID, tournamentState.players);
+			let losers_match = null;
+			if (matches[3] && matches[3].matchNumber === 3)
+				losers_match = matches[3];
+			else if (matches[2] && matches[2].matchNumber === 3)
+				losers_match = matches[2];
+			updateButton(loser2Player, losers_match, loser2Box);
+		}
 	}
 
 	updateBoxBorder(matches, players);
@@ -349,7 +352,7 @@ export function showTournamentScreen() {
 
 		const player1Box = document.createElement('div');
 		player1Box.id = player1BoxId;
-		player1Box.textContent = 'Waiting...';
+		player1Box.textContent = '-';
 		player1Box.style.background = '#4a4a4a';
 		player1Box.style.color = 'white';
 		player1Box.style.padding = '0.75rem 1rem';
@@ -367,7 +370,7 @@ export function showTournamentScreen() {
 
 		const player2Box = document.createElement('div');
 		player2Box.id = player2BoxId;
-		player2Box.textContent = 'Waiting...';
+		player2Box.textContent = '-';
 		player2Box.style.background = '#4a4a4a';
 		player2Box.style.color = 'white';
 		player2Box.style.padding = '0.75rem 1rem';
@@ -388,7 +391,7 @@ export function showTournamentScreen() {
 		section.style.flexDirection = 'column';
 		section.style.alignItems = 'center';
 		section.style.gap = '1.5rem';
-		
+
 		const title = document.createElement('div');
 		title.textContent = roundTitle;
 		title.style.color = 'transparent'
@@ -397,7 +400,7 @@ export function showTournamentScreen() {
 		title.style.fontSize = 'clamp(10px, 13px, 18px)';
 		title.style.webkitTextStroke = '0.05rem #ffffffff'
 		title.style.textAlign = 'center';
-		
+
 		section.appendChild(title);
 		const matchBox = createMatchBox(player1BoxId, player2BoxId);
 		section.appendChild(matchBox);
@@ -408,7 +411,7 @@ export function showTournamentScreen() {
 
 	const round1Section = roundSection('Round 1', 'player1Box', 'player2Box');
 	round1Section.style.flex ='1';
-	
+
 	const round2Section = roundSection('Round 2', 'player3Box', 'player4Box');
 	round2Section.style.flex ='1';
 
@@ -425,7 +428,7 @@ export function showTournamentScreen() {
 
 	middleSection.appendChild(winnersSection);
 	middleSection.appendChild(losersSection);
-	
+
 	const leaveBtn = document.createElement('button');
 	leaveBtn.textContent = 'Leave Tournament';
 	leaveBtn.style.border = 'none';
@@ -434,22 +437,6 @@ export function showTournamentScreen() {
 	leaveBtn.style.fontFamily = '"RobotoCondensed", sans-serif';
 	leaveBtn.style.background = '#4a4a4a';
 	leaveBtn.onclick = () => requestLeaveTournament();
-
-	// // Arrow from Round 1 to Winners (winner arrow - green)
-	// const arrow1ToWinners = createArrow('25%', '35%', '42%', '25%', '#00ff00');
-	// bracketContainer.appendChild(arrow1ToWinners);
-	
-	// // Arrow from Round 1 to Losers (loser arrow - red)
-	// const arrow1ToLosers = createArrow('25%', '65%', '42%', '75%', '#ff4444');
-	// bracketContainer.appendChild(arrow1ToLosers);
-	
-	// // Arrow from Round 2 to Winners (winner arrow - green)
-	// const arrow2ToWinners = createArrow('75%', '35%', '58%', '25%', '#00ff00');
-	// bracketContainer.appendChild(arrow2ToWinners);
-	
-	// // Arrow from Round 2 to Losers (loser arrow - red)
-	// const arrow2ToLosers = createArrow('75%', '65%', '58%', '75%', '#ff4444');
-	// bracketContainer.appendChild(arrow2ToLosers);
 
 	tournamentContainer.appendChild(leaveBtn);
 	bracketContainer.appendChild(round1Section);
@@ -474,13 +461,15 @@ function styleText(playerName: string): HTMLDivElement {
 }
 
 export function showTournamentEndScreen(tournamentState: any) {
+	console.log('showTournamentEndScreen');
+	log('showTournamentEndScreen');
 	let winner_match = (tournamentState.matches[3].matchNumber == 4 ? tournamentState.matches[3] : tournamentState.matches[2]);
 	let loser_match = (tournamentState.matches[2].matchNumber == 3 ? tournamentState.matches[2] : tournamentState.matches[3]);
 
 	const winner1Name = getName(winner_match.winnerID, tournamentState.players);
-	const winner2Name = getName((winner_match.winnerID === winner_match.player1 ? winner_match.player2 : winner_match.player1), tournamentState);
+	const winner2Name = getName((winner_match.winnerID === winner_match.player1 ? winner_match.player2 : winner_match.player1), tournamentState.players);
 	const Loser1Name = getName(loser_match.winnerID, tournamentState.players);
-	const Loser2Name = getName((loser_match.winnerID === loser_match.player1 ? loser_match.player2 : loser_match.player1), tournamentState);
+	const Loser2Name = getName((loser_match.winnerID === loser_match.player1 ? loser_match.player2 : loser_match.player1), tournamentState.players);
 
 	const body = document.getElementById('body');
 	if (!body)
@@ -501,12 +490,13 @@ export function showTournamentEndScreen(tournamentState: any) {
 	tournamentEndScreen.style.justifyContent = 'center';
 	tournamentEndScreen.style.alignItems = 'center';
 	tournamentEndScreen.style.backdropFilter = 'blur(6px)';
-	tournamentEndScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.25)'; 
+	tournamentEndScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.25)';
 	tournamentEndScreen.style.position = 'fixed';
 	tournamentEndScreen.style.zIndex = '100';
 
 	tournamentEndScreen.addEventListener('click', (e) => {
 		if (e.target === tournamentEndScreen) {
+			requestLeaveTournament();
 			navigateTo('Menu');
 		}
 	});
@@ -531,7 +521,7 @@ export function showTournamentEndScreen(tournamentState: any) {
 	playerPodium.id = 'playerPodium';
 	playerPodium.style.borderRadius = '5px';
 	playerPodium.style.color = 'black';
-	playerPodium.style.gap = '2.5rem';
+	playerPodium.style.gap = '1.5rem';
 	playerPodium.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	playerPodium.style.alignItems = 'center';
 	playerPodium.style.justifyContent = 'center';
@@ -540,11 +530,11 @@ export function showTournamentEndScreen(tournamentState: any) {
 	playerPodium.style.flexDirection = 'column';
 
 	const playerPodiumTitle = styleSettingTitle('Player Podium');
-	const firstPlace = styleText('#1'+ winner1Name);
-	const secondPlace = styleText('#2'+ winner2Name);
-	const thirdPlace = styleText('#3'+ Loser1Name);
-	const fourthPlace = styleText('#4'+ Loser2Name);
-	
+	const firstPlace = styleText('1st - '+ winner1Name);
+	const secondPlace = styleText('2nd - '+ winner2Name);
+	const thirdPlace = styleText('3rd - '+ Loser1Name);
+	const fourthPlace = styleText('4 - '+ Loser2Name);
+
 	playerPodium.appendChild(playerPodiumTitle);
 	playerPodium.append(firstPlace, secondPlace, thirdPlace, fourthPlace);
 	blackContainer.appendChild(playerPodium);

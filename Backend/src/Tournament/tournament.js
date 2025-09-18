@@ -5,7 +5,7 @@ import { state, MF } from '../SharedBuild/enums.js';
 
 export const tournament = {
 	players: [],		// [{id, name, socket, ready ...}]
-	matches: [],		// { matchNumber: 1, matchObj }
+	matches: [],		// { matchNumber: 1, match: matchObj }
 	state: 'waiting',	// 'in_progress' 'finished'
 	io: null			// will be set when handleTournament is first called
 };
@@ -14,7 +14,7 @@ export const tournament = {
 function getTournamentStateForFrontend() {
 	// console.log(`tournament matches:`, tournament.matches);
 	return {
-		players: tournament.players.map(p => ({ id: p.id, name: p.name })),
+		players: tournament.players.map(p => ({ id: p.id, name: p.name, ready: p.ready })),
 		matches: tournament.matches.map(m => ({
 			matchNumber: m.matchNumber,
 			state: m.match.state,
@@ -83,7 +83,7 @@ export function leaveTournament(msg, userId, socket, io) {
 			subaction: 'left'
 		});
 		// Confirm leaving and trigger frontend navigation
-	
+
 		// Print in console for debugging
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else {
@@ -126,14 +126,47 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 
 
 export function reportTournamentMatchResult(match) {
-	// Update winner/loser
+	try {
+		// console.log('reportTournamentMatchResult called!');
 
-	// Broadcast updated state
-	tournament.io.to('tournament_1').emit('message', {
-		action: 'tournament',
-		subaction: 'update',
-		tournamentState: getTournamentStateForFrontend()
-	});
+		// console.log('MatchOnline: ', match);
+		// console.log('Match[0]: ', tournament.matches[0]);
+
+		const matchIndex = tournament.matches.findIndex(m => m.match.player1.ID === match.player1.ID && m.match.player2.ID === match.player2.ID);
+		if (matchIndex === -1) {
+			console.error(`No tournament match found..`);
+			return;
+		}
+		console.log('MatchIndex: ', matchIndex, ' MatchObj: ', tournament.matches[matchIndex]);
+		tournament.matches[matchIndex].match.state = state.End;
+
+		console.log('Tournament Matches length :', tournament.matches.length);
+		// Set tournament.state = 'finished' when all matches are done
+		let allFinished = true;
+		tournament.matches.forEach(m => {
+			console.log(`Match ${m.matchNumber} state: ${m.match.state}`);
+			if (!m.match.winnerID) {
+				allFinished = false;
+			}
+		});
+		if (allFinished && tournament.matches.length === 4) {
+			console.log("Tournament finished!");
+			tournament.state = 'finished';
+		}
+		// if (tournament.matches.length === 4 && tournament.matches.every(m => m.match.state === state.End)) {
+		// 	console.log("Tournament finished!");
+		// 	tournament.state = 'finished';
+		// }
+
+		// Broadcast updated state to frontend
+		tournament.io.to('tournament_1').emit('message', {
+			action: 'tournament',
+			subaction: 'update',
+			tournamentState: getTournamentStateForFrontend()
+		});
+	} catch (error) {
+		console.error('Error in reportTournamentMatchResult:', error);
+	}
 }
 
 export function isTournamentReadyToStart() {
@@ -153,12 +186,20 @@ async function startFirstTournamentMatches(io) {
 
 export async function triggerNextTournamentMatch(tournamentId, io) {
 	// Check if both Game 1 and Game 2 are finished
+
+	if (!tournament.matches[0].match.winnerID || !tournament.matches[1].match.winnerID) {
+		console.log("Both initial matches not finished yet.");
+		console.log("match 1 state:", tournament.matches[0].match.state, "match 2 state:", tournament.matches[1].match.state);
+		console.log('enum state.End:', state.End);
+		return;
+	} else {
+		console.log("Both initial matches finished.");
+		tournament.matches[0].match.state = state.End;
+		tournament.matches[1].match.state = state.End;
+	}
+
 	const game1 = tournament.matches.find(m => m.matchNumber === 1);
 	const game2 = tournament.matches.find(m => m.matchNumber === 2);
-
-	if (game1?.match.state !== state.End || game2?.match.state !== state.End) {
-		return ;
-	}
 
 	// Schedule Game 3 (losers) if not already scheduled and both games finished
 	if (!tournament.matches.find(m => m.matchNumber === 3)) {
@@ -168,6 +209,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 		const player1 = tournament.players.find(p => p.id === loser1ID);
 		const player2 = tournament.players.find(p => p.id === loser2ID);
 
+		console.log('Scheduling Game 3 (losers):', player1.name, 'vs', player2.name);
 		await createTournamentMatch(player1, player2, 3, io);
 	}
 
@@ -182,12 +224,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 		await createTournamentMatch(player1, player2, 4, io);
 	}
 
-	// Set tournament.state = 'finished' when all matches are done
-	if (tournament.matches.length === 4 && tournament.matches.every(m => m.match.state.End)) {
-		tournament.state = 'finished';
-	}
-
-	// After scheduling or finishing, broadcast state
+	// After scheduling, broadcast updated state
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
 		subaction: 'update',

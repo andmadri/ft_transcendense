@@ -92,10 +92,10 @@ function matchInterval(match, io) {
 				break;
 			}
 			case (state.End) : {
+				setWinner(match);
 				if (match.matchFormat == MF.Tournament) {
 					reportTournamentMatchResult(match);
 				}
-				setWinner(match);
 				sendWinnerResult(match, io);
 				saveMatch(match, null, null);
 				clearInterval(match.intervalID);

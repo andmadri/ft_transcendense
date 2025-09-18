@@ -84,7 +84,7 @@ async function ensureSchema(db) {
 export async function createDatabase() {
 	fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 	const db = await openDatabase(DB_PATH);
-	
+
 	sql_log(`Connected to the database`);
 
 	 // Enforce foreign key constraints (disabled by default in SQLite).
@@ -100,7 +100,7 @@ export async function createDatabase() {
 	});
 
 	const created = await ensureSchema(db);
-	
+
 	if (created) {
 		const guest_id = await createNewUserToDB(db, {
 			name: 'Guest',
@@ -113,26 +113,26 @@ export async function createDatabase() {
 			password: 'secretai'
 		});
 
-		// const test1 = await createNewUserToDB(db, {
-		// 	name: 'test1',
-		// 	email: 'test1@test1.test1',
-		// 	password: 'test1@test1.test1'
-		// });
-		// const test2 = await createNewUserToDB(db, {
-		// 	name: 'test2',
-		// 	email: 'test2@test2.test2',
-		// 	password: 'test2@test2.test2'
-		// });
-		// const test3 = await createNewUserToDB(db, {
-		// 	name: 'test3',
-		// 	email: 'test3@test3.test3',
-		// 	password: 'test3@test3.test3'
-		// });
-		// const test4 = await createNewUserToDB(db, {
-		// 	name: 'test4',
-		// 	email: 'test4@test4.test4',
-		// 	password: 'test4@test4.test4'
-		// });
+		const test1 = await createNewUserToDB(db, {
+			name: 'test1',
+			email: 'test1@test1.test1',
+			password: 'test1@test1.test1'
+		});
+		const test2 = await createNewUserToDB(db, {
+			name: 'test2',
+			email: 'test2@test2.test2',
+			password: 'test2@test2.test2'
+		});
+		const test3 = await createNewUserToDB(db, {
+			name: 'test3',
+			email: 'test3@test3.test3',
+			password: 'test3@test3.test3'
+		});
+		const test4 = await createNewUserToDB(db, {
+			name: 'test4',
+			email: 'test4@test4.test4',
+			password: 'test4@test4.test4'
+		});
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);
