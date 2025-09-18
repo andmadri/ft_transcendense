@@ -168,8 +168,8 @@ function updateBoxBorder(matches:any, players:any) {
 				const winner1 = players.find((p: any) => p.id === match.winnerID);
 
 				if (winner1?.name === box1.textContent) {
-					box1.style.border = '2px solid #00ff00';
-					box2.style.border = '2px solid #ff4444';
+					box1.style.border = '2px solid #7ed957';
+					box2.style.border = '2px solid #ff6117';
 					// if (match.matchNumber === 1) {
 					// 	getPointerPos(box1, document.getElementById('winner1Box'), 'pointer1');
 					// 	getPointerPos(box2, document.getElementById('loser1Box'), 'pointer2');
@@ -178,8 +178,8 @@ function updateBoxBorder(matches:any, players:any) {
 					// 	getPointerPos(box2, document.getElementById('loser2Box'), 'pointer2');
 					// }
 				} else if (winner1?.name === box2.textContent) {
-					box2.style.border = '2px solid #00ff00';
-					box1.style.border = '2px solid #ff4444';
+					box2.style.border = '2px solid #7ed957';
+					box1.style.border = '2px solid #ff6117';
 					// if (match.matchNumber === 1) {
 					// 	getPointerPos(box2, document.getElementById('winner1Box'), 'pointer3');
 					// 	getPointerPos(box1, document.getElementById('loser1Box'), 'pointer4');
@@ -453,7 +453,7 @@ function styleText(playerName: string): HTMLDivElement {
 	playerNamePodium.textContent = playerName
 	playerNamePodium.style.fontFamily = '"Horizon", sans-serif';
 	playerNamePodium.style.fontSize = 'clamp(13px, 1.7vw, 18px)';
-	playerNamePodium.style.textAlign = 'center';
+	playerNamePodium.style.textAlign = 'left';
 	playerNamePodium.style.alignItems = 'center';
 	playerNamePodium.style.justifyContent = 'flex-start';
 	playerNamePodium.style.color = 'black';
@@ -461,8 +461,7 @@ function styleText(playerName: string): HTMLDivElement {
 }
 
 export function showTournamentEndScreen(tournamentState: any) {
-	console.log('showTournamentEndScreen');
-	log('showTournamentEndScreen');
+	navigateTo('Tournament');
 	let winner_match = (tournamentState.matches[3].matchNumber == 4 ? tournamentState.matches[3] : tournamentState.matches[2]);
 	let loser_match = (tournamentState.matches[2].matchNumber == 3 ? tournamentState.matches[2] : tournamentState.matches[3]);
 
@@ -475,6 +474,9 @@ export function showTournamentEndScreen(tournamentState: any) {
 	if (!body)
 		return ;
 
+	if (document.getElementById('gameOver')) {
+		document.getElementById('gameOver')?.remove();
+	}
 	if (!document.getElementById('tournamentScreen')) {
 		showTournamentScreen();
 	}
@@ -530,10 +532,10 @@ export function showTournamentEndScreen(tournamentState: any) {
 	playerPodium.style.flexDirection = 'column';
 
 	const playerPodiumTitle = styleSettingTitle('Player Podium');
-	const firstPlace = styleText('1st - '+ winner1Name);
-	const secondPlace = styleText('2nd - '+ winner2Name);
-	const thirdPlace = styleText('3rd - '+ Loser1Name);
-	const fourthPlace = styleText('4 - '+ Loser2Name);
+	const firstPlace = styleText('1st\t-\t'+ winner1Name);
+	const secondPlace = styleText('2nd\t-\t'+ winner2Name);
+	const thirdPlace = styleText('3rd\t-\t'+ Loser1Name);
+	const fourthPlace = styleText('4th\t-\t'+ Loser2Name);
 
 	playerPodium.appendChild(playerPodiumTitle);
 	playerPodium.append(firstPlace, secondPlace, thirdPlace, fourthPlace);
