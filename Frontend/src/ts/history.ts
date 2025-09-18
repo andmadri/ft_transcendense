@@ -5,7 +5,7 @@ import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { getGameStats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
-import { log } from './logging.js';
+import { validateQuery } from './Dashboard/exists.js';
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
@@ -246,8 +246,10 @@ export function controlBackAndForward(event: PopStateEvent) {
 		newState = window.location.hash || 'Menu';
 	}
 	let [ page, query ] = splitHash(newState);
-	if (event.state && event.state.query)
+	if (event.state && event.state.query) {
 		query = event.state.query;
+	}
+	validateQuery(page, query);
 
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');

@@ -238,10 +238,7 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	exitButton.style.fontFamily = '"Horizon", sans-serif';
 
 	exitButton.addEventListener('click', () => {
-		// const dashboard = document.getElementById('dashboard');
-		// if (dashboard) {
-			containerDashboard.remove();
-		// }
+		containerDashboard.remove();
 		navigateTo('Menu');
 	});
 
@@ -253,6 +250,5 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	body.append(containerDashboard);
 	body.append(exitButton);
 	const msg = {action: 'dashboard', subaction: 'getFullDataDashboard', playerId: playerID, playerNr: playerNr};
-	console.log(`Sending msg to the backend: ${msg.action} ${msg.subaction}`);
 	Game.socket.emit('message', msg);
 }
