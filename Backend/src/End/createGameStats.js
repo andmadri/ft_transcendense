@@ -67,12 +67,12 @@ export async function generateAllChartsForMatch(db, match, matchID) {
 
 
 	// EXAMPLE USERSTATE DURATION
-	const svgPath = await renderUserStateDurationsSVG(db, {
-		outDir: path.join(uploadsBase, 'charts', String(matchID)),
-		fileName: `user_state_durations_match_${String(matchID)}.svg`,
-		width: 1000,
-		barHeight: 26
-	});
-	const svgChart = await generateSVG(outDir, `user_state_durations_match_${String(matchID)}.svg`, svgPath);
-	console.log('Chart 1 saved at:', svgChart);
+	// const svgPath = await renderUserStateDurationsSVG(db, {
+	// 	outDir: path.join(uploadsBase, 'charts', String(matchID)),
+	// 	fileName: `user_state_durations_match_${String(matchID)}.svg`,
+	// 	width: 1000,
+	// 	barHeight: 26
+	// });
+	// const svgChart = await generateSVG(outDir, `user_state_durations_match_${String(matchID)}.svg`, svgPath);
+	// console.log('Chart 1 saved at:', svgChart);
 }

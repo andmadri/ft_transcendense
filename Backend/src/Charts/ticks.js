@@ -54,6 +54,7 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 
 	const xScale = linearScale(domainMin, domainMax, plot.x, plot.x + plot.width - 1);
 	const ticks  = ticksLinear(domainMin, domainMax, numberOfTicks);
+	const tickShift = Number.isFinite(opts.tickShift) ? opts.tickShift : 0;
 	const baseY  = plot.y + plot.height;
 
 	let grid = '';
@@ -62,7 +63,7 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	}
 
 	const parts = ticks.map((t) => {
-		const x = xScale(t);
+		const x = xScale(t + tickShift);
 		return `
 		<g transform="translate(${x}, ${baseY})">
 			<line x1="0" y1="0" x2="0" y2="${tickLen}" stroke="#ffffff" stroke-width="3"/>
@@ -74,10 +75,6 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 				fill="#ffffff">${labelFormat(t)}</text>
 		</g>`;
 	}).join('');
-
-	if (gridLines === true) {
-
-	}
 
 	return `<g class="axis-x">${grid}<g class="axis-x-ticks">${parts}</g></g>`;
 }
