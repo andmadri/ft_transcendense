@@ -43,16 +43,17 @@ export async function generateScatterChartForMatch(db, matchID, colorOf) {
 	const xTitle = drawXAxisTitle(plot, 'BALL X');
 	const yTitle = drawYAxisTitle(plot, 'BALL Y');
 
-	// DATA
-	const xScale = linearScale(min_x, max_x, plot.x, plot.x + plot.width - 1);
-	const yScale = linearScale(min_y, max_y, plot.y + plot.height, plot.y + 1);
-	const points = renderScatterPoints(data, xScale, yScale, colorOf);
-
+	
 	// VALUES AXIS
 	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, false);
 	const yTicks = drawYAxisTicks(plot, min_y, max_y, ticks_y, true);
+	
+	// DATA
+	const xScale = linearScale(min_x, max_x, plot.x, plot.x + plot.width - 1);
+	const yScale = linearScale(min_y, max_y, plot.y + 1, plot.y + plot.height);
+	const points = renderScatterPoints(data, xScale, yScale, colorOf);
 
-	return (open + chartTitle + frame + xTitle + yTitle + points + xTicks + yTicks + close);
+	return (open + chartTitle + frame + xTitle + yTitle + xTicks + yTicks + points + close);
 }
 
 
