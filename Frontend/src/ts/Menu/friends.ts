@@ -26,7 +26,7 @@ function insertFriends(friends: any) {
 			btnContainer.style.gap = '0.3rem';
 
 			const challengeFriendBtn = document.createElement('button');
-			styleListBtns(challengeFriendBtn, 'url("../../images/delete_friend.png")');
+			styleListBtns(challengeFriendBtn, 'url("../../images/battle_friend.png")');
 			challengeFriendBtn.addEventListener("click", () => {
 				UI.state = S.stateUI.Game;
 				Game.match.state = state.Pending;
