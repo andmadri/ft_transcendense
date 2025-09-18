@@ -56,7 +56,6 @@ export function getLoadingPage() {
 	loadingTxt.style.fontSize = '1.2rem';
 	loadingTxt.style.fontWeight = 'bold';
 	loadingTxt.style.color = 'black';
-	loadingTxt.style.transform = 'translate(-50%, -50%)'; 
 	innerBox.appendChild(loadingTxt);
 
 	if (!document.getElementById('bounceText')) {

@@ -49,6 +49,9 @@ export async function getLastUserSession(db, user_id) {
 				sql_error(err, `getLastUserSession | user_id=${user_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getLastUserSession | No UserSession found! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});
@@ -66,6 +69,9 @@ export async function getLatestSessionByState(db, user_id, state) {
 				sql_error(err, `getLatestSessionByState | user_id=${user_id} state=${state}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getLatestSessionByState | No UserSession found with state: ${state}! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});

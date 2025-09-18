@@ -30,10 +30,10 @@ export async function saveMatch(match) {
 	const matchID = await handleMatchEndedDB(db, match.matchID);
 	
 	// Show some stats in the terminal
-	console.table(matchID);
-	console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
-	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
-	console.table(await getAllUserStateDurationsDB(db));
+	// console.table(matchID);
+	// console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
+	// console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
+	// console.table(await getAllUserStateDurationsDB(db));
 
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - start
 	const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
