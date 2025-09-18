@@ -126,7 +126,7 @@ export async function generateLineChartForMatch(db, matchID, colorOf) {
 	const yTitle = drawYAxisTitle(plot, 'GOALS');
 
 	// VALUES AXIS
-	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, true, { format: (s) => String(Math.round(s)), mode: 'step', tickShift: 0.5 });
+	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, true, { format: (s) => String(Math.round(s)) });
 	const yTicks = drawYAxisTicks(plot, min_y, max_y, ticks_y, false);
 
 	// DATA
