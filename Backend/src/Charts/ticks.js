@@ -1,4 +1,4 @@
-import { linearScale } from './scales.js';
+import { linearScale, stepScale } from './scales.js';
 
 // Evenly-spaced numeric ticks (e.g., 0, 0.25, 0.5, 0.75, 1)
 export function ticksLinear(domainMin, domainMax, count = 5) {
@@ -6,8 +6,26 @@ export function ticksLinear(domainMin, domainMax, count = 5) {
 		return [domainMin, domainMax];
 	const step = (domainMax - domainMin) / (count - 1);
 	const out = [];
-	for (let i = 0; i < count; i++) 
+	for (let i = 0; i < count; i++) {
 		out.push(domainMin + i * step);
+	}
+	return out;
+}
+
+// Evenly-spaced numeric ticks (e.g., 0, 0.25, 0.5, 0.75, 1)
+export function ticksStep(domainMin, domainMax, count = 5) {
+	if (count < 2)
+		return [domainMin, domainMax];
+	const step = (domainMax - domainMin) / (count - 1);
+	const center = step / 2;
+	const out = [];
+	for (let i = 0; i < count; i++) {
+		if (i === 0) {
+			out.push(domainMin + i * step);
+		} else {
+			out.push(domainMin - center + i * step);
+		}
+	}
 	return out;
 }
 
@@ -53,8 +71,8 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	const labelOffsetY = 15;
 
 	const xScale = linearScale(domainMin, domainMax, plot.x, plot.x + plot.width - 1);
-	const ticks  = ticksLinear(domainMin, domainMax, numberOfTicks);
-	const tickShift = Number.isFinite(opts.tickShift) ? opts.tickShift : 0;
+	// const ticks  = ticksLinear(domainMin, domainMax, numberOfTicks);
+	const ticks  = ticksStep(domainMin, domainMax, numberOfTicks);
 	const baseY  = plot.y + plot.height;
 
 	let grid = '';
@@ -63,7 +81,7 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	}
 
 	const parts = ticks.map((t) => {
-		const x = xScale(t + tickShift);
+		const x = xScale(t);
 		return `
 		<g transform="translate(${x}, ${baseY})">
 			<line x1="0" y1="0" x2="0" y2="${tickLen}" stroke="#ffffff" stroke-width="3"/>
