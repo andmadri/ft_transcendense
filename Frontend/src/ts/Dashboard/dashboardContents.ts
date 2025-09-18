@@ -2,9 +2,21 @@ import { Game, UI } from '../gameData'
 import * as S from '../structs.js'
 import { renderPlayingTimeCard } from './playingTime'
 import { renderUserStatsCard } from './userStats'
-import { log } from '../logging.js'
 import { navigateTo } from '../history'
 import { createBackgroundText } from '../Menu/menuContent'
+
+function formatDurationSecs(sec: unknown): string {
+	const n = Math.round(Number(sec));
+	if (!Number.isFinite(n)) {
+		return '';
+	}
+	if (n < 60) {
+		return `${n}s`;
+	}
+	const m = Math.floor(n / 60);
+	const s = n % 60;
+	return `${m}m ${s.toString().padStart(2, '0')}s`;
+}
 
 function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
@@ -23,14 +35,24 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 		row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
 
 		let score_match = `${match.my_score} - ${match.opp_score}`;
-		[match.opponent, match.date, match.winner, score_match, match.duration, match.totalHits].forEach(cell => {
+		const durationTxt = formatDurationSecs(match.duration_secs);
+		const cells = [
+			match.opponent_name,
+			match.date,
+			match.winner_name,
+			score_match, 
+			durationTxt, 
+			match.total_hits
+		];
+			
+		for (const cell of cells) {
 			const cellDiv = document.createElement('div');
 			cellDiv.textContent = String(cell);
 			cellDiv.style.color = 'white';
 			cellDiv.style.textAlign = 'center';
 			cellDiv.style.flex = '1';
 			row.appendChild(cellDiv);
-		});
+		};
 
 		const matchId = Number(match.match_id);
 		row.addEventListener('click', () => {
@@ -48,7 +70,6 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 {
 	const card = document.createElement('div');
 	card.id = 'userInfoCard';
-	// card.style.aspectRatio = '4 / 3';
 	card.style.borderRadius = '10px';
 	card.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	card.style.display = 'flex';
@@ -60,7 +81,6 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.justifyContent = 'center'; 
 
 	const userPic = document.createElement('img')
-	//forces the browser not to use the cached image that it already had
 	userPic.src = `/api/avatar/${user_info.id}?t=${Date.now()}`;
 	userPic.style.height = 'clamp(60px, 30%, 120px)';
 	userPic.style.objectFit = 'cover';
@@ -134,8 +154,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	dashboard.style.display = 'flex';
 	dashboard.style.flexDirection = 'column';
 	dashboard.style.aspectRatio = '4 / 3';
-	// dashboard.style.width = '80vw';
-	// dashboard.style.height = '50vh';
 	dashboard.style.width = 'clamp(500px, 80vw, 1200px)';
 	dashboard.style.height = 'clamp(300px, 50vh, 800px)';
 	dashboard.style.borderRadius = '10px';
@@ -149,7 +167,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	title.textContent = 'Match History';
 	title.style.fontFamily = '"Horizon", monospace';
 	title.style.color = 'transparent';
-	// title.style.fontSize = 'min(3vw, 3vh)';
 	title.style.fontSize = 'clamp(18px, 3vw, 36px)';
 	title.style.webkitTextStroke = '0.1rem #ffffff';
 	title.style.whiteSpace = 'nowrap';
@@ -157,7 +174,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	title.style.background = '#363430';;
 	title.style.borderRadius = '10px';
 	title.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
-	// title.style.width = '80vw';
 	title.style.width = 'clamp(500px, 80vw, 1200px)';
 	title.style.padding = '0.5rem';
 	title.style.boxSizing = 'border-box';
@@ -169,7 +185,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	headers.style.justifyContent = 'space-between';
 	headers.style.alignContent = 'center';
 	headers.style.alignItems = 'center';
-	//clamped
 	headers.style.fontSize = 'clamp(5px, 1.2vw, 15px)';
 	headers.style.fontFamily = '"Horizon", monospace';
 	headers.style.color = 'white';
