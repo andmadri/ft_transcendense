@@ -1,4 +1,4 @@
-import { linearScale, stepScale } from './scales.js';
+import { linearScale } from './scales.js';
 
 // Evenly-spaced numeric ticks (e.g., 0, 0.25, 0.5, 0.75, 1)
 export function ticksLinear(domainMin, domainMax, count = 5) {
@@ -21,7 +21,8 @@ export function ticksStep(domainMin, domainMax, count = 5) {
 	const out = [];
 	for (let i = 0; i < count; i++) {
 		if (i === 0) {
-			out.push(domainMin + i * step);
+			// out.push(domainMin + i * step);
+			;
 		} else {
 			out.push(domainMin - center + i * step);
 		}
@@ -65,14 +66,13 @@ export function drawGridLines(plot, ticks, scale, orientation) {
 	return `<g class="grid-${orientation}">${items}</g>`;
 }
 
-export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLines, opts = {}) {
-	const labelFormat  = opts.format ?? ((v) => formatNumber(v, 2));
-	const tickLen      = 6;
-	const labelOffsetY = 15;
+export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLines = false, linear = true, decimals = 2) {
+	const labelFormat = (v) => formatNumber(v, decimals);
 
 	const xScale = linearScale(domainMin, domainMax, plot.x, plot.x + plot.width - 1);
-	// const ticks  = ticksLinear(domainMin, domainMax, numberOfTicks);
-	const ticks  = ticksStep(domainMin, domainMax, numberOfTicks);
+	const ticks = (linear === true)
+		? ticksLinear(domainMin, domainMax, numberOfTicks)
+		: ticksStep(domainMin, domainMax, numberOfTicks);
 	const baseY  = plot.y + plot.height;
 
 	let grid = '';
@@ -84,8 +84,8 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 		const x = xScale(t);
 		return `
 		<g transform="translate(${x}, ${baseY})">
-			<line x1="0" y1="0" x2="0" y2="${tickLen}" stroke="#ffffff" stroke-width="3"/>
-			<text y="${tickLen + labelOffsetY}"
+			<line x1="0" y1="0" x2="0" y2="6" stroke="#ffffff" stroke-width="3"/>
+			<text y="21"
 				text-anchor="middle"
 				dominant-baseline="middle"
 				font-family="RobotoCondensed, sans-serif"
@@ -97,13 +97,13 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	return `<g class="axis-x">${grid}<g class="axis-x-ticks">${parts}</g></g>`;
 }
 
-export function drawYAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLines, opts = {}) {
-	const labelFormat  = opts.format ?? ((v) => formatNumber(v, 2));
-	const tickLen      = 6;
-	const labelOffsetX = 10;
+export function drawYAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLines = false, linear = true, decimals = 2) {
+	const labelFormat  = (v) => formatNumber(v, decimals);
 
 	const yScale = linearScale(domainMin, domainMax, plot.y + plot.height, plot.y + 1);
-	const ticks  = ticksLinear(domainMin, domainMax, numberOfTicks);
+	const ticks = (linear === true)
+		? ticksLinear(domainMin, domainMax, numberOfTicks)
+		: ticksStep(domainMin, domainMax, numberOfTicks);
 	const baseX  = plot.x;
 
 	let grid = '';
@@ -115,8 +115,8 @@ export function drawYAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 		const y = yScale(t);
 		return `
 		<g transform="translate(${baseX}, ${y})">
-			<line x1="0" y1="0" x2="${-tickLen}" y2="0" stroke="#ffffff" stroke-width="3"/>
-			<text x="${-(tickLen + labelOffsetX)}"
+			<line x1="0" y1="0" x2="-6" y2="0" stroke="#ffffff" stroke-width="3"/>
+			<text x="-16"
 				text-anchor="end"
 				dominant-baseline="middle"
 				font-family="RobotoCondensed, sans-serif"

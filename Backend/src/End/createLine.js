@@ -4,7 +4,6 @@ import { drawTitle, drawXAxisTitle, drawYAxisTitle } from '../Charts/titles.js';
 import { linearScale } from '../Charts/scales.js';
 import { drawXAxisTicks, drawYAxisTicks } from '../Charts/ticks.js';
 
-
 export function buildStepSeries(data) {
 	// Normalize + sort by time
 	const rows = [...data]
@@ -100,15 +99,11 @@ export async function generateLineChartForMatch(db, matchID, colorOf) {
 	const data = await getMatchLineDB(db, matchID);
 	const { width, height, open, close } = createSvgCanvas();
 	if (!data || data.length === 0) {
-		console.log(`No data from getMatchLineDB - matchID: ${matchID}`);
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 
-	console.log(`--- generateLineChartForMatch --- ${matchID}`);
-	console.table(data);
-
+	// SET VALUES
 	const { series, endT } = buildStepSeries(data);
-
 	const min_x = 0;
 	const min_y = 0;
 	const max_x = endT || 1;
@@ -121,13 +116,13 @@ export async function generateLineChartForMatch(db, matchID, colorOf) {
 	const frame = drawFrame(plot);
 	
 	// TITLES
-	const chartTitle = drawTitle({ width, height }, margins, `SCORE FLOW · MATCH ${matchID}`);
+	const chartTitle = drawTitle({ width, height }, margins, `SCORE FLOW`);
 	const xTitle = drawXAxisTitle(plot, 'TIME (S)');
 	const yTitle = drawYAxisTitle(plot, 'GOALS');
 
 	// VALUES AXIS
-	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, true, { format: (s) => String(Math.round(s)) });
-	const yTicks = drawYAxisTicks(plot, min_y, max_y, ticks_y, false);
+	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, true, true, 0);
+	const yTicks = drawYAxisTicks(plot, min_y, max_y, ticks_y);
 
 	// DATA
 	const xScale = linearScale(min_x, max_x, plot.x, plot.x + plot.width - 1);
