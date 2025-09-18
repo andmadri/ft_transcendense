@@ -8,7 +8,7 @@ import { drawXAxisTicks, drawYAxisTicks } from '../Charts/ticks.js';
 export function buildStepSeries(data) {
 	// Normalize + sort by time
 	const rows = [...data]
-		.map(r => ({ user: r.username, t: Number(r.duration) || 0 }))
+		.map(r => ({ user: r.user_id, t: Number(r.duration) || 0 }))
 		.sort((a, b) => a.t - b.t);
 	
 	const endT = rows.length ? Math.max(...rows.map(r => r.t)) : 0;

@@ -1,7 +1,5 @@
 import { createSvgCanvas, createPlotArea, drawFrame } from '../Charts/charts.js';
 import { drawTitle,} from '../Charts/titles.js';
-import { linearScale } from '../Charts/scales.js';
-import { getMatchByID } from '../Database/match.js';
 
 function getLineSVG(fontSize, txt, x, y, color) {
 	const fillColor = color || 'white';
@@ -10,6 +8,36 @@ function getLineSVG(fontSize, txt, x, y, color) {
 			${txt}
 		</text>
 	`;
+}
+
+function getSquare(nr, name, score, color) {
+	const plot = {
+		x: nr == 1 ? 50 : 550,
+		y: 80,
+		width: 400,
+		height: 150
+	};
+	const fill = color;
+	const stroke = '#ffffff';
+	const sw = 3;
+
+	const bottomY = plot.y + plot.height;
+	const rightX = plot.x + plot.width;
+	return `<!-- plot background -->
+			<rect x="${plot.x}" y="${plot.y}" width="${plot.width}" height="${plot.height}"
+				fill="${fill}" stroke="none"/>
+			
+			${getLineSVG(40, name, plot.x + 30, plot.y + 50, 'black')}
+			${getLineSVG(40, `score: ${score}`, plot.x + 30, plot.y + 100, 'black')}
+
+			<!-- left Y baseline -->
+			<line x1="${plot.x}" y1="${plot.y}" x2="${plot.x}" y2="${bottomY}"
+				stroke="${stroke}" stroke-width="${sw}"/>
+
+			<!-- bottom X baseline -->
+			<line x1="${plot.x}" y1="${bottomY}" x2="${rightX}" y2="${bottomY}"
+				stroke="${stroke}" stroke-width="${sw}"/>
+			`;
 }
 
 function getDurationInSec(data) {
@@ -23,21 +51,21 @@ function getDurationInSec(data) {
 }
 
 // Creates the left upper part with the basic game stats
-function getGameStatsSVG(data) {
+function getGameStatsSVG(data, players) {
+	const {player1, player2} = players;
 	const match_duration = getDurationInSec(data);
 
 	const gameStatsSVG = `
-		${getLineSVG(34, `${data.player_1_id}  |  score: ${data.player_1_score}`, 80, 200, '#ff6117')}
-		${getLineSVG(24, 'vs', 80, 230)}
-		${getLineSVG(34, `${data.player_2_id}  |  score: ${data.player_2_score}`, 80, 260, '#ffc433')}
-		${getLineSVG(24, `playing time: ${match_duration}`, 80, 290)}
-		${getLineSVG(24, `winner: ${data.winner_id}`, 80, 320)}
+		${getLineSVG(24, 'vs', 490, 175)}
+		${getLineSVG(24, `data: ${data.start_time}`, 80, 400)}
+		${getLineSVG(24, `playing time: ${match_duration}`, 80, 450)}
+		${getLineSVG(24, `winner: ${data.winner_id}`, 80, 500)}
 	`;
 	return (gameStatsSVG);
 }
 
-export async function generateMatchInfo(db, matchID, colorOf) {
-	const data = await getMatchByID(db, matchID);
+export async function generateMatchInfo(matchID, data, players, colorOf) {
+	const {player1, player2} = players;
 	const { width, height, open, close } = createSvgCanvas();
 	if (!data || data.length === 0) {
 		console.log(`No data from getMatchInfoDB - matchID: ${matchID}`);
@@ -57,10 +85,12 @@ export async function generateMatchInfo(db, matchID, colorOf) {
 	const { margins, plot } = createPlotArea({ width, height });
 
 	// TITLES
-	const chartTitle = drawTitle({ width, height }, margins, `MATCH INFO · MATCH ${matchID}`);
+	const chartTitle = drawTitle({ width, height }, margins, `MATCH ${matchID} STATS`);
 
+	const frame1 = getSquare(1, player1, data.player_1_score, colorOf.get(data.player_1_id));
+	const frame2 = getSquare(2, player2, data.player_2_score, colorOf.get(data.player_2_id))
 	// DATA
-	const svgtext = getGameStatsSVG(data);
+	const svgtext = getGameStatsSVG(data, players);
 
-	return (open + chartTitle + svgtext + close);
+	return (open + chartTitle + frame1 + frame2 + svgtext + close);
 }

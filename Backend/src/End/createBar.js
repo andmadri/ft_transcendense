@@ -4,7 +4,7 @@ import { drawTitle, drawXAxisTitle, drawYAxisTitle } from '../Charts/titles.js';
 import { linearScale } from '../Charts/scales.js';
 import { drawXAxisTicks, drawYAxisTicks } from '../Charts/ticks.js';
 
-function renderBars(data, xScale, yScale, colorOf) {
+function renderBars(data, yScale, colorOf) {
 	let bars = '';
 	const goals = data.length;
 
@@ -14,7 +14,7 @@ function renderBars(data, xScale, yScale, colorOf) {
 		const x = 80 + (index * w);
 		const y = yScale(hits);
 		const h = yScale(0) - y;
-		const c = colorOf.get(row.username);
+		const c = colorOf.get(row.user_id);
 		bars += `<rect x='${x}' y='${y}' height='${h}' width='${w}' fill='${c}'/>`;
 	});
 	return `<g class="bars">${bars}</g>`;
@@ -51,7 +51,7 @@ export async function generateBarChartForMatch(db, matchID, colorOf) {
 	// DATA
 	const xScale = linearScale(min_x, max_x, plot.x, plot.x + plot.width - 1);
 	const yScale = linearScale(min_y, max_y, plot.y + plot.height, plot.y + 1);
-	const bars = renderBars(data, xScale, yScale, colorOf);
+	const bars = renderBars(data, yScale, colorOf);
 
 	// VALUES AXIS
 	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, false);

@@ -45,7 +45,7 @@ export async function getMatchEventsDB(db, matchId) {
  */
 export async function getMatchScatterDB(db, match_id) {
 	return new Promise((resolve, reject) => {
-		const sql = `SELECT username, ball_x, ball_y FROM MatchGoalsSummary WHERE match_id = ?`;
+		const sql = `SELECT user_id, ball_x, ball_y FROM MatchGoalsSummary WHERE match_id = ?`;
 		db.all(sql, [match_id], (err, rows) => {
 			if (err) {
 				sql_error(err, `getMatchScatterDB id=${match_id}`);
@@ -68,7 +68,7 @@ export async function getMatchScatterDB(db, match_id) {
  */
 export async function getMatchLineDB(db, match_id) {
 	return new Promise((resolve, reject) => {
-		const sql = `SELECT goal, username, duration FROM MatchGoalsSummary WHERE match_id = ?`;
+		const sql = `SELECT goal, user_id, duration FROM MatchGoalsSummary WHERE match_id = ?`;
 		db.all(sql, [match_id], (err, rows) => {
 			if (err) {
 				sql_error(err, `getMatchLineDB id=${match_id}`);
@@ -91,7 +91,7 @@ export async function getMatchLineDB(db, match_id) {
  */
 export async function getMatchBarDB(db, match_id) {
 	return new Promise((resolve, reject) => {
-		const sql = `SELECT goal, username, hits FROM MatchGoalsSummary WHERE match_id = ?`;
+		const sql = `SELECT goal, user_id, hits FROM MatchGoalsSummary WHERE match_id = ?`;
 		db.all(sql, [match_id], (err, rows) => {
 			if (err) {
 				sql_error(err, `getMatchBarDB id=${match_id}`);

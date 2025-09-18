@@ -24,7 +24,7 @@ export async function quitMatch(match, msg, io) {
 
 export async function saveMatch(match, matchID) {
 	const matchInfo = await handleMatchEndedDB(db, matchID);
-	
+	console.log('matchInfo:', matchInfo);
 	generateAllChartsForMatch(db, matchInfo, matchID);
 
 	// Delete the data in the backend

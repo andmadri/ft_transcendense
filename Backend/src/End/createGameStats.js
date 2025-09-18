@@ -4,6 +4,8 @@ import { generateBarChartForMatch } from './createBar.js';
 import { generateLineChartForMatch } from './createLine.js';
 import { generateScatterChartForMatch } from './createScatter.js';
 import { generateMatchInfo } from './createMatchInfo.js';
+import { getMatchByID } from '../Database/match.js';
+import { getUsersByIDs } from '../Database/users.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -34,17 +36,18 @@ async function generateSVG(outDir, fileName, svg) {
 }
 
 export async function generateAllChartsForMatch(db, match, matchID) {
-
-	const goalData = await getMatchEventsDB(db, matchID);
+	const matchinfo = await getMatchByID(db, matchID);
+	const players = await getUsersByIDs(db, matchinfo.player_1_id, matchinfo.player_2_id);
 	const outDir = path.join(uploadsBase, 'charts', String(matchID));
 
 	// COLOR FOR THE USERS
-	const users = [...new Set(goalData.map(d => d.username))];
 	const palette = ['#f96216', '#f9d716'];
-	const colorOf = new Map(users.map((u, i) => [u, palette[i % palette.length]]));
+	const user_ids = [matchinfo.player_1_id, matchinfo.player_2_id]; 
+	const colorOf = new Map(user_ids.map((u, i) => [u, palette[i % palette.length]]));
+	const {p1, p2} = players;
 
 	// MATCHINFO
-	const infoChartSVG = await generateMatchInfo(db, matchID, colorOf);
+	const infoChartSVG = await generateMatchInfo(matchID, matchinfo, players, colorOf);
 	const svgInfoChart = await generateSVG(outDir, `info_chart_${String(matchID)}.svg`, infoChartSVG);
 	console.log('Chart saved at:', svgInfoChart);
 

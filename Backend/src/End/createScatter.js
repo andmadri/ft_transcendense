@@ -8,7 +8,7 @@ export function renderScatterPoints(data, xScale, yScale, colorOf) {
 	const dots = data.map((d) => {
 		const x = xScale(d.ball_x);
 		const y = yScale(d.ball_y);
-		const fill = colorOf.get(d.username);
+		const fill = colorOf.get(d.user_id);
 
 		return `<circle cx="${x}" cy="${y}" r="7" fill="${fill}" stroke="black" stroke-width="1" />`;
 	}).join('');
