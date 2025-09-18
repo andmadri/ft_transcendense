@@ -79,73 +79,6 @@ function getName(id: number, players: any) {
 	return players.find((p: any) => p.id === id)?.name || '-';
 }
 
-// function drawPointer(fromX: number, fromY: number, toX: number, toY: number) {
-// 	// Bounding box for the pointer: top-left at the min coords, sized to the deltas
-// 	const minX = Math.min(fromX, toX);
-// 	const minY = Math.min(fromY, toY);
-// 	const width = Math.abs(toX - fromX);
-// 	const height = Math.abs(toY - fromY);
-
-// 	const container = document.createElement('div');
-// 	container.style.position = 'absolute';
-// 	container.style.left = `${minX}px`;
-// 	container.style.top = `${minY}px`;
-// 	container.style.width = `${width}px`;
-// 	container.style.height = `${height}px`;
-// 	container.style.pointerEvents = 'none'; // keep it non-interactive
-
-// 	// Compute angle from start → end
-// 	const deltaX = toX - fromX;
-// 	const deltaY = toY - fromY;
-// 	const angleDeg = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-// 	// Position of the glyph inside the container at the midpoint
-// 	const glyphX = width / 2;
-// 	const glyphY = height / 2;
-
-// 	const glyph = document.createElement('div');
-// 	glyph.textContent = '--->';
-// 	glyph.style.position = 'absolute';
-// 	glyph.style.left = `${glyphX}px`;
-// 	glyph.style.top = `${glyphY}px`;
-// 	glyph.style.margin = '0';
-// 	glyph.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
-// 	glyph.style.transformOrigin = '50% 50%';
-// 	glyph.style.textAlign = 'center';
-// 	glyph.style.fontFamily = '"Horizon", sans-serif';
-// 	glyph.style.fontSize = 'clamp(32px, 48px, 56px)';
-// 	glyph.style.color = 'transparent';
-// 	(glyph.style as any).webkitTextStroke = '0.05rem #ffffffff';
-
-// 	container.appendChild(glyph);
-// 	return container;
-// }
-
-// function getPointerPos(fromBox: HTMLElement, toBox: HTMLElement | null, pointerId: string) {
-// 	if (!toBox) return;
-// 	const container = document.getElementById('tournamentScreen');
-// 	if (!container) return;
-// 	if (container.querySelector('#' + pointerId)) return;
-// 	// Get bounding rectangles
-// 	const fromRect = fromBox.getBoundingClientRect();
-// 	const toRect = toBox.getBoundingClientRect();
-// 	const containerRect = container.getBoundingClientRect();
-
-// 	// Compute centers relative to container
-// 	const fromX = (fromRect.left + fromRect.right) / 2 - containerRect.left;
-// 	const fromY = (fromRect.top + fromRect.bottom) / 2 - containerRect.top;
-// 	const toX = (toRect.left + toRect.right) / 2 - containerRect.left;
-// 	const toY = (toRect.top + toRect.bottom) / 2 - containerRect.top;
-
-// 	const pointer = drawPointer(fromX, fromY, toX, toY);
-// 	pointer.id = pointerId;
-// 	container.appendChild(pointer);
-
-// 	return pointer;
-// }
-
-
-
 function updateBoxBorder(matches:any, players:any) {
 	let box1: HTMLElement | null;
 	let box2: HTMLElement | null;
@@ -170,23 +103,10 @@ function updateBoxBorder(matches:any, players:any) {
 				if (winner1?.name === box1.textContent) {
 					box1.style.border = '2px solid #7ed957';
 					box2.style.border = '2px solid #ff6117';
-					// if (match.matchNumber === 1) {
-					// 	getPointerPos(box1, document.getElementById('winner1Box'), 'pointer1');
-					// 	getPointerPos(box2, document.getElementById('loser1Box'), 'pointer2');
-					// } else if (match.matchNumber === 2) {
-					// 	getPointerPos(box1, document.getElementById('winner2Box'), 'pointer1');
-					// 	getPointerPos(box2, document.getElementById('loser2Box'), 'pointer2');
-					// }
+
 				} else if (winner1?.name === box2.textContent) {
 					box2.style.border = '2px solid #7ed957';
 					box1.style.border = '2px solid #ff6117';
-					// if (match.matchNumber === 1) {
-					// 	getPointerPos(box2, document.getElementById('winner1Box'), 'pointer3');
-					// 	getPointerPos(box1, document.getElementById('loser1Box'), 'pointer4');
-					// } else if (match.matchNumber === 2) {
-					// 	getPointerPos(box2, document.getElementById('winner2Box'), 'pointer3');
-					// 	getPointerPos(box1, document.getElementById('loser2Box'), 'pointer4');
-					// }
 				}
 			}
 		} else if (box1 && box2) {
@@ -385,7 +305,7 @@ export function showTournamentScreen() {
 		return matchBox;
 	};
 
-	const roundSection = (roundTitle: string, player1BoxId: string, player2BoxId: string) => {
+	const roundSection = (roundTitle: string, player1BoxId: string, player2BoxId: string, textStroke: string) => {
 		const section = document.createElement('div');
 		section.style.display = 'flex';
 		section.style.flexDirection = 'column';
@@ -398,7 +318,7 @@ export function showTournamentScreen() {
 		title.style.margin = '0';
 		title.style.fontFamily = '"Horizon", sans-serif';
 		title.style.fontSize = 'clamp(10px, 13px, 18px)';
-		title.style.webkitTextStroke = '0.05rem #ffffffff'
+		title.style.webkitTextStroke = textStroke;
 		title.style.textAlign = 'center';
 
 		section.appendChild(title);
@@ -407,12 +327,10 @@ export function showTournamentScreen() {
 		return section;
 	};
 
-
-
-	const round1Section = roundSection('Round 1', 'player1Box', 'player2Box');
+	const round1Section = roundSection('Round 1', 'player1Box', 'player2Box', '0.05rem #ffffffff');
 	round1Section.style.flex ='1';
 
-	const round2Section = roundSection('Round 2', 'player3Box', 'player4Box');
+	const round2Section = roundSection('Round 2', 'player3Box', 'player4Box', '0.05rem #ffffffff');
 	round2Section.style.flex ='1';
 
 	const middleSection = document.createElement('div');
@@ -422,9 +340,9 @@ export function showTournamentScreen() {
 	middleSection.style.gap = '3rem';
 	middleSection.style.flex = '1';
 
-	const winnersSection = roundSection('Winners Final', 'winner1Box', 'winner2Box');
+	const winnersSection = roundSection('Winners Final', 'winner1Box', 'winner2Box', '0.05rem #7ed957ff');
 
-	const losersSection = roundSection('Losers Final', 'loser1Box', 'loser2Box');
+	const losersSection = roundSection('Losers Final', 'loser1Box', 'loser2Box', '0.05rem #ff6117ff');
 
 	middleSection.appendChild(winnersSection);
 	middleSection.appendChild(losersSection);
