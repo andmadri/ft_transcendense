@@ -1,51 +1,61 @@
 import { getMatchBarDB } from '../Database/gamestats.js';
-import { visual } from './createGameStats.js';
+import { createSvgCanvas, createPlotArea, drawFrame } from '../Charts/charts.js';
+import { drawTitle, drawXAxisTitle, drawYAxisTitle } from '../Charts/titles.js';
+import { linearScale } from '../Charts/scales.js';
+import { drawXAxisTicks, drawYAxisTicks } from '../Charts/ticks.js';
 
-export async function generateBarChartForMatch(db, matchID) {
+function renderBars(data, xScale, yScale, colorOf) {
+	let bars = '';
+	const goals = data.length;
+
+	data.forEach((row, index) => {
+		const hits = Number(row.hits) || 0;
+		const w = 896 / goals;
+		const x = 80 + (index * w);
+		const y = yScale(hits);
+		const h = yScale(0) - y;
+		const c = colorOf.get(row.username);
+		bars += `<rect x='${x}' y='${y}' height='${h}' width='${w}' fill='${c}'/>`;
+	});
+	return `<g class="bars">${bars}</g>`;
+}
+
+export async function generateBarChartForMatch(db, matchID, colorOf) {
 	const data = await getMatchBarDB(db, matchID);
+	const { width, height, open, close } = createSvgCanvas();
 	if (!data || data.length === 0) {
 		console.log(`No data from getMatchBarDB - matchID: ${matchID}`);
-		return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${visual.width}" height="${visual.height}" viewBox="0 0 ${visual.width} ${visual.height}" xmlns="http://www.w3.org/2000/svg">\n<rect x="0" y="0" width="${visual.width}" height="${visual.height}" fill="${visual.colors.gr}" />\n<text x="10" y="20" font-size="16" fill="#fff">No data</text>\n</svg>`;
+		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 
 	// CREATE CHART HERE
 	console.log(`--- generateBarChartForMatch --- ${matchID}`);
 	console.table(data);
 
-	let bars = '';
-	const goals = data.length;
-	const maxHits = Math.max(1, ...data.map(row => Number(row.hits) || 0));
-	const innerWidth = visual.width - visual.margin.left - visual.margin.right;
-	const innerHeight = visual.height - visual.margin.top - visual.margin.bottom;
-	console.log(innerWidth, 'and' , innerHeight);
-	data.forEach((row, index) => {
-		const hits = Number(row.hits) || 0;
-		const h = hits * innerHeight / maxHits;
-		const w = innerWidth / goals;
-		const x = visual.margin.left + (index * w);
-		const y = visual.margin.top + (innerHeight - h);
-		const c = index % 2 === 0 ? visual.colors.or : visual.colors.ye;
+	const min_x = 0;
+	const min_y = 0;
+	const max_x = data.length;
+	const max_y = Math.max(1, ...data.map(row => Number(row.hits) || 0));
+	const ticks_x = data.length + 1;
+	const ticks_y = max_y + 1;
 
-		bars += `<rect x='${x}' y='${y}' height='${h}' width='${w}' fill='${c}' stroke='black' stroke-width='2'/>`;
-	});
+	// CREATE CHART HERE
+	const { margins, plot } = createPlotArea({ width, height });
+	const frame = drawFrame(plot);
 
-	const background = `<rect x="0" y="0" width="${visual.width}" height="${visual.height}" fill="${visual.colors.gr}" />`;
-	const title = `<text x="${visual.title.x}" y="${visual.title.y}" font-size="${visual.title.fontSize}" fill="${visual.colors.wh}">Hits per goal</text>`
-	const axisY = `<line x1="${visual.margin.left}" y1="${visual.margin.top}" x2="${visual.margin.left}" y2="${visual.height - visual.margin.bottom}" stroke="${visual.colors.bl}" stroke-width="3"/>`;
-	const axisX = `<line x1="${visual.margin.left}" y1="${visual.height - visual.margin.bottom}" x2="${visual.width - visual.margin.right}" y2="${visual.height - visual.margin.bottom}" stroke="${visual.colors.bl}" stroke-width="3"/>`;
-	const xAsisLabel = `<text x="${visual.xLabel.x}" y="${visual.xLabel.y}" font-size="${visual.xLabel.fontSize}" fill="black" text-anchor="middle">Goals</text>`;
-	const yAsisLabel = `<text x="${visual.yLabel.x}" y="${visual.yLabel.y}" font-size="${visual.yLabel.fontSize}" fill="${visual.colors.wh}" text-anchor="middle" transform="${visual.yLine.transform}">Hits</text>`;
-	
-	let svg = `${visual.version}
-		<svg width="${visual.width}" height="${visual.height}" viewBox="${visual.viewbox} ${visual.height}" xmlns="${visual.xmlns}">
-			${background}
-			${axisY}
-			${axisX}
-			${bars}
-			${title}
-			${xAsisLabel}
-			${yAsisLabel}
-		</svg>`;
+	// TITLES
+	const chartTitle = drawTitle({ width, height }, margins, `HITS BETWEEN GOAL · MATCH ${matchID}`);
+	const xTitle = drawXAxisTitle(plot, 'GOALS');
+	const yTitle = drawYAxisTitle(plot, 'HITS');
 
-	return (svg);
+	// DATA
+	const xScale = linearScale(min_x, max_x, plot.x, plot.x + plot.width - 1);
+	const yScale = linearScale(min_y, max_y, plot.y + plot.height, plot.y + 1);
+	const bars = renderBars(data, xScale, yScale, colorOf);
+
+	// VALUES AXIS
+	const xTicks = drawXAxisTicks(plot, min_x, max_x, ticks_x, false);
+	const yTicks = drawYAxisTicks(plot, min_y, max_y, ticks_y, true);
+
+	return (open + chartTitle + frame + xTitle + yTitle + bars + xTicks + yTicks + close);
 }
