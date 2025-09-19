@@ -1,5 +1,6 @@
 import * as friendsDB from '../Database/friends.js';
 import { getAllPlayerInclFriends } from './getPlayers.js';
+import { getChallengesFriends } from '../Pending/matchmaking.js';
 import { db } from '../index.js';
 
 function sendContentToFrontend(socket, actionable, sub, content) {
@@ -56,9 +57,15 @@ export async function getFriends(userId1, socket) {
 export async function openFriendRequest(userId1, socket) {
 	try {
 		const requests = await friendsDB.getOpenFriendRequestsDB(db, userId1);
-		if (requests || requests.length !== 0) {
-			sendContentToFrontend(socket, 'friends', 'openRequests', requests);
-		}
+		const invites = getChallengesFriends(userId1);
+
+		socket.emit('message', {
+		action: 'friends',
+		subaction: 'openRequests',
+		friendRequests: requests ? requests : null,
+		invites: invites ? invites : null
+	});
+
 	} catch (err) {
 		sendContentToFrontend(socket, 'friends', 'error', err.message);
 	}

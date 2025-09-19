@@ -60,6 +60,12 @@ export async function getGameStats(data: any) {
 		console.error('No matchID getGameStats');
 		return ;
 	}
+
+	// // Delete old DOM containers
+	// document.getElementById("creditDiv")?.remove();
+	// document.getElementById("containerDashboard")?.remove();
+	// document.getElementById("settingPage")?.remove();
+	// document.getElementById("gameOver")?.remove();
 	console.log(`See GameStats! of gameID:${data.matchID}`);
 
 	const body = document.getElementById('body');

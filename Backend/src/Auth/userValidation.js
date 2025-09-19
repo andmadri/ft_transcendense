@@ -2,7 +2,7 @@ import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.j
 import bcrypt from 'bcrypt';
 import { db } from '../index.js' // DELETE THIS LATER
 
-function checkName(name) {
+export function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
 	if (!name.length)
 		return ('Name can not be empty');

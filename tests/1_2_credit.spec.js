@@ -24,7 +24,7 @@ async function goToCredits(page) {
 export async function creditTests(page, name) {
 	console.log('--- CREDITS TESTS ---');
 	await goToCredits(page);
-	await U.pressBtn(page, "CLOSE");
+	await U.pressBtn(page, "X");
 	await goToCredits(page);
 
 	// back/forward
@@ -32,5 +32,5 @@ export async function creditTests(page, name) {
 	await isInMenu(page, false, name, '');
 	await page.goForward();
 	await isOnCreditpage(page);
-	await U.pressBtn(page, "CLOSE");
+	await U.pressBtn(page, "X");
 }
