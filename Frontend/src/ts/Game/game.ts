@@ -4,7 +4,7 @@ import * as S from "../structs.js";
 import { getGameField } from "./gameContent.js"
 import { OT, state } from '@shared/enums'
 import { navigateTo } from "../history.js";
-import { applyGameStateUpdate, applyScoreUpdate } from './gameStateSync.js'
+import { applyGameStateUpdate, applyScoreUpdate, applyWinner } from './gameStateSync.js'
 
 // import { receiveUpdateFromServer } from "./updateServer.js";
 
@@ -27,7 +27,9 @@ function processSavingMatch(data: any) {
 function processQuitMatch(data: any) {
 	console.log("processQuitMatch()");
 	Game.match.winnerID = data.winner;
-	Game.match.state = state.End;
+	if (Game.match.OT !== OT.Online) {
+		Game.match.state = state.End;
+	}
 	log(data.reason);
 }
 
@@ -49,6 +51,8 @@ export function actionGame(data: any) {
 		case 'scoreUpdate':
 			applyScoreUpdate(data);
 			break;
+		case 'winner':
+			applyWinner(data);
 		case 'save':
 			processSavingMatch(data);
 			break ;

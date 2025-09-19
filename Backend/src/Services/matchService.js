@@ -104,22 +104,18 @@ export async function handleMatchEndedDB(db, match_id) {
 		}
 		winner_id = match.winnerID;
 	}
-	else if (match.player_1_score > match.player_2_score) {
-		winner_id = match.player_1_id;
-	} else if (match.player_1_score < match.player_2_score) {
-		winner_id = match.player_2_id;
+	else {
+		console.log(`Something went wrong in match ${match_id} -> no winner`)
+		return ;
 	}
 
 	// Update the match row, so we have a winner and an end_time
 	await updateMatchInDB(db, {
-		match_id: match.id,
+		match_id: match_id,
 		winner_id: winner_id,
 		end_time: true
 	})
 
 	// Add the players to 'in_menu' in UserSessions
 	await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_menu');
-
-	// Return the updated match row
-	return (await getMatchByID(db, match_id));
 }

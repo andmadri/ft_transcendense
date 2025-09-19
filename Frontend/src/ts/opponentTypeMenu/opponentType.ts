@@ -3,7 +3,7 @@ import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js";
 import { getMenu } from "../Menu/menuContent.js";
 
-function styleSettingTitle(text: string): HTMLDivElement {
+export function styleSettingTitle(text: string): HTMLDivElement {
 	const title = document.createElement('div');
 	title.textContent = text;
 	title.style.fontFamily = '"Horizon", sans-serif';

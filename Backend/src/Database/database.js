@@ -84,7 +84,7 @@ async function ensureSchema(db) {
 export async function createDatabase() {
 	fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 	const db = await openDatabase(DB_PATH);
-	
+
 	sql_log(`Connected to the database`);
 
 	 // Enforce foreign key constraints (disabled by default in SQLite).
@@ -100,7 +100,7 @@ export async function createDatabase() {
 	});
 
 	const created = await ensureSchema(db);
-	
+
 	if (created) {
 		const guest_id = await createNewUserToDB(db, {
 			name: 'Guest',
@@ -112,6 +112,7 @@ export async function createDatabase() {
 			email: 'ai@ai.ai',
 			password: 'secretai'
 		});
+
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);

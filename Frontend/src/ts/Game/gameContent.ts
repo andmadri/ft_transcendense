@@ -3,6 +3,7 @@ import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
 import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
+import { createBackgroundText } from '../Menu/menuContent.js';
 
 // function styleElement(
 // 	element: HTMLElement,
@@ -80,6 +81,7 @@ export function getGameField() {
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.overflow = 'hidden';
+	createBackgroundText(body);
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';
@@ -92,30 +94,30 @@ export function getGameField() {
 	game.style.textAlign = 'center';
 	game.style.boxSizing = 'border-box';
 
-	const scrollContainer = document.createElement('div');
-	scrollContainer.style.display = 'inline-flex';
-	scrollContainer.style.whiteSpace = 'nowrap';
-	scrollContainer.style.overflow = 'hidden';
-	scrollContainer.style.width = '100%';
-	scrollContainer.style.position = 'relative';
+	// const scrollContainer = document.createElement('div');
+	// scrollContainer.style.display = 'inline-flex';
+	// scrollContainer.style.whiteSpace = 'nowrap';
+	// scrollContainer.style.overflow = 'hidden';
+	// scrollContainer.style.width = '100%';
+	// scrollContainer.style.position = 'relative';
 
-	const title1 = document.createElement('div');
-	title1.id = 'gameTitle';
-	title1.textContent = 'PONG '.repeat(30);
-	title1.style.fontFamily = '"Horizon", monospace';
-	title1.style.fontSize = 'clamp(4rem, 8vh, 10rem)';
-	title1.style.color = 'transparent';
-	title1.style.webkitTextStroke = '0.2rem #000';
-	title1.style.position = 'relative';
-	title1.style.display = 'inline-block';
-	title1.style.pointerEvents = 'none';
-	title1.style.padding = '1rem';
-	title1.style.animation = 'scrollTitle 35s linear infinite';
+	// const title1 = document.createElement('div');
+	// title1.id = 'gameTitle';
+	// title1.textContent = 'PONG '.repeat(30);
+	// title1.style.fontFamily = '"Horizon", monospace';
+	// title1.style.fontSize = 'clamp(4rem, 8vh, 10rem)';
+	// title1.style.color = 'transparent';
+	// title1.style.webkitTextStroke = '0.2rem #000';
+	// title1.style.position = 'relative';
+	// title1.style.display = 'inline-block';
+	// title1.style.pointerEvents = 'none';
+	// title1.style.padding = '1rem';
+	// title1.style.animation = 'scrollTitle 35s linear infinite';
 
-	const title2 = title1.cloneNode(true);
+	// const title2 = title1.cloneNode(true);
 
-	scrollContainer.appendChild(title1);
-	scrollContainer.appendChild(title2);
+	// scrollContainer.appendChild(title1);
+	// scrollContainer.appendChild(title2);
 
 	const	field = document.createElement('div');
 	field.id = 'field';
@@ -194,7 +196,7 @@ export function getGameField() {
 	field.appendChild(scoreContainer);
 	field.appendChild(ball);
 
-	game.appendChild(scrollContainer);
+	// game.appendChild(scrollContainer);
 	game.appendChild(field);
 	game.appendChild(getQuitBtn())
 	body.append(game);

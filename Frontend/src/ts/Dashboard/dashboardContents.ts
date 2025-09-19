@@ -47,6 +47,7 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 
 function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 {
+	console.log('userinfo: ', user_info);
 	const card = document.createElement('div');
 	card.id = 'userInfoCard';
 	// card.style.aspectRatio = '4 / 3';

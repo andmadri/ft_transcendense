@@ -2,7 +2,6 @@ import { log } from '../logging.js'
 import { Game, UI } from "../gameData.js"
 import { styleRow, styleListBtns } from './menuContent.js'
 import { navigateTo } from '../history.js';
-import { getDashboard } from '../Dashboard/dashboardContents.js';
 // import { styleElement } from './menuContent.js'
 
 function createPlayerList(): HTMLDivElement {

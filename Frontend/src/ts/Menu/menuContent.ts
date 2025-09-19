@@ -9,7 +9,7 @@ import { submitLogout } from '../Auth/logout.js';
 import { changeAvatar } from './avatar.js';
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js"; //USE THIS!!!
-import { getDashboard } from "../Dashboard/dashboardContents.js";
+import { requestJoinTournament } from "../Tournament/tournamentContent.js";
 
 export function styleMainBtns(button: HTMLButtonElement, text: string) {
 	button.textContent = text;
@@ -104,15 +104,15 @@ export function getPlayBtn(): HTMLButtonElement {
 	return (playBtn);
 }
 
-export function getTournamentBtn(): HTMLButtonElement {
+
+function getTournamentBtn(): HTMLButtonElement {
 	const tournamentBtn = document.createElement('button');
-	styleMainBtns(tournamentBtn, "Tournament");
-	tournamentBtn.addEventListener('click', () => {
-		console.log('I am tired');
-		console.log('That is okay, sleep well ;)');
-	});
-	return (tournamentBtn);
+	styleMainBtns(tournamentBtn, "Join Tournament");
+	tournamentBtn.addEventListener('click', requestJoinTournament);
+	return tournamentBtn;
 }
+
+
 
 export function getDashboardBtn(): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
@@ -295,8 +295,6 @@ export function createBackgroundText(body: HTMLElement) {
 		pongSpan.textContent = 'PONG';
 		pongSpan.style.letterSpacing = '0.5rem';
 		// pongSpan.style.animation = `glitch 1s infinite`;
-		pongSpan.style.animationDelay = `${Math.random() * 5}s`; // random offset
-		pongSpan.style.animationDuration = `${0.8 + Math.random() * 1.5}s`; // varied speed
 		rowDiv.appendChild(pongSpan);
 		}
 		
