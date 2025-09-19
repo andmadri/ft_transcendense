@@ -61,14 +61,14 @@ function formatDurationSecs(data) {
 // Creates the left upper part with the basic game stats
 async function getGameStatsSVG(db, data) {
 	const match_duration = formatDurationSecs(data);
-	const winner = await getUserByID(db, data.winner_id);
+	const winner = (data.winner_id === null) ? 'No winner' : await getUserByID(db, data.winner_id).name;
 
 	const gameStatsSVG = `
 		${getLineSVG(40, 'vs', 480, 175)}
 		${getLineSVG(40, `Start date: ${data.start_time}`, 80, 400)}
 		${getLineSVG(40, `End date: ${data.end_time}`, 80, 450)}
 		${getLineSVG(40, `Playing time: ${match_duration}`, 80, 500)}
-		${getLineSVG(40, `Winner: ${winner.name}`, 80, 550)}
+		${getLineSVG(40, `Winner: ${winner}`, 80, 550)}
 	`;
 	return (gameStatsSVG);
 }
