@@ -50,6 +50,9 @@ export function getUserStateDurationsDB(db, user_id) {
 				sql_error(err, `getUserStateDurationsDB | user_id=${user_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getUserStateDurationsDB | No UserStateDuration found! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});
@@ -64,6 +67,9 @@ export function getUserMatchStatsDB(db, user_id) {
 				sql_error(err, `getUserMatchStatsDB | user_id=${user_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getUserMatchStatsDB | No UserMatchStats found! user_id=${user_id}`);
+				}
 				resolve(row || null);
 			}
 		});

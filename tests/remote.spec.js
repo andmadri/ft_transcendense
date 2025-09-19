@@ -50,17 +50,19 @@ export async function remotePlayer(page, browser, URL, name, name2, email2, pass
 	// Paddles moves when key is pressed
 	const paddle = await page.locator('#lPlayer');
 	const paddleRect1 = await paddle.boundingBox();
+
 	const paddle2 = await page.locator('#rPlayer');
 	const paddleRect2_1 = await paddle2.boundingBox();
-	for(let i = 0; i < 5; i++) {
+
+	for(let i = 0; i < 50; i++) {
 		await page.keyboard.press('ArrowDown'); 
 		await page2.keyboard.press('ArrowDown'); 
 		await timeout(page, page2, 100);
 	}
 	const paddleRect2 = await paddle.boundingBox();
 	const paddleRect2_2 = await paddle2.boundingBox();
-	await expect(paddleRect1).not.toEqual(paddleRect2);
-	await expect(paddleRect2_1).not.toEqual(paddleRect2_2);
+	expect(paddleRect1).not.toEqual(paddleRect2);
+	expect(paddleRect2_1).not.toEqual(paddleRect2_2);
 
 	// Quit game
 	await U.pressBtn(page, "QUIT");

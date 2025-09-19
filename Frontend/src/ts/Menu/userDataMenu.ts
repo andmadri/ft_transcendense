@@ -26,7 +26,7 @@ function styleTabButton(button: HTMLButtonElement) {
 	button.style.textAlign = 'center';
 	button.style.fontFamily = '"Horizon", sans-serif';
 	button.style.fontSize = 'clamp(12px, 1.2vw, 16px)';
-	button.style.cursor = 'pointer';
+	// button.style.cursor = 'pointer';
 	button.style.padding = '0.5rem 1rem'; 
 	button.style.borderRadius = '10px 10px 0 0';
 	button.style.border = 'none';
@@ -138,12 +138,12 @@ function createUserPicture(user_info: any, playerNr: number): HTMLImageElement {
 // 	return userInfoContainer;
 // }
 
-function createDashboardButton(): HTMLButtonElement {
+function createDashboardButton(userID: number): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
 	dashboardBtn.id = 'dashboardBtn';
 	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 	dashboardBtn.addEventListener("click", () => {
-		navigateTo(`Dashboard?userId=${UI.user1.ID}`);
+		navigateTo(`Dashboard?userId=${userID}`);
 	});
 	return dashboardBtn;
 }
@@ -187,7 +187,7 @@ function createNotificationButtons(): HTMLButtonElement {
 	notificationBadge.style.borderRadius = '50%';
 	notificationBadge.style.fontSize = '10px';
 	notificationBadge.style.width = '18px';
-  notificationBadge.style.height = '18px';
+	notificationBadge.style.height = '18px';
 	notificationBadge.style.display = 'none';
 	notificationBadge.style.alignItems = 'center';
 	notificationBadge.style.justifyContent = 'center';
@@ -247,7 +247,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 	}
 	const topRightButtonContainer =  createTopRightButtonContainer();
 	if(user_info.id >= 2) {
-		const dashboard = createDashboardButton();
+		const dashboard = createDashboardButton(user_info.id);
 		dashboard.id = 'dashboardBtn' + playerNr;
 		topRightButtonContainer.appendChild(dashboard);
 	}

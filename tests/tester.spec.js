@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 import { authenticationTests, signup_login_byPlayer } from './0_0_auth.spec.js';
 import { menuTests, isInMenu } from './1_0_menu.spec.js';
+import { afterGame } from './after_game.js';
 import * as Game from './game.spec.js';
 import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
@@ -68,4 +69,12 @@ test('Navigation', async ({browser}) => {
 	await signup_login_byPlayer(page, 1, name + 'n', 'n' + email, password);
 	await isInMenu(page, false, name, '');
 	await Navigation.navigation(page, name);
+});
+
+test('After Game', async ({browser}) => {
+	const page = await U.createNewPage(browser);
+	await page.goto(URL);
+	await signup_login_byPlayer(page, 1, name + 'g', 'g' + email, password);
+	await isInMenu(page, false, name, '');
+	await afterGame(page);
 });

@@ -8,6 +8,7 @@ import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
+import { getGameStats } from './Game/gameStats.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -72,6 +73,9 @@ export function receiveFromWS(data: any) {
 			break ;
 		case 'initOnlineGame':
 			actionInitOnlineGame(data);
+			break ;
+		case 'gameStats':
+			getGameStats(data);
 			break ;
 		case 'game':
 			actionGame(data);

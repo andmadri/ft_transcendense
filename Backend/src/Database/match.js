@@ -167,6 +167,9 @@ export async function getMatchByID(db, match_id) {
 				sql_error(err, `getMatchByID id=${match_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getMatchByID | match_id not found! match_id=${match_id}`);
+				}
 				resolve(row || null);
 			}
 		});
@@ -187,7 +190,33 @@ export async function getMatchEventByID(db, event_id) {
 				sql_error(err, `getMatchEventByID id=${event_id}`);
 				reject(err);
 			} else {
+				if (!row) {
+					sql_log(`getMatchEventByID | event_id not found! event_id=${event_id}`);
+				}
 				resolve(row || null);
+			}
+		});
+	});
+}
+
+/**
+ * @brief Fetches a MatchEvents rows by its MatchID.
+ *
+ * @param {number} match_id - The ID of the match to retrieve.
+ * @returns {Promise<Object|null>} - Resolves with matchEvents object or null.
+ */
+export async function getMatchEventsByMatchID(db, match_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM MatchEvents WHERE match_id = ?`;
+		db.all(sql, [match_id], (err, rows) => {
+			if (err) {
+				sql_error(err, `getMatchEventByID id=${match_id}`);
+				reject(err);
+			} else {
+				if (!rows) {
+					sql_log(`getMatchEventsByMatchID | match_id not found! match_id=${match_id}`);
+				}
+				resolve(rows || []);
 			}
 		});
 	});

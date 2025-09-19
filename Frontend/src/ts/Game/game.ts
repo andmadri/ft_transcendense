@@ -25,6 +25,8 @@ function processSavingMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
+	console.log("processQuitMatch()");
+	Game.match.winnerID = data.winner;
 	Game.match.state = state.End;
 	log(data.reason);
 }
@@ -41,10 +43,6 @@ export function actionGame(data: any) {
 			log(`MatchID frontend: ${data.id}`);
 			processMatch(data);
 			break ;
-		// case 'start':
-		// 	navigateTo('Game');
-		// 	Game.match.state = state.Playing; //don't think we need this
-		// 	break ;
 		case 'gameStateUpdate':
 			applyGameStateUpdate(data);
 			break ;

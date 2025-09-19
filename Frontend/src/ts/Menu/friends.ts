@@ -141,7 +141,7 @@ function insertFriends(friends: any) {
 			const dashboardBtn = document.createElement('button');
 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 			dashboardBtn.addEventListener("click", () => {
-				console.log('dashboard call friend.id', friend.id);
+				// console.log('dashboard call friend.id', friend.id);
 				navigateTo(`Dashboard?userId=${friend.id}`);
 			});
 			btnContainer.appendChild(deleteFriendBtn);
@@ -151,12 +151,12 @@ function insertFriends(friends: any) {
 	}
 }
 
-function processFriends(data: any) {
-	if (data.access && data.access == "yes")
-		insertFriends(data.content);
-	else
-		console.log("User has no Friends to Display");
-}
+// function processFriends(data: any) {
+// 	if (data.access && data.access == "yes")
+// 		insertFriends(data.content);
+// 	else
+// 		console.log("User has no Friends to Display");
+// }
 
 export function actionFriends(data: any) {
 	if (!data.subaction) {
