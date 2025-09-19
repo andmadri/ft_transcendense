@@ -33,8 +33,8 @@ export async function generateBarChartForMatch(db, matchID, colorOf) {
 	const max_x = data.length;
 	const max_y = Math.max(1, ...data.map(row => Number(row.hits) || 0));
 	const ticks_x = data.length + 1;
-	const ticks_y = Math.min(10, max_y + 1);
-	const decimals = (ticks_y < 10) ? 0 : 1;
+	const ticks_y = Math.min(11, max_y + 1);
+	const decimals = (ticks_y < 11) ? 0 : 1;
 
 	// CREATE CHART HERE
 	const { margins, plot } = createPlotArea({ width, height });

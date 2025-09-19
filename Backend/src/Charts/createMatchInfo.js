@@ -41,27 +41,34 @@ function getSquare(nr, name, score, color) {
 			`;
 }
 
-function getDurationInSec(data) {
+function formatDurationSecs(data) {
 	const startDate = new Date(data.start_time);
 	const endDate = new Date(data.end_time);
 	
 	const durationMS = endDate - startDate;
-	const minutes = Math.floor(durationMS / 1000 / 60);
-	const secondes = Math.floor((durationMS / 1000) % 60);
-	return (minutes + ':' + secondes);
+	const n = Math.round(Number(durationMS / 1000));
+	if (!Number.isFinite(n)) {
+		return '';
+	}
+	if (n < 60) {
+		return `${n}s`;
+	}
+	const m = Math.floor(n / 60);
+	const s = n % 60;
+	return `${m}m ${s.toString().padStart(2, '0')}s`;
 }
 
 // Creates the left upper part with the basic game stats
 async function getGameStatsSVG(db, data) {
-	const match_duration = getDurationInSec(data);
-	// const winner = data.player_1_id == data.winner_id ? player1 : player2;
+	const match_duration = formatDurationSecs(data);
 	const winner = await getUserByID(db, data.winner_id);
 
 	const gameStatsSVG = `
 		${getLineSVG(40, 'vs', 480, 175)}
-		${getLineSVG(40, `data: ${data.start_time}`, 80, 400)}
-		${getLineSVG(40, `playing time: ${match_duration}`, 80, 460)}
-		${getLineSVG(40, `winner: ${winner.name}`, 80, 520)}
+		${getLineSVG(40, `Start date: ${data.start_time}`, 80, 400)}
+		${getLineSVG(40, `End date: ${data.end_time}`, 80, 450)}
+		${getLineSVG(40, `Playing time: ${match_duration}`, 80, 500)}
+		${getLineSVG(40, `Winner: ${winner.name}`, 80, 550)}
 	`;
 	return (gameStatsSVG);
 }
@@ -85,7 +92,7 @@ export async function generateMatchInfo(db, matchID, data, colorOf) {
 	const frame1 = getSquare(1, player1.name, data.player_1_score, colorOf.get(data.player_1_id));
 	const frame2 = getSquare(2, player2.name, data.player_2_score, colorOf.get(data.player_2_id))
 	// DATA
-	const svgtext = getGameStatsSVG(db, data);
+	const svgtext = await getGameStatsSVG(db, data);
 
 	return (open + chartTitle + frame1 + frame2 + svgtext + close);
 }
