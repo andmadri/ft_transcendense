@@ -25,10 +25,10 @@ export async function generateAllChartsForMatch(db, socket, msg) {
 		socket.emit('message', {
 			action: 'gameStats',
 			matchID,
-			infoChartSVG,
-			barChartSVG,
-			scatterChartSVG,
-			lineChartSVG,
+			infoChartSVG: infoChartSVG,
+			barChartSVG: barChartSVG,
+			scatterChartSVG: scatterChartSVG,
+			lineChartSVG: lineChartSVG,
 		});
 	} catch (err) {
 		const fallback = `

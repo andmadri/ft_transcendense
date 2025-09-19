@@ -1,5 +1,12 @@
 import { navigateTo } from '../history.js';
-import { Game } from '../gameData.js';
+import { Game } from '../gameData.js'
+
+export function askForGamestats(matchID: number) {
+	Game.socket.emit('message', {
+		action: 'gameStats',
+		matchID: matchID
+	});
+}
 
 function ensureStatsChartElement(id: string, alt: string): HTMLImageElement {
 	let img = document.getElementById(id) as HTMLImageElement | null;
@@ -48,8 +55,12 @@ function getSRCfromString(chartText: string ): string {
 	return dataUri;
 }
 
-export async function getGameStats(matchId: number) {
-	console.log(`See GameStats! of gameID:${matchId}`);
+export async function getGameStats(data: any) {
+	if (!data.matchID) {
+		console.error('No matchID getGameStats');
+		return ;
+	}
+	console.log(`See GameStats! of gameID:${data.matchID}`);
 
 	const body = document.getElementById('body');
 	if (!body) return;
@@ -64,16 +75,15 @@ export async function getGameStats(matchId: number) {
 	page.style.flexWrap = 'wrap';
 	page.style.alignItems = 'stretch';
 
-	Game.socket.emit('message', {
-		action: 'gameStats',
-		matchID: matchId
-	});
-
 	// Charts
 	const img1 = ensureStatsChartElement('statsChart1', 'Info match');
+	img1.src = getSRCfromString(data.infoChartSVG);
 	const img2 = ensureStatsChartElement('statsChart2', 'Amount hits per goal');
+	img2.src = getSRCfromString(data.barChartSVG);
 	const img3 = ensureStatsChartElement('statsChart3', 'Line chart');
+	img3.src = getSRCfromString(data.scatterChartSVG);
 	const img4 = ensureStatsChartElement('statsChart4', 'Scatter chart');
+	img4.src = getSRCfromString(data.lineChartSVG);
 
 	// Exit button
 	const exitButton = document.createElement('button');
@@ -95,14 +105,6 @@ export async function getGameStats(matchId: number) {
 	page.appendChild(getColumsGameStates(img1, img2));
 	page.appendChild(getColumsGameStates(img3, img4));
 	page.appendChild(exitButton);
-	body.replaceChildren(page);
-}
-
-export function insertSVGsGameStats(data: any) {
-	if (!data.infoChartSVG || ! data.barChartSVG || !data.scatterChartSVG || data.lineChartSVG)
-		return ;
-	(document.getElementById('statsChart1') as HTMLImageElement).src = getSRCfromString(data.infoChartSVG);
-	(document.getElementById('statsChart2') as HTMLImageElement).src = getSRCfromString(data.barChartSVG);
-	(document.getElementById('statsChart3') as HTMLImageElement).src = getSRCfromString(data.scatterChartSVG);
-	(document.getElementById('statsChart4') as HTMLImageElement).src = getSRCfromString(data.lineChartSVG);
+	body.innerHTML = "";
+	body.appendChild(page);
 }

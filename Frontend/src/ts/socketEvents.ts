@@ -8,7 +8,7 @@ import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
-import { insertSVGsGameStats } from './Game/gameStats.js'
+import { getGameStats } from './Game/gameStats.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;
@@ -75,7 +75,7 @@ export function receiveFromWS(data: any) {
 			actionInitOnlineGame(data);
 			break ;
 		case 'gameStats':
-			insertSVGsGameStats(data);
+			getGameStats(data);
 			break ;
 		case 'game':
 			actionGame(data);
