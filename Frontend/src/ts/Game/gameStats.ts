@@ -77,13 +77,17 @@ export async function getGameStats(data: any) {
 
 	// Charts
 	const img1 = ensureStatsChartElement('statsChart1', 'Info match');
-	img1.src = getSRCfromString(data.infoChartSVG);
+	if (data.infoChartSVG)
+		img1.src = getSRCfromString(data.infoChartSVG);
 	const img2 = ensureStatsChartElement('statsChart2', 'Amount hits per goal');
-	img2.src = getSRCfromString(data.barChartSVG);
+	if (data.barChartSVG)
+		img2.src = getSRCfromString(data.barChartSVG);
 	const img3 = ensureStatsChartElement('statsChart3', 'Line chart');
+	if (data.scatterChartSVG)
 	img3.src = getSRCfromString(data.scatterChartSVG);
 	const img4 = ensureStatsChartElement('statsChart4', 'Scatter chart');
-	img4.src = getSRCfromString(data.lineChartSVG);
+	if (data.lineChartSVG)
+		img4.src = getSRCfromString(data.lineChartSVG);
 
 	// Exit button
 	const exitButton = document.createElement('button');
@@ -106,5 +110,8 @@ export async function getGameStats(data: any) {
 	page.appendChild(getColumsGameStates(img3, img4));
 	page.appendChild(exitButton);
 	body.innerHTML = "";
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
 	body.appendChild(page);
 }
