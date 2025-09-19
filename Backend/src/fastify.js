@@ -8,10 +8,6 @@ import userAuthRoutes from './routes/userAuth.js';
 import twoFactor from './routes/twofa.js';
 import googleAuthRoutes from './routes/googleAuth.js';
 import avatarRoutes from './routes/avatar.js';
-import chartRoutes from './routes/charts.js';
-
-import fs from 'fs';
-import path from 'path';
 
 export async function initFastify() {
 	// FASTIFY => API SERVER
@@ -25,7 +21,6 @@ export async function initFastify() {
 			done();
 		}
 	});
-	
 	
 	// Register the cookie plugin and set a secret for signed cookies
 	fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
@@ -56,15 +51,7 @@ export async function initFastify() {
 	
 	// POST /api/upload-avatar
 	await fastify.register(avatarRoutes);
-	
-	// ADDED FOR CREATING IMAGE IN THE BACKEND - these 6 lines
-	try {
-		fs.mkdirSync(path.join(process.env.UPLOADS_DIR, 'charts'), { recursive: true });
-	} catch (e) {
-		console.error('[BOOT] Cannot create uploads dir:', UPLOADS_BASE, e);
-	}
-	await fastify.register(chartRoutes);
-	
+		
 	fastify.setNotFoundHandler(function (request, reply) {
 		reply.status(404).send({ error: 'Not Found' });
 	});

@@ -14,6 +14,7 @@ import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
+import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 
 export const db = await createDatabase();
 
@@ -89,7 +90,7 @@ fastify.ready().then(() => {
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-	
+		
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;
@@ -116,6 +117,8 @@ fastify.ready().then(() => {
 					}
 					return handleDashboardMaking(msg, socket, msg.playerId);
 				}
+				case 'gameStats':
+					return generateAllChartsForMatch(db, socket, msg);
 				case 'init':
 					return handleInitGame(db, msg, socket);
 				case 'game':

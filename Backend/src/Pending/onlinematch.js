@@ -92,7 +92,7 @@ export function matchInterval(match, io) {
 				break;
 			}
 			case (state.End) : {
-				saveMatch(match, null, null);
+				saveMatch(match, match.matchID);
 				clearInterval(match.intervalID);
 				break;
 			}

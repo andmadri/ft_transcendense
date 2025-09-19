@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { addUserSessionToDB } from './sessions.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
