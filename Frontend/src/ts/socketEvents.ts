@@ -1,7 +1,7 @@
 import { actionGame } from './Game/game.js'
 import { actionPlayers } from './Menu/players.js'
 import { log } from './logging.js' 
-import { Game } from "./gameData.js"
+import { Game, UI } from "./gameData.js"
 import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
@@ -9,6 +9,7 @@ import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { getGameStats } from './Game/gameStats.js'
+import * as S from './structs.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;

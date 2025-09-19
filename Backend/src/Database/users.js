@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { addUserSessionToDB } from './sessions.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
@@ -178,30 +177,6 @@ export async function getUserByEmail(db, email) {
 					sql_log(`getUserByEmail | email not found! email=${email}`);
 				}
 				resolve(row || null);
-			}
-		});
-	});
-}
-
-export async function getUsersByIDs(db, user_id1, user_id2) {
-	return new Promise((resolve, reject) => {
-		const sql = `SELECT id, name FROM Users WHERE id IN (?, ?)`;
-		db.all(sql, [user_id1, user_id2], (err, rows) => {
-			if (err) {
-				sql_error(err, `getUsersByIDs | id=${user_id1} and id=${user_id2}`);
-				reject(err);
-			} else {
-				if (!rows || rows.length === 0) {
-					sql_log(`getUsersByIDs | user_ids not found! user_id1=${user_id1} user_id2=${user_id2}`);
-				}
-				const users = rows.reduce((acc, row) => {
-					acc[row.id] = row.name;
-					return acc;
-				}, {});
-
-				const player1 = users[user_id1];
-				const player2 = users[user_id2];
-				resolve({ player1, player2 });
 			}
 		});
 	});

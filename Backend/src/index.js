@@ -13,18 +13,15 @@ import { addUserSessionToDB } from './Database/sessions.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
-import { saveMatch } from './End/endGame.js';
-import { getMatchByID } from './Database/match.js';
-import { generateAllChartsForMatch } from './End/createGameStats.js';
+import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
+import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 
 export const db = await createDatabase();
 
 const fastify = await initFastify();
 
-const firstMatch = await getMatchByID(db, 1);
-
 // Map to track last seen timestamps for users
-const userLastSeen = new Map();
+const usersLastSeen = new Map();
 
 function installShutdownHandlers(fastify, db) {
 	const shutdown = async (signal) => {
@@ -136,7 +133,10 @@ fastify.ready().then(() => {
 
 		socket.on('heartbeat', (msg) => {
 			if (userId1) {
-				userLastSeen.set(userId1, Date.now());
+				usersLastSeen.set(userId1, {
+					userId2,
+					lastSeen: Date.now()
+				});
 				if (msg.menu === true) {
 					handleFriends({ subaction: 'initMenu' }, socket, userId1);
 				}
@@ -145,19 +145,27 @@ fastify.ready().then(() => {
 
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
+			checkChallengeFriendsInvites(socket, userId1);
 		});
 	});
 });
 
 setInterval(async () => {
 	const now = Date.now();
-	for (const [userId, lastSeen] of userLastSeen.entries()) {
+	for (const [userId1, data] of usersLastSeen.entries()) {
+		const { userId2, lastSeen } = data;
 		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 			// Mark user offline in DB
 			try {
-				await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
-				userLastSeen.delete(userId);
-				console.log(`User ${userId} marked offline due to missed heartbeat`);
+				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
+				// usersLastSeen.delete(userId1);
+				console.log(`User ${userId1} marked offline due to missed heartbeat`);
+				if (userId2 && userId2 > 2) {
+					await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
+					usersLastSeen.delete(userId1);
+					console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+				}
+				usersLastSeen.delete(userId1);
 			} catch (err) {
 				// console.error(`Error marking user ${userId} offline:`, err);
 			}

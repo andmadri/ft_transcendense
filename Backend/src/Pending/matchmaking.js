@@ -1,58 +1,153 @@
 import { handleOnlineMatch, removeFromWaitinglist } from "./onlinematch.js";
 import { addUserToRoom } from "../rooms.js";
+import { createMatch, matches } from "../InitGame/match.js";
+import { OT, state } from '../SharedBuild/enums.js'
+import { getUserByID } from "../Database/users.js";
+import { matchInterval } from "./onlinematch.js";
 
+let friendInvites = new Map();
+
+// Checks if a player disconnect if there are open invites
+export function checkChallengeFriendsInvites(socket, userId1) {
+	let invite = null;
+	for (const data of friendInvites.values()) {
+		invite = data.invite;
+		if (invite.challenger === userId1)
+			break ;
+		invite = null;
+	}
+	if (invite)
+		friendInvites.delete(invite.id);
+}
+
+// Returns al the invites
+export function getChallengesFriends(responder) {
+	let invites = [];
+
+	for (const data of friendInvites.values()) {
+		const invite = data.invite;
+		if (invite.responder === responder)
+			invites.push(invite);
+	}
+	return (invites);
+}
 
 // STEP 2: receiving invitation and send back to all the online players.
-function challengeFriend(socket, challenger, responder) {
-	// send to everyone in main except the current user socket
-	addUserToRoom(socket, challenger + responder);
+async function challengeFriend(io, db, socket, challenger, responder) {
+	const tempMatchID = 'temp' + challenger + '+' + responder;
+	const reverseMatchID = 'temp' + responder + '+' + challenger;
 
-	socket.to('main').emit('message', {
-		action: 'matchmaking',
-		subaction: 'challengeFriend',
-		challenger: userID,
-		responder: friendID,
-		roomname: challenger + responder // change to matchID!
+	if (friendInvites.has(tempMatchID))
+		return ;
+
+	if (friendInvites.has(reverseMatchID))
+	{
+		console.log("reverse match..");
+		const socket2 = friendInvites.get(reverseMatchID).socket;
+		startChallenge(io, db, socket, {challenger, responder, tempMatchID: reverseMatchID, socket2});
+		return ;
+	}
+	const user = await getUserByID(db, challenger);
+	if (!user)
+		return;
+
+	friendInvites.set(tempMatchID, {socket, invite :{challenger, responder, requester_name: user.name, id: tempMatchID}});
+}
+
+async function startChallenge(io, db, socket, msg) {
+	const data = friendInvites.get(msg.tempMatchID || msg.id);
+	if (!data) {
+		socket.emit('message', {action: 'matchmaking', subaction: 'matchIsRemoved'});
+		return ;
+	}
+	const socket2 = data.socket;
+	if (!socket2)
+		return console.error('Start challenge: socket is not found');
+
+	if (!socket2.connected) {
+		stopChallenge(msg, true);
+		return ;
+	}
+
+	const matchID = await createMatch(db, OT.Online, socket, msg.challenger, msg.responder);
+	addUserToRoom(socket2, matchID);
+	addUserToRoom(socket, matchID);
+
+	const match = matches.get(matchID);
+	if (!match) {
+		console.error(`Something went wrong!!! No match for matchID: ${matchID}`);
+		return ;
+	}
+	io.to(matchID).emit('message', {
+		action: 'initOnlineGame',
+		matchID: matchID,
+		match: match
 	});
+	match.state = state.Init;
+	matchInterval(match, io);
+	friendInvites.delete(msg.tempMatchID);
+}
+
+function stopChallenge(msg, disconnectedSocket) {
+	if (!disconnectedSocket) {
+		const data = friendInvites.get(msg.tempMatchID);
+		if (!data) {
+			return ;
+		}
+		const socket = data.socket;
+		if (!socket)
+			return console.error('stopChallenge: socket is not found');
+
+		socket.emit('message', {
+			action: 'matchmaking',
+			subaction: 'challengeDeclined'
+		})
+		socket.leave(msg.tempMatchID);
+	}
+	friendInvites.delete(msg.tempMatchID);
+}
+
+function cancelChallengeFriend(socket, userID) {
+	let invite = null;
+	for (const data of friendInvites.values()) {
+		invite = data.invite;
+		if (invite.challenger == userID)
+			break ;
+		invite = null
+	}
+	if (invite)
+		friendInvites.delete(invite.id);
 }
 
 // STEP 5: receive response from responder
-function receiveResponseChallenge(socket, msg) {
-	const responseChallenge = {
-		action: 'matchmaking',
-		subaction: 'responseChallenge',
-		response: true
-	}
-	if (msg.answer == true) {
-		socket.to(msg.roomname).emit('message', responseChallenge);
-		addUserToRoom(socket, msg.roomname);
-		// start match?
-	} else {
-		responseChallenge.response = false;
-		socket.to(msg.roomname).emit('message', responseChallenge);
-		socket.leave(msg.roomname);
-	}
+async function receiveResponseChallenge(io, db, socket, msg) {
+	if (msg.answer == true)
+		startChallenge(io, db, socket, msg);
+	else
+		stopChallenge(msg, false);
 }
 
 export function handleMatchmaking(db, msg, socket, userID, io) {
 	if (!msg.subaction)
 		return ;
 	
-	console.log(`handlematchmaking() -> UserID = ${userID}`);
 	switch(msg.subaction) {
 		case 'challengeFriend':
-			challengeFriend(socket, msg.challenger, msg.responder);
+			challengeFriend(io, db, socket, msg.challenger, msg.responder);
 			break ;
 		case 'challengeFriendAnswer':
-			receiveResponseChallenge(socket, msg);
+			receiveResponseChallenge(io, db, socket, msg);
 			break ;
 		case 'createOnlineMatch':
 			handleOnlineMatch(db, socket, userID, io);
+			break ;
+		case 'cancelChallengeFriend':
+			cancelChallengeFriend(socket, userID);
 			break ;
 		case 'cancelOnlineMatch':
 			removeFromWaitinglist(userID);
 			break ;
 		default:
-			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);
+			console.error(`subaction ${msg.subaction} not found in handleMatchmaking`);
 	}
 }

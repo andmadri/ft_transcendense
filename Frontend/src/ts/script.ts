@@ -68,7 +68,6 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 		navigateTo('LoginP1');
 });
 
-
 function gameLoop() {
 	switch (Game.match.state) {
 		case state.Pending: {
@@ -161,6 +160,9 @@ function mainLoop() {
 				document.getElementById('auth1')?.remove();
 				document.getElementById('auth2')?.remove();
 				document.getElementById('opponentMenu')?.remove();
+				document.getElementById("creditDiv")?.remove();
+				document.getElementById("containerDashboard")?.remove();
+				document.getElementById("gameOver")?.remove();
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
