@@ -225,6 +225,7 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	exitButton.addEventListener('click', () => {
 		// const dashboard = document.getElementById('dashboard');
 		// if (dashboard) {
+			dashboard.remove();
 			containerDashboard.remove();
 		// }
 		navigateTo('Menu');

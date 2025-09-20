@@ -173,6 +173,9 @@ function mainLoop() {
 				document.getElementById("creditDiv")?.remove();
 				document.getElementById("containerDashboard")?.remove();
 				document.getElementById("gameOver")?.remove();
+				document.getElementById("dashboard")?.remove();
+				document.getElementById("tournamentScreen")?.remove();
+				document.getElementById("tournamentEndScreen")?.remove();
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
@@ -197,12 +200,12 @@ function mainLoop() {
 				}
 				//requestUpdateTournament();
 			break ;
-			 case S.stateUI.Dashboard: {
-				if (!document.getElementById('dashboard')) {
-					getDashboard();
-				}
-			break;
-			}
+			//  case S.stateUI.Dashboard: {
+			// 	if (!document.getElementById('dashboard')) {
+			// 		getDashboard();
+			// 	}
+			// break;
+			// }
 			default:
 		}
 	} else {
