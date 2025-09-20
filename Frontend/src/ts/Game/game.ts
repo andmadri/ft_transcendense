@@ -53,6 +53,7 @@ export function actionGame(data: any) {
 			break;
 		case 'winner':
 			applyWinner(data);
+			break;
 		// case 'save':
 		// 	processSavingMatch(data);
 		// 	break ;

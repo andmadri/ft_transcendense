@@ -66,8 +66,9 @@ export function changeOpponentType(option: string) {
 		case 'Online':
 			Game.match.mode = OT.Online;
 			break ;
-		case 'empty':
+		case 'Empty':
 			Game.match.mode = OT.Empty;
+			break ;
 		default:
 			log(`unknown opponent type? ${option}`);
 	}
@@ -82,8 +83,9 @@ export function changeMatchFormat(option: string) {
 		case 'tournament':
 			Game.match.matchFormat = MF.Tournament;
 			break ;
-		case 'empty':
+		case 'Empty':
 			Game.match.matchFormat = MF.Empty;
+			break ;
 		default:
 			log(`unknown match format? ${option}`);
 	}
@@ -146,6 +148,7 @@ export function initGame() {
 export function actionInitOnlineGame(data: any) {
 	const match = data.match;
 
+	console.log("actionInitOnlineGame - matchID: " + data.matchID);
 	if (match == null) { // something went wrong
 		alert('Could not start a new game');
 		navigateTo('Menu');

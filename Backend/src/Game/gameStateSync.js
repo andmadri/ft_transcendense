@@ -137,6 +137,7 @@ export function sendWinnerResult(match, io) {
 		action: 'game',
 		subaction: 'winner',
 		match: match.matchID,
-		winnerID: match.winnerID
+		winnerID: match.winnerID,
+		state: match.state
 	});
 }

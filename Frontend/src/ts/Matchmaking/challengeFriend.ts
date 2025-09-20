@@ -1,5 +1,7 @@
+import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
 import { log } from "../logging.js";
+import { navigateTo } from '../history.js';
 
 // STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
@@ -11,47 +13,30 @@ export function inviteFriendForGame(responder: string) {
 	});
 }
 
-function isChallenged(ID: number): boolean {
-	if (ID == UI.user1.ID)
-		return (true);
-	return (false);
-}
-
 // STEP: 4: send back response to server
-function responseChallenge(answer: boolean, roomname: string) {
+export function responseChallenge(answer: boolean, req: any) {
+	if (answer == true) {
+		UI.state = S.stateUI.Game;
+		navigateTo('Pending');
+	}
 	Game.socket.emit('message',{
 		action: 'matchmaking',
 		subaction: 'challengeFriendAnswer',
 		answer: answer,
-		roomname: roomname, 
-		responder: UI.user1.ID
+		tempMatchID: req.id,
+		responder: UI.user1.ID,
+		challenger: req.challenger,
 	});
 }
 
-// STEP 3: create popup on screen responder that has accept of deny buttons
-export function acceptOnlineChallenge(msg: any) {
-	if (!isChallenged(msg.friendID))
-		return ; // msg not for me
-
-	alert(`${msg.challenger} is challenge you`);
-	// create popup with USERNAME is challenging YOU...
-	const btnAccept = document.createElement('button');
-	const btnDeny = document.createElement('button');
-	btnAccept.addEventListener('click', () => {
-		responseChallenge(true, msg.roomname);
-	})
-	btnDeny.addEventListener('click', () => {
-		responseChallenge(false, msg.roomname);
-	})
+function challengeDeclined() {
+	alert('Your invitation is denied');
+	navigateTo('Menu', false);
 }
 
-// STEP 6: receive answer from responder
-export function receiveAnswerResponder(msg: any) {
-	if (msg.response == true) {
-		alert("Challenge is accepted");
-	} else {
-		alert("Challenge is denied");
-	}
+function msgMatchIsRemoved() {
+	alert('This challenge is removed');
+	navigateTo('Menu', false);
 }
 
 export function actionMatchmaking(msg: any) {
@@ -59,11 +44,11 @@ export function actionMatchmaking(msg: any) {
 		return ;
 
 	switch(msg.subaction) {
-		case 'challengeFriend':
-			acceptOnlineChallenge(msg);
+		case 'challengeDeclined':
+			challengeDeclined();
 			break ;
-		case 'responseChallenge':
-			receiveAnswerResponder(msg);
+		case 'matchIsRemoved':
+			msgMatchIsRemoved();
 			break ;
 		default:
 			log(`subaction ${msg.subaction} not found in handleMatchmaking`);

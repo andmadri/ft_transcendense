@@ -20,4 +20,3 @@ export function tournamentGameStart(data: any) {
 	getGameField();
 	navigateTo('Game');
 }
-

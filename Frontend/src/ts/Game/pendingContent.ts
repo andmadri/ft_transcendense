@@ -1,5 +1,7 @@
 import { cancelOnlineMatch } from '../Matchmaking/onlineMatch.js';
 import { navigateTo } from "../history.js";
+import { Game }	from '../gameData.js'
+import * as S from '../structs.js'
 
 export function getPending() {
 	const Pending = document.createElement('div');
@@ -16,7 +18,10 @@ export function getPending() {
 	Pending.style.height = '100%';
 
 	const txtPending = document.createElement('div');
-	txtPending.textContent = "Pending...";
+	if (Game.pendingState == S.pendingState.Online)
+		txtPending.textContent = "Waiting for an opponent...";
+	else
+		txtPending.textContent = "Waiting for your friend to join the game";
 	txtPending.style.color = 'transparent';
 	txtPending.style.fontSize = '10vw';
 	txtPending.style.webkitTextStroke = '0.2rem #000';
@@ -50,8 +55,15 @@ export function getPending() {
 	backToMenu.style.transition = 'all 0.2s ease-in-out';
 
 	backToMenu.addEventListener('click', () => {
-		cancelOnlineMatch();
-		navigateTo('Menu'); 
+		if (Game.pendingState == S.pendingState.Online)
+			cancelOnlineMatch();
+		else
+			Game.socket.emit('message', {
+				action: 'matchmaking',
+				subaction: 'cancelChallengeFriend',
+			});
+		navigateTo('Menu');
+		Game.pendingState = S.pendingState.Online;
 	})
 	Pending.appendChild(backToMenu);
 

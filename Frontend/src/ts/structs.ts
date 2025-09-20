@@ -17,6 +17,11 @@ export enum stateUI {
 	Credits,
 }
 
+export enum pendingState {
+	Online,
+	Friend
+}
+
 export type update = {
 	time: number;
 	player: [number, boolean, boolean];
@@ -38,6 +43,7 @@ export type UI = {
 
 export type Game = {
 	socket: Socket,
+	pendingState: pendingState,
 	match: matchInfo,
 	colletedSteps: [],
 }

@@ -10,10 +10,10 @@ const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
 
 export async function quitMatch(match, msg, io) {
 	console.log(`match quit by ${msg.player}`);
-	if (match.mode == OT.Online) {
+	if (match.mode === OT.Online && !match.winnerID) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
-	else {
+	else if (match.mode !== OT.Online){
 		console.log(`quitmatch ${msg.winner}`);
 		match.winnerID = msg.winner
 	}
@@ -33,10 +33,10 @@ export async function saveMatch(match) {
 	const matchID = await handleMatchEndedDB(match, db, match.matchID);
 	
 	// Show some stats in the terminal
-	console.table(matchID);
-	console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
-	console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
-	console.table(await getAllUserStateDurationsDB(db));
+	// console.table(matchID);
+	// console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
+	// console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
+	// console.table(await getAllUserStateDurationsDB(db));
 
 	// ADDED FOR CREATING IMAGE IN THE BACKEND - start
 	const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());

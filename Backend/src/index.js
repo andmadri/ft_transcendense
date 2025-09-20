@@ -1,12 +1,12 @@
-import { handlePlayers, getAllPlayerInclFriends } from './DBrequests/getPlayers.js';
+import { handlePlayers } from './DBrequests/getPlayers.js';
 import { handlePlayerInfo } from './DBrequests/getPlayerInfo.js';
 import { handleUserDataMenu } from './DBrequests/getUserDataMenu.js';
 import { handleDashboardMaking } from './DBrequests/getDashboardInfo.js';
-import { handleMatchmaking } from './Pending/matchmaking.js'
-import { handleFriends, openFriendRequest, getFriends } from './DBrequests/getFriends.js';
-import { createDatabase } from './Database/database.js'
-import { handleGame } from './Game/game.js'
-import { handleInitGame } from './InitGame/initGame.js'
+import { handleFriends } from './DBrequests/getFriends.js';
+import { createDatabase } from './Database/database.js';
+import { handleGame } from './Game/game.js';
+import { handleInitGame } from './InitGame/initGame.js';
+import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 // import { addUserSessionToDB } from './Database/sessions.js';
@@ -15,13 +15,14 @@ import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
+import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 
 export const db = await createDatabase();
 
 const fastify = await initFastify();
 
 // Map to track last seen timestamps for users
-const userLastSeen = new Map();
+const usersLastSeen = new Map();
 
 function installShutdownHandlers(fastify, db) {
 	const shutdown = async (signal) => {
@@ -109,7 +110,7 @@ fastify.ready().then(() => {
 				case 'players':
 					return handlePlayers(db, msg, socket, userId1);
 				case 'friends':
-					return handleFriends(msg, socket, userId1, fastify.io);
+					return handleFriends(msg, socket, userId1);
 				case 'dashboard': {
 				//if there is no player id it is specify whether to use userID1 or userID2
 					if (!msg.playerId) {
@@ -133,31 +134,39 @@ fastify.ready().then(() => {
 
 		socket.on('heartbeat', (msg) => {
 			if (userId1) {
-				userLastSeen.set(userId1, Date.now());
+				usersLastSeen.set(userId1, {
+					userId2,
+					lastSeen: Date.now()
+				});
 				if (msg.menu === true) {
-					openFriendRequest(userId1, socket);
-					getAllPlayerInclFriends(db, userId1, socket);
-					getFriends(userId1, socket);
+					handleFriends({ subaction: 'initMenu' }, socket, userId1);
 				}
 			}
 		});
 
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
+			checkChallengeFriendsInvites(socket, userId1);
 		});
 	});
 });
 
 setInterval(async () => {
 	const now = Date.now();
-	for (const [userId, lastSeen] of userLastSeen.entries()) {
+	for (const [userId1, data] of usersLastSeen.entries()) {
+		const { userId2, lastSeen } = data;
 		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 			// Mark user offline in DB
 			try {
-				// await addUserSessionToDB(db, { user_id: userId, state: 'logout' });
-				await onUserLogout(db, userId);
-				userLastSeen.delete(userId);
-				console.log(`User ${userId} marked offline due to missed heartbeat`);
+				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
+				// usersLastSeen.delete(userId1);
+				console.log(`User ${userId1} marked offline due to missed heartbeat`);
+				if (userId2 && userId2 > 2) {
+					await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
+					usersLastSeen.delete(userId1);
+					console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+				}
+				usersLastSeen.delete(userId1);
 			} catch (err) {
 				// console.error(`Error marking user ${userId} offline:`, err);
 			}
