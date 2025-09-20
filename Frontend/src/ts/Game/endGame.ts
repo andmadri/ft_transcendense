@@ -24,6 +24,9 @@ export function getGameOver() {
 	const game = document.getElementById('game');
 	if (game)
 		game.remove();
+	const startGameField = document.getElementById('startGame');
+	if (startGameField)
+		startGameField.remove();
 
 	const gameOver = document.createElement('div');
 	gameOver.id = 'gameOver';
