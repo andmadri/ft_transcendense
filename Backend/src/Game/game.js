@@ -38,7 +38,7 @@ export async function handleGame(db, msg, socket, io) {
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
-			saveMatch(match, match.matchID);
+			saveMatch(match);
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket, io);

@@ -1,8 +1,8 @@
 import { getMatchScatterDB } from '../Database/gamestats.js';
-import { createSvgCanvas, createPlotArea, drawFrame } from '../Charts/charts.js';
-import { drawTitle, drawXAxisTitle, drawYAxisTitle } from '../Charts/titles.js';
-import { linearScale } from '../Charts/scales.js';
-import { drawXAxisTicks, drawYAxisTicks } from '../Charts/ticks.js';
+import { createSvgCanvas, createPlotArea, drawFrame } from './charts.js';
+import { drawTitle, drawXAxisTitle, drawYAxisTitle } from './titles.js';
+import { linearScale } from './scales.js';
+import { drawXAxisTicks, drawYAxisTicks } from './ticks.js';
 
 export function renderScatterPoints(data, xScale, yScale, colorOf) {
 	const dots = data.map((d) => {

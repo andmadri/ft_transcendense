@@ -1,5 +1,6 @@
-import { createSvgCanvas, createPlotArea, drawFrame } from '../Charts/charts.js';
-import { drawTitle,} from '../Charts/titles.js';
+import { createSvgCanvas, createPlotArea } from './charts.js';
+import { drawTitle,} from './titles.js';
+import { getUserByID } from '../Database/users.js';
 
 function getLineSVG(fontSize, txt, x, y, color) {
 	const fillColor = color || 'white';
@@ -51,27 +52,24 @@ function getDurationInSec(data) {
 }
 
 // Creates the left upper part with the basic game stats
-function getGameStatsSVG(data, players) {
-	const {player1, player2} = players;
+async function getGameStatsSVG(db, data) {
 	const match_duration = getDurationInSec(data);
-	const winner = data.player_1_id == data.winner_id ? player1 : player2;
+	// const winner = data.player_1_id == data.winner_id ? player1 : player2;
+	const winner = await getUserByID(db, data.winner_id);
 
 	const gameStatsSVG = `
 		${getLineSVG(40, 'vs', 480, 175)}
 		${getLineSVG(40, `data: ${data.start_time}`, 80, 400)}
 		${getLineSVG(40, `playing time: ${match_duration}`, 80, 460)}
-		${getLineSVG(40, `winner: ${winner}`, 80, 520)}
+		${getLineSVG(40, `winner: ${winner.name}`, 80, 520)}
 	`;
 	return (gameStatsSVG);
 }
 
-export async function generateMatchInfo(matchID, data, players, colorOf) {
-	const {player1, player2} = players;
+export async function generateMatchInfo(db, matchID, data, colorOf) {
+	const player1 = await getUserByID(db, data.player_1_id);
+	const player2 = await getUserByID(db, data.player_2_id);
 	const { width, height, open, close } = createSvgCanvas();
-	if (!data || data.length === 0) {
-		console.log(`No data from getMatchInfoDB - matchID: ${matchID}`);
-		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
-	}
 
 	const min_x = 0;
 	const min_y = 0;
@@ -84,10 +82,10 @@ export async function generateMatchInfo(matchID, data, players, colorOf) {
 	// TITLES
 	const chartTitle = drawTitle({ width, height }, margins, `MATCH ${matchID} STATS`);
 
-	const frame1 = getSquare(1, player1, data.player_1_score, colorOf.get(data.player_1_id));
-	const frame2 = getSquare(2, player2, data.player_2_score, colorOf.get(data.player_2_id))
+	const frame1 = getSquare(1, player1.name, data.player_1_score, colorOf.get(data.player_1_id));
+	const frame2 = getSquare(2, player2.name, data.player_2_score, colorOf.get(data.player_2_id))
 	// DATA
-	const svgtext = getGameStatsSVG(data, players);
+	const svgtext = getGameStatsSVG(db, data);
 
 	return (open + chartTitle + frame1 + frame2 + svgtext + close);
 }

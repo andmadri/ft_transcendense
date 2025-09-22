@@ -1,8 +1,6 @@
-import { getUserMatchStatsDB, getAllUserStateDurationsDB } from "../Database/dashboard.js";
 import { handleMatchEndedDB } from "../Services/matchService.js";
 import { matches } from "../InitGame/match.js";
 import { state, OT } from "../SharedBuild/enums.js";
-import { generateAllChartsForMatch } from "./createGameStats.js";
 import { db } from "../index.js";
 
 export async function quitMatch(match, msg, io) {
@@ -24,9 +22,7 @@ export async function quitMatch(match, msg, io) {
 	});
 }
 
-export async function saveMatch(socket, matchID) {
-	await handleMatchEndedDB(db, matchID);
-
-	// Delete the data in the backend
-	matches.delete(matchID);
+export async function saveMatch(match) {
+	await handleMatchEndedDB(match, db, match.matchID);
+	matches.delete(match.matchID);
 }

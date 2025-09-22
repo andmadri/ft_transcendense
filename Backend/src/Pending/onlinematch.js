@@ -99,7 +99,7 @@ export function matchInterval(match, io) {
 					reportTournamentMatchResult(match);
 				}
 				sendWinnerResult(match, io);
-				saveMatch(match, match.matchID);
+				saveMatch(match);
 				clearInterval(match.intervalID);
 				break;
 			}

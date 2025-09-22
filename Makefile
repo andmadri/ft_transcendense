@@ -80,8 +80,7 @@ clean: stop
 	@echo "containers, images and network are removed"
 
 # re:	clean up
-# re:	backend server-build-fast up
-re: backend up
+re:	backend server-build-fast up
 
 prune: clean clean_volumes
 	docker system prune -a --volumes -f

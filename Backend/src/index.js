@@ -15,9 +15,8 @@ import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
-import { getMatchByID } from './Database/match.js';
-import { generateAllChartsForMatch } from './End/createGameStats.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
+import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 
 export const db = await createDatabase();
 
