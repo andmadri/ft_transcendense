@@ -129,7 +129,7 @@ export function doRenderPage(newState: string, query?: string) {
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
 		}
-	const pagesWithQuery = ['Dashboard', 'GameStats'];
+	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
 	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
 	else
@@ -149,9 +149,6 @@ export function navigateTo(newState: any, fromHash = false) {
 		return;
 	}
 	let [ page, query ] = splitHash(newState);
-	if (page === 'GameOver') {
-		newState = page;
-	}
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
@@ -181,7 +178,7 @@ export function navigateTo(newState: any, fromHash = false) {
 function continueNavigation(newState: string, query: string) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
-	if (newState !== 'GameOver' && query && query.length > 0)
+	if (query && query.length > 0)
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
 	else
 		history.pushState(stateObj, '', `#${newState}`);
@@ -265,7 +262,7 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	// console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 	
-	const pagesWithQuery = ['Dashboard', 'GameStats'];
+	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
 	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
 	}
