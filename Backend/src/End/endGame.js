@@ -24,6 +24,8 @@ export async function quitMatch(match, msg, io) {
 }
 
 export async function saveMatch(match) {
+	console.log('match: ', match);
+	
 	await handleMatchEndedDB(match, db, match.matchID);
 	matches.delete(match.matchID);
 }

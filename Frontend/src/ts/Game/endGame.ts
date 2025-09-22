@@ -131,10 +131,18 @@ export function saveGame() {
 		return ;
 
 	if ( Game.match.mode != OT.Online) {
+		if (Game.match.player1.score < Game.match.player2.score) {
+			Game.match.winnerID = Game.match.player1.ID;
+		} else if (Game.match.player1.score > Game.match.player2.score) {
+			Game.match.winnerID = Game.match.player2.ID;
+		} else {
+			Game.match.winnerID = -1;
+		}
 		Game.socket.emit('message',{
 			action: 'game',
 			subaction: 'save',
-			matchID: Game.match.matchID
+			matchID: Game.match.matchID,
+			winnerID: Game.match.winnerID
 		});
 	}
 

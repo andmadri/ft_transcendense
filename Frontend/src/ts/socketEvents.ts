@@ -10,7 +10,6 @@ import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionTournament } from './Tournament/tournamentContent.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { validateURL } from './Dashboard/exists.js'
-import * as S from './structs.js'
 import { getGameStats } from './Game/gameStats.js'
 
 export function startSocketListeners() {
