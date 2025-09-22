@@ -1,40 +1,44 @@
 import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 
+async function timeoutForPages(pages, time) {
+	for (let i = 0; i < 4; i++) {
+		await pages[i].waitForTimeout(time);
+	}
+}
+
+async function pressBtnPages(pages, btnTxt) {
+	for (let i = 0; i < 4; i++) {
+		await U.pressBtn(pages[i], btnTxt);
+	}	
+}
+
+async function clickQuitIfExist(pages) {
+	for (let i = 0; i < 4; i++) {
+		const quitBtn = pages[i].locator('button', { hasText: 'QUIT' });
+		if (quitBtn) {
+			await quitBtn.click();
+		}
+	}
+}
+
 export async function tournament(p1, p2, p3, p4, name) {
-	// await U.pressBtn(p1, 'Join Tournament');
-	await U.pressBtn(p2, 'Join Tournament');
-	await U.pressBtn(p3, 'Join Tournament');
-	await U.pressBtn(p4, 'Join Tournament');
+	const pages = [p1, p2, p3, p4];
 
-	// await U.pressBtn(p1, 'Ready?');
-	await U.pressBtn(p2, 'Ready?');
-	await U.pressBtn(p3, 'Ready?');
-	await U.pressBtn(p4, 'Ready?');
+	await pressBtnPages(pages, 'Join Tournament');
+	await timeoutForPages(pages, 2000);
+	await pressBtnPages(pages, 'Ready');
+	await timeoutForPages(pages, 2000);
+	await clickQuitIfExist(pages);
+	await pressBtnPages(pages, `BACK TO MENU`);
+	await timeoutForPages(pages, 7000);
+	await pressBtnPages(pages, 'Ready');
+	await timeoutForPages(pages, 2000);
+	await clickQuitIfExist(pages);
+	await timeoutForPages(pages, 1000);
+	await pressBtnPages(pages, `BACK TO MENU`);
 
-	// await p1.waitForTimeout(15000);
-	await p2.waitForTimeout(10000);
-	await p3.waitForTimeout(10000);
-	await p4.waitForTimeout(10000);
-
-	// await p1.waitForTimeout(15000);
-	await p2.waitForTimeout(10000);
-	await p3.waitForTimeout(10000);
-	await p4.waitForTimeout(10000);
-
-	// await U.pressBtn(p1, `#menuBtn`);
-	await U.pressBtn(p2, `#menuBtn`);
-	await U.pressBtn(p3, `#menuBtn`);
-	await U.pressBtn(p4, `#menuBtn`);
-
-	// await p1.waitForTimeout(10000);
-	await p2.waitForTimeout(10000);
-	await p3.waitForTimeout(10000);
-	await p4.waitForTimeout(10000);
-
-	// await U.pressBtn(p1, 'Ready?');
-	await U.pressBtn(p2, 'Ready?');
-	await U.pressBtn(p3, 'Ready?');
-	await U.pressBtn(p4, 'Ready?');	
-
+	for (let i = 0; i < 4; i++) {
+		await isInMenu(pages[i], false, name + (i + 1), '');
+	}
 }
