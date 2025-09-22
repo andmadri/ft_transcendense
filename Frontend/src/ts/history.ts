@@ -95,6 +95,9 @@ export function doRenderPage(newState: string, query?: string) {
 		case 'Pending':
 			Game.match.state = state.Pending;
 			break ;
+		case 'Tournament':
+			UI.state = S.stateUI.Tournament;
+			break;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
 			if (query)
@@ -225,13 +228,13 @@ export function getValidState(newState: string, currentState: string): string {
 	}
 
 	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
-		'OpponentMenu', 'Dashboard', 'GameStats', 'GameOver'];
+		'OpponentMenu', 'Dashboard', 'Tournament', 'GameStats', 'GameOver'];
 	for (const page of allowedPages) {
 		if (page == newState) {
 			return newState;
 		}
 	}
-    return ('Menu');
+	return ('Menu');
 }
 
 /**

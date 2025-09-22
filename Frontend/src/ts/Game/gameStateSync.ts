@@ -79,3 +79,9 @@ export function sendScoreUpdate() {
 		matchID: Game.match.matchID
 	});
 }
+
+export function applyWinner(data : any) {
+	console.log(`applyWinner() winner ID = ${data.winnerID}`);
+	Game.match.winnerID = data.winnerID;
+	Game.match.state = data.state;
+} 

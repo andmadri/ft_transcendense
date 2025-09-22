@@ -9,8 +9,10 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB } from './Database/sessions.js';
+// import { addUserSessionToDB } from './Database/sessions.js';
+import { onUserLogout } from './Services/sessionsService.js';
 import { performCleanupDB } from './Database/cleanup.js';
+import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
@@ -36,7 +38,7 @@ function installShutdownHandlers(fastify, db) {
 			process.exit(1);
 		}
 	};
-	
+
 	process.on('SIGTERM', () => shutdown('SIGTERM'));
 	process.on('SIGINT', () => shutdown('SIGINT'));
 }
@@ -89,7 +91,7 @@ fastify.ready().then(() => {
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
-	
+
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
 			const action = msg.action;
@@ -120,6 +122,8 @@ fastify.ready().then(() => {
 					return handleInitGame(db, msg, socket);
 				case 'game':
 					return handleGame(db, msg, socket, fastify.io);
+				case 'tournament':
+					return handleTournament(db, msg, socket, fastify.io, userId1);
 				case 'error':
 					console.log('Error from frontend..');
 					return socket.emit('error', msg);

@@ -24,8 +24,9 @@ async function getNamebyUserID(db, userID) {
 }
 
 // creates a new match, init and returns id nr
-async function newMatch(db, matchnr, id, id2, mode) {
+async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 	try {
+		console.log(`newMatch() MatchFormat = ${mf}`);
 		const name = await getNamebyUserID(db, id);
 		const name2 = await getNamebyUserID(db, id2);
 		if (!name || !name2) {
@@ -36,13 +37,15 @@ async function newMatch(db, matchnr, id, id2, mode) {
 		matches.set(matchnr, {
 			state: state.Start,
 			matchID: matchnr,
-			matchFormat: MF.Empty,
+			matchFormat: mf,
 			intervalID: null,
 			pauseTimeOutID: null,
 			resumeTime: -1,
 			lastUpdateTime: null,
 			mode: mode,
 			lastScoreID: -1,
+			tournamentId: tournamentContext?.tournamentId || null,
+			tournamentMatchNumber: tournamentContext?.matchNumber || null,
 			winnerID: null,
 			player1: {
 				ID: id,
@@ -104,9 +107,10 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
  * @param socket - socket to send the message back to player
  * @returns match ID (needed for rooms)
 */
-export async function createMatch(db, mode, socket, userId1, userId2) {
+export async function createMatch(db, mode, socket, userId1, userId2, tournamentContext, mf) {
 	console.log(`create new match in OT: ${mode} - ${OT.Online}`);
 	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
+	console.log(`createMatch() MatchFormat = ${mf}`);
 	if (userId1 == userId2) {
 		console.log(`UserIds are the same`);
 		return (-1);
@@ -131,7 +135,7 @@ export async function createMatch(db, mode, socket, userId1, userId2) {
 		});
 
 		// CREATE MATCH IN MEMORY
-		await newMatch(db, matchID, userId1, userId2, mode);
+		await newMatch(db, matchID, userId1, userId2, mode, tournamentContext, mf);
 
 		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);

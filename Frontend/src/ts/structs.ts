@@ -11,6 +11,7 @@ export enum stateUI {
 	Game,
 	GameOver,
 	GameStats,
+	Tournament,
 	Dashboard,
 	OpponentMenu,
 	Credits,
@@ -32,7 +33,6 @@ export type user = {
 	name: string,
 	Twofa: boolean
 }
-
 
 export type UI = {
 	state: stateUI,
