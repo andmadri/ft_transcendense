@@ -95,9 +95,6 @@ export function doRenderPage(newState: string, query?: string) {
 		case 'Pending':
 			Game.match.state = state.Pending;
 			break ;
-		case 'Game':
-			UI.state = S.stateUI.Game;
-			break ;
 		case 'Tournament':
 			UI.state = S.stateUI.Tournament;
 			break;

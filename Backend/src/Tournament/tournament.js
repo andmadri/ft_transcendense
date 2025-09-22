@@ -221,7 +221,13 @@ export function reportTournamentMatchResult(match) {
 			console.log("Tournament finished!");
 			setTimeout(() => {
 				tournament.state = 'finished';
-			}, 2000);
+				tournament.io.to('tournament_1').emit('message', {
+					action: 'tournament',
+					subaction: 'update',
+					tournamentState: getTournamentStateForFrontend()
+				});
+			}, 4000);
+
 		}
 		// if (tournament.matches.length === 4 && tournament.matches.every(m => m.match.state === state.End)) {
 		// 	console.log("Tournament finished!");

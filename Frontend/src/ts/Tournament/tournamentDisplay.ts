@@ -41,13 +41,6 @@ function isUserInMatch(match: any) {
 	return match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
 }
 
-function isMatchStarted(match: any) {
-	if (match) {
-		console.log('match exists');
-	}
-	return match;
-}
-
 function updateButton(player: any, match:any, box: HTMLElement) {
 	// console.log(`${match}`);
 	const parent = box.parentElement;
@@ -56,14 +49,7 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 		return;
 	}
 	const existingBtn = parent.querySelector('button');
-	// if (existingBtn){
-	// 	console.log(`existingBTN exists`);
-	// }
-	// else if (match) {
-	// 	console.log(`existingBTN does not exist - match does`);
-	// 	console.log(`box exists - playedID = ${player.id} - boxID = ${box}`);
-	// }
-	if (existingBtn && isMatchStarted(match)) {
+	if (existingBtn && match) {
 		console.log('This button should be removed');
 		existingBtn.remove();
 		return;
@@ -133,7 +119,6 @@ export function updateNameTagsTournament(tournamentState: any) {
 		const box = document.getElementById(boxId);
 		const player = players[index];
 		let playerMatch = null;
-		console.log('round1 and round2 exist');
 		if (round1 && (player.id === round1.player1 || player.id === round1.player2))
 			playerMatch = round1;
 		else if (round2 && (player.id === round2.player1 || player.id === round2.player2)) {
@@ -379,6 +364,9 @@ function styleText(playerName: string): HTMLDivElement {
 }
 
 export function showTournamentEndScreen(tournamentState: any) {
+	if (document.getElementById('gameOver')) {
+		document.getElementById('gameOver')?.remove();
+	}
 	navigateTo('Tournament');
 	let winner_match = (tournamentState.matches[3].matchNumber == 4 ? tournamentState.matches[3] : tournamentState.matches[2]);
 	let loser_match = (tournamentState.matches[2].matchNumber == 3 ? tournamentState.matches[2] : tournamentState.matches[3]);
@@ -392,9 +380,6 @@ export function showTournamentEndScreen(tournamentState: any) {
 	if (!body)
 		return ;
 
-	if (document.getElementById('gameOver')) {
-		document.getElementById('gameOver')?.remove();
-	}
 	if (!document.getElementById('tournamentScreen')) {
 		showTournamentScreen();
 	}
