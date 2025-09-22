@@ -5,7 +5,7 @@ import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
 import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
-import { log } from './logging.js';
+import { validateQuery } from './Dashboard/exists.js';
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
@@ -129,7 +129,7 @@ export function doRenderPage(newState: string, query?: string) {
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
 		}
-	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
+	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
 	else
@@ -149,6 +149,9 @@ export function navigateTo(newState: any, fromHash = false) {
 		return;
 	}
 	let [ page, query ] = splitHash(newState);
+	if (page === 'GameOver') {
+		newState = page;
+	}
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
@@ -178,7 +181,7 @@ export function navigateTo(newState: any, fromHash = false) {
 function continueNavigation(newState: string, query: string) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
-	if (query && query.length > 0)
+	if (newState !== 'GameOver' && query && query.length > 0)
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
 	else
 		history.pushState(stateObj, '', `#${newState}`);
@@ -238,25 +241,34 @@ export function getValidState(newState: string, currentState: string): string {
  * @brief activate when back/forward btn is pushed. Checks if valid and renders page
  * @param event PopStateEvent
  */
-export function controlBackAndForward(event: PopStateEvent) {
-	console.log('popstate event:', event.state, 'hash:', window.location.hash);
+export async function controlBackAndForward(event: PopStateEvent) {
+	// console.log('popstate event:', event.state, 'hash:', window.location.hash);
 	
 	let newState = event.state?.page;
 	if (!newState) {
 		newState = window.location.hash || 'Menu';
 	}
 	let [ page, query ] = splitHash(newState);
-	if (event.state && event.state.query)
+	if (event.state && event.state.query) {
 		query = event.state.query;
-
+	}
+	const validQuery = await validateQuery(page, query);
+	if (validQuery === false) {
+		console.log(`Invalid query (${query}) => redirecting to '#Menu'`);
+		newState = 'Menu';
+		page = 'Menu';
+		query = '';
+	}
+	
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
-	console.log('state to valid', newState, validState, currentState);
+	// console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
-
-	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
-	if (pagesWithQuery.includes(validState))
+	
+	const pagesWithQuery = ['Dashboard', 'GameStats'];
+	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
+	}
 	else
 		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
 

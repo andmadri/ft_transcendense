@@ -9,6 +9,7 @@ import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { getGameStats } from './Game/gameStats.js'
+import { validateURL } from './Dashboard/exists.js'
 import * as S from './structs.js'
 
 export function startSocketListeners() {
@@ -83,6 +84,9 @@ export function receiveFromWS(data: any) {
 			break;
 		case 'dashboardInfo':
 			populateDashboard(data);
+			break;
+		case 'validate':
+			validateURL(data);
 			break;
 		case 'error':
 			if (data.reason)
