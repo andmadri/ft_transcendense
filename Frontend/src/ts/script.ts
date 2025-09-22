@@ -191,16 +191,11 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Tournament: {
-			if (!document.getElementById('tournamentScreen'))
+				if (!document.getElementById('tournamentScreen'))
 					showTournamentScreen();
 				//requestUpdateTournament();
-			break ;
-			//  case S.stateUI.Dashboard: {
-			// 	if (!document.getElementById('dashboard')) {
-			// 		getDashboard();
-			// 	}
-			// break;
-			// }
+				break ;
+			}
 			default:
 		}
 	} else {
