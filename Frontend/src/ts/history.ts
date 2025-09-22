@@ -238,8 +238,8 @@ export function getValidState(newState: string, currentState: string): string {
  * @brief activate when back/forward btn is pushed. Checks if valid and renders page
  * @param event PopStateEvent
  */
-export function controlBackAndForward(event: PopStateEvent) {
-	console.log('popstate event:', event.state, 'hash:', window.location.hash);
+export async function controlBackAndForward(event: PopStateEvent) {
+	// console.log('popstate event:', event.state, 'hash:', window.location.hash);
 	
 	let newState = event.state?.page;
 	if (!newState) {
@@ -249,16 +249,23 @@ export function controlBackAndForward(event: PopStateEvent) {
 	if (event.state && event.state.query) {
 		query = event.state.query;
 	}
-	validateQuery(page, query);
-
+	const validQuery = await validateQuery(page, query);
+	if (validQuery === false) {
+		console.log(`Invalid query (${query}) => redirecting to '#Menu'`);
+		newState = 'Menu';
+		page = 'Menu';
+		query = '';
+	}
+	
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
-	console.log('state to valid', newState, validState, currentState);
+	// console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
-
+	
 	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
-	if (pagesWithQuery.includes(validState))
+	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
+	}
 	else
 		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
 

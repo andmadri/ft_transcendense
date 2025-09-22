@@ -229,7 +229,6 @@ export function getUserTournamentBlock(): HTMLDivElement {
 
 	users_block.appendChild(user1_block);
 	users_block.appendChild(user2_block);
-	console.log("Sending data to the backend for the USERDATAMENU!!");
 	Game.socket.emit('message', {
 		action: 'userDataMenu', 
 		subaction: 'getUserDataMenu',
