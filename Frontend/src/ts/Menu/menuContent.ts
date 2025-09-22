@@ -230,7 +230,6 @@ export function getUserTournamentBlock(): HTMLDivElement {
 
 	users_block.appendChild(user1_block);
 	users_block.appendChild(user2_block);
-	console.log("Sending data to the backend for the USERDATAMENU!!");
 	Game.socket.emit('message', {
 		action: 'userDataMenu', 
 		subaction: 'getUserDataMenu',
@@ -265,6 +264,7 @@ function getPlayersBlock(): HTMLDivElement {
 
 export function createBackgroundText(body: HTMLElement) {
 	const backgroundText = document.createElement('div');
+	backgroundText.id = 'backgroundText';
 	backgroundText.style.position = 'fixed';
 	backgroundText.style.top = '0';
 	backgroundText.style.left = '0';

@@ -2,7 +2,7 @@
 //importing functionality from different files
 import * as S from './structs.js' //imports structures from the file structs.js
 import { Game, UI } from "./gameData.js"
-import { navigateTo, controlBackAndForward, onHashChange } from './history.js'
+import { navigateTo, controlBackAndForward } from './history.js'
 import { createLog, log } from './logging.js'
 import { pressButton, releaseButton } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'

@@ -25,19 +25,22 @@ function insertFriends(friends: any) {
 			btnContainer.style.display = 'flex';
 			btnContainer.style.gap = '0.3rem';
 
-			const challengeFriendBtn = document.createElement('button');
-			styleListBtns(challengeFriendBtn, 'url("../../images/battle_friend.png")');
-			challengeFriendBtn.addEventListener("click", () => {
-				UI.state = S.stateUI.Game;
-				Game.match.state = state.Pending;
-				Game.pendingState = S.pendingState.Friend;
-				Game.socket.emit('message', {
-					action: 'matchmaking',
-					subaction: 'challengeFriend',
-					challenger: UI.user1.ID,
-					responder: friend.id
-				})
-			});
+			if (status === 'online') {
+				const challengeFriendBtn = document.createElement('button');
+				styleListBtns(challengeFriendBtn, 'url("../../images/battle_friend.png")');
+				challengeFriendBtn.addEventListener("click", () => {
+					UI.state = S.stateUI.Game;
+					Game.match.state = state.Pending;
+					Game.pendingState = S.pendingState.Friend;
+					Game.socket.emit('message', {
+						action: 'matchmaking',
+						subaction: 'challengeFriend',
+						challenger: UI.user1.ID,
+						responder: friend.id
+					})
+				});
+				btnContainer.appendChild(challengeFriendBtn);
+			}
 		
 			const deleteFriendBtn = document.createElement('button');
 			styleListBtns(deleteFriendBtn, 'url("../../images/delete_friend.png")');
@@ -58,7 +61,6 @@ function insertFriends(friends: any) {
 				// console.log('dashboard call friend.id', friend.id);
 				navigateTo(`Dashboard?userId=${friend.id}`);
 			});
-			btnContainer.appendChild(challengeFriendBtn);
 			btnContainer.appendChild(deleteFriendBtn);
 			btnContainer.appendChild(dashboardBtn);
 			row.appendChild(btnContainer);
