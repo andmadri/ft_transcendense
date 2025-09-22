@@ -7,6 +7,7 @@ import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
+import { actionTournament } from './Tournament/tournamentContent.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { getGameStats } from './Game/gameStats.js'
 import { validateURL } from './Dashboard/exists.js'
@@ -72,6 +73,9 @@ export function receiveFromWS(data: any) {
 			break ;
 		case 'matchmaking':
 			actionMatchmaking(data);
+			break ;
+		case 'tournament':
+			actionTournament(data);
 			break ;
 		case 'initOnlineGame':
 			actionInitOnlineGame(data);

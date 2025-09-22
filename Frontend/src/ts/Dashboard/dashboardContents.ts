@@ -238,6 +238,7 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	exitButton.style.fontFamily = '"Horizon", sans-serif';
 
 	exitButton.addEventListener('click', () => {
+		dashboard.remove();
 		containerDashboard.remove();
 		navigateTo('Menu');
 	});

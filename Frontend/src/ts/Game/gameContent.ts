@@ -3,6 +3,7 @@ import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
 import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
+import { createBackgroundText } from '../Menu/menuContent.js';
 
 // function styleElement(
 // 	element: HTMLElement,
@@ -46,6 +47,7 @@ function getQuitBtn() {
 		//determine winner in local game
 		//if online -> winnerID stays undefined -> backend will determine winner
 		if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
+			console.log(`quit button eventlistener: ${Game.match.player2.ID}`);
 			Game.match.winnerID = Game.match.player2.ID;
 		}
 		else if (Game.match.mode == OT.ONEvsONE) {
@@ -80,6 +82,7 @@ export function getGameField() {
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.overflow = 'hidden';
+	createBackgroundText(body);
 
 	const game = document.createElement('div');
 	game.style.display = 'flex';

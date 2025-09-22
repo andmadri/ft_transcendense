@@ -1,7 +1,8 @@
 import { Game } from "../gameData.js"
 import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
-import { OT } from '@shared/enums'
+import { OT, MF } from '@shared/enums'
+// import { createBackgroundText } from "../Menu/menuContent.js";
 
 let result = "";
 let lastMatchId = -1;
@@ -15,16 +16,7 @@ function getWinnerResult() {
 	else if (Game.match.winnerID) {
 		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
 	}
-	else if (Game.match.player1.score > Game.match.player2.score) {
-		winnerName = Game.match.player1.name;
-	}
-	else if (Game.match.player1.score < Game.match.player2.score) {
-		winnerName = Game.match.player2.name;
-	}
-	else {
-		winnerName = null;
-	}
-	return winnerName ? `${winnerName} Wins!` : "It is a Tie!";
+	return winnerName ? `${winnerName} Wins!` : "NO WINNER :(";
 }
 
 export function getGameOver(matchId: number) {
@@ -32,6 +24,9 @@ export function getGameOver(matchId: number) {
 	const game = document.getElementById('game');
 	if (game)
 		game.remove();
+	const startGameField = document.getElementById('startGame');
+	if (startGameField)
+		startGameField.remove();
 
 	const gameOver = document.createElement('div');
 	gameOver.id = 'gameOver';
@@ -80,7 +75,7 @@ export function getGameOver(matchId: number) {
 
 	const backToMenu = document.createElement('button');
 	backToMenu.id = 'menuBtn';
-	backToMenu.textContent = 'Back to menu';
+	backToMenu.textContent = Game.match.MF === MF.Tournament ? 'Back to tournament' : 'Back to menu';
 	backToMenu.style.fontFamily = '"Horizon", monospace';
 	backToMenu.style.padding = '0.6rem 2rem';
 	backToMenu.style.fontSize = '1.5rem';
@@ -90,25 +85,34 @@ export function getGameOver(matchId: number) {
 	backToMenu.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
 	backToMenu.style.cursor = 'pointer';
 	backToMenu.style.transition = 'all 0.2s ease-in-out';
-	backToMenu.addEventListener('click', () => { navigateTo('Menu'); })
+	backToMenu.addEventListener('click', () => {
+		console.log(`Game.match.format === ${Game.match.matchFormat}`)
+		if (Game.match.matchFormat == MF.SingleGame) {
+			navigateTo('Menu');
+		}
+		else if (Game.match.matchFormat == MF.Tournament) {
+			navigateTo('Tournament');
+		}});
 	gameOver.appendChild(backToMenu);
 
-	const statsButton = document.createElement('button');
-	statsButton.id = 'statsButton';
-	statsButton.textContent = 'View Game Stats';
-	statsButton.style.fontFamily = '"Horizon", monospace';
-	statsButton.style.padding = '0.6rem 2rem';
-	statsButton.style.fontSize = '1.5rem';
-	statsButton.style.borderRadius = '0.8rem';
-	statsButton.style.border = '0.15rem solid black';
-	statsButton.style.backgroundColor = '#ededeb';
-	statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
-	statsButton.style.cursor = 'pointer';
-	statsButton.style.transition = 'all 0.2s ease-in-out';
-	statsButton.addEventListener('click', () => {
-		navigateTo(`GameStats?matchId=${matchId}`);
-	});
-	gameOver.appendChild(statsButton);
+	if (Game.match.matchFormat !== MF.Tournament) {
+		const statsButton = document.createElement('button');
+		statsButton.id = 'statsButton';
+		statsButton.textContent = 'View Game Stats';
+		statsButton.style.fontFamily = '"Horizon", monospace';
+		statsButton.style.padding = '0.6rem 2rem';
+		statsButton.style.fontSize = '1.5rem';
+		statsButton.style.borderRadius = '0.8rem';
+		statsButton.style.border = '0.15rem solid black';
+		statsButton.style.backgroundColor = '#ededeb';
+		statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
+		statsButton.style.cursor = 'pointer';
+		statsButton.style.transition = 'all 0.2s ease-in-out';
+		statsButton.addEventListener('click', () => { 
+			navigateTo(`GameStats?matchId=${lastMatchId}`);
+		});
+		gameOver.appendChild(statsButton);
+	}
 
 	const body = document.getElementById('body');
 	if (!body)
@@ -118,6 +122,8 @@ export function getGameOver(matchId: number) {
 	body.style.width = '100vw';
 	body.style.height = '100vh';
 	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	document.getElementById('backgroundText')?.remove();
+	// createBackgroundText(body);
 	body.appendChild(gameOver);
 }
 

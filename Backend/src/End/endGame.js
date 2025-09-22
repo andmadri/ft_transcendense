@@ -4,12 +4,16 @@ import { state, OT } from "../SharedBuild/enums.js";
 import { db } from "../index.js";
 
 export async function quitMatch(match, msg, io) {
-	if (match.mode == OT.Online) {
+	console.log(`match quit by ${msg.player}`);
+	if (match.mode === OT.Online && !match.winnerID) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
-	else {
-		match.winnerID = msg.winnerID
+	else if (match.mode !== OT.Online){
+		console.log(`quitmatch ${msg.winner}`);
+		match.winnerID = msg.winner
 	}
+	match.state = state.End;
+	console.log(`WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
@@ -17,10 +21,9 @@ export async function quitMatch(match, msg, io) {
 		winner: match.winnerID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.state = state.End;
 }
 
-export async function saveMatch(socket, matchID) {
+export async function saveMatch(matchID) {
 	const matchInfo = await handleMatchEndedDB(db, matchID);
 
 	matches.delete(matchID);
