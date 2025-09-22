@@ -2,6 +2,17 @@ export function getLoadingPage() {
 	if (document.getElementById('loadingpage'))
 		return;
 
+	const body = document.getElementById('body');
+	if (!body)
+		return ;
+	body.style.margin = '0';
+	body.style.width = '100vw';
+	body.style.height = '100vh';
+	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	body.style.justifyContent = 'center';
+	body.style.alignItems = 'center';
+	body.innerHTML = '';
+
 	const page = document.createElement('div');
 	page.id = "loadingpage";
 	page.className = "loadingpage";
@@ -71,5 +82,5 @@ export function getLoadingPage() {
 	wrapper.appendChild(ball);
 	innerBox.append(loadingTxt, wrapper);
 	page.appendChild(innerBox);
-	document.body.appendChild(page);
+	body.appendChild(page);
 }

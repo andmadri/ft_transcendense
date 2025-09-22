@@ -301,7 +301,6 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 }
 
 export function actionUserDataMenu(data: any) {
-	console.log('Action to get UserDataMenu')
 	if (!data.subaction) {
 		console.error('No subaction in userDataMenu data');
 		return ;
