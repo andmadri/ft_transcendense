@@ -16,6 +16,7 @@ import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
+import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 
 export const db = await createDatabase();
 
@@ -118,6 +119,8 @@ fastify.ready().then(() => {
 					}
 					return handleDashboardMaking(msg, socket, msg.playerId);
 				}
+				case 'gameStats':
+					return generateAllChartsForMatch(db, socket, msg);
 				case 'init':
 					return handleInitGame(db, msg, socket);
 				case 'game':

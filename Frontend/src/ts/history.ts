@@ -3,7 +3,7 @@ import { state } from '@shared/enums'
 import { Game, UI, newMatch } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
-import { getGameStats } from './Game/gameStats.js';
+import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 
@@ -109,7 +109,7 @@ export function doRenderPage(newState: string, query?: string) {
 			if (query)
 				id = getIdFromHash(query, "matchId");
 			if (id != null) {
-				requestAnimationFrame(() => getGameStats({ matchId: id }));
+				requestAnimationFrame(() => askForGamestats(id));
 			} else {
 				console.warn('GameStats: no matchId found');
 				navigateTo('Menu');

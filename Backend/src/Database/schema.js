@@ -156,6 +156,52 @@ export async function createTables(db)
 					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
 
+	CREATE VIEW IF NOT EXISTS MatchGoalsSummary AS
+		WITH ordered AS (
+			SELECT
+				e.*,
+				SUM(CASE WHEN e.event_type = 'serve' THEN 1 ELSE 0 END)
+				OVER (PARTITION BY e.match_id ORDER BY e.timestamp ASC, e.id ASC) AS rally_id,
+				MIN(e.timestamp) OVER (PARTITION BY e.match_id) AS first_ts
+			FROM MatchEvents e
+		),
+		goals AS (
+			SELECT
+				o.match_id,
+				o.id AS event_id,
+				o.user_id,
+				o.rally_id,
+				o.timestamp,
+				o.ball_x,
+				o.ball_y,
+				o.first_ts,
+				ROW_NUMBER() OVER (PARTITION BY o.match_id ORDER BY o.timestamp ASC, o.id ASC) AS goal_no
+			FROM ordered o
+			WHERE o.event_type = 'goal'
+		),
+		hits_per_rally AS (
+			SELECT
+				match_id,
+				rally_id,
+				COUNT(*) AS hits
+			FROM ordered
+			WHERE event_type = 'hit'
+			GROUP BY match_id, rally_id
+		)
+		SELECT
+			g.match_id,
+			g.goal_no AS goal,
+			g.user_id,
+			u.name AS username,
+			COALESCE(h.hits, 0) AS hits,
+			g.timestamp,
+			ROUND( (julianday(g.timestamp) - julianday(g.first_ts)) * 86400, 0 ) AS duration,
+			ROUND(g.ball_x, 3) AS ball_x,
+			ROUND(g.ball_y / 0.75, 3) AS ball_y
+		FROM goals g JOIN Users u ON u.id = g.user_id
+		LEFT JOIN hits_per_rally h ON h.match_id = g.match_id AND h.rally_id = g.rally_id
+		ORDER BY g.match_id, g.goal_no;
+
 	CREATE VIEW IF NOT EXISTS UserMatchHistory AS
 		SELECT
 			m.id AS match_id,
