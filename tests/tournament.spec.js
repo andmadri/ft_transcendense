@@ -17,7 +17,9 @@ async function clickQuitIfExist(pages) {
 	for (let i = 0; i < 4; i++) {
 		const quitBtn = pages[i].locator('button', { hasText: 'QUIT' });
 		if (quitBtn) {
-			await quitBtn.click();
+			if (await quitBtn.isVisible()) {
+				await quitBtn.click();
+			}
 		}
 	}
 }
@@ -31,7 +33,7 @@ export async function tournament(p1, p2, p3, p4, name) {
 	await timeoutForPages(pages, 2000);
 	await clickQuitIfExist(pages);
 	await pressBtnPages(pages, `BACK TO MENU`);
-	await timeoutForPages(pages, 7000);
+	await timeoutForPages(pages, 3000);
 	await pressBtnPages(pages, 'Ready');
 	await timeoutForPages(pages, 2000);
 	await clickQuitIfExist(pages);
