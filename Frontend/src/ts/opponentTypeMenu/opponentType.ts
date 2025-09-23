@@ -156,15 +156,15 @@ export function getOpponentMenu() {
 	gameModeContainer.style.flex = '1 1';
 	gameModeContainer.style.display = 'flex';
 	gameModeContainer.style.flexDirection = 'column';
+	gameModeContainer.style.position = 'relative';
 
 	const exitButton = document.createElement('button');
 	exitButton.id = 'exitButton';
 	exitButton.textContent = 'X';
 	exitButton.style.color = 'black';
-	exitButton.style.fontSize = 'clamp(10px, 1.5vw, 15px)';
-	exitButton.style.position = 'fixed';
-	exitButton.style.top = '30rem';
-	exitButton.style.right = '25rem';
+	exitButton.style.position = 'absolute';
+	exitButton.style.top = '10px';
+	exitButton.style.right = '10px';
 	exitButton.style.background = 'transparent';
 	exitButton.style.border = 'transparent';
 	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
@@ -175,6 +175,7 @@ export function getOpponentMenu() {
 	});
 
 	const gameModeTitle = styleSettingTitle('Choose Opponent');
+	gameModeTitle.style.fontSize = 'clamp(10px, 1.5vw, 45px)';
 
 	const gameModeButtonsContainer = styleContainerButtons();
 	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs AI', '1 vs COM'));

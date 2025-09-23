@@ -433,13 +433,32 @@ export function showTournamentEndScreen(tournamentState: any) {
 	playerPodium.style.flex = '1 1';
 	playerPodium.style.display = 'flex';
 	playerPodium.style.flexDirection = 'column';
+	playerPodium.style.position = 'relative';
+
+	const exitButton = document.createElement('button');
+	exitButton.id = 'exitButton';
+	exitButton.textContent = 'X';
+	exitButton.style.color = 'black';
+	exitButton.style.position = 'absolute';
+	exitButton.style.top = '10px';
+	exitButton.style.right = '10px';
+	exitButton.style.background = 'transparent';
+	exitButton.style.border = 'transparent';
+	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	exitButton.style.fontFamily = '"Horizon", sans-serif';
+
+	exitButton.addEventListener('click', () => {
+		navigateTo('Menu');
+	});
 
 	const playerPodiumTitle = styleSettingTitle('Player Podium');
+	playerPodiumTitle.style.fontSize = 'clamp(18px, 2.5vw, 30px)';
 	const firstPlace = styleText('1st\t-\t'+ winner1Name);
 	const secondPlace = styleText('2nd\t-\t'+ winner2Name);
 	const thirdPlace = styleText('3rd\t-\t'+ Loser1Name);
 	const fourthPlace = styleText('4th\t-\t'+ Loser2Name);
 
+	playerPodium.appendChild(exitButton);
 	playerPodium.appendChild(playerPodiumTitle);
 	playerPodium.append(firstPlace, secondPlace, thirdPlace, fourthPlace);
 	blackContainer.appendChild(playerPodium);
