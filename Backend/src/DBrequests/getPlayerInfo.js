@@ -20,12 +20,10 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	if (userId2) {
 		player2 = await userDB.getUserByID(db, userId2);
 	}
-	// console.log('Player 2:', player2);
 	returnMsg.name2 = player2?.name || 'Guest';
 	returnMsg.id2 = player2?.id || 1;
 	returnMsg.player2Login = player2?.online || true;
 	returnMsg.score2 = player2?.score || 0;
-	// console.log('Sending player data:', returnMsg);
 	socket.emit('message', returnMsg);
 }
 
@@ -41,7 +39,6 @@ function sendChangingNameMsg(socket, msg, success, returnMsg) {
 
 export async function changeName(socket, db, msg) {
 	if (!msg.user_id || !msg.oldName || !msg.name) {
-		console.error("Not all info changeName");
 		socket.emit('serverError', { reason: "Unknown Server error" });
 		return ;
 	}
@@ -49,7 +46,7 @@ export async function changeName(socket, db, msg) {
 	if (msg.oldName == msg.name) {
 		return (sendChangingNameMsg(socket, msg, 0, 'You are already using this name.'));
 	} else {
-		const errMsg = checkName(msg.name);
+		const errMsg = await checkName(msg.name);
 		if (errMsg)
 			return (sendChangingNameMsg(socket, msg, 0, errMsg));
 	}
