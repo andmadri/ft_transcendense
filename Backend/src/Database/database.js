@@ -112,27 +112,6 @@ export async function createDatabase() {
 			email: 'ai@ai.ai',
 			password: 'secretai'
 		});
-
-		const test1 = await createNewUserToDB(db, {
-			name: 'test1',
-			email: 'test1@test1.test1',
-			password: 'test1@test1.test1'
-		});
-		const test2 = await createNewUserToDB(db, {
-			name: 'test2',
-			email: 'test2@test2.test2',
-			password: 'test2@test2.test2'
-		});
-		const test3 = await createNewUserToDB(db, {
-			name: 'test3',
-			email: 'test3@test3.test3',
-			password: 'test3@test3.test3'
-		});
-		const test4 = await createNewUserToDB(db, {
-			name: 'test4',
-			email: 'test4@test4.test4',
-			password: 'test4@test4.test4'
-		});
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);

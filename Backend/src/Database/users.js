@@ -5,6 +5,21 @@ import { sql_log, sql_error } from './dblogger.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
+export async function nameAlreadyExist(db, name) {
+	const username = name.toLowerCase(); 
+
+	const exists = await new Promise((resolve, reject) => {
+		db.get(`SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`,
+			[username], (err, row) => {
+			if (err)
+				return reject(err);
+			resolve(!!row);
+		});
+	});
+	console.log('exist: ', exists);
+	return (exists);
+}
+
 /**
  * @brief Adds a new user to the SQL Users table.
  *
