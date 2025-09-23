@@ -97,9 +97,9 @@ function createTabs(): { tabContainer1: HTMLDivElement; tabContainer2: HTMLDivEl
 	return { tabContainer1, tabContainer2};
 }
 
-function createUserPicture(user_info: any): HTMLImageElement {
+function createUserPicture(user_info: any, playerNr: number): HTMLImageElement {
 	const userPic = document.createElement('img');
-	userPic.id = `avatar1`;
+	userPic.id = `avatar${playerNr}`;
 	userPic.src = `/api/avatar/${user_info?.id}?ts=${Date.now()}`
 	userPic.alt = `${user_info?.name}'s avatar`;
 	userPic.style.height = 'clamp(60px, 90%, 120px)';
@@ -140,6 +140,7 @@ function createUserPicture(user_info: any): HTMLImageElement {
 
 function createDashboardButton(userID: number): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
+	dashboardBtn.id = 'dashboardBtn';
 	styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 	dashboardBtn.addEventListener("click", () => {
 		navigateTo(`Dashboard?userId=${userID}`);
@@ -214,7 +215,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 	userContainer.style.width = '100%';
 	userContainer.style.height = '50%';
 
-	const userPic = createUserPicture(user_info);
+	const userPic = createUserPicture(user_info, playerNr);
 	userContainer.appendChild(userPic);
 
 	const userInfoContainer = document.createElement('div');
@@ -236,6 +237,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 
 	if (user_info.id >= 2) {
 		const userStats = document.createElement('div');
+		userStats.id = `userStats${playerNr}`;
 		userStats.textContent = `Games: ${stats.total_matches} W: ${stats.wins} L: ${stats.losses}`;
 		userStats.style.fontFamily = '"RobotoCondensed", monospace';
 		userStats.style.color = 'white';
@@ -246,6 +248,7 @@ function createUserContainer(user_info: any, stats: any, playerNr: number): HTML
 	const topRightButtonContainer =  createTopRightButtonContainer();
 	if(user_info.id >= 2) {
 		const dashboard = createDashboardButton(user_info.id);
+		dashboard.id = 'dashboardBtn' + playerNr;
 		topRightButtonContainer.appendChild(dashboard);
 	}
 	if (playerNr === 1) {
