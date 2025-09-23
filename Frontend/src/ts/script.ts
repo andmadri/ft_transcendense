@@ -63,6 +63,7 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(data => {
 		// User is authenticated, go to menu
 		const currentState = sessionStorage.getItem("currentState");
+		console.log('current state script:', currentState);
 		if (currentState && currentState !== 'LoginP1')
 			navigateTo(currentState);
 		else

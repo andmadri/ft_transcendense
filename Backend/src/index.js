@@ -10,12 +10,13 @@ import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { performCleanupDB } from './Database/cleanup.js';
-import { handleTournament } from './Tournament/tournament.js';
+import { handleTournament, leaveTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
+import { tournament } from './Tournament/tournament.js';
 
 export const db = await createDatabase();
 
@@ -150,6 +151,10 @@ fastify.ready().then(() => {
 			console.log(`User ${userId1} disconnected`);
 			checkChallengeFriendsInvites(socket, userId1);
 			await stopMatchAfterRefresh(fastify.io, userId1);
+			// for (const players in tournament.players) {
+			// 	if (players.id == userId1)
+			// 		leaveTournament({name: players.name}, userId1, socket, fastify.io);
+			// }
 		});
 	});
 });
