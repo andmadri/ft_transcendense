@@ -131,3 +131,13 @@ export function sendPadelHit(match, io) {
 		}
 	});
 }
+
+export function sendWinnerResult(match, io) {
+	io.to(match.matchID).emit('message', {
+		action: 'game',
+		subaction: 'winner',
+		match: match.matchID,
+		winnerID: match.winnerID,
+		state: match.state
+	});
+}

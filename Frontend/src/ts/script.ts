@@ -2,7 +2,7 @@
 //importing functionality from different files
 import * as S from './structs.js' //imports structures from the file structs.js
 import { Game, UI } from "./gameData.js"
-import { navigateTo, controlBackAndForward, onHashChange } from './history.js'
+import { navigateTo, controlBackAndForward } from './history.js'
 import { createLog, log } from './logging.js'
 import { pressButton, releaseButton } from './windowEvents.js'
 import { startSocketListeners } from './socketEvents.js'
@@ -18,8 +18,11 @@ import { getMenu , getCreditsPage } from './Menu/menuContent.js'
 import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
 import { getLoadingPage } from './Loading/loadContent.js'
 import { OT, state} from '@shared/enums'
-import { resetBall, updatePaddlePos } from '@shared/gameLogic'
+import { resetBall, setWinner } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
+
+import { requestUpdateTournament } from './Tournament/tournamentContent.js'
+import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
 
 createLog();
 
@@ -29,14 +32,16 @@ startSocketListeners();
 
 // Send a heartbeat every 5 seconds
 setInterval(() => {
-	if (Game.socket && Game.socket.connected) {
+	if (Game.socket && Game.socket.connected && UI.state !== S.stateUI.LoginP1) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
-		fetch('/api/refresh-token', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ playerNr: 1 })
-		});
+		if (UI.user1.ID !== -1) {
+			fetch('/api/refresh-token', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ playerNr: 1 })
+			});
+		}
 		if (UI.user2.ID !== 1) {	// if user2 is not guest
 			fetch('/api/refresh-token', {
 				method: 'POST',
@@ -136,7 +141,12 @@ function gameLoop() {
 			break ;
 		}
 		case state.End: {
-			saveGame();
+			if (Game.match.winnerID) {
+				saveGame();
+			}
+			else if (Game.match.mode !== OT.Online){
+				setWinner(Game.match);
+			}
 			break ;
 		}
 		default:
@@ -163,6 +173,9 @@ function mainLoop() {
 				document.getElementById("creditDiv")?.remove();
 				document.getElementById("containerDashboard")?.remove();
 				document.getElementById("gameOver")?.remove();
+				document.getElementById("dashboard")?.remove();
+				document.getElementById("tournamentScreen")?.remove();
+				document.getElementById("tournamentEndScreen")?.remove();
 				if (!document.getElementById('menu'))
 					getMenu();
 				break ;
@@ -181,6 +194,18 @@ function mainLoop() {
 				gameLoop();
 				break ;
 			}
+			case S.stateUI.Tournament: {
+			if (!document.getElementById('tournamentScreen'))
+					showTournamentScreen();
+				}
+				//requestUpdateTournament();
+			break ;
+			//  case S.stateUI.Dashboard: {
+			// 	if (!document.getElementById('dashboard')) {
+			// 		getDashboard();
+			// 	}
+			// break;
+			// }
 			default:
 		}
 	} else {

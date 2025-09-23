@@ -1,6 +1,8 @@
 import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB, applyScoreUpdate } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
+import { MF } from '../SharedBuild/enums.js';
+import { reportTournamentMatchResult } from '../Tournament/tournament.js';
 
 export async function handleGame(db, msg, socket, io) {
 	if (!msg.subaction)
@@ -36,7 +38,7 @@ export async function handleGame(db, msg, socket, io) {
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
-			saveMatch(match, msg, socket);
+			saveMatch(match.matchID);
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket, io);

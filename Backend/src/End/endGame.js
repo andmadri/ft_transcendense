@@ -1,20 +1,19 @@
-import { getUserMatchStatsDB, getAllUserStateDurationsDB } from "../Database/dashboard.js";
 import { handleMatchEndedDB } from "../Services/matchService.js";
 import { matches } from "../InitGame/match.js";
-import { state, OT } from "../SharedBuild/enums.js"
-import { renderUserStateDurationsSVG } from '../Database/test.js';
-import path from 'path';
+import { state, OT } from "../SharedBuild/enums.js";
 import { db } from "../index.js";
 
-const uploadsBase = process.env.UPLOADS_DIR || '/tmp/uploads';
-
 export async function quitMatch(match, msg, io) {
-	if (match.mode == OT.Online) {
+	console.log(`match quit by ${msg.player}`);
+	if (match.mode === OT.Online && !match.winnerID) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
-	else {
-		match.winnerID = msg.winnerID
+	else if (match.mode !== OT.Online){
+		console.log(`quitmatch ${msg.winner}`);
+		match.winnerID = msg.winner
 	}
+	match.state = state.End;
+	console.log(`WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
@@ -22,35 +21,12 @@ export async function quitMatch(match, msg, io) {
 		winner: match.winnerID,
 		reason: `match quit by player ${msg.name}`
 	});
-	match.state = state.End;
 }
 
-export async function saveMatch(match) {
-	// Update the match in the database
-	const matchID = await handleMatchEndedDB(db, match.matchID);
-	
-	// Show some stats in the terminal
-	// console.table(matchID);
-	// console.log(await getUserMatchStatsDB(db, matchID.player_1_id));
-	// console.log(await getUserMatchStatsDB(db, matchID.player_2_id));
-	// console.table(await getAllUserStateDurationsDB(db));
+export async function saveMatch(matchID) {
+	const matchInfo = await handleMatchEndedDB(db, matchID);
 
-	// ADDED FOR CREATING IMAGE IN THE BACKEND - start
-	const idForName = String(match?.matchID ?? matchID?.id ?? match?.matchID ?? Date.now());
-
-	const svgPath = await renderUserStateDurationsSVG(db, {
-		outDir: path.join(uploadsBase, 'charts', idForName),
-		fileName: `user_state_durations_match_${idForName}.svg`,
-		width: 1000,
-		barHeight: 26
-	});
-	console.log('Chart saved at:', svgPath);
-
-	// Delete the data in the backend
-	matches.delete(match.matchID);
-
-	const chartUrl = `/api/charts/user-state-durations/${idForName}`;
-	// ADDED FOR CREATING IMAGE IN THE BACKEND - stop
+	matches.delete(matchID);
 
 	// Send a message to the frontend
 	// socket.emit('message', {

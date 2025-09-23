@@ -8,7 +8,6 @@ services:
     restart: always
     environment:
       - DB_PATH=/data/pong.db
-      - UPLOADS_DIR=/tmp/uploads
     volumes:
       - dbdata:/data
     init: true

@@ -1,4 +1,16 @@
 
+function formatDurationSecs(sec: unknown): string {
+	const n = Math.round(Number(sec));
+	if (!Number.isFinite(n)) {
+		return '';
+	}
+	if (n < 60) {
+		return `${n}s`;
+	}
+	const m = Math.floor(n / 60);
+	const s = n % 60;
+	return `${m}m ${s.toString().padStart(2, '0')}s`;
+}
 
 export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 {
@@ -59,7 +71,12 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	avgHeader.style.gridArea = 'avgHeader';
 	avgHeader.style.fontFamily = '"Horizon", monospace';
 	const avgValue = document.createElement('div');
-	avgValue.textContent = `${stats.avg_duration}`;
+	if (!stats.avg_duration) {
+		avgValue.textContent = `0 seconds`;
+	} else {
+		const durationTxt = formatDurationSecs(stats.avg_duration);
+		avgValue.textContent = durationTxt;
+	}
 	avgValue.style.fontFamily = '"RobotoCondensed", monospace';
 	avgValue.style.gridArea = 'avg';
 

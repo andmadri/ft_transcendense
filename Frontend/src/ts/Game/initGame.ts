@@ -111,6 +111,7 @@ export function initGame() {
 	if (Game.match.mode != OT.Online) {
 		Game.match.player1.ID = UI.user1.ID;
 		Game.match.player1.name = UI.user1.name;
+		console.log(`initGame() OT = ${Game.match.mode}`);
 		if (Game.match.mode != OT.ONEvsCOM) {
 			Game.match.player2.ID = UI.user2.ID;
 			Game.match.player2.name = UI.user2.name;
@@ -118,6 +119,7 @@ export function initGame() {
 		else {
 			Game.match.player2.ID = 2;
 			Game.match.player2.name = "AI";
+			console.log(`initGame() ${Game.match.player2.ID}`);
 		}
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
@@ -155,6 +157,7 @@ export function actionInitOnlineGame(data: any) {
 	//getGameField();
 
 	Game.match = match;
+	console.log(`actionINitOnlineGame() MatchFormat = ${Game.match.matchFormat}`);
 	// Function to set all data sync with match in game...
 
 	navigateTo('Game'); //think we don't need this

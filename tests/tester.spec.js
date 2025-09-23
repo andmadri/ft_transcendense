@@ -1,144 +1,84 @@
 import { test, expect } from '@playwright/test';
 import * as U from './utils.spec.js';
-import * as Login from './login.spec.js';
+import { authenticationTests, signup_login_byPlayer } from './0_0_auth.spec.js';
+import { menuTests, isInMenu } from './1_0_menu.spec.js';
+import { afterGame } from './after_game.spec.js';
+import { tournament } from './tournament.spec.js'
 import * as Game from './game.spec.js';
-import * as Menu from './menu.spec.js';
 import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
 import * as Navigation from './navigation.spec.js'
 
+// TESTER:
+// npx install --save-dev @playwright/test
+// npx playwright install
+// npx playwright test --ui (IN VSC)
 
-const URL = 'https://localhost:8443';
+export const URL = 'https://localhost:8443';
 
-const name = `User${Math.floor(Math.random() * 1000000)}`;
+const name = `U${Math.floor(Math.random() * 1000000)}`;
 const email = `${name}@codam.com`;
 const password = `Hallo123`;
-const name2 = `User${Math.floor(Math.random() * 1000000)}`;
+const name2 = `U${Math.floor(Math.random() * 1000000)}`;
 const email2 = `${name2}@codam.com`;
 const password2 = `Hallo123`;
 
 // To execute the test in serie instead of all together
 test.describe.configure({ mode: 'serial' });
 
-// *************************************************************************** //
-//               TESTS TO ACCESS WITH ALL AND SINGLE TEST                      //
-// *************************************************************************** // 
-
-async function TestSignupAndLogin(page) {
-	await page.goto(URL);
-
-	await Login.sign_in_tests(page, 1, name, email, password);
-	await Login.login_tests(page, 1, email, password);
-
-	await Menu.isInMenu(page);
-
-	// NAME PLAYER 1 IS VISIBLE IN MENU
-	await Menu.playerIsLoggedIn(page, 1, name);
-
-	await page.waitForTimeout(1000);
-	// await Menu.playerInOnlineMenu(page, name);
-}
-
-async function TestMenu(page, allTests) {
-	if (!allTests) {
-		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'menu', 'menu' + email, password);
-		await Menu.isInMenu(page);
-	}
-	await Menu.seeCredits(page);
-	await Menu.changeAvatar(page, 1, 'avatar1');
-	await Menu.playerIsLoggedIn(page, 1, name + 'menu');
-}
-
-async function TestOneVSone(page, allTests) {
-	if (!allTests) {
-		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'onevsone', 'onevsone' + email, password);
-		await Menu.isInMenu(page);
-	}
-
-	await OneVSone.oneVsOne(page, name2, email2, password2);
-	// await Game.quitGame(page);
-}
-
-async function TestOneVSai(page, allTests) {
-	if (!allTests) {
-		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
-	}
-
-	// PLAY 1 VS COM
-	await OneVSai.StartOneVsCom(page);
-	await Game.quitGame(page);
-}
-
-async function TestRemotePlayer(page, browser, allTests) {
-	if (!allTests) {
-		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
-	}
-	await Remote.remotePlayer(page, browser, URL, name, name2, email2, password2);
-	
-	// BACK TO MENU
-	await page.goto(URL);
-	await Menu.isInMenu(page);
-}
-
-async function TestNavigation(page, allTests) {
-	if (!allTests) {
-		await page.goto(URL);
-		await Login.signup_login_byPlayer(page, 1, name + 'ai', 'ai' + email, password);
-		await Menu.isInMenu(page);
-	}
-	await Navigation.navigation(page);
-}
-
-// *************************************************************************** //
-//                          SINGLE TESTS 			                           //
-// *************************************************************************** // 
-test('Sign Up and Login', async ({ browser }) => {
+async function pageLogin(browser, add) {
 	const page = await U.createNewPage(browser);
-	await TestSignupAndLogin(page);
+	await page.goto(URL);
+	await signup_login_byPlayer(page, 1, name + add, add + email, password);
+	return (page);
+}
+
+test('Authentication', async ({ browser }) => {
+	const page = await U.createNewPage(browser);
+	await page.goto(URL);
+	await authenticationTests(browser, page, 1, name, email, password);
 });
 
-test('Function Menu', async ({ browser }) => {
-	const page = await U.createNewPage(browser);
-	await TestMenu(page, false);
+test('Menu', async ({ browser }) => {
+	const page = await pageLogin(browser, 'm');
+	await menuTests(page, name + 'm', email, password, name2 + 'm', email2, password2);
 });
 
 test('One vs One', async ({ browser }) => {
-	const page = await U.createNewPage(browser);
-	await TestOneVSone(page, false);
+	const page = await pageLogin(browser, 'o');
+	await isInMenu(page, false, name + 'o', '');
+	await OneVSone.oneVsOne(page, name + 'o', name2, email2, password2);
 });
 
 test('OneVSai', async ({ browser }) => {
-	const page = await U.createNewPage(browser);
-	await TestOneVSai(page, false);
+	const page = await pageLogin(browser, 'a');
+	await isInMenu(page, false, name + 'a', '');
+	await OneVSai.StartOneVsCom(page, name + 'a');
 });
 
 test('Remote Player', async ({ browser }) => {
-	const page = await U.createNewPage(browser);
-	await TestRemotePlayer(page, browser, false);
+	const page = await pageLogin(browser, 'r');
+	await isInMenu(page, false, name + 'r', '');
+	await Remote.remotePlayer(page, browser, URL, name + 'r', name2, email2, password2);
 });
 
 test('Navigation', async ({browser}) => {
-	const page = await U.createNewPage(browser);
-	await TestNavigation(page, false);
+	const page = await pageLogin(browser, 'n');
+	await isInMenu(page, false, name, '');
+	await Navigation.navigation(page, name);
 });
 
+test('After Game', async ({browser}) => {
+	const page =  await pageLogin(browser, 'g');
+	await isInMenu(page, false, name, '');
+	await afterGame(page);
+});
 
-// *************************************************************************** //
-//                             ALL TESTS 			                           //
-// *************************************************************************** // 
-test('All tests', async ({ browser }) => {
-	const page = await U.createNewPage(browser);
-	await TestSignupAndLogin(page, true);
-	await TestMenu(page, true);
-	await TestOneVSone(page, true);
-	await TestOneVSai(page, true);
-	await TestRemotePlayer(page, browser, true);
-	await TestNavigation(page, true)
+test('Tournament', async ({browser}) => {
+	const page1 =  await pageLogin(browser, '1');
+	const page2 =  await pageLogin(browser, '2');
+	const page3 =  await pageLogin(browser, '3');
+	const page4 =  await pageLogin(browser, '4');
+	await tournament(page1, page2, page3, page4, name);
 });
