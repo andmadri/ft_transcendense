@@ -47,7 +47,6 @@ function sendChangingNameMsg(socket, msg, success, returnMsg) {
 
 export async function changeName(socket, db, msg) {
 	if (!msg.user_id || !msg.oldName || !msg.name) {
-		console.error("Not all info changeName");
 		socket.emit('serverError', { reason: "Unknown Server error" });
 		return ;
 	}
@@ -55,7 +54,7 @@ export async function changeName(socket, db, msg) {
 	if (msg.oldName == msg.name) {
 		return (sendChangingNameMsg(socket, msg, 0, 'You are already using this name.'));
 	} else {
-		const errMsg = checkName(msg.name);
+		const errMsg = await checkName(msg.name);
 		if (errMsg)
 			return (sendChangingNameMsg(socket, msg, 0, errMsg));
 	}

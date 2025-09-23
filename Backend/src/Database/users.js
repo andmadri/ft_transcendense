@@ -5,6 +5,25 @@ import { sql_log, sql_error } from './dblogger.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
+export function nameAlreadyExist(db, name) {
+	const username = name.toLowerCase(); 
+
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`;
+		db.get(sql,	[username], (err, row) => {
+			if (err) {
+				sql_error(err, `nameAlreadyExist | name=${name}`);
+				return reject(err);
+			} else {
+				if (row) {
+					sql_log(`Name already exist: ${name}`);
+				}
+				resolve(row || null);
+			}
+		});
+	});
+}
+
 /**
  * @brief Adds a new user to the SQL Users table.
  *
