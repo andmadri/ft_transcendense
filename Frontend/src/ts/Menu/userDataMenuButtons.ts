@@ -298,6 +298,7 @@ export function getChangeNameBtn(playerNr: number): HTMLButtonElement {
 function getLogoutBtn(playerNr: number): HTMLButtonElement {
 	const logoutBtn = document.createElement('button');
 	logoutBtn.textContent = 'Logout';
+	logoutBtn.id = `LogoutBtn${playerNr}`;
 	logoutBtn.addEventListener('click', (e) => submitLogout(e, playerNr));
 	return (logoutBtn);
 }
