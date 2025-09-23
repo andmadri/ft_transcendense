@@ -1,11 +1,25 @@
 import { Game } from "../gameData.js"
-import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT, MF } from '@shared/enums'
 // import { createBackgroundText } from "../Menu/menuContent.js";
 
-let result = "";
-let lastMatchId = -1;
+function setGameOverContext(matchId: number, resultText: string) {
+	sessionStorage.setItem('lastMatchId', String(matchId));
+	sessionStorage.setItem('lastResult', resultText);
+}
+
+function getGameOverContext(): { matchId: number | null; result: string } {
+	const idRaw = sessionStorage.getItem('lastMatchId');
+	const idNum = idRaw != null ? Number(idRaw) : NaN;
+	const matchId = Number.isFinite(idNum) ? idNum : null;
+	const result = sessionStorage.getItem('lastResult') || '';
+	return { matchId, result };
+}
+
+function clearGameOverContext() {
+	sessionStorage.removeItem('lastMatchId');
+	sessionStorage.removeItem('lastResult');
+}
 
 function getWinnerResult() {
 	let winnerName = null;
@@ -19,8 +33,8 @@ function getWinnerResult() {
 	return winnerName ? `${winnerName} Wins!` : "NO WINNER :(";
 }
 
-export function getGameOver(matchId: number) {
-	log("Game Over!");
+export function getGameOver() {
+	const { matchId, result } = getGameOverContext();
 	const game = document.getElementById('game');
 	if (game)
 		game.remove();
@@ -41,11 +55,6 @@ export function getGameOver(matchId: number) {
 	gameOver.style.width = '100%';
 	gameOver.style.height = '100%';
 
-	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
-	// gameOver.style.height = '100%';
-
-	// gameOver.style.gap = '5%'
-
 	const txtGameOver = document.createElement('div');
 	txtGameOver.textContent = "Game Over";
 	txtGameOver.style.color = 'transparent';
@@ -57,7 +66,7 @@ export function getGameOver(matchId: number) {
 	txtInnerGameOver.style.color = 'black';
 	txtInnerGameOver.style.fontSize = '3rem';
 
-	const	ball = document.createElement('div');
+	const ball = document.createElement('div');
 	ball.id = 'ballEndCredits';
 	ball.style.position = 'absolute';
 	ball.style.top = '47.5%';
@@ -109,7 +118,7 @@ export function getGameOver(matchId: number) {
 		statsButton.style.cursor = 'pointer';
 		statsButton.style.transition = 'all 0.2s ease-in-out';
 		statsButton.addEventListener('click', () => { 
-			navigateTo(`GameStats?matchId=${lastMatchId}`);
+			navigateTo(`GameStats?matchId=${matchId}`);
 		});
 		gameOver.appendChild(statsButton);
 	}
@@ -145,8 +154,8 @@ export function saveGame() {
 	}
 	
 	// Save the result to show in the GameOver function
-	result = getWinnerResult();
-	lastMatchId = Game.match.matchID;
+	const result = getWinnerResult();
+	setGameOverContext(Game.match.matchID, result);
 
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;
