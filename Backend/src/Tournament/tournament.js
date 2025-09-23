@@ -36,7 +36,7 @@ function joinTournament(msg, userId, socket, io) {
 			subaction: 'joinRejected',
 			reason: 'Tournament already in progress'
 		});
-		return ;
+		return;
 	} else if (tournament.players.find(p => p.id === userId)) {
 		const player = tournament.players.find(p => p.id === userId);
 		if (!player.socket) {
@@ -133,7 +133,7 @@ export function leaveTournament(msg, userId, socket, io) {
 		// Print in console for debugging
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else {
-		// -> alert player they can't leave / lose the tournament
+		// -> customAlert player they can't leave / lose the tournament
 		console.log('Tournament already in progress, cannot leave');
 
 	}
@@ -182,7 +182,7 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		player2.ready = false;
 	}
 
-	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId)});
+	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
 
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {

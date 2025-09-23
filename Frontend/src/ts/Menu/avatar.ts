@@ -1,8 +1,10 @@
 import { log } from "../logging.js";
 import { Game, UI } from "../gameData.js";
+import { customAlert } from '../Alerts/customAlert.js';
 
-export async function changeAvatar(file: File,  playerNr: number) {
-	log("File: " + file.name + " " + file.size);
+
+export async function changeAvatar(file: File, playerNr: number) {
+	console.log("File: " + file.name + " " + file.size);
 
 	const formData = new FormData();
 	formData.append('avatar', file);
@@ -13,16 +15,16 @@ export async function changeAvatar(file: File,  playerNr: number) {
 	});
 
 	if (response.ok) {
-		log("Upload succeeded!");
+		console.log("Upload succeeded!");
 		const avatar = document.getElementById(`avatar${playerNr}`) as HTMLImageElement | null;
 		if (!avatar) {
 			console.log("No avatar yet");
-			return ;
+			return;
 		}
 		const user = playerNr == 1 ? UI.user1.ID : UI.user2.ID;
 		avatar.src = `/api/avatar/${user}?ts=${Date.now()}`
 	} else {
-		alert("Upload failed: " + response.statusText);
-		log("Error with upload avatar");
+		customAlert("Upload failed: " + response.statusText); //needed customAlert
+		console.log("Error with upload avatar");
 	}
 }
