@@ -22,7 +22,11 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
 	for (let match of matches) {
 		const row = document.createElement('div');
-		row.id = `matchInfoFor${match.match_id}`
+		if (match && match.match_id) {
+			row.id = `matchInfoFor${match.match_id}`;
+		} else {
+			row.id = `matchInfoForUnknown`;
+		}
 		row.style.display = 'flex';
 		row.style.position = 'relative';
 		row.style.width = '100%';
