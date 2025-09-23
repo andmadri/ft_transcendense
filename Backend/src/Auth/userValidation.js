@@ -52,8 +52,8 @@ export async function addUser(msg) {
 	if (errorMsg)
 		return (errorMsg);
 	try {
-		const userId = await addUserToDB(db, msg);
-		return (''); // Should we not return the userId?
+		await addUserToDB(db, msg);
+		return ('');
 	}
 	catch(err) {
 		if (err.code === 'SQLITE_CONSTRAINT') {
@@ -70,16 +70,14 @@ export async function addUser(msg) {
 }
 
 export async function validateLogin(msg, fastify) {
-	let user;
-
+	let user = null;
 	try {
 		user = await getUserByEmail(db, msg.email);
+		if (!user || !user.password)
+			return ({ error: 'User not found' });
 	} catch (err) {
-		console.error('Error with getting user by email');
-		return (err);
-	}
-	if (!user || !user.password)
 		return ({ error: 'User not found' });
+	}
 
 	const isValidPassword = await bcrypt.compare(msg.password, user.password);
 	if (!isValidPassword)
@@ -87,7 +85,6 @@ export async function validateLogin(msg, fastify) {
 
 	try {
 		const onlineUsers = await getOnlineUsers(db);
-		console.log('Online users:', onlineUsers.map(u => u.id));
 		for (const onlineUser of onlineUsers) {
 			if (onlineUser.id === user.id) {
 				return ({ error: 'You are already logged in!' });

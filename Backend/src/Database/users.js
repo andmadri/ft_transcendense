@@ -65,15 +65,19 @@ export async function createNewUserToDB(db, user = {}) {
  * @throws {Error} if the user doesn’t exist or no valid fields are provided.
  */
 export async function updateUserInDB(db, user) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
+	let existing = null;
+	try {
+		existing = await getUserByID(db, user.user_id);
+		if (!existing) {
+			throw new Error(`User ID ${user.user_id} does not exist.`);
+		}
 
-	if (user.password !== undefined) {
-		user.password = await bcrypt.hash(user.password, 10);
+		if (user.password !== undefined) {
+			user.password = await bcrypt.hash(user.password, 10);
+		}
+	} catch (err) {
+		return err;
 	}
-
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];

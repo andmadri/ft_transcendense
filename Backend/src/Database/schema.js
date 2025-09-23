@@ -20,7 +20,6 @@ export async function createTables(db)
 		avatar_url TEXT,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		last_edited TEXT DEFAULT CURRENT_TIMESTAMP,
-		is_deleted INTEGER NOT NULL DEFAULT 0,
 		CHECK(twofa_active IN (0,1))
 	);
 

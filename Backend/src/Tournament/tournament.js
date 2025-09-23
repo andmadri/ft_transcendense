@@ -160,6 +160,10 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	if (!player1.socket) {
 		console.log(`Player ${player1.name} disconnected, cannot start match.`);
 		matchId = await createMatch(db, OT.Online, player2.socket, player1.id, player2.id, null, MF.Tournament);
+		if (matchId === -1) {
+			console.log("createTournamentMatch (!player1.socket) - Error in CreateMatch");
+			return ;
+		}
 		match = matches.get(matchId);
 		match.winnerID = player2.id;
 		match.state = state.End;
@@ -169,6 +173,10 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	} else if (!player2.socket) {
 		console.log(`Player ${player2.name} disconnected, cannot start match.`);
 		matchId = await createMatch(db, OT.Online, player1.socket, player1.id, player2.id, null, MF.Tournament);
+		if (matchId === -1) {
+			console.log("createTournamentMatch (!player2.socket) - Error in CreateMatch");
+			return ;
+		}
 		match = matches.get(matchId);
 		match.winnerID = player1.id;
 		match.state = state.End;

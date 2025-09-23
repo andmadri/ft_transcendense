@@ -28,13 +28,15 @@ function handleStartOnlineMatch(msg, match) {
 		console.log("waiting till the opponent is ready");
 		return true;
 	}
-	return false
+	return false;
 }
 
 // From Frontend
 export function handleInitGame(db, msg, socket) {
-	if (!msg.subaction)
-		return console.log('no subaction in handleInitGame');
+	if (!msg.subaction) {
+		console.log('no subaction in handleInitGame');
+		return -1;
+	}
 
 	// for local games
 	if (msg.subaction == 'createMatch' && msg.mode != 3)

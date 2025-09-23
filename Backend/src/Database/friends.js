@@ -44,13 +44,14 @@ async function isAlreadyAnInvite(db, user_id, friend_id, user_id_name, friend_id
  */
 
 export async function addFriendRequestDB(db, user_id, friend_id) {
-	const user1 = await getUserByID(db, user_id);
-	const user2 = await getUserByID(db, friend_id);
-	if (!user1 || !user2) {
-		throw new Error(`addFriendRequestDB | ${user_id} and/or ${friend_id} does not exist.`);
-	}
-
+	let user1 = null;
+	let user2 = null;
 	try {
+		user1 = await getUserByID(db, user_id);
+		user2 = await getUserByID(db, friend_id);
+		if (!user1 || !user2) {
+			throw new Error(`addFriendRequestDB | ${user_id} and/or ${friend_id} does not exist.`);
+		}
 		const requestID = await isAlreadyAnInvite(db, user_id, friend_id, user1.name, user2.name);
 		if (requestID) {
 			return await acceptFriendRequestDB(db, requestID.id, user1.name, user2.name);
@@ -92,18 +93,22 @@ export async function addFriendRequestDB(db, user_id, friend_id) {
  * @throws {Error} If the request or users cannot be found, or the SQL update fails.
  */
 export async function acceptFriendRequestDB(db, request_id, user1_name, user2_name) {
-	if (!user1_name || !user2_name) {
-		const request = await getFriendRequestByID(db, request_id);
-		if (!request) {
-			throw new Error(`acceptFriendRequestDB | Can not find friend request in DB with request_id=${request_id}.`);
+	try {
+		if (!user1_name || !user2_name) {
+			const request = await getFriendRequestByID(db, request_id);
+			if (!request) {
+				throw new Error(`acceptFriendRequestDB | Can not find friend request in DB with request_id=${request_id}.`);
+			}
+			const user1 = await getUserByID(db, request.user_id);
+			const user2 = await getUserByID(db, request.friend_id);
+			if (!user1 || !user2) {
+				throw new Error(`acceptFriendRequestDB | ${request.user_id} and/or ${request.friend_id} does not exist.`);
+			}
+			user1_name = user1.name;
+			user2_name = user2.name;
 		}
-		const user1 = await getUserByID(db, request.user_id);
-		const user2 = await getUserByID(db, request.friend_id);
-		if (!user1 || !user2) {
-			throw new Error(`acceptFriendRequestDB | ${request.user_id} and/or ${request.friend_id} does not exist.`);
-		}
-		user1_name = user1.name;
-		user2_name = user2.name;
+	} catch (err) {
+		return err;
 	}
 
 	return new Promise((resolve, reject) => {
@@ -135,14 +140,20 @@ export async function acceptFriendRequestDB(db, request_id, user1_name, user2_na
  * @throws {Error} If the request/users cannot be found or the SQL delete fails.
  */
 export async function denyFriendRequestDB(db, request_id) {
-	const request = await getFriendRequestByID(db, request_id);
-	if (!request) {
-		throw new Error(`denyFriendRequestDB | Can not find friend request in DB with request_id=${request_id}.`);
-	}
-	const user1 = await getUserByID(db, request.user_id);
-	const user2 = await getUserByID(db, request.friend_id);
-	if (!user1 || !user2) {
-		throw new Error(`denyFriendRequestDB | ${request.user_id} and/or ${request.friend_id} does not exist.`);
+	let user1 = null;
+	let user2 = null;
+	try {
+		const request = await getFriendRequestByID(db, request_id);
+		if (!request) {
+			throw new Error(`denyFriendRequestDB | Can not find friend request in DB with request_id=${request_id}.`);
+		}
+		user1 = await getUserByID(db, request.user_id);
+		user2 = await getUserByID(db, request.friend_id);
+		if (!user1 || !user2) {
+			throw new Error(`denyFriendRequestDB | ${request.user_id} and/or ${request.friend_id} does not exist.`);
+		}
+	} catch (err) {
+		return err;
 	}
 
 	return new Promise((resolve, reject) => {
@@ -171,14 +182,20 @@ export async function denyFriendRequestDB(db, request_id) {
  * @throws {Error} If no friendship/request exists or the SQL delete fails.
  */
 export async function deleteFriendDB(db, user_id, friend_id) {
-	const request = await getFriendRequestByUserIDs(db, user_id, friend_id);
-	if (!request) {
-		throw new Error(`deleteFriendDB | Can not find friend request in DB with user_id=${user_id}, friend_id=${friend_id}.`);
-	}
-	const user1 = await getUserByID(db, user_id);
-	const user2 = await getUserByID(db, friend_id);
-	if (!user1 || !user2) {
-		throw new Error(`deleteFriendDB | ${user_id} and/or ${friend_id} does not exist.`);
+	let user1 = null;
+	let user2 = null;
+	try {
+		const request = await getFriendRequestByUserIDs(db, user_id, friend_id);
+		if (!request) {
+			throw new Error(`deleteFriendDB | Can not find friend request in DB with user_id=${user_id}, friend_id=${friend_id}.`);
+		}
+		user1 = await getUserByID(db, user_id);
+		user2 = await getUserByID(db, friend_id);
+		if (!user1 || !user2) {
+			throw new Error(`deleteFriendDB | ${user_id} and/or ${friend_id} does not exist.`);
+		}
+	} catch (err) {
+		return err;
 	}
 	return new Promise((resolve, reject) => {
 		const sql = `DELETE FROM Friends WHERE (user_id = ? AND friend_id = ? AND accepted = 1) 
