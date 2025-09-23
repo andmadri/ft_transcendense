@@ -9,14 +9,13 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-// import { addUserSessionToDB } from './Database/sessions.js';
-import { onUserLogout } from './Services/sessionsService.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 import { generateAllChartsForMatch } from './Charts/createGameStats.js';
+import { stopMatchAfterRefresh } from './End/endGame.js';
 
 export const db = await createDatabase();
 
@@ -150,6 +149,7 @@ fastify.ready().then(() => {
 		socket.on('disconnect', async () => {
 			console.log(`User ${userId1} disconnected`);
 			checkChallengeFriendsInvites(socket, userId1);
+			await stopMatchAfterRefresh(fastify.io, userId1);
 		});
 	});
 });
