@@ -97,7 +97,7 @@ export function leaveTournament(msg, userId, socket, io) {
 		if (player) {
 			player.ready = true;	// Mark as ready to create matches
 			player.socket = null;	// Mark as disconnected
-			leaveRoom('tournament_1');
+			leaveRoom(socket, 'tournament_1');
 		}
 		socket.emit('message', {
 			action: 'tournament',
