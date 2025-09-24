@@ -153,7 +153,7 @@ fastify.ready().then(() => {
 			await stopMatchAfterRefresh(fastify.io, userId1);
 			const player = tournament.players.find(p => p.id === userId1);
 			if (player) {
-				leaveTournament({name: player.name}, userId1, player.socker, fastify.io);
+				leaveTournament({name: player.name}, userId1, player.socket, fastify.io);
 			}
 		});
 	});

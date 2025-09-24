@@ -4,6 +4,7 @@ import { createMatch, matches } from "../InitGame/match.js";
 import { OT, state } from '../SharedBuild/enums.js'
 import { getUserByID } from "../Database/users.js";
 import { matchInterval } from "./onlinematch.js";
+import { leaveRoom } from "../rooms.js";
 
 let friendInvites = new Map();
 
@@ -102,7 +103,7 @@ function stopChallenge(msg, disconnectedSocket) {
 			action: 'matchmaking',
 			subaction: 'challengeDeclined'
 		})
-		socket.leave(msg.tempMatchID);
+		leaveRoom(socket, msg.tempMatchID);
 	}
 	friendInvites.delete(msg.tempMatchID);
 }
