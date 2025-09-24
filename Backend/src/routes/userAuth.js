@@ -8,6 +8,7 @@ import { db } from '../index.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { verifyAuthCookie } from '../Auth/authToken.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+import { tournament } from '../Tournament/tournament.js'
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -76,12 +77,20 @@ export default async function userAuthRoutes(fastify) {
 			if (!user) {
 				return reply.status(401).send({ error: 'Unauthorized' });
 			}
+			let inTournament = false;
+			for (const player of tournament.players) {
+				if (player.id == user.id) {
+					inTournament = true;
+					break ;
+				}
+			}
 			reply.send({
 				success: true,
 				userId: user.id,
 				name: user.name,
 				email: user.email,
 				twofa: user.twofa_active,
+				inTournament
 			});
 		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });

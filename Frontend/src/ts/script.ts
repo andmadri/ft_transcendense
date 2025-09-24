@@ -26,8 +26,6 @@ import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
 
 createLog();
 
-log("host: " + window.location.host);
-
 startSocketListeners();
 
 // Send a heartbeat every 5 seconds
@@ -62,10 +60,13 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(res => res.ok ? res.json() : Promise.reject())
 	.then(data => {
 		// User is authenticated, go to menu
+		UI.user1.ID = data.userId; // Need to check later in validatePage
 		const currentState = sessionStorage.getItem("currentState");
 		console.log('current state script:', currentState);
-		if (currentState && currentState !== 'LoginP1')
-			navigateTo(currentState);
+		if (data.inTournament && data.inTournament == true)
+			navigateTo('Tournament');
+		else if (currentState && currentState !== 'LoginP1')
+			navigateTo(currentState, true);
 		else
 			navigateTo('Menu');
 	})

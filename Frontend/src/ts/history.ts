@@ -155,6 +155,8 @@ export function navigateTo(newState: any, fromHash = false) {
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
+	console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
+	
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(page)) {
@@ -214,7 +216,7 @@ export function getValidState(newState: string, currentState: string): string {
 	}
 
 	// No match is started
-    if ((newState === 'Game' || newState === 'GameOver') && Game.match.matchID == -1) {
+    if ((newState == 'Game' || newState == 'GameOver') && Game.match.matchID == -1) {
 		return ('Menu');
 	}
 
