@@ -2,9 +2,10 @@ import axios from 'axios';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import bcrypt from 'bcrypt';
 import { db } from '../index.js';
-import { addUserToDB, getUserByID, getUserByEmail, updateUserInDB } from '../Database/users.js';
+import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+import crypto from 'crypto';
 
 /**
  * Handles the Google authentication process.
@@ -35,20 +36,20 @@ async function handleGoogleAuth(user) {
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
 				exists.name = user.name;
+				exists.email = user.email;
 				exists.avatar_url = user.picture;
-				// CHECK FOR 2FA KEY? AND SET IT TO GOOGLE?
 				await updateUserInDB(db, exists);
 			}
 		} else {
 			await addUserToDB(db, {
 				email: user.email,
 				name: user.name,
-				password: user.id,
+				password: crypto.randomBytes(32).toString('base64'),
 				avatar_url: user.picture,
 				twofa_secret: 'google'
 			});
 		}
-		return await getUserByID(db, user.id);
+		return await getUserByEmail(db, user.email);
 	} catch (err) {
 		console.error('Error during Google authentication:', err);
 		return null;
@@ -76,6 +77,7 @@ export default async function googleAuthRoutes(fastify) {
 	fastify.get('/api/auth/google', async (request, reply) => {
 		const playerNr = request.query.playerNr || '1';
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
+		console.log('Redirect URI:', redirectUri);
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
 		const playerNrEncoded = encodeURIComponent(playerNr);
@@ -142,7 +144,7 @@ export default async function googleAuthRoutes(fastify) {
 				encode: v => v,      // Use default encoding
 				path: '/',
 				maxAge: USERLOGIN_TIMEOUT
-			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
+			}).redirect(`https://${process.env.HOST_DOMAIN}`);
 		} catch (err) {
 			fastify.log.error(err.response?.data || err.message);
 			reply.code(500).send('OAuth login failed.');
