@@ -21,7 +21,7 @@ import { OT, state} from '@shared/enums'
 import { resetBall, setWinner } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
-import { requestUpdateTournament } from './Tournament/tournamentContent.js'
+import { requestJoinTournament } from './Tournament/tournamentContent.js'
 import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
 
 createLog();
@@ -64,7 +64,8 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 		const currentState = sessionStorage.getItem("currentState");
 		console.log('current state script:', currentState);
 		if (data.inTournament && data.inTournament == true)
-			navigateTo('Tournament');
+			requestJoinTournament();
+			// navigateTo('Tournament');
 		else if (currentState && currentState !== 'LoginP1')
 			navigateTo(currentState, true);
 		else
