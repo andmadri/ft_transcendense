@@ -151,10 +151,10 @@ fastify.ready().then(() => {
 			console.log(`User ${userId1} disconnected`);
 			checkChallengeFriendsInvites(socket, userId1);
 			await stopMatchAfterRefresh(fastify.io, userId1);
-			// for (const players in tournament.players) {
-			// 	if (players.id == userId1)
-			// 		leaveTournament({name: players.name}, userId1, socket, fastify.io);
-			// }
+			const player = tournament.players.find(p => p.id === userId1);
+			if (player) {
+				leaveTournament({name: player.name}, userId1, player.socker, fastify.io);
+			}
 		});
 	});
 });
