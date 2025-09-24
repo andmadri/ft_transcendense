@@ -130,10 +130,6 @@ export function startGameField(duration : number) {
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
-	body.style.display = 'flex';
-	body.style.justifyContent = 'center';
-	body.style.alignItems = 'center';
-	body.style.height = '100vh';
 	body.appendChild(startGame);
 
 	setTimeout(() => {

@@ -5,32 +5,6 @@ import * as S from '../structs.js'
 import { navigateTo } from '../history.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
 
-// function styleElement(
-// 	element: HTMLElement,
-// 	width?: string,
-// 	height?: string,
-// 	position?: string,
-// 	top?: string,
-// 	right?: string,
-// 	left?: string,
-// 	backgroundColor?: string
-// ) {
-// 	if (width)
-// 		element.style.width = width;
-// 	if (height)
-// 		element.style.height = height;
-// 	if (position)
-// 		element.style.position = position;
-// 	if (top)
-// 		element.style.top = top;
-// 	if (right)
-// 		element.style.right = right;
-// 	if (left)
-// 		element.style.left = left;
-// 	if (backgroundColor)
-// 		element.style.backgroundColor = backgroundColor;
-// }
-
 function getQuitBtn() {
 	const	quitButton = document.createElement('button');
 	quitButton.id = 'quitButton';
@@ -77,11 +51,6 @@ export function getGameField() {
 	if (!body)
 		return;
 	body.innerHTML = "";
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
-	body.style.overflow = 'hidden';
 	createBackgroundText(body);
 
 	const game = document.createElement('div');

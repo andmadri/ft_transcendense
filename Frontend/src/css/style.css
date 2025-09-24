@@ -46,6 +46,16 @@
   100% { transform: translate(0,0); opacity: 1; }
 }
 
+body {
+	margin: 0;
+	width: 100vw;
+	height: 100vh;
+	background: linear-gradient(90deg, #ff6117, #ffc433, #ffc433);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
 
 /* Authentification */
 .authContainer {
