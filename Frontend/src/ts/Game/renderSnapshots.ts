@@ -58,24 +58,6 @@ function getBoundingSnapshots(renderTime: number) {
 	return [snap1, snap2];
 }
 
-/**
- * @brief updates the positions of the divElements in the frontend
- */
-// function updateDivFromSnapshot(ball: any, paddle: any, playerNr: number) {
-// 	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
-// 	const ballDiv = document.getElementById('ball');
-// 	const fieldDiv = document.getElementById('field');
-
-// 	if (!ballDiv || !playerDiv || !fieldDiv) {
-// 		console.error("Div elements are missing applyUpdatesGameServer");
-// 		return;
-// 	}
-// 	// Change values in div elements
-// 	playerDiv.style.top = `${(paddle.pos.y * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
-// 	ballDiv.style.left = `${ball.pos.x * fieldDiv.clientWidth}px`;
-// 	ballDiv.style.top = `${ball.pos.y * fieldDiv.clientWidth}px`;
-// }
-
 function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
 	const paddle = playerNr == 1 ? Game.match.gameState.paddle2 : Game.match.gameState.paddle1;
 	const ball = Game.match.gameState.ball;
