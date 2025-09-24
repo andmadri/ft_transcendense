@@ -1,4 +1,4 @@
-import { addUserToDB, getOnlineUsers, getUserByEmail, nameAlreadyExist } from '../Database/users.js';
+import { addUserToDB, getOnlineUsers, getUserByEmail, nameAlreadyExist, emailAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js' // DELETE THIS LATER
 
@@ -16,8 +16,9 @@ export async function checkName(name) {
 	return (null);
 }
 
-function checkEmail(email) {
+export async function checkEmail(email) {
 	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	const exists = await emailAlreadyExist(db, email);
 	if (!email.length)
 		return ('Email can not be empty');
 	else if (email.length < 3)
@@ -26,10 +27,12 @@ function checkEmail(email) {
 		return ('Email is too long');
 	else if (!emailRegex.test(email))
 		return ('Email has no @ and dot or forbidden characters');
+	else if (exists)
+		return ("That email is already taken");
 	return (null);
 }
 
-function checkPassword(password) {
+export function checkPassword(password) {
 	const passwordRegex = /^\S+$/;
 	if (!password.length)
 		return ('Password can not be empty');
@@ -48,7 +51,7 @@ export async function addUser(msg) {
 	errorMsg = await checkName(msg.name);
 	if (errorMsg)
 		return (errorMsg);
-	errorMsg = checkEmail(msg.email);
+	errorMsg = await checkEmail(msg.email);
 	if (errorMsg)
 		return (errorMsg);
 	errorMsg = checkPassword(msg.password);
@@ -59,9 +62,6 @@ export async function addUser(msg) {
 		return ('');
 	}
 	catch(err) {
-		if (err.code === 'SQLITE_CONSTRAINT' && err.message.includes('Users.email')) {
-			return ('That email is already registered.');
-		}
 		console.error('addUser:', err);
 		return ('Unknown error occurred while adding user.');
 	}

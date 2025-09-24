@@ -2,7 +2,7 @@ import { Game, UI } from "../gameData.js";
 
 function styleChangeUsernameTitle(): HTMLDivElement {
 	const title = document.createElement('div');
-	title.textContent = 'Change Username';
+	title.textContent = "Profile Settings";
 	title.style.fontFamily = '"Horizon", sans-serif';
 	title.style.color = 'black';
 	title.style.fontSize = 'clamp(20px, 4vw, 30px)';
@@ -15,9 +15,9 @@ function styleChangeUsernameTitle(): HTMLDivElement {
 	return title;
 }
 
-function styleSubmitBtn(): HTMLButtonElement {
+function styleSubmitBtn(txt: string): HTMLButtonElement {
 	const button = document.createElement('button');
-	button.textContent = 'Change';
+	button.textContent = "Change " + txt;
 	button.style.width = '100%';
 	button.style.height = '20%'
 	button.style.borderRadius = '5px';
@@ -33,9 +33,9 @@ function styleSubmitBtn(): HTMLButtonElement {
 	return button
 }
 
-function getChangeName(): HTMLDivElement {
+function getChangeDiv(id: string): HTMLDivElement {
 	const cnDiv = document.createElement('div');
-	cnDiv.id = 'changeName';
+	cnDiv.id = id;
 	cnDiv.style.width = '100%';
 	cnDiv.style.height = '100%';
 	cnDiv.style.margin = '0';
@@ -107,36 +107,73 @@ function getBlackContainerBlock(): HTMLDivElement {
 	return (blackContainer);
 }
 
-export function getChangeNameField(e: Event | null, playerNr: number) {
-	const cnDiv = getChangeName();
-	const titleAndExitBtn = getTitleAndExitBtn(cnDiv);
-	
+function getInputField(txt: string): HTMLInputElement {
 	const input = document.createElement('input');
  	input.type = "text";
- 	input.placeholder = "New Username";
- 	input.id = `usernameInput${playerNr}`;
+ 	input.placeholder = "New " + txt;
+ 	input.id = `${txt}Input`;
 	input.style.justifyContent = 'center';
 	input.style.alignItems = 'center';
-	input.style.height = '20%'
+	input.style.height = '50%'
+	return (input);
+}
 
-	const submitBtn = styleSubmitBtn();
+function getSubMitBtn(txt: string, input: HTMLInputElement): HTMLButtonElement{
+	const submitBtn = styleSubmitBtn(txt);
 	submitBtn.addEventListener("click", () => {
-		const newUsername = input.value.trim();
-		if (!newUsername) {
-			alert("Please enter a username!");
+		const newInput = input.value.trim();
+		if (!newInput) {
 			return;
 		}
 		Game.socket.emit('message', {
 			action: 'playerInfo',
-			subaction: 'changeName',
+			subaction: 'profileSettings',
 			user_id: UI.user1.ID,
-			oldName: UI.user1.name,
-			name: newUsername
+			field: txt,
+			new: newInput
 		})
-		document.getElementById('changeName')?.remove();
+		input.value = "";
 	});
+	return (submitBtn);
+}
+
+function getInputRow(field: string): HTMLDivElement {
+	const row = document.createElement("div");
+	row.style.display = "flex";
+	row.style.flexDirection = "row";
+	row.style.alignItems = "center";
+	row.style.justifyContent = "space-between";
+	row.style.gap = "0.5rem";
+	row.style.width = "100%";
+
+	const input = getInputField(field);
+	input.style.flex = "1";
+	input.style.padding = "0.3rem";
+
+	const submitBtn = getSubMitBtn(field, input);
+	submitBtn.style.flex = "0"; 
+	submitBtn.style.width = "30%"; 
+
+	row.append(input, submitBtn);
+	return row;
+}
+
+export function getProfileSettings(e: Event | null) {
+	const allInfo = getChangeDiv("Profile Settings");
+	const titleAndExitBtn = getTitleAndExitBtn(allInfo);
+
+	let information = [];
+	if (UI.user1.Google == false)
+		information = ["name", "password", "email"];
+	else
+		information = ["name"];
+
 	const blackContainer = getBlackContainerBlock();
-	blackContainer.append(titleAndExitBtn, input, submitBtn);
-	cnDiv.appendChild(blackContainer);
-	document.body.append(cnDiv);
+	blackContainer.append(titleAndExitBtn);
+	for(const field of information) {
+		const row = getInputRow(field);
+		blackContainer.append(row);
+	}
+	allInfo.appendChild(blackContainer);
+	document.body.append(allInfo);
 }

@@ -16,7 +16,24 @@ export async function nameAlreadyExist(db, name) {
 			resolve(!!row);
 		});
 	});
-	console.log('exist: ', exists);
+	if (exists)
+		console.log("Username already exists");
+	return (exists);
+}
+
+export async function emailAlreadyExist(db, emailadress) {
+	const email = emailadress.toLowerCase(); 
+
+	const exists = await new Promise((resolve, reject) => {
+		db.get(`SELECT 1 FROM Users WHERE LOWER(email) = ? LIMIT 1`,
+			[email], (err, row) => {
+			if (err)
+				return reject(err);
+			resolve(!!row);
+		});
+	});
+	if (exists)
+		console.log("Email already exists");
 	return (exists);
 }
 
@@ -49,11 +66,6 @@ export async function createNewUserToDB(db, user = {}) {
 	const { name, email, password, avatar_url = null } = user;
 	if (!name || !email) {
 		throw new Error("createNewUserToDB: 'name' and 'email' are required");
-	}
-	const existing = await getUserByEmail(db, email);
-	if (existing) {
-		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
-		return existing.id;
 	}
 	return await addUserToDB(db, { name, email, password, avatar_url });
 }

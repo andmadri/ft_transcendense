@@ -9,12 +9,14 @@ export const UI : S.UI = {
 	user1: {
 		ID: -1,
 		name: 'unknown',
-		Twofa: false
+		Twofa: false,
+		Google: false
 	},
 	user2: {
 		ID: 1,
 		name: 'Guest',
-		Twofa: false
+		Twofa: false,
+		Google: false
 	},
 }
 

@@ -1,5 +1,5 @@
 import * as userDB from '../Database/users.js';
-import { checkName } from '../Auth/userValidation.js';
+import { checkName, checkPassword, checkEmail } from '../Auth/userValidation.js';
 import { db } from '../index.js';
 
 async function getPlayerData(msg, socket, userId1, userId2) {
@@ -16,6 +16,7 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	returnMsg.id = player1?.id || 0;
 	returnMsg.player1Login = player1?.online || false;
 	returnMsg.score = player1?.score || 0;
+	returnMsg.google = player1.twofa_secret === 'google' ? true : false
 
 	if (userId2) {
 		player2 = await userDB.getUserByID(db, userId2);
@@ -27,41 +28,64 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	socket.emit('message', returnMsg);
 }
 
-function sendChangingNameMsg(socket, msg, success, returnMsg) {
+function sendProfileSettingsMsg(socket, msg, success, returnMsg) {
 	socket.emit('message', {
 		action: 'playerInfo',
-		subaction: 'changeName',
+		subaction: 'profileSettings',
 		userID: msg.user_id,
+		field: msg.field,
 		success: success,
 		msg: returnMsg
 	})
 }
 
-export async function changeName(socket, db, msg) {
-	if (!msg.user_id || !msg.oldName || !msg.name) {
+export async function changeProfileSettings(socket, db, msg) {
+	if (!msg.user_id || ! msg.field || !msg.new) {
 		socket.emit('serverError', { reason: "Unknown Server error" });
 		return ;
 	}
-
-	if (msg.oldName == msg.name) {
-		return (sendChangingNameMsg(socket, msg, 0, 'You are already using this name.'));
-	} else {
-		const errMsg = await checkName(msg.name);
-		if (errMsg)
-			return (sendChangingNameMsg(socket, msg, 0, errMsg));
+	let user = null;
+	try {
+		user = userDB.getUserByID(db, msg.user_id);
+	} catch(err) {
+		console.error("User does not exist Profile Settings");
 	}
-
+	if (msg.field == 'name') {
+		if (user.name == msg.new) {
+			return (sendProfileSettingsMsg(socket, msg, 0, 'You are already using this name.'));
+		} else {
+			const errMsg = await checkName(msg.new);
+			if (errMsg)
+				return (sendProfileSettingsMsg(socket, msg, 0, errMsg));
+		}
+		user.name = msg.name;
+	} else if (msg.field == 'password') {
+		if (user.password == msg.new) {
+			return (sendProfileSettingsMsg(socket, msg, 0, 'You are already using this password.'));
+		} else {
+			const errMsg = checkPassword(msg.new);
+			if (errMsg)
+				return (sendProfileSettingsMsg(socket, msg, 0, errMsg));
+		}
+		user.password = msg.new;
+	} else if (msg.field == 'email') {
+		if (user.email == msg.new) {
+			return (sendProfileSettingsMsg(socket, msg, 0, 'You are already using this email.'));
+		} else {
+			const errMsg = await checkEmail(msg.new);
+			if (errMsg)
+				return (sendProfileSettingsMsg(socket, msg, 0, errMsg));
+		}
+		user.email = msg.new;
+	}
+	
 	try {
 		await userDB.updateUserInDB(db, msg);
-		sendChangingNameMsg(socket, msg, 1, msg.name);
+		sendProfileSettingsMsg(socket, msg, 1, msg.new);
 		return;
 	}
 	catch(err) {
-		if (err.code === 'SQLITE_CONSTRAINT') {
-			if (err.message.includes('Users.name'))
-				return (sendChangingNameMsg(socket, msg, 0, 'That username is already taken.'));
-		} else
-			socket.emit('serverError', { reason: "Unknown error occurred while adding user." });
+		socket.emit('serverError', { reason: "Unknown error occurred while adding user." });
 	}
 }
 
@@ -77,8 +101,8 @@ export function handlePlayerInfo(msg, socket, userId1, userId2) {
 		console.log('Received request for player data:', msg, userId1, userId2);
 		getPlayerData(msg, socket, userId1, userId2);
 		return true;
-	} else if (msg.subaction == 'changeName') {
-		changeName(socket, db, msg);
+	} else if (msg.subaction == 'profileSettings') {
+		changeProfileSettings(socket, db, msg);
 	} else {
 		socket.emit('serverError', { reason: "Unknown Server error" });
 		console.log('Unknown subaction handlePlayerInfo:', msg.subaction);

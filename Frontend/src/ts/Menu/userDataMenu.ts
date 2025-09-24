@@ -1,7 +1,7 @@
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js"
 import { styleListBtns } from "./menuContent.js";
-import { get2faBtn, getLoginBtn, getAvatarBtn, getChangeNameBtn } from "./userDataMenuButtons.js";
+import { get2faBtn, getLoginBtn, getAvatarBtn, getProfileSettingsBtn } from "./userDataMenuButtons.js";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.display = 'flex';
@@ -272,7 +272,7 @@ function createButtonsContainer(playerNr: number): HTMLDivElement {
 	if (playerNr == 1) {
 		buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
 		buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
-		buttonsContainer.appendChild(styleBtnUserMenu(getChangeNameBtn(playerNr))); //Merel will built this
+		buttonsContainer.appendChild(styleBtnUserMenu(getProfileSettingsBtn()));
 	}
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
 	return buttonsContainer;

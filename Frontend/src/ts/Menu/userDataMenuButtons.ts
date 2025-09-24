@@ -2,7 +2,7 @@ import { Game, UI } from "../gameData";
 import { navigateTo } from "../history";
 import { submitLogout } from "../Auth/logout";
 import { changeAvatar } from "./avatar";
-import { getChangeNameField } from "./usernameChange.js"
+import { getProfileSettings } from "./profileSettings.js"
 
 function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	const twofaDisableBtn = document.createElement('button');
@@ -285,11 +285,11 @@ export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 	return button;
 }
 
-export function getChangeNameBtn(playerNr: number): HTMLButtonElement {
+export function getProfileSettingsBtn(): HTMLButtonElement {
 	const button = document.createElement('button');
-	button.textContent = 'Change Username';
+	button.textContent = 'Profile Settings';
 	button.addEventListener('click', (e) => { 
-		const newName = getChangeNameField(e, playerNr)
+		const newName = getProfileSettings(e)
 	
 	});
 	return button;
