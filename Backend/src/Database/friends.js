@@ -205,7 +205,7 @@ export async function deleteFriendDB(db, user_id, friend_id) {
 				sql_error(err, `deleteFriendDB | user_id=${user_id}, friend_id=${friend_id}`);
 				reject(err);
 			} else {
-				sql_log(`Friendship [${request.id}] deleted: ${user1.name} - ${user2.name}`);
+				sql_log(`Friendship deleted: ${user1.name} - ${user2.name}`);
 				resolve();
 			}
 		});
