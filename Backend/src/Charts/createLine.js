@@ -96,9 +96,15 @@ export function renderLines(series, xScale, yScale, colorOf) {
 }
 
 export async function generateLineChartForMatch(db, matchID, colorOf) {
-	const data = await getMatchLineDB(db, matchID);
 	const { width, height, open, close } = createSvgCanvas();
-	if (!data || data.length === 0) {
+	let data = null;
+	try {
+		data = await getMatchLineDB(db, matchID);
+		if (!data || data.length === 0) {
+			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
+		}
+	} catch (err) {
+		console.log('Database error: ', err);
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 

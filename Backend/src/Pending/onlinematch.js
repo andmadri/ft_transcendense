@@ -75,18 +75,15 @@ export function matchInterval(match, io) {
 			}
 			case (state.Serve) : {
 				updateMatchEventsDB(match, null, match.gameState, "serve");
-				// sendServe(match, io);
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Hit) : {
 				updateMatchEventsDB(match, null, match.gameState, "hit");
-				// sendPadelHit(match, io);
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Score) : {
-				// console.log(`state.Score`);
 				updateMatchEventsDB(match, null, match.gameState, "goal");
 				resetBall(match.gameState.ball, match.gameState.field);
 				sendScoreUpdate(match, io);
@@ -111,15 +108,13 @@ export function matchInterval(match, io) {
 
 export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, io, tournamentContext, mf) {
 	const matchID = await createMatch(db, OT.Online, socket1, userID1, userID2, tournamentContext, mf);
-
-	if (matchID == -1) {
-		console.log("CreateMatch went wrong");
+	if (matchID === -1) {
+		console.log("startOnlineMatch - Error in CreateMatch");
 		return ;
 	}
 	// add both players to the room
 	socket1.join(matchID);
 	socket2.join(matchID);
-	// matches.get(matchID).stage = state.Init;
 
 	const sockets = await io.in(matchID).allSockets();
 	assert(sockets.size === 2, `Expected 2 sockets in match room, found ${sockets.size}`);

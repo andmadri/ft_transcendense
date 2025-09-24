@@ -15,9 +15,9 @@ function styleChangeUsernameTitle(): HTMLDivElement {
 	return title;
 }
 
-function styleSubmitBtn(txt: string): HTMLButtonElement {
+function styleSubmitBtn(): HTMLButtonElement {
 	const button = document.createElement('button');
-	button.textContent = "Change " + txt;
+	button.textContent = "Change";
 	button.style.width = '100%';
 	button.style.height = '20%'
 	button.style.borderRadius = '5px';
@@ -109,7 +109,10 @@ function getBlackContainerBlock(): HTMLDivElement {
 
 function getInputField(txt: string): HTMLInputElement {
 	const input = document.createElement('input');
- 	input.type = "text";
+	if (txt == "password")
+		input.type = "password"
+	else
+ 		input.type = "text";
  	input.placeholder = "New " + txt;
  	input.id = `${txt}Input`;
 	input.style.justifyContent = 'center';
@@ -118,13 +121,34 @@ function getInputField(txt: string): HTMLInputElement {
 	return (input);
 }
 
+let firstPassword = "";
+
 function getSubMitBtn(txt: string, input: HTMLInputElement): HTMLButtonElement{
-	const submitBtn = styleSubmitBtn(txt);
+	const submitBtn = styleSubmitBtn();
 	submitBtn.addEventListener("click", () => {
 		const newInput = input.value.trim();
 		if (!newInput) {
 			return;
 		}
+		if (txt == 'password') {
+			if (firstPassword == "") {
+				submitBtn.textContent = " Again!";
+				firstPassword = newInput;
+				input.value = "";
+				return;
+			} else {
+				if (firstPassword != newInput) {
+					alert('Passwords are not the same');
+					input.value = "";
+					firstPassword = "";
+					submitBtn.textContent = 'Change';
+					return;
+				}
+				firstPassword = "";
+				submitBtn.textContent = 'Change';
+			}
+		}
+		
 		Game.socket.emit('message', {
 			action: 'playerInfo',
 			subaction: 'profileSettings',

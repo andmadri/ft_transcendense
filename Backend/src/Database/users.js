@@ -5,15 +5,21 @@ import { sql_log, sql_error } from './dblogger.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
-export async function nameAlreadyExist(db, name) {
+export function nameAlreadyExist(db, name) {
 	const username = name.toLowerCase(); 
 
-	const exists = await new Promise((resolve, reject) => {
-		db.get(`SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`,
-			[username], (err, row) => {
-			if (err)
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`;
+		db.get(sql,	[username], (err, row) => {
+			if (err) {
+				sql_error(err, `nameAlreadyExist | name=${name}`);
 				return reject(err);
-			resolve(!!row);
+			} else {
+				if (row) {
+					sql_log(`Name already exist: ${name}`);
+				}
+				resolve(row || null);
+			}
 		});
 	});
 	if (exists)
@@ -92,15 +98,19 @@ export async function createNewUserToDB(db, user = {}) {
  * @throws {Error} if the user doesn’t exist or no valid fields are provided.
  */
 export async function updateUserInDB(db, user) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
+	let existing = null;
+	try {
+		existing = await getUserByID(db, user.user_id);
+		if (!existing) {
+			throw new Error(`User ID ${user.user_id} does not exist.`);
+		}
 
-	if (user.password !== undefined) {
-		user.password = await bcrypt.hash(user.password, 10);
+		if (user.password !== undefined) {
+			user.password = await bcrypt.hash(user.password, 10);
+		}
+	} catch (err) {
+		return err;
 	}
-
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];

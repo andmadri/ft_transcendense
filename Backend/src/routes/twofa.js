@@ -92,9 +92,14 @@ export default async function twoFactor(fastify) {
 		}
 
 		const { token } = request.body;
-		const user = await getUserByID(db, request.user.userId);
-		if (!user) {
-			console.error('Stopping activate 2FA, becasue can not find user (invalid userId): ', request.user);
+		let user = null;
+		try {
+			user = await getUserByID(db, request.user.userId);
+			if (!user) {
+				console.error('Stopping activate 2FA, becasue can not find user (invalid userId): ', request.user);
+				return reply.status(404).send({ success: false, message: 'User not found' });
+			}
+		} catch (err) {
 			return reply.status(404).send({ success: false, message: 'User not found' });
 		}
 		if (!user.twofa_secret) {
@@ -118,8 +123,12 @@ export default async function twoFactor(fastify) {
 		if (!verified) {
 			return reply.status(401).send({ success: false, message: 'Invalid token' });
 		}
-
-		await updateUserInDB(db, { user_id: user.id, twofa_active: 1 });
+		try {
+			await updateUserInDB(db, { user_id: user.id, twofa_active: 1 });
+		} catch (err) {
+			console.log('Error updateUserInDB: ', err);
+			return { success: false };
+		}
 		return { success: true };
 	});
 
@@ -133,9 +142,14 @@ export default async function twoFactor(fastify) {
 
 		const token = request.body.token;
 		const playerNr = request.body.playerNr;
-		const user = await getUserByID(db, request.user.userId);
-		if (!user) {
-			console.error('Stopping disable 2FA, becasue can not find user (invalid userId): ', request.user);
+		let user = null;
+		try {
+			user = await getUserByID(db, request.user.userId);
+			if (!user) {
+				console.error('Stopping disable 2FA, becasue can not find user (invalid userId): ', request.user);
+				return reply.status(404).send({ success: false, message: 'User not found' });
+			}
+		} catch (err) {
 			return reply.status(404).send({ success: false, message: 'User not found' });
 		}
 		if (!user.twofa_secret) {
@@ -155,7 +169,12 @@ export default async function twoFactor(fastify) {
 			return reply.status(401).send({ success: false, message: 'Invalid token' });
 		}
 
-		await updateUserInDB(db, { user_id: user.id, twofa_active: 0 });
+		try {
+			await updateUserInDB(db, { user_id: user.id, twofa_active: 0 });
+		} catch (err) {
+			console.log('Error updateUserInDB: ', err);
+			return { success: false };
+		}
 		return { success: true, message: '2FA disabled successfully', playerNr: playerNr, userId: user.id };
 	});
 
@@ -169,9 +188,14 @@ export default async function twoFactor(fastify) {
 
 		const token = request.body.token;
 		const playerNr = request.body.playerNr;
-		const user = await getUserByID(db, request.body.userId);
-		if (!user) {
-			console.error('Stopping verify 2FA, becasue can not find user (invalid userId): ', request.user);
+		let user = null;
+		try {
+			user = await getUserByID(db, request.body.userId);
+			if (!user) {
+				console.error('Stopping verify 2FA, becasue can not find user (invalid userId): ', request.user);
+				return reply.status(404).send({ success: false, message: 'User not found' });
+			}
+		} catch (err) {
 			return reply.status(404).send({ success: false, message: 'User not found' });
 		}
 		
