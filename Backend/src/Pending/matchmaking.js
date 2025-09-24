@@ -48,9 +48,18 @@ async function challengeFriend(io, db, socket, challenger, responder) {
 		startChallenge(io, db, socket, {challenger, responder, tempMatchID: reverseMatchID, socket2});
 		return ;
 	}
-	const user = await getUserByID(db, challenger);
-	if (!user)
-		return;
+
+	let user = null;
+	try {
+		user = await getUserByID(db, challenger);
+		if (!user) {
+			console.log('Error getUserByID', err);
+			return ;
+		}
+	} catch (err) {
+		console.log('Error getUserByID', err);
+		return ;
+	}
 
 	friendInvites.set(tempMatchID, {socket, invite :{challenger, responder, requester_name: user.name, id: tempMatchID}});
 }
@@ -71,12 +80,16 @@ async function startChallenge(io, db, socket, msg) {
 	}
 
 	const matchID = await createMatch(db, OT.Online, socket, msg.challenger, msg.responder);
+	if (matchID === -1) {
+		console.log(`startChallenge - Error in createMatch`);
+		return ;
+	}
 	addUserToRoom(socket2, matchID);
 	addUserToRoom(socket, matchID);
 
 	const match = matches.get(matchID);
 	if (!match) {
-		console.error(`Something went wrong!!! No match for matchID: ${matchID}`);
+		console.log(`No match for matchID: ${matchID}`);
 		return ;
 	}
 	io.to(matchID).emit('message', {

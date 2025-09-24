@@ -17,9 +17,14 @@ import { sql_log, sql_error } from './dblogger.js';
  * @throws {Error} - If insertion fails.
  */
 export async function addUserSessionToDB(db, session) {
-	const user = await getUserByID(db, session.user_id);
-	if (!user) {
-		throw new Error(`User ID ${session.user_id} does not exist.`);
+	let user = null;
+	try {
+		user = await getUserByID(db, session.user_id);
+		if (!user) {
+			throw new Error(`User ID ${session.user_id} does not exist.`);
+		}
+	} catch (err) {
+		return err;
 	}
 
 	return new Promise((resolve, reject) => {

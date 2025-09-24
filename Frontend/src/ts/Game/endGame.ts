@@ -1,11 +1,27 @@
 import { Game } from "../gameData.js"
-import { log } from '../logging.js';
 import { navigateTo } from "../history.js";
 import { OT, MF } from '@shared/enums'
-// import { createBackgroundText } from "../Menu/menuContent.js";
 
-let result = "";
-let lastMatchId = -1;
+function setGameOverContext(matchId: number, resultText: string, matchTypeText: string) {
+	sessionStorage.setItem('lastMatchId', String(matchId));
+	sessionStorage.setItem('lastResult', resultText);
+	sessionStorage.setItem('matchType', matchTypeText);
+}
+
+function getGameOverContext(): { matchId: number | null; result: string, matchType: string } {
+	const idRaw = sessionStorage.getItem('lastMatchId');
+	const idNum = idRaw != null ? Number(idRaw) : NaN;
+	const matchId = Number.isFinite(idNum) ? idNum : null;
+	const result = sessionStorage.getItem('lastResult') || '';
+	const matchType = sessionStorage.getItem('matchType') || '';
+	return { matchId, result, matchType };
+}
+
+function clearGameOverContext() {
+	sessionStorage.removeItem('lastMatchId');
+	sessionStorage.removeItem('lastResult');
+	sessionStorage.removeItem('matchType');
+}
 
 function getWinnerResult() {
 	let winnerName = null;
@@ -19,8 +35,8 @@ function getWinnerResult() {
 	return winnerName ? `${winnerName} Wins!` : "NO WINNER :(";
 }
 
-export function getGameOver(matchId: number) {
-	log("Game Over!");
+export function getGameOver() {
+	const { matchId, result, matchType } = getGameOverContext();
 	const game = document.getElementById('game');
 	if (game)
 		game.remove();
@@ -41,11 +57,6 @@ export function getGameOver(matchId: number) {
 	gameOver.style.width = '100%';
 	gameOver.style.height = '100%';
 
-	// ADDED FOR CREATING IMAGE IN THE BACKEND - Commented this one line
-	// gameOver.style.height = '100%';
-
-	// gameOver.style.gap = '5%'
-
 	const txtGameOver = document.createElement('div');
 	txtGameOver.textContent = "Game Over";
 	txtGameOver.style.color = 'transparent';
@@ -57,7 +68,7 @@ export function getGameOver(matchId: number) {
 	txtInnerGameOver.style.color = 'black';
 	txtInnerGameOver.style.fontSize = '3rem';
 
-	const	ball = document.createElement('div');
+	const ball = document.createElement('div');
 	ball.id = 'ballEndCredits';
 	ball.style.position = 'absolute';
 	ball.style.top = '47.5%';
@@ -75,7 +86,7 @@ export function getGameOver(matchId: number) {
 
 	const backToMenu = document.createElement('button');
 	backToMenu.id = 'menuBtn';
-	backToMenu.textContent = Game.match.MF === MF.Tournament ? 'Back to tournament' : 'Back to menu';
+	backToMenu.textContent = matchType === 'tournament' ? 'Back to tournament' : 'Back to menu';
 	backToMenu.style.fontFamily = '"Horizon", monospace';
 	backToMenu.style.padding = '0.6rem 2rem';
 	backToMenu.style.fontSize = '1.5rem';
@@ -86,16 +97,16 @@ export function getGameOver(matchId: number) {
 	backToMenu.style.cursor = 'pointer';
 	backToMenu.style.transition = 'all 0.2s ease-in-out';
 	backToMenu.addEventListener('click', () => {
-		console.log(`Game.match.format === ${Game.match.matchFormat}`)
-		if (Game.match.matchFormat == MF.SingleGame) {
+		console.log(`Game.match.format === ${matchType}`);
+		if (matchType === 'tournament') {
+			navigateTo('Tournament');
+		} else {
 			navigateTo('Menu');
 		}
-		else if (Game.match.matchFormat == MF.Tournament) {
-			navigateTo('Tournament');
-		}});
+	});
 	gameOver.appendChild(backToMenu);
 
-	if (Game.match.matchFormat !== MF.Tournament) {
+	if (matchType !== 'tournament') {
 		const statsButton = document.createElement('button');
 		statsButton.id = 'statsButton';
 		statsButton.textContent = 'View Game Stats';
@@ -108,31 +119,25 @@ export function getGameOver(matchId: number) {
 		statsButton.style.boxShadow = '0.25rem 0.375rem 0.625rem rgba(0,0,0,0.3)';
 		statsButton.style.cursor = 'pointer';
 		statsButton.style.transition = 'all 0.2s ease-in-out';
-		statsButton.addEventListener('click', () => { 
-			navigateTo(`GameStats?matchId=${lastMatchId}`);
+		statsButton.addEventListener('click', () => {
+			navigateTo(`GameStats?matchId=${matchId}`);
 		});
 		gameOver.appendChild(statsButton);
 	}
 
 	const body = document.getElementById('body');
 	if (!body)
-		return ;
-	// body.innerHTML = '';
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+		return;
 	document.getElementById('backgroundText')?.remove();
-	// createBackgroundText(body);
 	body.appendChild(gameOver);
 }
 
 export function saveGame() {
 	if (Game.match.matchID == -1)
-		return ;
+		return;
 
-	if ( Game.match.mode != OT.Online) {
-		Game.socket.emit('message',{
+	if (Game.match.mode != OT.Online) {
+		Game.socket.emit('message', {
 			action: 'game',
 			subaction: 'save',
 			matchID: Game.match.matchID
@@ -143,10 +148,14 @@ export function saveGame() {
 		clearTimeout(Game.match.pauseTimeOutID);
 		Game.match.pauseTimeOutID = null;
 	}
-	
+
 	// Save the result to show in the GameOver function
-	result = getWinnerResult();
-	lastMatchId = Game.match.matchID;
+	const result = getWinnerResult();
+	let matchType = 'single';
+	if (Game.match.matchFormat === MF.Tournament) {
+		matchType = 'tournament';
+	}
+	setGameOverContext(Game.match.matchID, result, matchType);
 
 	Game.match.player1.score = 0;
 	Game.match.player2.score = 0;

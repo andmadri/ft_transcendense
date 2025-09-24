@@ -45,16 +45,6 @@ export async function quitMatch(match, msg, io) {
 }
 
 export async function saveMatch(matchID) {
-	const matchInfo = await handleMatchEndedDB(db, matchID);
-
+	await handleMatchEndedDB(db, matchID);
 	matches.delete(matchID);
-
-	// Send a message to the frontend
-	// socket.emit('message', {
-	// 	action: 'game',
-	// 	subaction: 'save',
-	// 	matchID: match.matchID,
-	// 	success: true,
-	// 	chartUrl
-	// });
 }
