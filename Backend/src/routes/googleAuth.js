@@ -5,7 +5,7 @@ import { db } from '../index.js';
 import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
-import crypto from 'crypto';
+
 
 /**
  * Handles the Google authentication process.
@@ -25,7 +25,6 @@ async function handleGoogleAuth(user) {
 			console.error('Invalid user data from Google!');
 			return null;
 		}
-
 		const exists = await getUserByEmail(db, user.email);
 		if (exists) {
 			console.log('User: ', user.name, ' already exists');
@@ -35,16 +34,18 @@ async function handleGoogleAuth(user) {
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
+				exists.user_id = exists.id; // for updateUserInDB
 				exists.name = user.name;
 				exists.email = user.email;
 				exists.avatar_url = user.picture;
 				await updateUserInDB(db, exists);
 			}
 		} else {
+
 			await addUserToDB(db, {
 				email: user.email,
 				name: user.name,
-				password: crypto.randomBytes(32).toString('base64'),
+				password: user.id,
 				avatar_url: user.picture,
 				twofa_secret: 'google'
 			});
