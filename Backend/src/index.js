@@ -9,8 +9,8 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-// import { addUserSessionToDB } from './Database/sessions.js';
-import { onUserLogout } from './Services/sessionsService.js';
+import { addUserSessionToDB } from './Database/sessions.js';
+
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
@@ -60,8 +60,6 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
-					console.log(`UserId1=${userId1}`);
-					// Use userId or decoded as needed for player 1
 				} catch (err) {
 					console.error('JWT1 verification failed:', err);
 				}
@@ -83,7 +81,6 @@ fastify.ready().then(() => {
 				console.error('JWT2 verification failed: Invalid cookie');
 			}
 		}
-		// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
 		if (!userId1) {
 			console.error('No valid auth tokens found in cookies');
 			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
@@ -171,7 +168,7 @@ setInterval(async () => {
 				}
 				usersLastSeen.delete(userId1);
 			} catch (err) {
-				// console.error(`Error marking user ${userId} offline:`, err);
+				console.error('Error setInterval: ', err);
 			}
 		}
 	}

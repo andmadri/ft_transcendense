@@ -9,16 +9,24 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	};
 	let player1 = null;
 	let player2 = null;
-	if (userId1) {
-		player1 = await userDB.getUserByID(db, userId1);
+	try {
+		if (userId1) {
+			player1 = await userDB.getUserByID(db, userId1);
+		}
+	} catch (err) {
+		console.log('Error getUserByID', err);
 	}
 	returnMsg.name = player1?.name || 'unknown';
 	returnMsg.id = player1?.id || 0;
 	returnMsg.player1Login = player1?.online || false;
 	returnMsg.score = player1?.score || 0;
 
-	if (userId2) {
-		player2 = await userDB.getUserByID(db, userId2);
+	try {
+		if (userId2) {
+			player2 = await userDB.getUserByID(db, userId2);
+		}
+	} catch (err) {
+		console.log('Error getUserByID', err);
 	}
 	returnMsg.name2 = player2?.name || 'Guest';
 	returnMsg.id2 = player2?.id || 1;

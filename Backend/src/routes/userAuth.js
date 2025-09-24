@@ -1,6 +1,4 @@
 import { addUser, validateLogin } from '../Auth/userValidation.js';
-import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
-// import { addUserSessionToDB } from '../Database/sessions.js';
 import { onUserLogout } from '../Services/sessionsService.js';
 import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
@@ -44,9 +42,13 @@ export default async function userAuthRoutes(fastify) {
 		}
 
 		const userId = request.user.userId;
-		// console.log(`Refreshing token for user ID: ${userId}`);
-		const user = await getUserByID(fastify.db || db, userId);
-		if (!user) {
+		let user = null;
+		try {
+			user = await getUserByID(fastify.db || db, userId);
+			if (!user) {
+				return reply.status(401).send({ error: 'Unauthorized' });
+			}
+		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });
 		}
 		const jwtToken = signFastifyJWT(user, fastify);
@@ -112,7 +114,6 @@ export default async function userAuthRoutes(fastify) {
 			player: playerNr
 		};
 		const answer = await validateLogin(msg, fastify);
-		// console.log('Login answer:', answer.user);
 		if (answer.error) {
 			reply.status(401).send({ success: false, message: answer.error });
 			return;
@@ -137,7 +138,6 @@ export default async function userAuthRoutes(fastify) {
 			}
 
 			const jwtToken = signFastifyJWT(answer.user, fastify);
-			// console.log('JWT Token:', jwtToken);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
@@ -167,11 +167,8 @@ export default async function userAuthRoutes(fastify) {
 			return;
 		}
 		try {
-			// MAYBE CHANGE THIS LATER: Marty edited this, but is not sure if this is correct
 			const decoded = fastify.jwt.verify(unsigned.value);
-
 			const user = await getUserByID(db, decoded.userId);
-			// await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
 			await onUserLogout(db, user.id);
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,

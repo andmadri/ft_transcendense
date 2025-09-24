@@ -26,14 +26,12 @@ async function getNamebyUserID(db, userID) {
 // creates a new match, init and returns id nr
 async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 	try {
-		console.log(`newMatch() MatchFormat = ${mf}`);
 		const name = await getNamebyUserID(db, id);
 		const name2 = await getNamebyUserID(db, id2);
 		if (!name || !name2) {
-			console.error(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
-			return;
+			console.log(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
+			return (-1);
 		}
-		console.log(`Creating match with ID: ${matchnr}, mode: ${mode}, player1: ${name} (${id}), player2: ${name2} (${id2})`);
 		matches.set(matchnr, {
 			state: state.Start,
 			matchID: matchnr,
@@ -84,9 +82,10 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 					},
 			}
 		});
+		return (1);
 	} catch (err) {	
-		console.error(`Error creating match: ${err}`);
-		return;
+		console.error(`newMatch - Error creating match: ${err}`);
+		return (-1);
 	}
 }
 
@@ -108,16 +107,13 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
  * @returns match ID (needed for rooms)
 */
 export async function createMatch(db, mode, socket, userId1, userId2, tournamentContext, mf) {
-	console.log(`create new match in OT: ${mode} - ${OT.Online}`);
-	console.log("playerid1: " + userId1 + " playerid2: " + userId2);
-	console.log(`createMatch() MatchFormat = ${mf}`);
 	if (userId1 == userId2) {
 		console.log(`UserIds are the same`);
 		return (-1);
 	}
 
 	if (mode === OT.ONEvsCOM)
-		userId2 = 2; // COM
+		userId2 = 2;
 
 	if (userId2 == null)
 		userId2 = 1;
@@ -129,13 +125,24 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 
 	try {
 		// CREATE MATCH IN DB
+		let MatchIsTournament = false;
+		if (tournamentContext) {
+			MatchIsTournament = true;
+		}
 		const matchID = await handleMatchStartDB(db, { 
 			player_1_id: userId1, 
-			player_2_id: userId2
+			player_2_id: userId2,
+			isTournament: MatchIsTournament
 		});
+		if (matchID === -1) {
+			return (-1);
+		}
 
 		// CREATE MATCH IN MEMORY
-		await newMatch(db, matchID, userId1, userId2, mode, tournamentContext, mf);
+		const initOk = await newMatch(db, matchID, userId1, userId2, mode, tournamentContext, mf);
+		if (initOk === -1) {
+			return (-1);
+		}
 
 		if (mode != OT.Online) {
 			sendInitMatchReadyLocal(socket, userId1, userId2, matchID);
@@ -143,7 +150,7 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 		}
 		return (matchID);
 	} catch (err) {
-		console.error(`Error creating match: ${err}`);
+		console.error(`createMatch - Error creating match: ${err}`);
 		return (-1);
 	}
 }
