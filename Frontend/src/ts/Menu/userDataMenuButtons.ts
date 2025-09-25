@@ -2,7 +2,9 @@ import { Game, UI } from "../gameData";
 import { navigateTo } from "../history";
 import { submitLogout } from "../Auth/logout";
 import { changeAvatar } from "./avatar";
-import { getChangeNameField } from "./usernameChange.js"
+import { getChangeNameField } from "./usernameChange.js";
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	const twofaDisableBtn = document.createElement('button');
@@ -75,7 +77,7 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 			e.preventDefault();
 			const code = codeInput.value.trim();
 			if (!/^\d{6}$/.test(code)) {
-				alert('Please enter a valid 6-digit code.');
+				customAlert('Please enter a valid 6-digit code.'); //needed customAlert
 				return;
 			}
 			try {
@@ -96,10 +98,10 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 					setTimeout(() => overlay.remove(), 1000);
 					document.getElementById('menu')?.remove();
 				} else {
-					alert(data.message || 'Failed to disable 2FA.');
+					customAlert('Failed to disable 2FA.'); //needed customAlert
 				}
 			} catch (err) {
-				alert('Error disabling 2FA.');
+				customAlert('Error disabling 2FA.'); ////needed customAlert
 			}
 		});
 
@@ -170,7 +172,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 			});
 			const data = await res.json();
 			if (data.success === false) {
-				alert(data.message || 'Failed to generate QR code.');
+				customAlert(data.message || 'Failed to generate QR code.'); //needed customAlert
 				return;
 			} else if (data.qrCodeDataURL) {
 				qrImg.src = data.qrCodeDataURL;
@@ -213,7 +215,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 			e.preventDefault();
 			const code = codeInput.value.trim();
 			if (!/^\d{6}$/.test(code)) {
-				alert('Please enter a valid 6-digit code.');
+				customAlert('Please enter a valid 6-digit code.'); //needed customAlert
 				return;
 			}
 			try {
@@ -234,10 +236,10 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					document.getElementById('menu')?.remove();
 					// Optionally update UI or state here
 				} else {
-					alert(data.message || '2FA verification failed.');
+					customAlert(data.message || '2FA verification failed.'); //needed customAlert
 				}
 			} catch (err) {
-				alert('Error verifying 2FA.');
+				customAlert('Error verifying 2FA.'); //needed customAlert
 			}
 		});
 
@@ -288,9 +290,9 @@ export function getAvatarBtn(playerNr: number): HTMLButtonElement {
 export function getChangeNameBtn(playerNr: number): HTMLButtonElement {
 	const button = document.createElement('button');
 	button.textContent = 'Change Username';
-	button.addEventListener('click', (e) => { 
+	button.addEventListener('click', (e) => {
 		const newName = getChangeNameField(e, playerNr)
-	
+
 	});
 	return button;
 }
@@ -313,7 +315,7 @@ export function getLoginBtn(playerNr: number): HTMLButtonElement {
 		document.getElementById('menu')?.remove();
 		if (playerNr == 2) {
 			navigateTo('LoginP2');
-		} else { 
+		} else {
 			navigateTo('LoginP1');
 		}
 	});

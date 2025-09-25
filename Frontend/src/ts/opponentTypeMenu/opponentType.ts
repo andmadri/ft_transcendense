@@ -2,6 +2,7 @@ import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGa
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js";
 import { getMenu } from "../Menu/menuContent.js";
+import { game } from "../Game/gameLogic.js";
 
 export function styleSettingTitle(text: string): HTMLDivElement {
 	const title = document.createElement('div');
@@ -155,21 +156,40 @@ export function getOpponentMenu() {
 	gameModeContainer.style.flex = '1 1';
 	gameModeContainer.style.display = 'flex';
 	gameModeContainer.style.flexDirection = 'column';
+	gameModeContainer.style.position = 'relative';
+
+	const exitButton = document.createElement('button');
+	exitButton.id = 'exitButton';
+	exitButton.textContent = 'X';
+	exitButton.style.color = 'black';
+	exitButton.style.position = 'absolute';
+	exitButton.style.top = '10px';
+	exitButton.style.right = '10px';
+	exitButton.style.background = 'transparent';
+	exitButton.style.border = 'transparent';
+	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	exitButton.style.fontFamily = '"Horizon", sans-serif';
+
+	exitButton.addEventListener('click', () => {
+		navigateTo('Menu');
+	});
 
 	const gameModeTitle = styleSettingTitle('Choose Opponent');
+	gameModeTitle.style.fontSize = 'clamp(10px, 1.5vw, 45px)';
 
 	const gameModeButtonsContainer = styleContainerButtons();
 	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs AI', '1 vs COM'));
 	gameModeButtonsContainer.appendChild(styleSettingsBttns(`vs ${UI.user2.name}`, '1 vs 1'));
 	gameModeButtonsContainer.appendChild(styleSettingsBttns('vs Online', 'Online'));
-
+	
 	const playGameButton = stylePlayGameBttn('Play Game');
 	playGameButton.style.width = '85%';
 	playGameButton.addEventListener('click', () => {
 		changeMatchFormat('single game');
 		startGame();
 	});
-
+	
+	gameModeContainer.appendChild(exitButton);
 	gameModeContainer.appendChild(gameModeTitle);
 	gameModeContainer.appendChild(gameModeButtonsContainer);
 	gameModeContainer.appendChild(playGameButton);
