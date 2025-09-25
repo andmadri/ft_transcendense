@@ -29,6 +29,20 @@ function getTournamentStateForFrontend() {
 	};
 }
 
+function checkPlayerInTournament() {
+	let allLeft = true;
+	tournament.players.forEach(p => {
+		if (p.socket)
+			allLeft = false;
+	});
+	if (allLeft) {
+		tournament.players = [];
+		tournament.matches = [];
+		tournament.state = 'waiting';
+		console.log('All players left, resetting tournament.');
+	}
+}
+
 function joinTournament(msg, userId, socket, io) {
 	if (tournament.state !== 'waiting' && !tournament.players.find(p => p.id === userId)) {
 		console.log('Tournament already in progress, cannot join');
@@ -37,12 +51,13 @@ function joinTournament(msg, userId, socket, io) {
 			subaction: 'joinRejected',
 			reason: 'Tournament already in progress'
 		});
-		return;
+		checkPlayerInTournament();
+		return ;
 	} else if (tournament.players.find(p => p.id === userId)) {
 		const player = tournament.players.find(p => p.id === userId);
 		if (!player.socket) {
-			player.socket = socket; // Reassign socket if player was disconnected
-			player.ready = false;
+			player.socket = socket;		// Reassign socket if player was disconnected
+			player.ready = false;		// Mark as not ready
 			console.log('Player re-joined tournament:', msg.name, userId);
 		}
 	}
@@ -86,13 +101,8 @@ export function leaveTournament(msg, userId, socket, io) {
 			action: 'tournament',
 			subaction: 'left'
 		});
-		// Confirm leaving and trigger frontend navigation
-
-		// Print in console for debugging
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'in_progress') {
-		// Player tries to leave during an ongoing tournament
-		// Option 1: Forfeit the tournament (set them as lost)
 		const player = tournament.players.find(p => p.id === userId);
 		if (player) {
 			player.ready = true;	// Mark as ready to create matches
@@ -103,41 +113,28 @@ export function leaveTournament(msg, userId, socket, io) {
 			action: 'tournament',
 			subaction: 'left'
 		});
-		let allLeft = true;
-		tournament.players.forEach(p => {
-			if (p.socket) {
-				allLeft = false;
-			}
-		});
-		if (allLeft) {
-			// Reset tournament if all players have left
-			tournament.matches = [];
-			tournament.state = 'waiting';
-			console.log('All players left, resetting tournament.');
+		if (tournament.matches.length < 2) {
+			startFirstTournamentMatches(io);
+		} else {
+			triggerNextTournamentMatch(null, io)
 		}
+		checkPlayerInTournament();
 		// Print in console for debugging
 		console.log('Player left tournament (forfeit):', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'finished') {
-		// Allow leaving after tournament is finished
-		leaveRoom(socket, 'tournament_1');
-		tournament.players = tournament.players.filter(p => p.id !== userId);
-		// Broadcast updated state to all participants
-		if (tournament.players.length === 0) {
-			// Reset tournament if all players have left
-			tournament.matches = [];
-			tournament.state = 'waiting';
-			console.log('All players left, resetting tournament.');
+		const player = tournament.players.find(p => p.id === userId);
+		if (player) {
+			player.socket = null;	// Mark as disconnected
+			socket.leave('tournament_1');
 		}
 		socket.emit('message', {
 			action: 'tournament',
 			subaction: 'left'
 		});
-		// Print in console for debugging
+		checkPlayerInTournament();
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else {
-		// -> customAlert player they can't leave / lose the tournament
-		console.log('Tournament already in progress, cannot leave');
-
+		console.log('Unknown tournament state on leave:', tournament.state);
 	}
 }
 
@@ -330,9 +327,8 @@ export function handleTournament(db, msg, socket, io, userId) {
 			player.ready = true;
 			if (tournament.matches.length < 2) {
 				startFirstTournamentMatches(io);
-			}
-			else {
-				triggerNextTournamentMatch(null, io) //pass tournamentId
+			} else {
+				triggerNextTournamentMatch(null, io)
 			}
 		}
 	} else if (msg.subaction === 'notReady') {

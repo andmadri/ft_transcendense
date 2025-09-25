@@ -24,7 +24,7 @@ export async function onUserLogin(db, user_id) {
 export async function onUserLogout(db, user_id) {
 	try {
 		const tournamentPlayer = tournament.players.find(p => p.id === user_id);
-		if (tournamentPlayer) {
+		if (tournamentPlayer && tournamentPlayer.socket) {
 			tournamentPlayer.ready = false;
 			leaveTournament({ name: tournamentPlayer.name }, tournamentPlayer.id, tournamentPlayer.socket, tournament.io);
 		}

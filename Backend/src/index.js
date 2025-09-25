@@ -171,25 +171,21 @@ fastify.ready().then(() => {
 });
 
 setInterval(async () => {
-	try {
-		const now = Date.now();
-		for (const [userId1, data] of usersLastSeen.entries()) {
-			const { userId2, lastSeen } = data;
-			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
-				// Mark user offline in DB
-				try {
-					await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
-					// usersLastSeen.delete(userId1);
-					console.log(`User ${userId1} marked offline due to missed heartbeat`);
-					if (userId2 && userId2 > 2) {
-						await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
-						usersLastSeen.delete(userId1);
-						console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
-					}
-					usersLastSeen.delete(userId1);
-				} catch (err) {
-					console.error('Error setInterval: ', err);
+	const now = Date.now();
+	for (const [userId1, data] of usersLastSeen.entries()) {
+		const { userId2, lastSeen } = data;
+		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
+			try {
+				await onUserLogout(db, userId1);
+				usersLastSeen.delete(userId1);
+				console.log(`User ${userId1} marked offline due to missed heartbeat`);
+				if (userId2 && userId2 > 2) {
+					await onUserLogout(db, userId2);
+					usersLastSeen.delete(userId2);
+					console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
 				}
+			} catch (err) {
+				console.error(`Error setting user1: ${userId1} or user2: ${userId2} offline: `, err);
 			}
 		}
 	} catch (err) {
