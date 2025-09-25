@@ -6,8 +6,8 @@ import { db } from "../index.js";
 export async function stopMatchAfterRefresh(io, userId1) {
 	try {
 		for (const [, match] of matches) {
-			if (match.state != state.Start || match.state != state.Pending ||
-				match.state != state.Init || match.state != state.End) {
+			if (match.state !== state.Start && match.state !== state.Pending &&
+				match.state !== state.Init && match.state !== state.End) {
 				let name = '';
 				if (userId1 === match.player1.ID) {
 					name = match.player1.name;
@@ -25,7 +25,7 @@ export async function stopMatchAfterRefresh(io, userId1) {
 			}
 		}
 	} catch (err) {
-		console.error('Error quit match by disconnect', err);
+		console.error(`MATCH_QUIT Error while quitting match by disconnect`, err, "stopMatchAfterRefresh");
 	}
 }
 

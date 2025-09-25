@@ -17,13 +17,6 @@ function processMatch(data: any) {
 	navigateTo('Game');
 }
 
-function processSavingMatch(data: any) {
-	if (data.success)
-		console.log("Save match successful");
-	else
-		console.log("Something went wrong saving match");
-}
-
 function processQuitMatch(data: any) {
 	console.log("processQuitMatch()");
 	Game.match.winnerID = data.winner;
@@ -36,7 +29,6 @@ function processQuitMatch(data: any) {
 
 export function actionGame(data: any) {
 	if (!data.subaction) {
-		console.log('no subaction');
 		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionGame');
 		return ;
 	}

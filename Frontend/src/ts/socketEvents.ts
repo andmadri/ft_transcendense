@@ -10,6 +10,7 @@ import { actionTournament } from './Tournament/tournamentContent.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { getGameStats } from './Game/gameStats.js'
 import { validateURL } from './Dashboard/exists.js'
+import { customAlert } from './Alerts/customAlert.js';
 import * as S from './structs.js'
 
 export function startSocketListeners() {
@@ -31,7 +32,7 @@ export function startSocketListeners() {
 	});
 
 	socket.on('connect_error', (err: any) => {
-		console.error(err);
+		console.error(err.message || err);
 	});
 
 	// Only for errors from libaries / backend
@@ -41,7 +42,8 @@ export function startSocketListeners() {
 
 	// custom errors (for our error handling)
 	socket.on('server_error', (err: any) => {
-		console.error(err.code, err.reason);
+		console.error(err.code, ' ', err.reason);
+		customAlert("Something went wrong. Please try again.");
 	});
 }
 
@@ -59,7 +61,7 @@ FROM backend TO frontend
 export function receiveFromWS(data: any) {
 	const action = data.action;
 	if (!action)
-		console.log('no action');
+		return console.error('MSG_MISSING_ACTION', 'Invalid message format:', 'action missing', 'receiveFromWS');
 
 	// log(`receiveFromWS - action: ${action} - subaction: ${data.subaction}`);
 	//when is this called: playerInfo?
@@ -99,11 +101,11 @@ export function receiveFromWS(data: any) {
 			break;
 		case 'error':
 			if (data.reason)
-				console.log('error' + `${data.reason}`);
+				console.error('GEN_ERROR', data.reason, 'receiveFromWS');
 			else
-				console.log('data received from ws' + data);
+				console.error('GEN_ERROR', 'Unknown error', 'receiveFromWS');
 			break ;
 		default:
-			console.log(`(receiveFromWS) Unknown action: ${action}`);
+			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', action, 'receiveFromWS');
 	}
 }
