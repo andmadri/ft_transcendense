@@ -45,7 +45,7 @@ export async function handleMatchStartDB(db, { player_1_id, player_2_id, isTourn
 		// Return the match row
 		return (matchID);
 	} catch (err) {
-		console.log('Error handleMatchStartDB: ', err);
+		console.error('DB_ERROR', `Failed for players ${player_1_id} and ${player_2_id}: ${err.message || err}`, 'handleMatchStartDB');
 		return (-1);
 	}
 }
@@ -84,7 +84,7 @@ export async function handleMatchEventDB(db, event) {
 			await updateMatchInDB(db, updated);
 		}
 	} catch (err) {
-		console.log('Error handleMatchEventDB: ', err);
+		console.error('DB_ERROR', `handleMatchEventDB failed for event ${event.event_type} in match ${event.match_id}: ${err.message || err}`, 'handleMatchEventDB');
 	}
 }
 
@@ -127,6 +127,6 @@ export async function handleMatchEndedDB(db, match_id) {
 		// Add the players to 'in_menu' in UserSessions
 		await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_menu');
 	} catch (err) {
-		console.log('error handleMatchEndedDB: ', err);
+		console.error('DB_ERROR', `handleMatchEndedDB failed for match ${match_id}: ${err.message || err}`, 'handleMatchEndedDB');
 	}
 }

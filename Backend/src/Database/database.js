@@ -116,18 +116,18 @@ export async function createDatabase() {
 				password: 'secretai'
 			});
 		} catch(err) {
-			console.log("Error created accounts: ", err);
+			console.error('CREATE_USER_ERROR', `Error creating guest/AI accounts: ${err.message || err}`, 'createDatabase');
 			return db;
 		}
 		if (!guest_id || !ai_id) {
-			console.log("Error created accounts: guest_id and/or guest_id");
+			console.error('CREATE_USER_ERROR', 'guest_id and/or ai_id missing after account creation', 'createDatabase');
 			return db;
 		}
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);
 		} catch(err) {
-			console.log("onUserLogin failed: guest / ai id", err);
+			console.error('LOGIN_ERROR', 'onUserLogin failed for guest or AI id', err.message || err, 'createDatabase');
 			return db;
 		}
 	}

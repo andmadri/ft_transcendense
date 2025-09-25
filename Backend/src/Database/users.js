@@ -148,7 +148,7 @@ export async function updateUserInDB(db, user) {
 		}
 
 		if (updates.length === 0) {
-			console.log('No valid profile fields provided to update.');
+			console.warn('UPDATE_WARNING', 'No valid match fields provided to update', 'updateUserInDB');
 			return resolve();
 		}
 

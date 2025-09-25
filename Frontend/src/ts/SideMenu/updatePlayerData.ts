@@ -6,14 +6,13 @@ import { customAlert } from '../Alerts/customAlert.js';
 
 export function actionPlayerInfo(data: any) {
 	if (!data.subaction) {
-		console.error('No subaction in playerInfo data');
-		return;
+		return console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', 'subaction missing', 'actionPlayerInfo');
 	} else if (data.subaction === 'receivePlayerData') {
 		receivePlayerData(data);
 	} else if (data.subaction == 'profileSettings') {
 		updateProfileSettings(data);
 	} else {
-		console.log(`Unknown subaction in playerInfo: ${data.subaction}`);
+		console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', data.subaction, 'actionPlayerInfo');
 	}
 }
 
@@ -34,8 +33,7 @@ function updateProfileSettings(msg: any) {
 
 function receivePlayerData(data: any) {
 	if (!data || !data.success != true) {
-		console.error('Error receiving player data:', data.msg);
-		return;
+		return console.error('PLAYER_DATA_ERROR', `Error receiving player data: ${data?.msg || 'No message provided'}`, 'receivePlayerData');
 	} else {
 		UI.user1.name = data.name || 'unknown';
 		UI.user1.ID = data.id || -1;

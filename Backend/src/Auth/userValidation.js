@@ -8,7 +8,7 @@ export async function checkName(name) {
 	try {
 		exists = await nameAlreadyExist(db, name);
 	} catch (err) {
-		console.log('Error checkName: ', err);
+		console.error('CHECK_NAME_ERROR', `Error checking if name exists: ${err.message || err}`, 'checkName');
 	}
 	if (!name.length)
 		return ('Name can not be empty');
@@ -67,7 +67,11 @@ export async function addUser(msg) {
 		return ('');
 	}
 	catch(err) {
-		console.error('addUser:', err);
+		// For Merel: Do we need this IF statement?
+		if (err.code === 'SQLITE_CONSTRAINT' && err.message.includes('Users.email')) {
+			return ('That email is already registered.');
+		}
+		console.error('ADD_USER_ERROR', err.message || err, 'addUser');
 		return ('Unknown error occurred while adding user.');
 	}
 }
@@ -94,7 +98,7 @@ export async function validateLogin(msg, fastify) {
 			}
 		}
 	} catch (err) {
-		console.error('Error with getting online users');
+		console.error('GET_ONLINE_USERS_ERROR', err.message || err, 'validateLogin');
 		return ({ error: 'Database error' });
 	}
 

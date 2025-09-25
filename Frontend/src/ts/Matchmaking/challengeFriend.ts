@@ -53,6 +53,6 @@ export function actionMatchmaking(msg: any) {
 			msgMatchIsRemoved();
 			break;
 		default:
-			log(`subaction ${msg.subaction} not found in handleMatchmaking`);
+			console.log(`subaction ${msg.subaction} not found in handleMatchmaking`);
 	}
 }
