@@ -4,6 +4,7 @@ import { log } from '../logging.js'
 import { authenticationMode, changeAuthMode } from './authContent.js'
 import { navigateTo } from '../history.js';
 import { getLoadingPage } from '../Loading/loadContent.js';
+import { customAlert } from '../Alerts/customAlert.js';
 
 
 
@@ -19,7 +20,7 @@ export async function submitAuthForm(e: Event, player: number) {
 	const endpoint = isSignup ? '/api/signup' : '/api/login';
 
 	if (!email || !password || (isSignup && !username)) {
-		alert("Please fill in all required fields");
+		customAlert("Please fill in all required fields"); //needed customAlert
 		return;
 	}
 
@@ -27,9 +28,9 @@ export async function submitAuthForm(e: Event, player: number) {
 		? { playerNr, username, email, password }
 		: { playerNr, email, password };
 
-	log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
+	console.log(`Submitting ${isSignup ? 'sign up' : 'login'} form for player ${playerNr}`);
 	try {
-			const response = await fetch(`https://${S.host}${endpoint}`, {
+		const response = await fetch(`https://${S.host}${endpoint}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload),
@@ -38,25 +39,24 @@ export async function submitAuthForm(e: Event, player: number) {
 
 		if (response.ok) {
 			const data = await response.json();
-			log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
+			console.log(`Authentication successful for player ${playerNr}: ${data.message || ''}`);
 
 			if (endpoint == "/api/login")
 				if (data.twofaPending)
 					await requestTwofaCode(playerNr, data.userId);
 				else {
-					log(`No 2FA required for player ${playerNr}, logging in directly.`);
+					console.log(`No 2FA required for player ${playerNr}, logging in directly.`);
 					loginSuccessfull(playerNr, data.userId, data.name, data.twofa);
 				}
 			else
 				changeAuthMode(playerNr);
 
 		} else {
-			log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
-			const error = await response.json();
-			alert(error.message || "Authentication failed");
+			console.log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
+			customAlert("Authentication failed");  //needed customAlert?
 		}
 	} catch (err) {
-		alert("Network error during authentication");
+		console.log("Network error during authentication");
 	}
 }
 
@@ -83,7 +83,7 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 	Game.socket.connect();
 
 	// Wait till connected to the socket server
-	Game.socket.once("connect", () => {	
+	Game.socket.once("connect", () => {
 		console.log("Connection with the server!");
 		navigateTo("Menu");
 	});
@@ -163,7 +163,7 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 		e.preventDefault();
 		const code = codeInput.value.trim();
 		if (!/^\d{6}$/.test(code)) {
-			alert('Please enter a valid 6-digit code.');
+			customAlert('Please enter a valid 6-digit code.'); //needed customAlert
 			return;
 		}
 		try {
@@ -183,10 +183,10 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 				}, 1000); // 1000 ms = 1 second
 				loginSuccessfull(playerNr, userId, data.name, data.twofa);
 			} else {
-				alert(data.message || '2FA verification failed.');
+				customAlert(data.message || '2FA verification failed.'); //needed customAlert
 			}
 		} catch (err) {
-			alert('Error verifying 2FA.');
+			customAlert('Error verifying 2FA.'); //needed customAlert
 		}
 	});
 

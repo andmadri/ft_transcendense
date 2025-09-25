@@ -2,10 +2,12 @@ import * as S from '../structs.js'
 import { Game, UI } from "../gameData.js"
 import { log } from "../logging.js";
 import { navigateTo } from '../history.js';
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 // STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
-	Game.socket.emit('message',{
+	Game.socket.emit('message', {
 		action: 'matchmaking',
 		subaction: 'challengeFriend',
 		challenger: UI.user1.ID,
@@ -19,7 +21,7 @@ export function responseChallenge(answer: boolean, req: any) {
 		UI.state = S.stateUI.Game;
 		navigateTo('Pending');
 	}
-	Game.socket.emit('message',{
+	Game.socket.emit('message', {
 		action: 'matchmaking',
 		subaction: 'challengeFriendAnswer',
 		answer: answer,
@@ -30,26 +32,26 @@ export function responseChallenge(answer: boolean, req: any) {
 }
 
 function challengeDeclined() {
-	alert('Your invitation is denied');
+	customAlert('Your invitation is denied'); //needed customAlert
 	navigateTo('Menu', false);
 }
 
 function msgMatchIsRemoved() {
-	alert('This challenge is removed');
+	customAlert('This challenge is removed'); //needed customAlert
 	navigateTo('Menu', false);
 }
 
 export function actionMatchmaking(msg: any) {
 	if (!msg.subaction)
-		return ;
+		return;
 
-	switch(msg.subaction) {
+	switch (msg.subaction) {
 		case 'challengeDeclined':
 			challengeDeclined();
-			break ;
+			break;
 		case 'matchIsRemoved':
 			msgMatchIsRemoved();
-			break ;
+			break;
 		default:
 			log(`subaction ${msg.subaction} not found in handleMatchmaking`);
 	}
