@@ -19,6 +19,7 @@ import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
+import { removeFromWaitinglist } from './Pending/onlinematch.js';
 
 export const db = await createDatabase();
 
@@ -158,6 +159,7 @@ fastify.ready().then(() => {
 			try {
 				console.log(`User ${userId1} disconnected`);
 				checkChallengeFriendsInvites(socket, userId1);
+				removeFromWaitinglist(userId1);
 				await stopMatchAfterRefresh(fastify.io, userId1);
 				const player = tournament.players.find(p => p.id === userId1);
 				if (player) {
