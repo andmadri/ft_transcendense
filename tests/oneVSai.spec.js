@@ -31,7 +31,7 @@ export async function StartOneVsCom(page, name) {
 	const startTime = Date.now();
 	const paddleRect = await paddle.boundingBox();
 	while (Date.now() - startTime < 10000) {
-		await page.keyboard.press('ArrowDown');
+		await page.keyboard.down('ArrowDown');
 		await page.waitForTimeout(200);
 		const newRectBall = await ball.boundingBox();
 		if (newRectBall && ballRect && (newRectBall.x !== ballRect.x || newRectBall.y !== ballRect.y)) {
@@ -41,8 +41,8 @@ export async function StartOneVsCom(page, name) {
 		if (newRectPaddle && paddleRect && (newRectPaddle.x !== paddleRect.x || newRectPaddle.y !== paddleRect.y)) {
 			paddleHasMoved = true;
 		}
-
 	}
+	await page.keyboard.up('ArrowDown');
 	expect(ballHasMoved).toBeTruthy();
 	expect(paddleHasMoved).toBeTruthy;
 

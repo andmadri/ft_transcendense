@@ -91,7 +91,7 @@ export async function sign_in_tests(browser, page, player, Name, Email, Password
 
 	// Sign up with existing email / username
 	await page.waitForTimeout(1000);
-	await waitForAlert(page, player, Name, Email, Password, 'That email is already taken');
+	await waitForAlert(page, player, Name + 'a', Email, Password, 'That email is already taken');
 	await page.waitForTimeout(1000);
 	await waitForAlert(page, player, Name, 'extra' + Email, Password, 'That username is already taken');
 

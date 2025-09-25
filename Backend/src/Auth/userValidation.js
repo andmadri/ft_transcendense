@@ -67,10 +67,6 @@ export async function addUser(msg) {
 		return ('');
 	}
 	catch(err) {
-		// For Merel: Do we need this IF statement?
-		if (err.code === 'SQLITE_CONSTRAINT' && err.message.includes('Users.email')) {
-			return ('That email is already registered.');
-		}
 		console.error('ADD_USER_ERROR', err.message || err, 'addUser');
 		return ('Unknown error occurred while adding user.');
 	}
