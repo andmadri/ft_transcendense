@@ -167,6 +167,40 @@ function createNotificationButtons(): HTMLButtonElement {
 	notificationBtnList.style.width = '210px';
 	notificationBtnList.style.height = '200px';
 
+	notificationBtnList.addEventListener("click", (e) => {
+		e.stopPropagation();
+	});
+
+	document.addEventListener("click", (e) => {
+		const target = e.target as HTMLElement;
+		if (
+			target !== notificationsBtn &&
+			!notificationsBtn.contains(target) &&
+			!notificationBtnList.contains(target)
+		) {
+			notificationBtnList.style.display = "none";
+		}
+	});
+
+	const closeBtnItem = document.createElement('li');
+	closeBtnItem.id = 'closeBtnItem';
+	closeBtnItem.style.textAlign = 'right';
+	closeBtnItem.style.padding = '4px 8px';
+
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = 'Close'; // Or "Close"
+	closeBtn.style.fontFamily = '"RobotoCondensed", sans-serif';
+	closeBtn.style.background = 'transparent';
+	closeBtn.style.border = 'none';
+	closeBtn.style.color = 'white';
+	closeBtn.style.cursor = 'pointer';
+	closeBtn.style.fontSize = '14px';
+
+	closeBtn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		notificationBtnList.style.display = 'none';
+	});
+
 	styleListBtns(notificationsBtn, 'url("../../images/notifications.png")');
 	notificationsBtn.addEventListener("click", () => {
 		if (notificationBtnList.style.display === 'none') {
@@ -192,6 +226,8 @@ function createNotificationButtons(): HTMLButtonElement {
 	notificationBadge.style.alignItems = 'center';
 	notificationBadge.style.justifyContent = 'center';
 
+	closeBtnItem.appendChild(closeBtn);
+	notificationBtnList.appendChild(closeBtnItem);
 	notificationsBtn.appendChild(notificationBadge);
 	notificationsBtn.appendChild(notificationBtnList);
 	return notificationsBtn;
