@@ -97,12 +97,12 @@ function processPlayers(data: any) {
 	if (data.access && data.access == "yes")
 		insertPlayers(data.content);
 	else
-		log("Access to DB: " + data.access + " " + data.content);
+		console.log("Access to DB: " + data.access + " " + data.content);
 }
 
 export function actionPlayers(data: any) {
 	if (!data.subaction) {
-		log('no subaction Players');
+		console.log('no subaction Players');
 		return;
 	}
 
@@ -111,6 +111,6 @@ export function actionPlayers(data: any) {
 			processPlayers(data);
 			break;
 		default:
-			log(`(actionPlayers) Unknown action: ${data.subaction}`);
+			console.log(`(actionPlayers) Unknown action: ${data.subaction}`);
 	}
 }

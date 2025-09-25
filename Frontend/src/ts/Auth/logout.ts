@@ -4,7 +4,7 @@ import * as S from '../structs.js'
 import { navigateTo } from '../history.js'
 
 export async function submitLogout(e: Event | null, playerNr: number) {
-	log(`Submitting logout for playerNr ${playerNr}`);
+	console.log(`Submitting logout for playerNr ${playerNr}`);
 	if (e)
 		e.preventDefault();
 
