@@ -76,7 +76,7 @@ async function handleGoogleAuth(user) {
  */
 export default async function googleAuthRoutes(fastify) {
 	fastify.get('/api/auth/google', async (request, reply) => {
-		const playerNr = request.query.playerNr || '1';
+		const playerNr = request.query.state || '1';
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
 		console.log('Redirect URI:', redirectUri);
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
