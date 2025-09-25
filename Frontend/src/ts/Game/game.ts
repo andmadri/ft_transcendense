@@ -36,14 +36,14 @@ function processQuitMatch(data: any) {
 
 export function actionGame(data: any) {
 	if (!data.subaction) {
-		log('no subaction');
+		console.log('no subaction');
 		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionGame');
 		return ;
 	}
 
 	switch(data.subaction) {
 		case 'init':
-			log(`MatchID frontend: ${data.id}`);
+			console.log(`MatchID frontend: ${data.id}`);
 			processMatch(data);
 			break ;
 		case 'gameStateUpdate':

@@ -59,7 +59,7 @@ FROM backend TO frontend
 export function receiveFromWS(data: any) {
 	const action = data.action;
 	if (!action)
-		log('no action');
+		console.log('no action');
 
 	// log(`receiveFromWS - action: ${action} - subaction: ${data.subaction}`);
 	//when is this called: playerInfo?
@@ -99,11 +99,11 @@ export function receiveFromWS(data: any) {
 			break;
 		case 'error':
 			if (data.reason)
-				log('error' + `${data.reason}`);
+				console.log('error' + `${data.reason}`);
 			else
-				log('data received from ws' + data);
+				console.log('data received from ws' + data);
 			break ;
 		default:
-			log(`(receiveFromWS) Unknown action: ${action}`);
+			console.log(`(receiveFromWS) Unknown action: ${action}`);
 	}
 }
