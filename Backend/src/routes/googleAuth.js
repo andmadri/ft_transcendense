@@ -2,9 +2,10 @@ import axios from 'axios';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
 import bcrypt from 'bcrypt';
 import { db } from '../index.js';
-import { addUserToDB, getUserByID, getUserByEmail, updateUserInDB } from '../Database/users.js';
+import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+
 
 /**
  * Handles the Google authentication process.
@@ -21,25 +22,26 @@ import { USERLOGIN_TIMEOUT } from '../structs.js';
 async function handleGoogleAuth(user) {
 	try {
 		if (!user || !user.email) {
-			console.error('Invalid user data from Google!');
+			console.error('INVALID_USER_DATA', 'Invalid user data received from Google', 'handleGoogleLogin');
 			return null;
 		}
-
 		const exists = await getUserByEmail(db, user.email);
 		if (exists) {
 			console.log('User: ', user.name, ' already exists');
 			const isValidPassword = await bcrypt.compare(user.id, exists.password);
 			if (!isValidPassword) {
-				console.log(`User: ${user.name} - Invalid google ID!`);
+				console.warn('INVALID_GOOGLE_ID', `User: ${user.name} has invalid Google ID`, 'handleGoogleLogin');
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
+				exists.user_id = exists.id; // for updateUserInDB
 				exists.name = user.name;
+				exists.email = user.email;
 				exists.avatar_url = user.picture;
-				// CHECK FOR 2FA KEY? AND SET IT TO GOOGLE?
 				await updateUserInDB(db, exists);
 			}
 		} else {
+
 			await addUserToDB(db, {
 				email: user.email,
 				name: user.name,
@@ -48,9 +50,9 @@ async function handleGoogleAuth(user) {
 				twofa_secret: 'google'
 			});
 		}
-		return await getUserByID(db, user.id);
+		return await getUserByEmail(db, user.email);
 	} catch (err) {
-		console.error('Error during Google authentication:', err);
+		console.error('GOOGLE_AUTH_ERROR', err.message || err, 'handleGoogleLogin');
 		return null;
 	}
 }
@@ -76,6 +78,7 @@ export default async function googleAuthRoutes(fastify) {
 	fastify.get('/api/auth/google', async (request, reply) => {
 		const playerNr = request.query.playerNr || '1';
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
+		console.log('Redirect URI:', redirectUri);
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 		const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
 		const playerNrEncoded = encodeURIComponent(playerNr);
@@ -97,7 +100,7 @@ export default async function googleAuthRoutes(fastify) {
 			});
 
 			if (!tokenRes || !tokenRes.data || !tokenRes.data.access_token) {
-				console.error('Invalid token response from Google!');
+				console.error('GOOGLE_AUTH_ERROR', 'Invalid token response from Google', 'googleAuthRoutes');
 				return reply.code(500).send('OAuth login failed.');
 			}
 
@@ -107,13 +110,13 @@ export default async function googleAuthRoutes(fastify) {
 				headers: { Authorization: `Bearer ${access_token}` }
 			});
 			if (!userRes || !userRes.data || !userRes.data.email) {
-				console.error('Invalid user data from Google!');
+				console.error('INVALID_GOOGLE_USER_DATA', 'Invalid user data received from Google', 'googleAuthRoutes');
 				return reply.code(500).send('OAuth login failed.');
 			}
 
 			const user = await handleGoogleAuth(userRes.data);
 			if (!user) {
-				console.error('user returned:', user);
+				console.error('GOOGLE_AUTH_FAILED', 'handleGoogleAuth returned null or undefined user', 'googleAuthRoutes');
 				return reply.code(500).send('OAuth login failed.');
 			}
 
@@ -122,14 +125,14 @@ export default async function googleAuthRoutes(fastify) {
 				await updateUserInDB(db, { user_id: user.id, twofa_secret:  'google' });
 				// await addUser2faSecretToDB(db, user.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
 			} catch (err) {
-				console.error('Error adding 2FA secret for Google user:', err);
+				console.error('GOOGLE_2FA_UPDATE_ERROR', err.message || err, 'googleAuthRoutes');
 				return reply.code(500).send('OAuth login failed.');
 			}
 
 			try {
 				await onUserLogin(db, user.id);
 			} catch(err) {
-				console.error(err.msg);
+				console.error('USER_LOGIN_ERROR', err.message || err, 'googleAuthRoutes');
 				return ({ error: 'Database error' });
 			}
 
@@ -142,9 +145,9 @@ export default async function googleAuthRoutes(fastify) {
 				encode: v => v,      // Use default encoding
 				path: '/',
 				maxAge: USERLOGIN_TIMEOUT
-			}).redirect(`https://${process.env.HOST_DOMAIN}:8443`);
+			}).redirect(`https://${process.env.HOST_DOMAIN}`);
 		} catch (err) {
-			fastify.log.error(err.response?.data || err.message);
+			fastify.log.error(err.response?.data || err.message || err);
 			reply.code(500).send('OAuth login failed.');
 		}
 	});

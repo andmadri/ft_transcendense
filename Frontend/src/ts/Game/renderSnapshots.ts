@@ -58,24 +58,6 @@ function getBoundingSnapshots(renderTime: number) {
 	return [snap1, snap2];
 }
 
-/**
- * @brief updates the positions of the divElements in the frontend
- */
-// function updateDivFromSnapshot(ball: any, paddle: any, playerNr: number) {
-// 	const playerDiv = playerNr == 1 ? document.getElementById('rPlayer') : document.getElementById('lPlayer');
-// 	const ballDiv = document.getElementById('ball');
-// 	const fieldDiv = document.getElementById('field');
-
-// 	if (!ballDiv || !playerDiv || !fieldDiv) {
-// 		console.error("Div elements are missing applyUpdatesGameServer");
-// 		return;
-// 	}
-// 	// Change values in div elements
-// 	playerDiv.style.top = `${(paddle.pos.y * fieldDiv.clientWidth) - (playerDiv.clientHeight / 2)}px`;
-// 	ballDiv.style.left = `${ball.pos.x * fieldDiv.clientWidth}px`;
-// 	ballDiv.style.top = `${ball.pos.y * fieldDiv.clientWidth}px`;
-// }
-
 function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number, playerNr: number) {
 	const paddle = playerNr == 1 ? Game.match.gameState.paddle2 : Game.match.gameState.paddle1;
 	const ball = Game.match.gameState.ball;
@@ -93,10 +75,8 @@ function updateRenderFromSnapshot(ballX: number, ballY: number, paddleY: number,
  */
 function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: number, player: number) {
 	// calculate the right position at the right delay time
-	if (snap2.timestamp <= snap1.timestamp) {
-		console.error("Invalid snapshots: snap2.timestamp must be greater than snap1.timestamp");
-		return;
-	}
+	if (snap2.timestamp <= snap1.timestamp)
+		return console.error('SNAPSHOT_ERROR', 'snap2.timestamp must be greater than snap1.timestamp', 'interpolateSnapshot');
 
 	const t = (renderTime - snap1.timestamp) / (snap2.timestamp - snap1.timestamp);
 	const fraction = Math.min(Math.max(t, 0), 1);
@@ -106,25 +86,6 @@ function interpolateSnapshot(snap1: Snapshot, snap2: Snapshot, renderTime: numbe
 	const paddleY = snap1.paddleY + (snap2.paddleY - snap1.paddleY) * fraction;
 
 	updateRenderFromSnapshot(ballX, ballY, paddleY, player);
-}
-
-/**
- * @brief Predict the position of ball and paddle is there is a server delay
- * @param snap1 last snapshot that is made
- * @param player left or right player
- */
-function extrapolateFromSnapshot(snap1: Snapshot, player: number) {
-	const deltaTime = Date.now() - snap1.timestamp;
-
-	const vX = snap1.ballVX;
-	const vY = snap1.ballVY;
-	const paddleVY = snap1.paddleVY;
-
-	const predictNewBallX = snap1.ballX + vX * (deltaTime / 1000);
-	const predictNewBallY = snap1.ballY + vY * (deltaTime / 1000);
-	const predictNewPaddleY = snap1.paddleY + paddleVY * (deltaTime / 1000);
-
-	updateRenderFromSnapshot(predictNewBallX, predictNewBallY, predictNewPaddleY, player);
 }
 
 // Deletes the snapshots that are before the rendertime and till two are left
@@ -155,11 +116,4 @@ export function renderGameInterpolated() {
 		snapshots.length = 0;
 		return ;
 	}
-	// else if (snap1) {
-	// 	if (Date.now() - snap1.timestamp <= MAX_SNAPSHOT_AGE) {
-	// 		extrapolateFromSnapshot(snap1, playerNr);
-	// 	} else {
-	// 		console.error("snap1 is too old for extrapolation");
-	// 	}
-	// }
 }

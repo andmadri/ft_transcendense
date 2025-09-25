@@ -21,9 +21,15 @@ function renderBars(data, yScale, colorOf) {
 }
 
 export async function generateBarChartForMatch(db, matchID, colorOf) {
-	const data = await getMatchBarDB(db, matchID);
 	const { width, height, open, close } = createSvgCanvas();
-	if (!data || data.length === 0) {
+	let data = null;
+	try {
+		data = await getMatchBarDB(db, matchID);
+		if (!data || data.length === 0) {
+			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
+		}
+	} catch (err) {
+		console.error('DB_ERROR', `Database error getting match bar for matchID ${matchID}: ${err.message || err}`, 'generateBarChartForMatch');
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 

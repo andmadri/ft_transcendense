@@ -10,10 +10,10 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 
 	const payload = { playerNr };
 	if (playerNr == 1 && UI.user2.ID != 1) {  // Ensure player 2 is logged out too
-		log(`Player 2 is logged in, logging out player 2 as well.`);
+		console.log(`Player 2 is logged in, logging out player 2 as well.`);
 		submitLogout(null, 2);
 	}
-	log(`Submitting logout for player ${playerNr}`);
+	console.log(`Submitting logout for player ${playerNr}`);
 	try {
 		const response = await fetch(`https://${S.host}/api/logout`, {
 			method: 'POST',
@@ -23,7 +23,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		});
 		if (response.ok) {
 			const data = await response.json();
-			log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
+			console.log(`Logout successful for playerNr ${playerNr}: ${data.message || ''}`);
 			document.getElementById('menu')?.remove();
 			Game.socket.disconnect();
 			Game.socket.connect();
@@ -38,11 +38,9 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 				navigateTo('Menu');
 			}
 		} else {
-			log(`Logout failed for player ${playerNr}: ${response.statusText}`);
-			const error = await response.json();
-			alert(error.message || "Logout failed");
+			console.error('LOGOUT_FAILED', `Logout failed for player ${playerNr}: ${response.statusText}`, 'submitLogout');
 		}
 	} catch (err) {
-		alert("Network error during authentication");
+		console.error('NETWORK_ERROR', 'Network error during authentication', 'submitLogout');
 	}
 }

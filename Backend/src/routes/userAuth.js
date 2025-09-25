@@ -1,6 +1,4 @@
 import { addUser, validateLogin } from '../Auth/userValidation.js';
-import { parseAuthTokenFromCookies } from '../Auth/authToken.js';
-// import { addUserSessionToDB } from '../Database/sessions.js';
 import { onUserLogout } from '../Services/sessionsService.js';
 import { getUserByID }        from '../Database/users.js';
 import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
@@ -8,6 +6,7 @@ import { db } from '../index.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { verifyAuthCookie } from '../Auth/authToken.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+import { tournament } from '../Tournament/tournament.js'
 
 /**
  * User authentication routes for signup, login, and logout.
@@ -44,9 +43,13 @@ export default async function userAuthRoutes(fastify) {
 		}
 
 		const userId = request.user.userId;
-		// console.log(`Refreshing token for user ID: ${userId}`);
-		const user = await getUserByID(fastify.db || db, userId);
-		if (!user) {
+		let user = null;
+		try {
+			user = await getUserByID(fastify.db || db, userId);
+			if (!user) {
+				return reply.status(401).send({ error: 'Unauthorized' });
+			}
+		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });
 		}
 		const jwtToken = signFastifyJWT(user, fastify);
@@ -76,12 +79,20 @@ export default async function userAuthRoutes(fastify) {
 			if (!user) {
 				return reply.status(401).send({ error: 'Unauthorized' });
 			}
+			let inTournament = false;
+			for (const player of tournament.players) {
+				if (player.id == user.id) {
+					inTournament = true;
+					break ;
+				}
+			}
 			reply.send({
 				success: true,
 				userId: user.id,
 				name: user.name,
 				email: user.email,
 				twofa: user.twofa_active,
+				inTournament
 			});
 		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });
@@ -112,7 +123,6 @@ export default async function userAuthRoutes(fastify) {
 			player: playerNr
 		};
 		const answer = await validateLogin(msg, fastify);
-		// console.log('Login answer:', answer.user);
 		if (answer.error) {
 			reply.status(401).send({ success: false, message: answer.error });
 			return;
@@ -133,11 +143,10 @@ export default async function userAuthRoutes(fastify) {
 			try {
 				await onUserLogin(db, answer.user.id);
 			} catch(err) {
-				console.error(err.msg);
+				console.error('LOGIN_ONLOGIN_FAILED', err.message || err, 'api/login');
 			}
 
 			const jwtToken = signFastifyJWT(answer.user, fastify);
-			// console.log('JWT Token:', jwtToken);
 			reply.setCookie('jwtAuthToken' + playerNr, jwtToken, {
 				httpOnly: true,      // Prevents JS access
 				secure: true,        // Only sent over HTTPS
@@ -167,11 +176,8 @@ export default async function userAuthRoutes(fastify) {
 			return;
 		}
 		try {
-			// MAYBE CHANGE THIS LATER: Marty edited this, but is not sure if this is correct
 			const decoded = fastify.jwt.verify(unsigned.value);
-
 			const user = await getUserByID(db, decoded.userId);
-			// await addUserSessionToDB(db, {user_id: user.id, state: 'logout'});
 			await onUserLogout(db, user.id);
 			reply.clearCookie('jwtAuthToken' + playerNr, {
 				httpOnly: true,

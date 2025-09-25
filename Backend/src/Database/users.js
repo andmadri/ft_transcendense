@@ -5,18 +5,41 @@ import { sql_log, sql_error } from './dblogger.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
-export async function nameAlreadyExist(db, name) {
+export function nameAlreadyExist(db, name) {
 	const username = name.toLowerCase(); 
 
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`;
+		db.get(sql,	[username], (err, row) => {
+			if (err) {
+				sql_error(err, `nameAlreadyExist | name=${name}`);
+				return reject(err);
+			} else {
+				if (row) {
+					sql_log(`Name already exist: ${name}`);
+				}
+				resolve(row || null);
+			}
+		});
+	});
+	if (exists)
+		console.log("Username already exists");
+	return (exists);
+}
+
+export async function emailAlreadyExist(db, emailadress) {
+	const email = emailadress.toLowerCase(); 
+
 	const exists = await new Promise((resolve, reject) => {
-		db.get(`SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`,
-			[username], (err, row) => {
+		db.get(`SELECT 1 FROM Users WHERE LOWER(email) = ? LIMIT 1`,
+			[email], (err, row) => {
 			if (err)
 				return reject(err);
 			resolve(!!row);
 		});
 	});
-	console.log('exist: ', exists);
+	if (exists)
+		console.log("Email already exists");
 	return (exists);
 }
 
@@ -50,11 +73,6 @@ export async function createNewUserToDB(db, user = {}) {
 	if (!name || !email) {
 		throw new Error("createNewUserToDB: 'name' and 'email' are required");
 	}
-	const existing = await getUserByEmail(db, email);
-	if (existing) {
-		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
-		return existing.id;
-	}
 	return await addUserToDB(db, { name, email, password, avatar_url });
 }
 
@@ -80,15 +98,19 @@ export async function createNewUserToDB(db, user = {}) {
  * @throws {Error} if the user doesn’t exist or no valid fields are provided.
  */
 export async function updateUserInDB(db, user) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
+	let existing = null;
+	try {
+		existing = await getUserByID(db, user.user_id);
+		if (!existing) {
+			throw new Error(`User ID ${user.user_id} does not exist.`);
+		}
 
-	if (user.password !== undefined) {
-		user.password = await bcrypt.hash(user.password, 10);
+		if (user.password !== undefined) {
+			user.password = await bcrypt.hash(user.password, 10);
+		}
+	} catch (err) {
+		return err;
 	}
-
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];
@@ -126,7 +148,7 @@ export async function updateUserInDB(db, user) {
 		}
 
 		if (updates.length === 0) {
-			console.log('No valid profile fields provided to update.');
+			console.warn('UPDATE_WARNING', 'No valid match fields provided to update', 'updateUserInDB');
 			return resolve();
 		}
 

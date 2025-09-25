@@ -56,10 +56,9 @@ function getSRCfromString(chartText: string ): string {
 }
 
 export async function getGameStats(data: any) {
-	if (!data.matchID) {
-		console.error('No matchID getGameStats');
-		return ;
-	}
+	if (!data.matchID)
+		return console.error('GAME_STATS_ERROR', 'No matchID', 'getGameStats');
+
 	console.log(`See GameStats! of gameID:${data.matchID}`);
 
 	const body = document.getElementById('body');
@@ -110,8 +109,5 @@ export async function getGameStats(data: any) {
 	page.appendChild(getColumsGameStates(img3, img4));
 	page.appendChild(exitButton);
 	body.innerHTML = "";
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
 	body.appendChild(page);
 }

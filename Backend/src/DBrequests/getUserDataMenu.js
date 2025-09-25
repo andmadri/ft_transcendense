@@ -1,47 +1,42 @@
 import { getUserByID } from '../Database/users.js';
 import { getUserMatchStatsDB } from '../Database/dashboard.js';
+import { handleError } from '../errors.js'
 import { db } from '../index.js';
 
 async function getUserDataMenu(msg, socket, userId1, userId2)
 {
-	// let playerID = null;
-	// if (msg.playerNr == 1)
-	// playerID1 = userId1;
-	// else
-		// playerID = userId2;
-	if (userId2 == null)
-		userId2 = 1;
-	let player1 = await getUserByID(db, userId1);
-	let player2 = await getUserByID(db, userId2);
-	let stats1 = await getUserMatchStatsDB(db, userId1);
-	let stats2 = await getUserMatchStatsDB(db, userId2);
-	let returnMsg = {
-		action: 'userDataMenu',
-		subaction: 'receivedUserDataMenu',
-		user_info1: player1,
-		user_info2: player2,
-		stats1: stats1,
-		stats2: stats2,
-		// playerNr: msg.playerNr
+	try {
+		if (userId2 == null)
+			userId2 = 1;
+		const player1 = await getUserByID(db, userId1);
+		const player2 = await getUserByID(db, userId2);
+		const stats1 = await getUserMatchStatsDB(db, userId1);
+		const stats2 = await getUserMatchStatsDB(db, userId2);
+		const returnMsg = {
+			action: 'userDataMenu',
+			subaction: 'receivedUserDataMenu',
+			user_info1: player1,
+			user_info2: player2,
+			stats1: stats1,
+			stats2: stats2,
+		}
+		socket.emit('message', returnMsg);
+		return true;
+	} catch (err) {
+		handleError(socket, 'DB_ERROR', 'Database error', err.message || err, 'getUserDataMenu');
+		return false;
 	}
-	socket.emit('message', returnMsg);
 }
 
 export function handleUserDataMenu(msg, socket, userId1, userId2) {
 	if (!msg || !msg.action || msg.action !== 'userDataMenu' || !msg.subaction) {
-		const returnMsg = { action: "Error", message: "Invalid message format" };
-		console.log('Invalid message format:', msg);
-		socket.emit('message', returnMsg);
+		handleError(socket, 'MSG_MISSING_ACTION', 'Invalid message format', 'missing (sub)action', 'handleUserDataMenu');
 		return false;
 	}
-	if (msg.subaction == 'getUserDataMenu') {
-		console.log('Received request for player data:', userId1, userId2);
-		getUserDataMenu(msg, socket, userId1, userId2);
-		return true;
+	if (msg.subaction === 'getUserDataMenu') {
+		return getUserDataMenu(msg, socket, userId1, userId2);
 	} else {
-		const returnMsg = { action: "Error", message: "Unknown subaction" };
-		console.log('Unknown subaction:', msg.subaction);
-		socket.emit('message', returnMsg);
+		handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleUserDataMenu');
 		return false;
 	}
 }

@@ -9,12 +9,11 @@ import * as S from '../structs.js'
 function insertFriends(friends: any) {
 	const html_list = document.getElementById('friends_list') as HTMLUListElement;
 	if (!html_list) {
-		console.log('HTML List for Friends Not Found');
+		console.error('HTML_NOT_FOUND', 'HTML List for Friends Not Found', 'insertFriends');
 		return;
 	}
 	html_list.innerHTML = "";
 	const friendsArray = Array.isArray(friends.content) ? friends.content : [];
-	//there is a problem with the friends data
 	for (const friend of friendsArray)
 	{
 			const row = styleRow(friend.name);
@@ -58,7 +57,6 @@ function insertFriends(friends: any) {
 			const dashboardBtn = document.createElement('button');
 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');
 			dashboardBtn.addEventListener("click", () => {
-				// console.log('dashboard call friend.id', friend.id);
 				navigateTo(`Dashboard?userId=${friend.id}`);
 			});
 			btnContainer.appendChild(deleteFriendBtn);
@@ -68,16 +66,9 @@ function insertFriends(friends: any) {
 	}
 }
 
-// function processFriends(data: any) {
-// 	if (data.access && data.access == "yes")
-// 		insertFriends(data.content);
-// 	else
-// 		console.log("User has no Friends to Display");
-// }
-
 export function actionFriends(data: any) {
 	if (!data.subaction) {
-		log('no subaction Friends');
+		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionFriends');
 		return ;
 	}
 	switch(data.subaction) {
@@ -88,9 +79,9 @@ export function actionFriends(data: any) {
 			showFriendAndChallengeRequests(data.friendRequests, data.invites);
 			break ;
 		case 'error':
-			alert(data.content);
+			console.error('ERROR_FRIEND', data.content);
 			break ;
 		default:
-			console.log(`(actionOnline) Unknown action: ${data.subaction}`);
+			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', data.subaction, 'actionFriends');
 	}
 }

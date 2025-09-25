@@ -7,22 +7,14 @@ export async function updatePlayersSessionDB(db, user_ids, state) {
 	);
 }
 
-/*
-1) Update to players userSession using this function: addUserSessionToDB(db, session)
-2) Check if the player is online using this function: getLatestSessionByState(db, user_id, state)
-3) Give a list of all the players that are online.
-*/
-
 export async function onUserLogin(db, user_id) {
 	try {
 		await addUserSessionToDB(db, { user_id, state: 'login' });
 		await addUserSessionToDB(db, { user_id, state: 'in_menu' });
 	} catch (err) {
-		console.error('AddUserSession: ' + err);
+		console.error('LOGIN_SESSION_ERROR', err.message || err, 'onUserLogin');
 	}
 }
-
-
 
 /**
  * Handle user logout by updating session state and managing tournament participation.
@@ -38,6 +30,6 @@ export async function onUserLogout(db, user_id) {
 		}
 		await addUserSessionToDB(db, { user_id, state: 'logout' });
 	} catch (err) {
-		console.error('AddUserSession: ' + err);
+		console.error('LOGOUT_SESSION_ERROR', err.message || err, 'onUserLogout');
 	}
 }

@@ -28,13 +28,15 @@ function handleStartOnlineMatch(msg, match) {
 		console.log("waiting till the opponent is ready");
 		return true;
 	}
-	return false
+	return false;
 }
 
 // From Frontend
 export function handleInitGame(db, msg, socket) {
-	if (!msg.subaction)
-		return console.log('no subaction in handleInitGame');
+	if (!msg.subaction) {
+		handleError(socket, 'MSG_MISSING_SUBCTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleInitGame');
+		return -1;
+	}
 
 	// for local games
 	if (msg.subaction == 'createMatch' && msg.mode != 3)
@@ -45,4 +47,5 @@ export function handleInitGame(db, msg, socket) {
 		if (handleStartOnlineMatch(msg, match))
 			return ;
 	}
+	handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleInitGame');
 }

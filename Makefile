@@ -49,7 +49,7 @@ update-host-env:
 	else \
 		echo "HOST_IP=$$HOST_IP" >> .env; \
 	fi
-	@HOST_DOMAIN=$$(hostname); \
+	@HOST_DOMAIN="$$(hostname):8443"; \
 	if grep -q '^HOST_DOMAIN=' .env; then \
 		sed -i "s/^HOST_DOMAIN=.*/HOST_DOMAIN=$$HOST_DOMAIN/" .env; \
 	else \

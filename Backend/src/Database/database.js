@@ -102,21 +102,33 @@ export async function createDatabase() {
 	const created = await ensureSchema(db);
 
 	if (created) {
-		const guest_id = await createNewUserToDB(db, {
-			name: 'Guest',
-			email: 'guest@guest.guest',
-			password: 'secretguest'
-		});
-		const ai_id = await createNewUserToDB(db, {
-			name: 'AI',
-			email: 'ai@ai.ai',
-			password: 'secretai'
-		});
+		let guest_id = null;
+		let ai_id = null;
+		try {
+			guest_id = await createNewUserToDB(db, {
+				name: 'Guest',
+				email: 'guest@guest.guest',
+				password: 'secretguest'
+			});
+			ai_id = await createNewUserToDB(db, {
+				name: 'AI',
+				email: 'ai@ai.ai',
+				password: 'secretai'
+			});
+		} catch(err) {
+			console.error('CREATE_USER_ERROR', `Error creating guest/AI accounts: ${err.message || err}`, 'createDatabase');
+			return db;
+		}
+		if (!guest_id || !ai_id) {
+			console.error('CREATE_USER_ERROR', 'guest_id and/or ai_id missing after account creation', 'createDatabase');
+			return db;
+		}
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);
 		} catch(err) {
-			console.log("onUserLogin failed: guest / ai id");
+			console.error('LOGIN_ERROR', 'onUserLogin failed for guest or AI id', err.message || err, 'createDatabase');
+			return db;
 		}
 	}
 	sql_log(`Finished setting up database`);

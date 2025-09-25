@@ -63,8 +63,12 @@ async function getGameStatsSVG(db, data) {
 	const match_duration = formatDurationSecs(data);
 	let winner = 'No winner';
 	if (data.winner_id !== null) {
-		const winnerId = await getUserByID(db, data.winner_id);
-		winner = winnerId.name;
+		try {
+			const winnerId = await getUserByID(db, data.winner_id);
+			winner = winnerId.name;
+		} catch (err) {
+			console.error('DB_ERROR', `Error fetching winner data for user ID ${data.winner_id}: ${err.message || err}`, 'getGameStatsSVG');
+		}
 	}
 
 	const gameStatsSVG = `
@@ -78,14 +82,20 @@ async function getGameStatsSVG(db, data) {
 }
 
 export async function generateMatchInfo(db, matchID, data, colorOf) {
-	const player1 = await getUserByID(db, data.player_1_id);
-	const player2 = await getUserByID(db, data.player_2_id);
 	const { width, height, open, close } = createSvgCanvas();
-
-	const min_x = 0;
-	const min_y = 0;
-	const max_x = 100;
-	const max_y = 600;
+	let player1 = null;
+	let player2 = null;
+	try {
+		player1 = await getUserByID(db, data.player_1_id);
+		player2 = await getUserByID(db, data.player_2_id);
+		if (!player1 || !player2) {
+			console.error('DB_ERROR', `Error fetching players with IDs ${data.player_1_id} or ${data.player_2_id}: ${err.message}`, 'generateMatchInfo');
+			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
+		}
+	} catch (err) {
+		console.error('DB_ERROR', `Database error in getUserByID: ${err.message || err}`, 'generateMatchInfo');
+		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
+	}
 
 	// CREATE CHART HERE
 	const { margins, plot } = createPlotArea({ width, height });

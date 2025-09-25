@@ -2,6 +2,8 @@ import { log } from '../logging.js'
 import { Game, UI } from "../gameData.js"
 import { styleRow, styleListBtns } from './menuContent.js'
 import { navigateTo } from '../history.js';
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 function createPlayerList(): HTMLDivElement {
 	const playerList = document.createElement('div');
@@ -25,7 +27,6 @@ function createPlayerList(): HTMLDivElement {
 }
 
 export function getPlayerList(): HTMLDivElement {
-	console.log("getPlayerList called");
 	let playerList = document.getElementById('players') as HTMLDivElement;
 
 	if (!playerList) {
@@ -40,7 +41,7 @@ export function getPlayerList(): HTMLDivElement {
 			list.innerHTML = '';
 	}
 	console.log("getPlayerList send request to backend");
-	Game.socket.emit('message',{
+	Game.socket.emit('message', {
 		action: 'players',
 		subaction: 'getAllPlayers'
 	});
@@ -49,16 +50,16 @@ export function getPlayerList(): HTMLDivElement {
 
 export function insertPlayers(players: any) {
 	const html_list = document.getElementById('players_list') as HTMLUListElement;
-		if (!html_list) {
-		console.log('HTML List for Friends Not Found');
+	if (!html_list) {
+		console.error('HTML_NOT_FOUND', 'HTML List for Friends Not Found', 'insertPlayers');
+
 		return;
 	}
 	html_list.innerHTML = "";
 	html_list.className = 'playerOfList';
-	for (const player of players)
-	{
+	for (const player of players) {
 		//I don't want to show the current player
-			if (player.id > 2 && player.id !== UI.user1.ID && !player.isFriend) {
+		if (player.id > 2 && player.id !== UI.user1.ID && !player.isFriend) {
 			const row = styleRow(player.name);
 			const status = player.online_status == 0 ? 'offline' : 'online';
 			row.style.color = status === 'online' ? 'green' : 'gray';
@@ -72,10 +73,10 @@ export function insertPlayers(players: any) {
 			const addFriendBtn = document.createElement('button');
 			styleListBtns(addFriendBtn, 'url("../../images/add_friend.png")');
 			addFriendBtn.addEventListener("click", () => {
-				alert(`Send ${player.name} a friend request`);
+				customAlert(`You send ${player.name} a friend request`); //needed customAlert
 				const id = UI.user1.ID;
 				const friendID = player.id;
-				Game.socket.emit('message', {action: "friends", subaction: "friendRequest", id, friendID});
+				Game.socket.emit('message', { action: "friends", subaction: "friendRequest", id, friendID });
 			});
 			btnContainer.appendChild(addFriendBtn);
 			// }
@@ -102,13 +103,13 @@ function processPlayers(data: any) {
 export function actionPlayers(data: any) {
 	if (!data.subaction) {
 		log('no subaction Players');
-		return ;
+		return;
 	}
 
-	switch(data.subaction) {
+	switch (data.subaction) {
 		case "retPlayers":
 			processPlayers(data);
-			break ;
+			break;
 		default:
 			log(`(actionPlayers) Unknown action: ${data.subaction}`);
 	}

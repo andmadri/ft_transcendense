@@ -1,7 +1,7 @@
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js"
 import { styleListBtns } from "./menuContent.js";
-import { get2faBtn, getLoginBtn, getAvatarBtn, getChangeNameBtn } from "./userDataMenuButtons.js";
+import { get2faBtn, getLoginBtn, getAvatarBtn, getProfileSettingsBtn } from "./userDataMenuButtons.js";
 
 function styleBtnUserMenu(button: HTMLButtonElement): HTMLButtonElement {
 	button.style.display = 'flex';
@@ -308,7 +308,7 @@ function createButtonsContainer(playerNr: number): HTMLDivElement {
 	if (playerNr == 1) {
 		buttonsContainer.appendChild(styleBtnUserMenu(get2faBtn(playerNr)));
 		buttonsContainer.appendChild(styleBtnUserMenu(getAvatarBtn(playerNr)));
-		buttonsContainer.appendChild(styleBtnUserMenu(getChangeNameBtn(playerNr))); //Merel will built this
+		buttonsContainer.appendChild(styleBtnUserMenu(getProfileSettingsBtn()));
 	}
 	buttonsContainer.appendChild(styleBtnUserMenu(getLoginBtn(playerNr)));
 	return buttonsContainer;
@@ -317,10 +317,9 @@ function createButtonsContainer(playerNr: number): HTMLDivElement {
 function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, user2_stats: any) {
 	const user1_block = document.getElementById('user1_block');
 	const user2_block = document.getElementById('user2_block');
-	if (!user1_block || !user2_block) {
-		console.error('Required user blocks not found');
-		return;
-	}
+	if (!user1_block || !user2_block)
+		return console.error('USER_BLOCK_ERROR', 'Required user blocks not found', 'renderUserCardMenu');
+
 	clearUserBlocks(user1_block, user2_block);
 	setupBlockStyling(user1_block, user2_block);
 	const { tabContainer1, tabContainer2 } = createTabs();
@@ -341,11 +340,11 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 
 export function actionUserDataMenu(data: any) {
 	if (!data.subaction) {
-		console.error('No subaction in userDataMenu data');
+		console.error('MSG_MISSING_ACTION', 'Invalid message format:', 'missing subaction', 'actionUserDataMenu');
 		return ;
 	} else if (data.subaction === 'receivedUserDataMenu') {
 		renderUserCardMenu(data.user_info1, data.stats1, data.user_info2, data.stats2); ;
 	} else {
-		console.log(`Unknown subaction in playerInfo: ${data.subaction}`);
+		console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', data.subaction, 'actionUserDataMenu');
 	}
 }
