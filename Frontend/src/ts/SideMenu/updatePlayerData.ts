@@ -1,13 +1,13 @@
-import { log } from '../logging.js';
 import { UI, Game } from "../gameData.js"
 import { navigateTo, getValidState } from '../history.js';
-import * as S from '../structs.js'
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 
 export function actionPlayerInfo(data: any) {
 	if (!data.subaction) {
 		console.error('No subaction in playerInfo data');
-		return ;
+		return;
 	} else if (data.subaction === 'receivePlayerData') {
 		receivePlayerData(data);
 	} else if (data.subaction == 'changeName') {
@@ -19,7 +19,7 @@ export function actionPlayerInfo(data: any) {
 
 function updateUsername(msg: any) {
 	if (msg.success === 1) {
-		alert('Username is successfully changed');
+		customAlert('Username is successfully changed'); //needed customAlert
 		UI.user1.name = msg.msg;
 		const playerNameField = document.getElementById('userNameMenu1')
 		if (playerNameField)
@@ -27,14 +27,14 @@ function updateUsername(msg: any) {
 
 	} else {
 		if (msg.msg)
-			alert(msg.msg);
+			customAlert("Unable to change username"); //needed customAlert
 	}
 }
 
 function receivePlayerData(data: any) {
 	if (!data || !data.success != true) {
 		console.error('Error receiving player data:', data.msg);
-		return ;
+		return;
 	} else {
 		UI.user1.name = data.name || 'unknown';
 		UI.user1.ID = data.id || -1;
@@ -64,9 +64,10 @@ function receivePlayerData(data: any) {
 }
 
 export function getPlayerData() {
-	Game.socket.emit('message',{
+	Game.socket.emit('message', {
 		action: 'playerInfo',
-		subaction: 'getPlayerData'});
+		subaction: 'getPlayerData'
+	});
 }
 
 export function updatePlayerData(player: number) {

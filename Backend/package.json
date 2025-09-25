@@ -17,7 +17,7 @@
    "@fastify/cookie": "^7.x.x",
    "@fastify/jwt": "^7.0.0",
    "speakeasy": "^2.0.0",
-   "sqlite3": "^5.1.6",
+   "sqlite3": "^5.1.7",
    "bcrypt": "^5.0.0",
    "axios": "^1.6.1",
    "qrcode": "^1.4.4"

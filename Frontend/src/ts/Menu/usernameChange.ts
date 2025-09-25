@@ -1,4 +1,6 @@
 import { Game, UI } from "../gameData.js";
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 function styleChangeUsernameTitle(): HTMLDivElement {
 	const title = document.createElement('div');
@@ -43,10 +45,10 @@ function getChangeName(): HTMLDivElement {
 	cnDiv.style.left = '0';
 	cnDiv.style.display = 'flex';
 	cnDiv.style.flexDirection = 'column',
-	cnDiv.style.justifyContent = 'center';
+		cnDiv.style.justifyContent = 'center';
 	cnDiv.style.alignItems = 'center';
 	cnDiv.style.backdropFilter = 'blur(6px)';
-	cnDiv.style.backgroundColor = 'rgb(54, 52, 48);'; 
+	cnDiv.style.backgroundColor = 'rgb(54, 52, 48);';
 	cnDiv.style.position = 'fixed';
 	cnDiv.style.zIndex = '100';
 	cnDiv.style.padding = '5px';
@@ -110,11 +112,11 @@ function getBlackContainerBlock(): HTMLDivElement {
 export function getChangeNameField(e: Event | null, playerNr: number) {
 	const cnDiv = getChangeName();
 	const titleAndExitBtn = getTitleAndExitBtn(cnDiv);
-	
+
 	const input = document.createElement('input');
- 	input.type = "text";
- 	input.placeholder = "New Username";
- 	input.id = `usernameInput${playerNr}`;
+	input.type = "text";
+	input.placeholder = "New Username";
+	input.id = `usernameInput${playerNr}`;
 	input.style.justifyContent = 'center';
 	input.style.alignItems = 'center';
 	input.style.height = '20%'
@@ -123,7 +125,7 @@ export function getChangeNameField(e: Event | null, playerNr: number) {
 	submitBtn.addEventListener("click", () => {
 		const newUsername = input.value.trim();
 		if (!newUsername) {
-			alert("Please enter a username!");
+			customAlert("Please enter a username!"); //needed customAlert
 			return;
 		}
 		Game.socket.emit('message', {

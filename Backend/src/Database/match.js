@@ -222,20 +222,44 @@ export async function getMatchEventsByMatchID(db, match_id) {
 	});
 }
 
+export async function getMatchByUserID(db, user_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT id FROM Matches WHERE end_time IS NULL AND (player_1_id = ? OR player_2_id = ?)`;
+		db.get(sql, [user_id, user_id], (err, row) => {
+			if (err) {
+				sql_error(err, `getMatchByUserID id=${user_id}`);
+				reject(err);
+			} else {
+				if (!row) {
+					sql_log(`getMatchByUserID | user_id not found! user_id=${user_id}`);
+				}
+				resolve(row || null);
+			}
+		});
+	});
+}
+
 // *************************************************************************** //
 //                           SHOW DATA IN THE LOGGER                           //
 // *************************************************************************** //
 
 export async function loggerUpdateMatchInDB(db, match_id) {
-	const match = await getMatchByID(db, match_id);
-	if (!match) {
-		throw new Error(`Match ID ${match_id} does not exist.`);
-	}
+	let match = null;
+	let player_1 = null;
+	let player_2 = null;
+	try {
+		match = await getMatchByID(db, match_id);
+		if (!match) {
+			throw new Error(`Match ID ${match_id} does not exist.`);
+		}
 
-	const player_1 = await getUserByID(db, match.player_1_id);
-	const player_2 = await getUserByID(db, match.player_2_id);
-	if (!player_1 || !player_2) {
-		throw new Error(`UserID ${match.player_1_id} and/or ${match.player_2_id} does not exist.`);
+		player_1 = await getUserByID(db, match.player_1_id);
+		player_2 = await getUserByID(db, match.player_2_id);
+		if (!player_1 || !player_2) {
+			throw new Error(`UserID ${match.player_1_id} and/or ${match.player_2_id} does not exist.`);
+		}
+	} catch (err) {
+		return err;
 	}
 
 	if (match.player_1_score === 0 && match.player_2_score === 0 && !match.end_time) {

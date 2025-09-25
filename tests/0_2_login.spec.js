@@ -10,15 +10,15 @@ Tests:
 		+ Email / Password / Login btn / Google img / Sign Up link
 		+ No Email -> error v
 		+ No password -> error v
-		+ wrong password -> alert v
-		+ wrong email -> alert v
+		+ wrong password -> customAlert v
+		+ wrong email -> customAlert v
 		+ Login btn -> To menu
 
 		+ Login twice -> You are already logged in!
 	
 	LOGIN WITH 2FA
 		+ Login with 2FA -> To menu
-		+ Wrong 2FA code -> alert
+		+ Wrong 2FA code -> customAlert
 
 	GOOGLE
 		+ Google login btn
@@ -55,7 +55,7 @@ export async function login_tests(page, player, Email, Password) {
 
 	// Incorrect Password / email
 	await waitForAlert(page, player, Email, Password + '1', 'Incorrect password');
-	await waitForAlert(page, player, Email + '1', Password, 'User not found' );
+	await waitForAlert(page, player, Email + '1', Password, 'User not found');
 
 	// Correct Login
 	await login_player(page, player, Email, Password);
