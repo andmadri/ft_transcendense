@@ -9,8 +9,8 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB } from './Database/sessions.js';
-import { handleError } from './errors.js'
+import { onUserLogout } from './Services/sessionsService.js';
+import { handleError } from './errors.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
@@ -19,6 +19,7 @@ import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
 import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
+import { removeFromWaitinglist } from './Pending/onlinematch.js';
 
 export const db = await createDatabase();
 
@@ -158,6 +159,7 @@ fastify.ready().then(() => {
 			try {
 				console.log(`User ${userId1} disconnected`);
 				checkChallengeFriendsInvites(socket, userId1);
+				removeFromWaitinglist(userId1);
 				await stopMatchAfterRefresh(fastify.io, userId1);
 				const player = tournament.players.find(p => p.id === userId1);
 				if (player) {
@@ -178,17 +180,17 @@ setInterval(async () => {
 			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 				// Mark user offline in DB
 				try {
-					await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
-					// usersLastSeen.delete(userId1);
+					await onUserLogout(db, userId1);
+					usersLastSeen.delete(userId1);
 					console.log(`User ${userId1} marked offline due to missed heartbeat`);
 					if (userId2 && userId2 > 2) {
-						await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
-						usersLastSeen.delete(userId1);
+						await onUserLogout(db, userId2);
+						usersLastSeen.delete(userId2);
 						console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
 					}
 					usersLastSeen.delete(userId1);
 				} catch (err) {
-					console.error('USER_LOGOUT_ERROR', 'Error in heartbeat logout process:', err.message || err, 'setInterval');
+					console.error(`Error setting user1 (${userId1}) and/or user2 (${userId2}) offline: `, err);
 				}
 			}
 		}

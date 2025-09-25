@@ -4,6 +4,7 @@ import { db } from '../index.js';
 import { handleError } from '../errors.js'
 
 async function getPlayerData(msg, socket, userId1, userId2) {
+	console.log(`getPlayerData | userId1=${userId1} - userId2=${userId2}`);
 	let returnMsg = {
 		action: "playerInfo",
 		subaction: "receivePlayerData"
@@ -21,7 +22,7 @@ async function getPlayerData(msg, socket, userId1, userId2) {
 	returnMsg.id = player1?.id || 0;
 	returnMsg.player1Login = player1?.online || false;
 	returnMsg.score = player1?.score || 0;
-	if (player1.twofa_secret)
+	if (player1 && player1.twofa_secret)
 		returnMsg.google = player1.twofa_secret === 'google' ? true : false
 	else 
 		returnMsg.google = false;
