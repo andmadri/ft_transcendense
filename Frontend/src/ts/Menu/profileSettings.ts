@@ -140,7 +140,7 @@ function getSubMitBtn(txt: string, input: HTMLInputElement): HTMLButtonElement{
 				return;
 			} else {
 				if (firstPassword != newInput) {
-					alert('Passwords are not the same');
+					customAlert('Passwords are not the same');
 					input.value = "";
 					firstPassword = "";
 					submitBtn.textContent = 'Change';
