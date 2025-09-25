@@ -42,8 +42,8 @@ function msgMatchIsRemoved() {
 }
 
 export function actionMatchmaking(msg: any) {
-	if (!msg.subaction)
-		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', msg, 'actionMatchmaking');
+	if (!msg || !msg.subaction)
+		return console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', msg, 'actionMatchmaking');
 
 	switch (msg.subaction) {
 		case 'challengeDeclined':
