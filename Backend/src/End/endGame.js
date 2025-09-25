@@ -14,6 +14,11 @@ export async function stopMatchAfterRefresh(io, userId1) {
 				} else if (userId1 === match.player2.ID) {
 					name = match.player2.name;
 				}
+				if (match.mode !== OT.Online) {
+					// Martijn: Decide who is the winner
+					match.winnerID = match.player2.ID;
+					await saveMatch(match.matchID);
+				}
 				if (name) {
 					await quitMatch(match, {name, player: userId1}, io);
 				}
@@ -25,16 +30,14 @@ export async function stopMatchAfterRefresh(io, userId1) {
 }
 
 export async function quitMatch(match, msg, io) {
-	console.log(`match quit by ${msg.player}`);
 	if (match.mode === OT.Online && !match.winnerID) {
 		match.winnerID = msg.player == match.player1.ID ? match.player2.ID : match.player1.ID;
 	}
 	else if (match.mode !== OT.Online){
-		console.log(`quitmatch ${msg.winner}`);
-		match.winnerID = msg.winner
+		match.winnerID = match.player2.ID;
 	}
 	match.state = state.End;
-	console.log(`WinnerID = ${match.winnerID}`);
+	console.log(`match quit by ${msg.player} | WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',
