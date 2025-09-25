@@ -1,4 +1,6 @@
 import { Game, UI } from "../gameData.js";
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 function styleChangeUsernameTitle(): HTMLDivElement {
 	const title = document.createElement('div');
@@ -43,10 +45,10 @@ function getChangeDiv(id: string): HTMLDivElement {
 	cnDiv.style.left = '0';
 	cnDiv.style.display = 'flex';
 	cnDiv.style.flexDirection = 'column',
-	cnDiv.style.justifyContent = 'center';
+		cnDiv.style.justifyContent = 'center';
 	cnDiv.style.alignItems = 'center';
 	cnDiv.style.backdropFilter = 'blur(6px)';
-	cnDiv.style.backgroundColor = 'rgb(54, 52, 48);'; 
+	cnDiv.style.backgroundColor = 'rgb(54, 52, 48);';
 	cnDiv.style.position = 'fixed';
 	cnDiv.style.zIndex = '100';
 	cnDiv.style.padding = '5px';

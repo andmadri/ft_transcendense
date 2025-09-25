@@ -4,24 +4,26 @@ import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
+import { customAlert } from '../Alerts/customAlert.js';
+
 
 
 export function startGame() {
 	console.log(`function startGame() ${Game.match.mode}`);
 	switch (Game.match.matchFormat) {
 		case MF.SingleGame: {
-			break ;
+			break;
 		}
 		case MF.Tournament: {
 			// create tournament once?
-			break ;
+			break;
 		}
 		default: {
-			alert("Please select single game or tournament");
-			return ;
+			customAlert("Please select single game or tournament"); //needed customAlert
+			return;
 		}
 	}
-	
+
 	switch (Game.match.mode) {
 		case OT.ONEvsONE: {
 			if (Game.match.player2.ID != -1) {
@@ -31,26 +33,26 @@ export function startGame() {
 			else {
 				navigateTo('LoginP2');
 			}
-			break ;
+			break;
 		}
 		case OT.ONEvsCOM: {
 			navigateTo('Game');
 			Game.match.state = state.Init;
-			break ;
+			break;
 		}
 		case OT.Online: {
 			navigateTo('Game');
 			Game.match.state = state.Pending;
 			console.log("Send online request to backend");
-			Game.socket.emit('message',{
+			Game.socket.emit('message', {
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
 			});
-			break ;
+			break;
 		}
 		default: {
-			alert('Please select an opponent');
-			return ;
+			customAlert('Please select an opponent'); //needed customAlert
+			return;
 		}
 	}
 }
@@ -59,16 +61,16 @@ export function changeOpponentType(option: string) {
 	switch (option) {
 		case '1 vs 1':
 			Game.match.mode = OT.ONEvsONE;
-			break ;
+			break;
 		case '1 vs COM':
 			Game.match.mode = OT.ONEvsCOM;
-			break ;
+			break;
 		case 'Online':
 			Game.match.mode = OT.Online;
-			break ;
+			break;
 		case 'Empty':
 			Game.match.mode = OT.Empty;
-			break ;
+			break;
 		default:
 			log(`unknown opponent type? ${option}`);
 	}
@@ -79,13 +81,13 @@ export function changeMatchFormat(option: string) {
 	switch (option) {
 		case 'single game':
 			Game.match.matchFormat = MF.SingleGame;
-			break ;
+			break;
 		case 'tournament':
 			Game.match.matchFormat = MF.Tournament;
-			break ;
+			break;
 		case 'Empty':
 			Game.match.matchFormat = MF.Empty;
-			break ;
+			break;
 		default:
 			log(`unknown match format? ${option}`);
 	}
@@ -103,7 +105,7 @@ export function initGameServer() {
 			player2ID: Game.match.player2.ID,
 			player2Name: Game.match.player2.name
 		}
-		Game.socket.emit('message',initGame);
+		Game.socket.emit('message', initGame);
 	}
 }
 
@@ -150,9 +152,9 @@ export function actionInitOnlineGame(data: any) {
 
 	console.log("actionInitOnlineGame - matchID: " + data.matchID);
 	if (match == null) { // something went wrong
-		alert('Could not start a new game');
+		customAlert('Could not start a new game'); //needed customAlert
 		navigateTo('Menu');
-		return ;
+		return;
 	}
 	//getGameField();
 
