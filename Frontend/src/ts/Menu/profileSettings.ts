@@ -1,7 +1,6 @@
 import { Game, UI } from "../gameData.js";
 import { customAlert } from '../Alerts/customAlert.js';
 
-
 function styleChangeUsernameTitle(): HTMLDivElement {
 	const title = document.createElement('div');
 	title.textContent = "Profile Settings";
