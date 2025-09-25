@@ -97,12 +97,7 @@ export async function changeProfileSettings(socket, db, msg) {
 		return;
 	}
 	catch(err) {
-		// For Merel: Do we need this IF ELSE statement - in main there is only the ELSE option?
-		if (err.code === 'SQLITE_CONSTRAINT' && err.message.includes('Users.name')) {
-			return (sendChangingNameMsg(socket, msg, 0, 'That username is already taken.'));
-		} else {
-			handleError(socket, 'DB_UNKNOWN', 'Unknown error occurred', `while adding user`, err.message || err, 'changeName');
-		}
+		handleError(socket, 'DB_UNKNOWN', 'Unknown error occurred', `while adding user`, err.message || err, 'changeName');
 	}
 }
 

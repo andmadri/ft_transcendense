@@ -102,8 +102,7 @@ function processPlayers(data: any) {
 
 export function actionPlayers(data: any) {
 	if (!data.subaction) {
-		console.log('no subaction Players');
-		return;
+		return console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', 'subaction missing', 'actionPlayers');
 	}
 
 	switch (data.subaction) {
@@ -111,6 +110,6 @@ export function actionPlayers(data: any) {
 			processPlayers(data);
 			break;
 		default:
-			console.log(`(actionPlayers) Unknown action: ${data.subaction}`);
+			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', data.subaction, 'actionPlayers');
 	}
 }
