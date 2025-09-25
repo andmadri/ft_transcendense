@@ -222,6 +222,23 @@ export async function getMatchEventsByMatchID(db, match_id) {
 	});
 }
 
+export async function getMatchByUserID(db, user_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT id FROM Matches WHERE end_time IS NULL AND (player_1_id = ? OR player_2_id = ?)`;
+		db.get(sql, [user_id, user_id], (err, row) => {
+			if (err) {
+				sql_error(err, `getMatchByUserID id=${user_id}`);
+				reject(err);
+			} else {
+				if (!row) {
+					sql_log(`getMatchByUserID | user_id not found! user_id=${user_id}`);
+				}
+				resolve(row || null);
+			}
+		});
+	});
+}
+
 // *************************************************************************** //
 //                           SHOW DATA IN THE LOGGER                           //
 // *************************************************************************** //
