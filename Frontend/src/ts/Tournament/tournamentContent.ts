@@ -41,7 +41,7 @@ function tournamentUpdate(data: any) {
 // }
 
 function tournamentError(data: any) {
-	console.log('Tournament error: ' + (data.reason || 'Unknown error'));
+	console.error('TOURNAMENT_ERROR', data.reason || 'Unknown error', 'tournamentError');
 	navigateTo('Menu');
 }
 

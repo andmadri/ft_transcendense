@@ -29,7 +29,7 @@ export async function generateBarChartForMatch(db, matchID, colorOf) {
 			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 		}
 	} catch (err) {
-		console.log('Database error: ', err);
+		console.error('DB_ERROR', `Database error getting match bar for matchID ${matchID}: ${err.message || err}`, 'generateBarChartForMatch');
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 

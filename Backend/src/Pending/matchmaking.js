@@ -33,7 +33,6 @@ export function getChallengesFriends(responder) {
 	return (invites);
 }
 
-// STEP 2: receiving invitation and send back to all the online players.
 async function challengeFriend(io, db, socket, challenger, responder) {
 	const tempMatchID = 'temp' + challenger + '+' + responder;
 	const reverseMatchID = 'temp' + responder + '+' + challenger;
@@ -43,7 +42,6 @@ async function challengeFriend(io, db, socket, challenger, responder) {
 
 	if (friendInvites.has(reverseMatchID))
 	{
-		console.log("reverse match..");
 		const socket2 = friendInvites.get(reverseMatchID).socket;
 		startChallenge(io, db, socket, {challenger, responder, tempMatchID: reverseMatchID, socket2});
 		return ;
@@ -53,11 +51,11 @@ async function challengeFriend(io, db, socket, challenger, responder) {
 	try {
 		user = await getUserByID(db, challenger);
 		if (!user) {
-			console.log('Error getUserByID', err);
+			console.error('PLAYER_NOT_FOUND Error getUserByID', 'challengeFriend');
 			return ;
 		}
 	} catch (err) {
-		console.log('Error getUserByID', err);
+		console.error('PLAYER_NOT_FOUND Error getUserByID', err.message || err, 'challengeFriend');
 		return ;
 	}
 
@@ -72,16 +70,17 @@ async function startChallenge(io, db, socket, msg) {
 	}
 	const socket2 = data.socket;
 	if (!socket2)
-		return console.error('Start challenge: socket is not found');
+		return console.error('CHALLENGE_NO_SOCKET socket is not found', 'startChallenge');
 
 	if (!socket2.connected) {
+		console.error('CHALLENGE_SOCKET_DISCONNECTED Responder is disconnected', 'startChallenge');
 		stopChallenge(msg, true);
 		return ;
 	}
 
 	const matchID = await createMatch(db, OT.Online, socket, msg.challenger, msg.responder);
 	if (matchID === -1) {
-		console.log(`startChallenge - Error in createMatch`);
+		console.error(`CHALLENGE_MATCH_CREATION_FAIL Error in createMatch`, 'startChallenge');
 		return ;
 	}
 	addUserToRoom(socket2, matchID);
@@ -89,7 +88,7 @@ async function startChallenge(io, db, socket, msg) {
 
 	const match = matches.get(matchID);
 	if (!match) {
-		console.log(`No match for matchID: ${matchID}`);
+		console.error(`MATCH_NOT_FOUND No match for matchID: ${matchID}`, 'startChallenge');
 		return ;
 	}
 	io.to(matchID).emit('message', {
@@ -110,7 +109,7 @@ function stopChallenge(msg, disconnectedSocket) {
 		}
 		const socket = data.socket;
 		if (!socket)
-			return console.error('stopChallenge: socket is not found');
+			return console.error('CHALLENGE_NO_SOCKET socket is not found', 'stopChallenge');
 
 		socket.emit('message', {
 			action: 'matchmaking',
@@ -133,7 +132,6 @@ function cancelChallengeFriend(socket, userID) {
 		friendInvites.delete(invite.id);
 }
 
-// STEP 5: receive response from responder
 async function receiveResponseChallenge(io, db, socket, msg) {
 	if (msg.answer == true)
 		startChallenge(io, db, socket, msg);
@@ -143,7 +141,7 @@ async function receiveResponseChallenge(io, db, socket, msg) {
 
 export function handleMatchmaking(db, msg, socket, userID, io) {
 	if (!msg.subaction)
-		return ;
+		return handleError('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', msg, 'handleMatchmaking');
 	
 	switch(msg.subaction) {
 		case 'challengeFriend':
@@ -162,6 +160,6 @@ export function handleMatchmaking(db, msg, socket, userID, io) {
 			removeFromWaitinglist(userID);
 			break ;
 		default:
-			console.error(`subaction ${msg.subaction} not found in handleMatchmaking`);
+			handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleMatchmaking');
 	}
 }

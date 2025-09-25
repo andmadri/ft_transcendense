@@ -53,10 +53,11 @@ export async function submitAuthForm(e: Event, player: number) {
 
 		} else {
 			console.log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
-			customAlert("Authentication failed");  //needed customAlert?
+			const error = await response.json();
+			customAlert(error.message || "Authentication failed");  //needed customAlert
 		}
 	} catch (err) {
-		console.log("Network error during authentication");
+		console.error('NETWORK_ERROR', 'Network error during sign up', 'submitAuthForm');
 	}
 }
 
@@ -64,13 +65,13 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 	document.getElementById('auth1')?.remove();
 	document.getElementById('auth2')?.remove();
 	if (player == 1) {
-		log("Login Successfull (player one) with id: " + userId);
+		console.log("Login Successfull (player one) with id: " + userId);
 		UI.user1.ID = userId;
 		UI.user1.name = name;
 		UI.user1.Twofa = twofa;
 	}
 	else if (player == 2) {
-		log("Login Successfull (player two) with id: " + userId);
+		console.log("Login Successfull (player two) with id: " + userId);
 		UI.user2.ID = userId;
 		UI.user2.name = name;
 		UI.user2.Twofa = twofa;
@@ -90,7 +91,7 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 }
 
 async function requestTwofaCode(playerNr: number, userId: number) {
-	log(`Requesting 2FA code for player ${playerNr} with userId ${userId}`);
+	console.log(`Requesting 2FA code for player ${playerNr} with userId ${userId}`);
 
 	// Create overlay
 	const overlay = document.createElement('div');

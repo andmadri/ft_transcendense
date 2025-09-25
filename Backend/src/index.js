@@ -10,7 +10,7 @@ import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
 import { addUserSessionToDB } from './Database/sessions.js';
-
+import { handleError } from './errors.js'
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
@@ -37,7 +37,7 @@ function installShutdownHandlers(fastify, db) {
 			fastify.log.info({ msg: `Cleanup done. Exiting.` });
 			process.exit(0);
 		} catch (err) {
-			fastify.log.error(err, `Error during shutdown after ${signal}`);
+			fastify.log.error(err.message || err, `Error during shutdown after ${signal}`);
 			process.exit(1);
 		}
 	};
@@ -63,10 +63,10 @@ fastify.ready().then(() => {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
 				} catch (err) {
-					console.error('JWT1 verification failed:', err);
+					console.error('AUTH_JWT_INVALID', 'JWT1 verification failed: Invalid cookie', err.message || err, 'index');
 				}
 			} else {
-				console.error('JWT1 verification failed: Invalid cookie');
+				console.error('AUTH_JWT_INVALID', 'JWT1 verification failed: Invalid cookie', 'index');
 			}
 		}
 		if (authTokens && authTokens.jwtAuthToken2) {
@@ -77,15 +77,14 @@ fastify.ready().then(() => {
 					userId2 = decoded.userId;
 					// Use userId or decoded as needed for player 2
 				} catch (err) {
-					console.error('JWT2 verification failed:', err);
+					console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', err.message || err, 'index');
 				}
 			} else {
-				console.error('JWT2 verification failed: Invalid cookie');
+				console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', 'index');
 			}
 		}
 		if (!userId1) {
-			console.error('No valid auth tokens found in cookies');
-			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
+			handleError(socket, 'AUTH_NO_TOKEN', 'Unauthorized: No authentication token provided.', '', '', 'index');
 			return ;
 		}
 
@@ -97,7 +96,7 @@ fastify.ready().then(() => {
 			try {
 				const action = msg.action;
 				if (!action) {
-					socket.emit('error', { action: 'error', reason: 'No action specified' });
+					handleError(socket, 'MSG_MISSING_ACTION', 'Invalid message format', 'missing action', msg, 'index');
 					return ;
 				}
 
@@ -128,10 +127,11 @@ fastify.ready().then(() => {
 					case 'tournament':
 						return handleTournament(db, msg, socket, fastify.io, userId1);
 					case 'error':
-						console.log('Error from frontend..');
-						return socket.emit('error', msg);
+						console.error('FRONTEND_ERROR:', msg);
+						return ;
 					default:
-						return socket.emit('error', { reason: 'Unknown action' + action });
+						handleError(socket, 'MSG_UNKNOWN_ACTION', 'Invalid message format', 'Unknown:', action, 'index');
+						return ;
 				}
 			} catch (err) {
 				console.error('Error during receiving msg', err);
@@ -171,21 +171,25 @@ fastify.ready().then(() => {
 });
 
 setInterval(async () => {
-	const now = Date.now();
-	for (const [userId1, data] of usersLastSeen.entries()) {
-		const { userId2, lastSeen } = data;
-		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
-			try {
-				await onUserLogout(db, userId1);
-				usersLastSeen.delete(userId1);
-				console.log(`User ${userId1} marked offline due to missed heartbeat`);
-				if (userId2 && userId2 > 2) {
-					await onUserLogout(db, userId2);
-					usersLastSeen.delete(userId2);
-					console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+	try {
+		const now = Date.now();
+		for (const [userId1, data] of usersLastSeen.entries()) {
+			const { userId2, lastSeen } = data;
+			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
+				// Mark user offline in DB
+				try {
+					await onUserLogout(db, userId1);
+					usersLastSeen.delete(userId1);
+					console.log(`User ${userId1} marked offline due to missed heartbeat`);
+					if (userId2 && userId2 > 2) {
+						await onUserLogout(db, userId2);
+						usersLastSeen.delete(userId2);
+						console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+					}
+					usersLastSeen.delete(userId1);
+				} catch (err) {
+					console.error(`Error setting user1 (${userId1}) and/or user2 (${userId2}) offline: `, err);
 				}
-			} catch (err) {
-				console.error(`Error setting user1: ${userId1} or user2: ${userId2} offline: `, err);
 			}
 		}
 	} catch (err) {
@@ -197,6 +201,6 @@ try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });
 	console.log('Server listening on port 3000');
 } catch (err) {
-	fastify.log.error(err);
+	fastify.log.error(err.message || err);
 	process.exit(1);
 }

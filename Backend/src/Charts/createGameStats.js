@@ -34,7 +34,7 @@ export async function generateAllChartsForMatch(db, socket, msg) {
 			lineChartSVG: lineChartSVG,
 		});
 	} catch (err) {
-		console.error(err, 'generating Charts');
+		console.error('GENERATE_CHARTS_ERROR', err.message || err, 'generateAllChartsForMatch');
 		const { open, close } = createSvgCanvas();
 		const fallback = open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 

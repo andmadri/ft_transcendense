@@ -14,24 +14,21 @@ function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 export async function getAllPlayerInclFriends(db, userID, socket) {
 	try {
 		const players = await userDB.getAllPlayers(db);
-		// console.log("players: ", players);
 		const friendsIds = await friendDB.getFriendsOnlyIdDB(db, userID);
 		const friendsIdsSet = new Set(friendsIds);
 
 		for (const player of players) {
 			player.isFriend = friendsIdsSet.has(player.id);
 		}
-		// console.log("Players with friends info: ", players);
 		return sendContentToFrontend('players', 'retPlayers', socket, "yes", players);
 	} catch (err) {
-		console.error(err);
-		sendContentToFrontend('error', '', socket, "no", "Error while requesting players");
+		handleError(socket, 'DB_ERROR', 'Error while requesting players', err.message || err, 'getAllPlayerInclFriends');
 	}
 }
 
 export async function handlePlayers(db, msg, socket, userId) {
 	if (msg.subaction == 'getAllPlayers')
 		return getAllPlayerInclFriends(db, userId, socket);
-	sendContentToFrontend('error', '', socket, "no", "Unkown action");
+	handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', `Unknown: ${msg.subaction}`, 'handlePlayers');
 }
 

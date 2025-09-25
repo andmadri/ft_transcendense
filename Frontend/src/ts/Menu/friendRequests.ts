@@ -138,7 +138,13 @@ export function showFriendAndChallengeRequests(friendRequest: any, invites: any)
 	const notificationBtnList = document.getElementById('notificationBtnList');
 	if (!notificationBtnList)
 		return ;
-	notificationBtnList.innerHTML = '';
+
+	Array.from(notificationBtnList.children).forEach(child => {
+	if (child.id !== 'closeBtnItem') {
+		child.remove();
+	}
+	});
+
 	notificationBtnList.style.gap = '0.5rem';
 	notificationBtnList.style.overflowY = 'auto';
 
