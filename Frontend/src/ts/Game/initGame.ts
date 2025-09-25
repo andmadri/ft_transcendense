@@ -72,7 +72,7 @@ export function changeOpponentType(option: string) {
 			Game.match.mode = OT.Empty;
 			break;
 		default:
-			log(`unknown opponent type? ${option}`);
+			console.error('MSG_UNKNOWN_TYPE', 'Invalid message format', 'Unknown opponent:', option, 'changeOpponentType');
 	}
 }
 
@@ -89,7 +89,7 @@ export function changeMatchFormat(option: string) {
 			Game.match.matchFormat = MF.Empty;
 			break;
 		default:
-			log(`unknown match format? ${option}`);
+			console.error('MSG_UNKNOWN_FORMAT', 'Invalid message format', 'Unknown opponent:', option, 'changeMatchFormat');
 	}
 }
 

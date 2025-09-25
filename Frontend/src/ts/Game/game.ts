@@ -19,9 +19,9 @@ function processMatch(data: any) {
 
 function processSavingMatch(data: any) {
 	if (data.success)
-		log("Save match successful");
+		console.log("Save match successful");
 	else
-		log("Something went wrong saving match");
+		console.log("Something went wrong saving match");
 }
 
 function processQuitMatch(data: any) {
@@ -30,13 +30,14 @@ function processQuitMatch(data: any) {
 	if (Game.match.OT !== OT.Online) {
 		Game.match.state = state.End;
 	}
-	log(data.reason);
+	console.log(data.reason);
 }
 
 
 export function actionGame(data: any) {
 	if (!data.subaction) {
 		log('no subaction');
+		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionGame');
 		return ;
 	}
 
@@ -54,13 +55,10 @@ export function actionGame(data: any) {
 		case 'winner':
 			applyWinner(data);
 			break;
-		// case 'save':
-		// 	processSavingMatch(data);
-		// 	break ;
 		case 'quit':
 			processQuitMatch(data);
 			break ;
 		default:
-			log(`(actionGame) Unknown action: ${data.subaction}`);
+			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', data.subaction, 'actionGame');
 	}
 }

@@ -38,9 +38,9 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 				navigateTo('Menu');
 			}
 		} else {
-			console.log(`Logout failed for player ${playerNr}: ${response.statusText}`);
+			console.error('LOGOUT_FAILED', `Logout failed for player ${playerNr}: ${response.statusText}`, 'submitLogout');
 		}
 	} catch (err) {
-		console.log('Network error during authentication');
+		console.error('NETWORK_ERROR', 'Network error during authentication', 'submitLogout');
 	}
 }

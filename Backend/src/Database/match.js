@@ -128,7 +128,7 @@ export async function updateMatchInDB(db, match) {
 		}
 
 		if (updates.length === 0) {
-			console.log("No valid match fields provided to update.");
+			console.warn('UPDATE_WARNING', 'No valid match fields provided to update', 'updateMatchInDB');
 			return resolve();
 		}
 

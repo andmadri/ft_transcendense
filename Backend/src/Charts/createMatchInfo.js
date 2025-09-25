@@ -67,7 +67,7 @@ async function getGameStatsSVG(db, data) {
 			const winnerId = await getUserByID(db, data.winner_id);
 			winner = winnerId.name;
 		} catch (err) {
-			console.log('Error getUserByID: ', err);
+			console.error('DB_ERROR', `Error fetching winner data for user ID ${data.winner_id}: ${err.message || err}`, 'getGameStatsSVG');
 		}
 	}
 
@@ -89,11 +89,11 @@ export async function generateMatchInfo(db, matchID, data, colorOf) {
 		player1 = await getUserByID(db, data.player_1_id);
 		player2 = await getUserByID(db, data.player_2_id);
 		if (!player1 || !player2) {
-			console.log('Database error (getUserByID): ', err);
+			console.error('DB_ERROR', `Error fetching players with IDs ${data.player_1_id} or ${data.player_2_id}: ${err.message}`, 'generateMatchInfo');
 			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 		}
 	} catch (err) {
-		console.log('Database error (getUserByID): ', err);
+		console.error('DB_ERROR', `Database error in getUserByID: ${err.message || err}`, 'generateMatchInfo');
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 
