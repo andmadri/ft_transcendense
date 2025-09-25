@@ -104,7 +104,7 @@ export async function generateLineChartForMatch(db, matchID, colorOf) {
 			return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 		}
 	} catch (err) {
-		console.log('Database error: ', err);
+		console.error('DB_ERROR', `Database error getting match line for matchID ${matchID}: ${err.message || err}`, 'generateLineChartForMatch');
 		return open + `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#bbb">No data</text>` + close;
 	}
 

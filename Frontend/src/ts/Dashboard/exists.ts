@@ -69,6 +69,6 @@ export function validateURL(msg: any) {
 		}
 		return ;
 	} else {
-		console.log(`(validateURL) Unknown action: ${msg.subaction}`);
+		console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'validateURL');
 	}
 }

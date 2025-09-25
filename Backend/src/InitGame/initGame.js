@@ -34,7 +34,7 @@ function handleStartOnlineMatch(msg, match) {
 // From Frontend
 export function handleInitGame(db, msg, socket) {
 	if (!msg.subaction) {
-		console.log('no subaction in handleInitGame');
+		handleError(socket, 'MSG_MISSING_SUBCTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleInitGame');
 		return -1;
 	}
 
@@ -47,4 +47,5 @@ export function handleInitGame(db, msg, socket) {
 		if (handleStartOnlineMatch(msg, match))
 			return ;
 	}
+	handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleInitGame');
 }

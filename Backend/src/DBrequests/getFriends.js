@@ -1,6 +1,7 @@
 import * as friendsDB from '../Database/friends.js';
 import { getAllPlayerInclFriends } from './getPlayers.js';
 import { getChallengesFriends } from '../Pending/matchmaking.js';
+import { handleError } from '../errors.js'
 import { db } from '../index.js';
 
 function sendContentToFrontend(socket, actionable, sub, content) {
@@ -15,7 +16,7 @@ async function addFriendRequest(socket, userId1, data) {
 	try {
 		await friendsDB.addFriendRequestDB(db, userId1, data.friendID);
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -23,7 +24,7 @@ async function acceptFriendRequest(socket, data) {
 	try {
 		await friendsDB.acceptFriendRequestDB(db, data.requestId);
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -31,7 +32,7 @@ async function denyFriendRequest(socket, data) {
 	try {
 		await friendsDB.denyFriendRequestDB(db, data.requestId);
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -39,7 +40,7 @@ async function deleteFriendship(socket, userID1, msg) {
 	try {
 		await friendsDB.deleteFriendDB(db, userID1, msg.friendID);
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -50,7 +51,7 @@ export async function getFriends(userId1, socket) {
 			sendContentToFrontend(socket, 'friends', 'retFriends', friends);
 		}
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -67,7 +68,7 @@ export async function openFriendRequest(userId1, socket) {
 	});
 
 	} catch (err) {
-		sendContentToFrontend(socket, 'friends', 'error', err.message);
+		sendContentToFrontend(socket, 'friends', 'error', err.message || err);
 	}
 }
 
@@ -94,7 +95,6 @@ export async function handleFriends(msg, socket, userId1) {
 			getAllPlayerInclFriends(db, userId1, socket);
 			break ;
 		default:
-			console.log(`Unknown subaction ${msg.subaction}`);
-			sendContentToFrontend('error', '', socket, 'no', 'Unkown action');
+			handleError(socket, 'MSG_UNKNOWN_ACTION', 'Unknow action', msg.subaction, 'handleFriends');
 	}
 }

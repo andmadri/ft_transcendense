@@ -9,7 +9,7 @@ import * as S from '../structs.js'
 function insertFriends(friends: any) {
 	const html_list = document.getElementById('friends_list') as HTMLUListElement;
 	if (!html_list) {
-		console.log('HTML List for Friends Not Found');
+		console.error('HTML_NOT_FOUND', 'HTML List for Friends Not Found', 'insertFriends');
 		return;
 	}
 	html_list.innerHTML = "";
@@ -68,7 +68,7 @@ function insertFriends(friends: any) {
 
 export function actionFriends(data: any) {
 	if (!data.subaction) {
-		console.log('no subaction Friends');
+		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionFriends');
 		return ;
 	}
 	switch(data.subaction) {
@@ -79,9 +79,9 @@ export function actionFriends(data: any) {
 			showFriendAndChallengeRequests(data.friendRequests, data.invites);
 			break ;
 		case 'error':
-			console.log(data.content);
+			console.error('ERROR_FRIEND', data.content);
 			break ;
 		default:
-			console.log(`(actionOnline) Unknown action: ${data.subaction}`);
+			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', data.subaction, 'actionFriends');
 	}
 }

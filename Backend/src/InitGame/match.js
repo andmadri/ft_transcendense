@@ -12,13 +12,13 @@ async function getNamebyUserID(db, userID) {
 			return (user.name);
 		else {
 			if (!user)
-				console.error(`User ${userID} not found in db`);
+				console.error(`PLAYER_NOT_FOUND User ${userID} not found in db`, 'getNamebyUserID');
 			else
-				console.error(`Username not found in user with ID ${userID}`);
+				console.error(`DB_NOT_FOUND Username not found in user with ID ${userID}`, 'getNamebyUserID');
 			return (null);
 		}
 	} catch(err) {
-		console.error(err);
+		console.error('DB_ERROR', err.message || err, 'getNamebyUserID');
 		return (null);
 	}
 }
@@ -29,7 +29,7 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 		const name = await getNamebyUserID(db, id);
 		const name2 = await getNamebyUserID(db, id2);
 		if (!name || !name2) {
-			console.log(`Error creating match: Invalid player names for IDs ${id} and ${id2}`);
+			console.error(`PLAYER_INVALID_NAME Error creating match: Invalid player names for IDs ${id} and ${id2}`, 'newMatch');
 			return (-1);
 		}
 		matches.set(matchnr, {
@@ -84,7 +84,7 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 		});
 		return (1);
 	} catch (err) {	
-		console.error(`newMatch - Error creating match: ${err}`);
+		console.error(`GEN_UNKNOWN newMatch - Error creating match: ${err.message || err}`, 'newMatch');
 		return (-1);
 	}
 }
@@ -108,7 +108,7 @@ function sendInitMatchReadyLocal(socket, userId1, userId2, matchID) {
 */
 export async function createMatch(db, mode, socket, userId1, userId2, tournamentContext, mf) {
 	if (userId1 == userId2) {
-		console.log(`UserIds are the same`);
+		console.error(`MATCH_SAME_PLAYER UserIds are the same`, 'createMatch');
 		return (-1);
 	}
 
@@ -119,7 +119,7 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 		userId2 = 1;
 
 	if ((userId1 == 1 && userId2 == 2) || (userId2 == 1 && userId1 == 2)) {
-		console.log(`Match Guest vs AI is not allowed!`);
+		console.error(`MATCH_GUEST_AI_INVALID Match Guest vs AI is not allowed!`, 'createMatch');
 		return (-1);
 	}
 
@@ -150,7 +150,7 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 		}
 		return (matchID);
 	} catch (err) {
-		console.error(`createMatch - Error creating match: ${err}`);
+		console.error(`SRV_CREATE_MATCH_EXCEPTION createMatch - Error creating match: ${err.message || err}`, 'createMatch');
 		return (-1);
 	}
 }

@@ -6,20 +6,15 @@ import { reportTournamentMatchResult } from '../Tournament/tournament.js';
 
 export async function handleGame(db, msg, socket, io) {
 	if (!msg.subaction)
-		return console.log('no subaction in handleGame');
+		return handleError('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', msg, 'handleGame');
 
-	// we need to have a matchID by now
-	if (!msg.matchID) {
-		console.log("No matchID found in msg from frontend");
-		console.log(msg);
-		return ;
-	}
+	if (!msg.matchID)
+		return console.error('NO_MATCH_ID - No matchID found in message from frontend:', msg);
 
 	const match = matches.get(msg.matchID);
 	if (!match)
-		return console.error(`No match found with ${msg.matchID}`);
+		return console.error('MATCH_NOT_FOUND', `No match found with matchID: ${msg.matchID}`, 'handleGame');
 
-	// Updates that are comming into the backend (Maybe better to update all in once)
 	switch (msg.subaction) {
 		case 'gameStateUpdate':
 			applyGameStateUpdate(match, msg);
@@ -44,6 +39,6 @@ export async function handleGame(db, msg, socket, io) {
 			quitMatch(match, msg, socket, io);
 			break;
 		default:
-			console.log("subaction not found: " + msg.subaction);
+			handleError('MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleGame');
 	}
 }

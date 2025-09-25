@@ -9,7 +9,7 @@ export default async function avatarRoutes(fastify) {
 		try {
 			const data = await request.file(); // get the uploaded file
 			if (!data) {
-				console.log('No file uploaded');
+				console.error('FILE_UPLOAD_ERROR', 'No file uploaded', 'avatarRoutes');
 				reply.code(400).send({ error: 'No file uploaded' });
 				return;
 			}
@@ -17,7 +17,7 @@ export default async function avatarRoutes(fastify) {
 			// Validate MIME type
 			const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 			if (!allowedTypes.includes(data.mimetype)) {
-				console.log('Unsupported file type:', data.mimetype);
+				console.warn('FILE_UPLOAD_ERROR', `Unsupported file type: ${data.mimetype}`, 'avatarRoutes');
 				return reply.code(415).send({ error: 'Unsupported file type' });
 			}
 
@@ -25,13 +25,13 @@ export default async function avatarRoutes(fastify) {
 			const ext = path.extname(data.filename) || '.png';
 
 			const uploadDir = path.join(process.cwd(), 'uploads', 'avatars', String(request.user.userId));
-			console.log('Upload directory:', uploadDir);
+			// console.log('Upload directory:', uploadDir);
 			if (fs.existsSync(uploadDir))
 				fs.rmSync(uploadDir, { recursive: true, force: true });
 			fs.mkdirSync(uploadDir, { recursive: true });
 
 			const filePath = path.join(uploadDir, `avatar${ext}`);
-			console.log('File path:', filePath);
+			// console.log('File path:', filePath);
 			const writeStream = fs.createWriteStream(filePath);
 			data.file.pipe(writeStream);
 
@@ -43,7 +43,7 @@ export default async function avatarRoutes(fastify) {
 
 			reply.send({ success: true, message: 'Upload succeeded', });
 		} catch (err) {
-			fastify.log.error(err.response?.data || err.message);
+			fastify.log.error(err.response?.data || err.message || err);
 			reply.code(500).send('Upload Server failed.');
 		}
 	});
@@ -62,7 +62,7 @@ export default async function avatarRoutes(fastify) {
 		} else {
 			for (const ext of exts) {
 				const filePath = path.join(avatarDir, `avatar${ext}`);
-				console.log('Checking file path:', filePath);
+				// console.log('Checking file path:', filePath);
 				if (fs.existsSync(filePath)) {
 					reply.type(`image/${ext.replace('.', '')}`);
 					return fs.createReadStream(filePath);

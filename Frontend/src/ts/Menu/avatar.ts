@@ -18,13 +18,13 @@ export async function changeAvatar(file: File, playerNr: number) {
 		console.log("Upload succeeded!");
 		const avatar = document.getElementById(`avatar${playerNr}`) as HTMLImageElement | null;
 		if (!avatar) {
-			console.log("No avatar yet");
+			console.warn("No avatar yet");
 			return;
 		}
 		const user = playerNr == 1 ? UI.user1.ID : UI.user2.ID;
 		avatar.src = `/api/avatar/${user}?ts=${Date.now()}`
 	} else {
 		customAlert("Upload failed: " + response.statusText); //needed customAlert
-		console.log("Error with upload avatar");
+		console.error('UPLOAD_ERROR', 'Error with upload avatar', 'changeAvatar'); 
 	}
 }
