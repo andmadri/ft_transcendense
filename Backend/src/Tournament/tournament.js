@@ -3,6 +3,7 @@ import { startOnlineMatch } from '../Pending/onlinematch.js';
 import { matches } from '../InitGame/match.js';
 import { createMatch } from '../InitGame/match.js';
 import { saveMatch } from '../End/endGame.js';
+import { leaveRoom } from '../rooms.js';
 import { OT, state, MF } from '../SharedBuild/enums.js'
 
 export const tournament = {
@@ -41,6 +42,7 @@ function joinTournament(msg, userId, socket, io) {
 		const player = tournament.players.find(p => p.id === userId);
 		if (!player.socket) {
 			player.socket = socket; // Reassign socket if player was disconnected
+			player.ready = false;
 			console.log('Player re-joined tournament:', msg.name, userId);
 		}
 	}
@@ -72,7 +74,7 @@ function joinTournament(msg, userId, socket, io) {
 
 export function leaveTournament(msg, userId, socket, io) {
 	if (tournament.state === 'waiting') {
-		socket.leave('tournament_1');
+		leaveRoom(socket, 'tournament_1');
 		tournament.players = tournament.players.filter(p => p.id !== userId);
 		// Broadcast updated state to all participants
 		io.to('tournament_1').emit('message', {
@@ -95,7 +97,7 @@ export function leaveTournament(msg, userId, socket, io) {
 		if (player) {
 			player.ready = true;	// Mark as ready to create matches
 			player.socket = null;	// Mark as disconnected
-			socket.leave('tournament_1');
+			leaveRoom(socket, 'tournament_1');
 		}
 		socket.emit('message', {
 			action: 'tournament',
@@ -117,7 +119,7 @@ export function leaveTournament(msg, userId, socket, io) {
 		console.log('Player left tournament (forfeit):', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'finished') {
 		// Allow leaving after tournament is finished
-		socket.leave('tournament_1');
+		leaveRoom(socket, 'tournament_1');
 		tournament.players = tournament.players.filter(p => p.id !== userId);
 		// Broadcast updated state to all participants
 		if (tournament.players.length === 0) {

@@ -9,6 +9,7 @@ import * as Remote from './remote.spec.js';
 import * as OneVSone from './oneVSone.spec.js';
 import * as OneVSai from './oneVSai.spec.js';
 import * as Navigation from './navigation.spec.js'
+import { tournamentHelper } from './tournamentHelper.spec.js';
 
 // TESTER:
 // npx install --save-dev @playwright/test
@@ -82,3 +83,10 @@ test('Tournament', async ({browser}) => {
 	const page4 =  await pageLogin(browser, '4');
 	await tournament(page1, page2, page3, page4, name);
 });
+
+test('TournamentHelper', async({browser}) => {
+	const page1 =  await pageLogin(browser, '1');
+	const page2 =  await pageLogin(browser, '2');
+	const page3 =  await pageLogin(browser, '3');
+	await tournamentHelper(page1, page2, page3, )
+})
