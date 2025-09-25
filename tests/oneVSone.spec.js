@@ -39,8 +39,9 @@ export async function oneVsOne(page, name, name2, email2, password2) {
 
 	const startTime = Date.now();
 	const paddleRect = await paddle.boundingBox();
+
 	while (Date.now() - startTime < 10000) {
-		await page.keyboard.press('KeyW');
+		await page.keyboard.down('KeyW');
 		await page.waitForTimeout(200);
 		const newRectBall = await ball.boundingBox();
 		if (newRectBall && ballRect && (newRectBall.x !== ballRect.x || newRectBall.y !== ballRect.y)) {
@@ -52,6 +53,8 @@ export async function oneVsOne(page, name, name2, email2, password2) {
 		}
 
 	}
+	await page.keyboard.up('KeyW');
+	
 	expect(ballHasMoved).toBeTruthy();
 	expect(paddleHasMoved).toBeTruthy;
 
