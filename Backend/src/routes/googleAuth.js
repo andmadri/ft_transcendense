@@ -35,8 +35,8 @@ async function handleGoogleAuth(user) {
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
 				exists.user_id = exists.id; // for updateUserInDB
-				exists.name = user.name;
-				exists.email = user.email;
+				exists.name = user.name.trim().slice(0, 10);;
+				exists.email = user.email.toLowerCase().trim();
 				exists.avatar_url = user.picture;
 				await updateUserInDB(db, exists);
 			}
@@ -111,22 +111,13 @@ export default async function googleAuthRoutes(fastify) {
 			});
 			if (!userRes || !userRes.data || !userRes.data.email) {
 				console.error('Invalid user data from Google!');
-				return reply.code(500).send('OAuth login failed.');
+				return reply.code(500).send('OAuth login failed: Invalid user data from Google.');
 			}
 
 			const user = await handleGoogleAuth(userRes.data);
 			if (!user) {
 				console.error('user returned:', user);
-				return reply.code(500).send('OAuth login failed.');
-			}
-
-			try {
-				// CHRISS LOOK AT THIS!! addUser2faSecretToDB is deleted, but this { google: 'true' } didn't make sense before as well
-				await updateUserInDB(db, { user_id: user.id, twofa_secret:  'google' });
-				// await addUser2faSecretToDB(db, user.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
-			} catch (err) {
-				console.error('Error adding 2FA secret for Google user:', err);
-				return reply.code(500).send('OAuth login failed.');
+				return reply.code(500).send('User already exists - please log in with your username and password.');
 			}
 
 			try {
