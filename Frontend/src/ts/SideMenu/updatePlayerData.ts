@@ -9,21 +9,22 @@ export function actionPlayerInfo(data: any) {
 		return console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', 'subaction missing', 'actionPlayerInfo');
 	} else if (data.subaction === 'receivePlayerData') {
 		receivePlayerData(data);
-	} else if (data.subaction == 'changeName') {
-		updateUsername(data);
+	} else if (data.subaction == 'profileSettings') {
+		updateProfileSettings(data);
 	} else {
 		console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', data.subaction, 'actionPlayerInfo');
 	}
 }
 
-function updateUsername(msg: any) {
+function updateProfileSettings(msg: any) {
 	if (msg.success === 1) {
-		customAlert('Username is successfully changed'); //needed customAlert
-		UI.user1.name = msg.msg;
-		const playerNameField = document.getElementById('userNameMenu1')
-		if (playerNameField)
-			playerNameField.textContent = msg.msg;
-
+		customAlert(`${msg.field} is successfully changed`);
+		if (msg.field == 'name') {
+			UI.user1.name = msg.msg;
+			const playerNameField = document.getElementById('userNameMenu1')
+			if (playerNameField)
+				playerNameField.textContent = msg.msg;
+		}
 	} else {
 		if (msg.msg)
 			customAlert("Unable to change username"); //needed customAlert
@@ -40,6 +41,7 @@ function receivePlayerData(data: any) {
 		UI.user2.name = data.name2 || 'Guest';
 		UI.user2.ID = data.id2 || -1;
 		Game.match.player2.score = data.score2 || 0;
+		UI.user1.Google = data.google || false
 	}
 }
 

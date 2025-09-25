@@ -31,7 +31,8 @@ export type update = {
 export type user = {
 	ID: number,
 	name: string,
-	Twofa: boolean
+	Twofa: boolean,
+	Google: boolean
 }
 
 export type UI = {
