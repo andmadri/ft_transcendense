@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 import { switchLoginTab } from './0_0_auth.spec.js';
+import { checkAlert } from './utils.spec.js';
 import * as Menu from './1_0_menu.spec.js';
 
 /*
@@ -35,12 +36,8 @@ export async function login_player(page, player, Email, Password) {
 }
 
 async function waitForAlert(page, player, Email, Password, expectedMessage) {
-	const [dialog] = await Promise.all([
-		page.waitForEvent('dialog'),
-		await login_player(page, player, Email, Password),
-	]);
-	expect(dialog.message()).toBe(expectedMessage);
-	await dialog.dismiss();
+	await login_player(page, player, Email, Password),
+	await checkAlert(page, expectedMessage);
 }
 
 
