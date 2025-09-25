@@ -9,8 +9,8 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { addUserSessionToDB } from './Database/sessions.js';
-import { handleError } from './errors.js'
+import { onUserLogout } from './Services/sessionsService.js';
+import { handleError } from './errors.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
