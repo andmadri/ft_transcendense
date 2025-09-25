@@ -108,10 +108,9 @@ export function matchInterval(match, io) {
 
 export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, io, tournamentContext, mf) {
 	const matchID = await createMatch(db, OT.Online, socket1, userID1, userID2, tournamentContext, mf);
-	if (matchID === -1) {
-		console.log("startOnlineMatch - Error in CreateMatch");
-		return ;
-	}
+	if (matchID === -1)
+		return console.error("CHALLENGE_MATCH_CREATION_FAIL Error in CreateMatch", 'startOnlineMatch');
+
 	// add both players to the room
 	socket1.join(matchID);
 	socket2.join(matchID);
@@ -121,12 +120,8 @@ export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, i
 
 	// CREATE START VALUES FOR GAME HERE
 	const match = matches.get(matchID);
-	if (!match) {
-		console.log(`Something went wrong!!! No match for matchID: ${matchID}`);
-		return ;
-	}
-	console.log(`handleOnlineMatch: ${matchID}:
-		${match.player1.ID} and ${match.player2.ID}`)
+	if (!match)
+		return console.error(`MATCH_NOT_FOUND No match for matchID: ${matchID}`, 'startOnlineMatch');
 
 	io.to(matchID).emit('message', {
 		action: 'initOnlineGame',
@@ -150,7 +145,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 	// if match is found, both are add to the room and get the msg to init the game + start
 	if (socket2) {
 		if (userID2 && userID2 == userID) {
-			console.log('Player can not play against himself');
+			console.warn('PLAYER_ERROR', 'Player cannot play against himself', 'handleOnlineMatch');
 			socket.emit('message', {
 				action: 'initOnlineGame',
 				match: null

@@ -31,7 +31,7 @@ export function applyKeyPressUpdate(match, msg) {
 
 export async function updateMatchEventsDB(match, msg, gameState, event) {
 	if (event !== "serve" && event !== "goal" && event !== "hit") {
-		console.error(`updateMatchEventsDB: invalid event - ${event} | Should be 'serve', 'goal', 'hit'`);
+		console.error('INVALID_EVENT', `updateMatchEventsDB: invalid event - ${event}. Expected 'serve', 'goal', or 'hit'.`, 'applyKeyPressUpdate');
 		return ;
 	}
 	let user_id = null;

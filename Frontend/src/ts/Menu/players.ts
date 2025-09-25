@@ -27,7 +27,6 @@ function createPlayerList(): HTMLDivElement {
 }
 
 export function getPlayerList(): HTMLDivElement {
-	console.log("getPlayerList called");
 	let playerList = document.getElementById('players') as HTMLDivElement;
 
 	if (!playerList) {
@@ -52,7 +51,8 @@ export function getPlayerList(): HTMLDivElement {
 export function insertPlayers(players: any) {
 	const html_list = document.getElementById('players_list') as HTMLUListElement;
 	if (!html_list) {
-		console.log('HTML List for Friends Not Found');
+		console.error('HTML_NOT_FOUND', 'HTML List for Friends Not Found', 'insertPlayers');
+
 		return;
 	}
 	html_list.innerHTML = "";
@@ -97,12 +97,12 @@ function processPlayers(data: any) {
 	if (data.access && data.access == "yes")
 		insertPlayers(data.content);
 	else
-		log("Access to DB: " + data.access + " " + data.content);
+		console.log("Access to DB: " + data.access + " " + data.content);
 }
 
 export function actionPlayers(data: any) {
 	if (!data.subaction) {
-		log('no subaction Players');
+		console.log('no subaction Players');
 		return;
 	}
 
@@ -111,6 +111,6 @@ export function actionPlayers(data: any) {
 			processPlayers(data);
 			break;
 		default:
-			log(`(actionPlayers) Unknown action: ${data.subaction}`);
+			console.log(`(actionPlayers) Unknown action: ${data.subaction}`);
 	}
 }

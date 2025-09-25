@@ -12,7 +12,7 @@ export async function onUserLogin(db, user_id) {
 		await addUserSessionToDB(db, { user_id, state: 'login' });
 		await addUserSessionToDB(db, { user_id, state: 'in_menu' });
 	} catch (err) {
-		console.error('AddUserSession: ' + err);
+		console.error('LOGIN_SESSION_ERROR', err.message || err, 'onUserLogin');
 	}
 }
 
@@ -24,12 +24,12 @@ export async function onUserLogin(db, user_id) {
 export async function onUserLogout(db, user_id) {
 	try {
 		const tournamentPlayer = tournament.players.find(p => p.id === user_id);
-		if (tournamentPlayer) {
+		if (tournamentPlayer && tournamentPlayer.socket) {
 			tournamentPlayer.ready = false;
 			leaveTournament({ name: tournamentPlayer.name }, tournamentPlayer.id, tournamentPlayer.socket, tournament.io);
 		}
 		await addUserSessionToDB(db, { user_id, state: 'logout' });
 	} catch (err) {
-		console.error('AddUserSession: ' + err);
+		console.error('LOGOUT_SESSION_ERROR', err.message || err, 'onUserLogout');
 	}
 }

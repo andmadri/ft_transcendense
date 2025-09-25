@@ -1,5 +1,6 @@
 import { getUserByID } from '../Database/users.js';
 import { getUserMatchStatsDB } from '../Database/dashboard.js';
+import { handleError } from '../errors.js'
 import { db } from '../index.js';
 
 async function getUserDataMenu(msg, socket, userId1, userId2)
@@ -22,26 +23,20 @@ async function getUserDataMenu(msg, socket, userId1, userId2)
 		socket.emit('message', returnMsg);
 		return true;
 	} catch (err) {
-		const returnMsg = { action: "error", reason: "Database error" };
-		console.log('Database error: ', err);
-		socket.emit('error', returnMsg);
+		handleError(socket, 'DB_ERROR', 'Database error', err.message || err, 'getUserDataMenu');
 		return false;
 	}
 }
 
 export function handleUserDataMenu(msg, socket, userId1, userId2) {
 	if (!msg || !msg.action || msg.action !== 'userDataMenu' || !msg.subaction) {
-		const returnMsg = { action: "Error", message: "Invalid message format" };
-		console.log('Invalid message format:', msg);
-		socket.emit('message', returnMsg);
+		handleError(socket, 'MSG_MISSING_ACTION', 'Invalid message format', 'missing (sub)action', 'handleUserDataMenu');
 		return false;
 	}
 	if (msg.subaction === 'getUserDataMenu') {
 		return getUserDataMenu(msg, socket, userId1, userId2);
 	} else {
-		const returnMsg = { action: "Error", message: "Unknown subaction" };
-		console.log('Unknown subaction:', msg.subaction);
-		socket.emit('message', returnMsg);
+		handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', 'Unknown:', msg.subaction, 'handleUserDataMenu');
 		return false;
 	}
 }

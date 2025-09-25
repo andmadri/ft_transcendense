@@ -1,6 +1,7 @@
 import { getUserByID } from '../Database/users.js';
 import { getMatchByID } from '../Database/match.js';
 import { getMatchHistoryDB, getUserMatchStatsDB, getUserStateDurationsDB } from '../Database/dashboard.js';
+import { handleError } from '../errors.js'
 import { db } from '../index.js';
 
 async function getDashboardInfo(socket, playerID) {
@@ -21,9 +22,7 @@ async function getDashboardInfo(socket, playerID) {
 		socket.emit('message', returnMsg);
 		return true;
 	} catch (err) {
-		const returnMsg = { action: "error", reason: "Database error" };
-		console.log('Database error: ', err);
-		socket.emit('error', returnMsg);
+		handleError(socket, 'DB_NOT_FOUND', 'Database error', err.message || err, 'getDashboardInfo')
 		return false;
 	}
 }
@@ -56,9 +55,7 @@ async function validateMatch(socket, matchID) {
 
 export function handleDashboardMaking(msg, socket, playerID) {
 	if (!msg || msg.action !== 'dashboard' || !msg.subaction) {
-		const returnMsg = { action: "error", reason: "Invalid message format" };
-		console.log('Invalid message format:', msg);
-		socket.emit('error', returnMsg);
+		handleError(socket, 'MSG_MISSING_ACTION', "Invalid message format", msg, 'handleDashboardMaking');
 		return false;
 	}
 	if (msg.subaction === 'validateUser') {
@@ -72,9 +69,7 @@ export function handleDashboardMaking(msg, socket, playerID) {
 	if (msg.subaction === 'getFullDataDashboard') {
 		return getDashboardInfo(socket, playerID);
 	} else {
-		const returnMsg = { action: "error", reason: "Unknown subaction" };
-		console.log('Unknown subaction:', msg.subaction);
-		socket.emit('error', returnMsg);
+		handleError(socket, 'MSG_UNKNOWN_SUBACTION', "Invalid message format", msg.subaction, 'handleDashboardMaking');
 		return false;
 	}
 }

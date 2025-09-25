@@ -143,7 +143,7 @@ export default async function userAuthRoutes(fastify) {
 			try {
 				await onUserLogin(db, answer.user.id);
 			} catch(err) {
-				console.error(err.msg);
+				console.error('LOGIN_ONLOGIN_FAILED', err.message || err, 'api/login');
 			}
 
 			const jwtToken = signFastifyJWT(answer.user, fastify);

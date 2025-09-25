@@ -17,7 +17,7 @@ function getQuitBtn() {
 	quitButton.style.pointerEvents = 'auto';
 
 	quitButton.addEventListener('click', () => {
-		log("pushed quit button");
+		console.log("pushed quit button");
 		//determine winner in local game
 		//if online -> winnerID stays undefined -> backend will determine winner
 		if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
