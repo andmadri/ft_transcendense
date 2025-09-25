@@ -22,6 +22,11 @@ function renderMatchInfo(matches: any, matchList: HTMLElement)
 {
 	for (let match of matches) {
 		const row = document.createElement('div');
+		if (match && match.match_id) {
+			row.id = `matchInfoFor${match.match_id}`;
+		} else {
+			row.id = `matchInfoForUnknown`;
+		}
 		row.style.display = 'flex';
 		row.style.position = 'relative';
 		row.style.width = '100%';
@@ -129,10 +134,6 @@ export function getDashboard(playerID?: number, playerNr?: number)
 	const body = document.getElementById('body');
 	if (!body)
 		return ;
-	body.style.margin = '0';
-	body.style.width = '100vw';
-	body.style.height = '100vh';
-	body.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
 	body.innerHTML = '';
 
 	createBackgroundText(body);

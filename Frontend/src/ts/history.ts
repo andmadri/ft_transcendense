@@ -3,7 +3,7 @@ import { state } from '@shared/enums'
 import { Game, UI, newMatch } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
-import { getGameStats } from './Game/gameStats.js';
+import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 
@@ -100,8 +100,7 @@ export function doRenderPage(newState: string, query?: string) {
 			break;
 		case 'GameOver':
 			UI.state = S.stateUI.GameOver;
-			if (query)
-				getGameOver(Number(getIdFromHash(query, "matchId")));
+			getGameOver();
 			break ;
 		case 'GameStats':
 			UI.state = S.stateUI.GameStats;
@@ -109,7 +108,7 @@ export function doRenderPage(newState: string, query?: string) {
 			if (query)
 				id = getIdFromHash(query, "matchId");
 			if (id != null) {
-				requestAnimationFrame(() => getGameStats({ matchId: id }));
+				requestAnimationFrame(() => askForGamestats(id));
 			} else {
 				console.warn('GameStats: no matchId found');
 				navigateTo('Menu');
@@ -132,7 +131,7 @@ export function doRenderPage(newState: string, query?: string) {
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
 		}
-	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
+	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
 	else
@@ -152,9 +151,14 @@ export function navigateTo(newState: any, fromHash = false) {
 		return;
 	}
 	let [ page, query ] = splitHash(newState);
+	if (page === 'GameOver') {
+		newState = page;
+	}
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
+	console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
+	
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(page)) {
@@ -181,7 +185,7 @@ export function navigateTo(newState: any, fromHash = false) {
 function continueNavigation(newState: string, query: string) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
-	if (query && query.length > 0)
+	if (newState !== 'GameOver' && query && query.length > 0)
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
 	else
 		history.pushState(stateObj, '', `#${newState}`);
@@ -214,7 +218,7 @@ export function getValidState(newState: string, currentState: string): string {
 	}
 
 	// No match is started
-    if ((newState === 'Game' || newState === 'GameOver') && Game.match.matchID == -1) {
+    if ((newState == 'Game' || newState == 'GameOver') && Game.match.matchID == -1) {
 		return ('Menu');
 	}
 
@@ -262,10 +266,10 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
-	// console.log('state to valid', newState, validState, currentState);
+	console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 	
-	const pagesWithQuery = ['Dashboard', 'GameStats', 'GameOver'];
+	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
 	}
@@ -273,7 +277,7 @@ export async function controlBackAndForward(event: PopStateEvent) {
 		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
 
 	// Always go back to menu and stop game
-	if (currentState == 'Game' && validState !== 'Game') {
+	if (currentState === 'Game' && validState !== 'Game') {
 		cancelOnlineMatch();
 		stopCurrentGame();
 		navigateTo('Menu', false);

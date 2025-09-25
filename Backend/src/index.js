@@ -9,13 +9,16 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-// import { addUserSessionToDB } from './Database/sessions.js';
-import { onUserLogout } from './Services/sessionsService.js';
+import { addUserSessionToDB } from './Database/sessions.js';
+
 import { performCleanupDB } from './Database/cleanup.js';
-import { handleTournament } from './Tournament/tournament.js';
+import { handleTournament, leaveTournament } from './Tournament/tournament.js';
 import { initFastify } from './fastify.js';
 import { USERLOGIN_TIMEOUT } from './structs.js';
 import { checkChallengeFriendsInvites } from './Pending/matchmaking.js'
+import { generateAllChartsForMatch } from './Charts/createGameStats.js';
+import { stopMatchAfterRefresh } from './End/endGame.js';
+import { tournament } from './Tournament/tournament.js';
 
 export const db = await createDatabase();
 
@@ -59,8 +62,6 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
-					console.log(`UserId1=${userId1}`);
-					// Use userId or decoded as needed for player 1
 				} catch (err) {
 					console.error('JWT1 verification failed:', err);
 				}
@@ -82,7 +83,6 @@ fastify.ready().then(() => {
 				console.error('JWT2 verification failed: Invalid cookie');
 			}
 		}
-		// console.log('User IDs from jwtCookie1:', userId1, 'jwtCookie2:', userId2);
 		if (!userId1) {
 			console.error('No valid auth tokens found in cookies');
 			socket.emit('error', { action: 'error', reason: 'Unauthorized: No auth tokens found' });
@@ -94,83 +94,106 @@ fastify.ready().then(() => {
 
 		// Socket that listens to incomming msg from frontend
 		socket.on('message', (msg) => {
-			const action = msg.action;
-			if (!action) {
-				socket.emit('error', { action: 'error', reason: 'No action specified' });
-				return ;
-			}
-
-			switch (action) {
-				case 'playerInfo':
-					return handlePlayerInfo(msg, socket, userId1, userId2);
-				case 'matchmaking':
-					return handleMatchmaking(db, msg, socket, userId1, fastify.io);
-				case 'userDataMenu':
-					return handleUserDataMenu(msg, socket, userId1, userId2);
-				case 'players':
-					return handlePlayers(db, msg, socket, userId1);
-				case 'friends':
-					return handleFriends(msg, socket, userId1);
-				case 'dashboard': {
-				//if there is no player id it is specify whether to use userID1 or userID2
-					if (!msg.playerId) {
-						msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
-					}
-					return handleDashboardMaking(msg, socket, msg.playerId);
+			try {
+				const action = msg.action;
+				if (!action) {
+					socket.emit('error', { action: 'error', reason: 'No action specified' });
+					return ;
 				}
-				case 'init':
-					return handleInitGame(db, msg, socket);
-				case 'game':
-					return handleGame(db, msg, socket, fastify.io);
-				case 'tournament':
-					return handleTournament(db, msg, socket, fastify.io, userId1);
-				case 'error':
-					console.log('Error from frontend..');
-					return socket.emit('error', msg);
-				default:
-					return socket.emit('error', { reason: 'Unknown action' + action });
+
+				switch (action) {
+					case 'playerInfo':
+						return handlePlayerInfo(msg, socket, userId1, userId2);
+					case 'matchmaking':
+						return handleMatchmaking(db, msg, socket, userId1, fastify.io);
+					case 'userDataMenu':
+						return handleUserDataMenu(msg, socket, userId1, userId2);
+					case 'players':
+						return handlePlayers(db, msg, socket, userId1);
+					case 'friends':
+						return handleFriends(msg, socket, userId1);
+					case 'dashboard': {
+					//if there is no player id it is specify whether to use userID1 or userID2
+						if (!msg.playerId) {
+							msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
+						}
+						return handleDashboardMaking(msg, socket, msg.playerId);
+					}
+					case 'gameStats':
+						return generateAllChartsForMatch(db, socket, msg);
+					case 'init':
+						return handleInitGame(db, msg, socket);
+					case 'game':
+						return handleGame(db, msg, socket, fastify.io);
+					case 'tournament':
+						return handleTournament(db, msg, socket, fastify.io, userId1);
+					case 'error':
+						console.log('Error from frontend..');
+						return socket.emit('error', msg);
+					default:
+						return socket.emit('error', { reason: 'Unknown action' + action });
+				}
+			} catch (err) {
+				console.error('Error during receiving msg', err);
 			}
 		});
 
 		socket.on('heartbeat', (msg) => {
-			if (userId1) {
-				usersLastSeen.set(userId1, {
-					userId2,
-					lastSeen: Date.now()
-				});
-				if (msg.menu === true) {
-					handleFriends({ subaction: 'initMenu' }, socket, userId1);
+			try {
+				if (userId1) {
+					usersLastSeen.set(userId1, {
+						userId2,
+						lastSeen: Date.now()
+					});
+					if (msg.menu === true) {
+						handleFriends({ subaction: 'initMenu' }, socket, userId1);
+					}
 				}
+			} catch (err) {
+				console.error('Error during heartbeat', err);
 			}
 		});
 
 		socket.on('disconnect', async () => {
-			console.log(`User ${userId1} disconnected`);
-			checkChallengeFriendsInvites(socket, userId1);
+			try {
+				console.log(`User ${userId1} disconnected`);
+				checkChallengeFriendsInvites(socket, userId1);
+				await stopMatchAfterRefresh(fastify.io, userId1);
+				const player = tournament.players.find(p => p.id === userId1);
+				if (player) {
+					leaveTournament({name: player.name}, userId1, socket, fastify.io);
+				}
+			} catch (err) {
+				console.error(`Error during disconnecting`, err);
+			}
 		});
 	});
 });
 
 setInterval(async () => {
-	const now = Date.now();
-	for (const [userId1, data] of usersLastSeen.entries()) {
-		const { userId2, lastSeen } = data;
-		if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
-			// Mark user offline in DB
-			try {
-				await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
-				// usersLastSeen.delete(userId1);
-				console.log(`User ${userId1} marked offline due to missed heartbeat`);
-				if (userId2 && userId2 > 2) {
-					await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
+	try {
+		const now = Date.now();
+		for (const [userId1, data] of usersLastSeen.entries()) {
+			const { userId2, lastSeen } = data;
+			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
+				// Mark user offline in DB
+				try {
+					await addUserSessionToDB(db, { user_id: userId1, state: 'logout' });
+					// usersLastSeen.delete(userId1);
+					console.log(`User ${userId1} marked offline due to missed heartbeat`);
+					if (userId2 && userId2 > 2) {
+						await addUserSessionToDB(db, { user_id: userId2, state: 'logout' });
+						usersLastSeen.delete(userId1);
+						console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+					}
 					usersLastSeen.delete(userId1);
-					console.log(`User (player2) ${userId2} marked offline due to missed heartbeat`);
+				} catch (err) {
+					console.error('Error setInterval: ', err);
 				}
-				usersLastSeen.delete(userId1);
-			} catch (err) {
-				// console.error(`Error marking user ${userId} offline:`, err);
 			}
 		}
+	} catch (err) {
+		console.error('Error during interval', err);
 	}
 }, 5000); // check every 5 seconds
 

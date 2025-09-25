@@ -102,42 +102,33 @@ export async function createDatabase() {
 	const created = await ensureSchema(db);
 
 	if (created) {
-		const guest_id = await createNewUserToDB(db, {
-			name: 'Guest',
-			email: 'guest@guest.guest',
-			password: 'secretguest'
-		});
-		const ai_id = await createNewUserToDB(db, {
-			name: 'AI',
-			email: 'ai@ai.ai',
-			password: 'secretai'
-		});
-
-		const test1 = await createNewUserToDB(db, {
-			name: 'test1',
-			email: 'test1@test1.test1',
-			password: 'test1@test1.test1'
-		});
-		const test2 = await createNewUserToDB(db, {
-			name: 'test2',
-			email: 'test2@test2.test2',
-			password: 'test2@test2.test2'
-		});
-		const test3 = await createNewUserToDB(db, {
-			name: 'test3',
-			email: 'test3@test3.test3',
-			password: 'test3@test3.test3'
-		});
-		const test4 = await createNewUserToDB(db, {
-			name: 'test4',
-			email: 'test4@test4.test4',
-			password: 'test4@test4.test4'
-		});
+		let guest_id = null;
+		let ai_id = null;
+		try {
+			guest_id = await createNewUserToDB(db, {
+				name: 'Guest',
+				email: 'guest@guest.guest',
+				password: 'secretguest'
+			});
+			ai_id = await createNewUserToDB(db, {
+				name: 'AI',
+				email: 'ai@ai.ai',
+				password: 'secretai'
+			});
+		} catch(err) {
+			console.log("Error created accounts: ", err);
+			return db;
+		}
+		if (!guest_id || !ai_id) {
+			console.log("Error created accounts: guest_id and/or guest_id");
+			return db;
+		}
 		try {
 			await onUserLogin(db, guest_id);
 			await onUserLogin(db, ai_id);
 		} catch(err) {
-			console.log("onUserLogin failed: guest / ai id");
+			console.log("onUserLogin failed: guest / ai id", err);
+			return db;
 		}
 	}
 	sql_log(`Finished setting up database`);

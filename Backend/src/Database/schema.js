@@ -20,7 +20,6 @@ export async function createTables(db)
 		avatar_url TEXT,
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
 		last_edited TEXT DEFAULT CURRENT_TIMESTAMP,
-		is_deleted INTEGER NOT NULL DEFAULT 0,
 		CHECK(twofa_active IN (0,1))
 	);
 
@@ -54,12 +53,9 @@ export async function createTables(db)
 		end_time TEXT,
 		player_1_score INTEGER DEFAULT 0,
 		player_2_score INTEGER DEFAULT 0,
-		tournament_id INTEGER,
-		tournament_match_number INTEGER,
 		FOREIGN KEY(player_1_id) REFERENCES Users(id),
 		FOREIGN KEY(player_2_id) REFERENCES Users(id),
 		FOREIGN KEY(winner_id) REFERENCES Users(id),
-		FOREIGN KEY(tournament_id) REFERENCES Tournaments(id),
 		CHECK(player_1_id <> player_2_id)
 	);
 
@@ -77,27 +73,6 @@ export async function createTables(db)
 		paddle_y_player_2 REAL,
 		FOREIGN KEY(match_id) REFERENCES Matches(id),
 		FOREIGN KEY(user_id) REFERENCES Users(id)
-	);
-
-	CREATE TABLE IF NOT EXISTS Tournaments (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-		state TEXT NOT NULL CHECK (state IN ('waiting', 'in_progress', 'finished')),
-		created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-		started_at TEXT,
-		finished_at TEXT
-	);
-
-	CREATE TABLE IF NOT EXISTS TournamentPlayers (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		tournament_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL,
-		spot INTEGER NOT NULL, -- 1-4 for a 4-player tournament
-		joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(tournament_id) REFERENCES Tournaments(id),
-		FOREIGN KEY(user_id) REFERENCES Users(id),
-		UNIQUE(tournament_id, user_id),
-		UNIQUE(tournament_id, spot)
 	);
 
 	CREATE VIEW IF NOT EXISTS OnlineUsers AS
@@ -155,6 +130,52 @@ export async function createTables(db)
 				ROUND(
 					AVG((julianday(m.end_time) - julianday(m.start_time)) * 86400), 0) AS avg_duration
 		FROM Users u LEFT JOIN Matches m ON (m.player_1_id = u.id OR m.player_2_id = u.id) AND m.end_time IS NOT NULL GROUP BY u.id;
+
+	CREATE VIEW IF NOT EXISTS MatchGoalsSummary AS
+		WITH ordered AS (
+			SELECT
+				e.*,
+				SUM(CASE WHEN e.event_type = 'serve' THEN 1 ELSE 0 END)
+				OVER (PARTITION BY e.match_id ORDER BY e.timestamp ASC, e.id ASC) AS rally_id,
+				MIN(e.timestamp) OVER (PARTITION BY e.match_id) AS first_ts
+			FROM MatchEvents e
+		),
+		goals AS (
+			SELECT
+				o.match_id,
+				o.id AS event_id,
+				o.user_id,
+				o.rally_id,
+				o.timestamp,
+				o.ball_x,
+				o.ball_y,
+				o.first_ts,
+				ROW_NUMBER() OVER (PARTITION BY o.match_id ORDER BY o.timestamp ASC, o.id ASC) AS goal_no
+			FROM ordered o
+			WHERE o.event_type = 'goal'
+		),
+		hits_per_rally AS (
+			SELECT
+				match_id,
+				rally_id,
+				COUNT(*) AS hits
+			FROM ordered
+			WHERE event_type = 'hit'
+			GROUP BY match_id, rally_id
+		)
+		SELECT
+			g.match_id,
+			g.goal_no AS goal,
+			g.user_id,
+			u.name AS username,
+			COALESCE(h.hits, 0) AS hits,
+			g.timestamp,
+			ROUND( (julianday(g.timestamp) - julianday(g.first_ts)) * 86400, 0 ) AS duration,
+			ROUND(g.ball_x, 3) AS ball_x,
+			ROUND(g.ball_y / 0.75, 3) AS ball_y
+		FROM goals g JOIN Users u ON u.id = g.user_id
+		LEFT JOIN hits_per_rally h ON h.match_id = g.match_id AND h.rally_id = g.rally_id
+		ORDER BY g.match_id, g.goal_no;
 
 	CREATE VIEW IF NOT EXISTS UserMatchHistory AS
 		SELECT

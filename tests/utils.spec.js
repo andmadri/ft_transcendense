@@ -23,3 +23,10 @@ export async function pressLabel(page, labelName) {
 	console.log(`Press ${btnName} label`);
 	await page.locator(`label[for=${labelName}]`).click();
 }
+
+export async function checkHash(page, expectedUrl) {
+	const currentUrl = page.url();
+	const urlObj = new URL(currentUrl);
+	const hash = urlObj.hash; 
+	await expect(hash).toContain(expectedUrl);
+};

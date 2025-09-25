@@ -1,10 +1,47 @@
 import bcrypt from 'bcrypt';
-import { addUserSessionToDB } from './sessions.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 // *************************************************************************** //
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
+
+export function nameAlreadyExist(db, name) {
+	const username = name.toLowerCase(); 
+
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`;
+		db.get(sql,	[username], (err, row) => {
+			if (err) {
+				sql_error(err, `nameAlreadyExist | name=${name}`);
+				return reject(err);
+			} else {
+				if (row) {
+					sql_log(`Name already exist: ${name}`);
+				}
+				resolve(row || null);
+			}
+		});
+	});
+	if (exists)
+		console.log("Username already exists");
+	return (exists);
+}
+
+export async function emailAlreadyExist(db, emailadress) {
+	const email = emailadress.toLowerCase(); 
+
+	const exists = await new Promise((resolve, reject) => {
+		db.get(`SELECT 1 FROM Users WHERE LOWER(email) = ? LIMIT 1`,
+			[email], (err, row) => {
+			if (err)
+				return reject(err);
+			resolve(!!row);
+		});
+	});
+	if (exists)
+		console.log("Email already exists");
+	return (exists);
+}
 
 /**
  * @brief Adds a new user to the SQL Users table.
@@ -36,11 +73,6 @@ export async function createNewUserToDB(db, user = {}) {
 	if (!name || !email) {
 		throw new Error("createNewUserToDB: 'name' and 'email' are required");
 	}
-	const existing = await getUserByEmail(db, email);
-	if (existing) {
-		sql_log(`User already exists: [${existing.id}] ${existing.name} (${existing.email})`);
-		return existing.id;
-	}
 	return await addUserToDB(db, { name, email, password, avatar_url });
 }
 
@@ -66,15 +98,19 @@ export async function createNewUserToDB(db, user = {}) {
  * @throws {Error} if the user doesn’t exist or no valid fields are provided.
  */
 export async function updateUserInDB(db, user) {
-	const existing = await getUserByID(db, user.user_id);
-	if (!existing) {
-		throw new Error(`User ID ${user.user_id} does not exist.`);
-	}
+	let existing = null;
+	try {
+		existing = await getUserByID(db, user.user_id);
+		if (!existing) {
+			throw new Error(`User ID ${user.user_id} does not exist.`);
+		}
 
-	if (user.password !== undefined) {
-		user.password = await bcrypt.hash(user.password, 10);
+		if (user.password !== undefined) {
+			user.password = await bcrypt.hash(user.password, 10);
+		}
+	} catch (err) {
+		return err;
 	}
-
 	return new Promise((resolve, reject) => {
 		const updates = [];
 		const values = [];

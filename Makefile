@@ -33,8 +33,14 @@ server: Frontend/*
 	cp -r Frontend/* Server/
 	docker compose up -d --build --force-recreate server
 
+server-build-fast:
+	@echo "=== Building server image (cache) and restarting server only ==="
+	docker compose -f docker-compose.yml build server
+	docker compose -f docker-compose.yml up -d --no-deps server
+
 backend:
-	docker compose up -d --build --force-recreate backend
+# 	docker compose up -d --build --force-recreate backend
+	docker compose -f docker-compose.yml up -d --build --no-deps backend
 
 update-host-env:
 	@HOST_IP=$$(hostname -I | awk '{print $$1}'); \
@@ -43,7 +49,7 @@ update-host-env:
 	else \
 		echo "HOST_IP=$$HOST_IP" >> .env; \
 	fi
-	@HOST_DOMAIN=$$(hostname); \
+	@HOST_DOMAIN="$$(hostname):8443"; \
 	if grep -q '^HOST_DOMAIN=' .env; then \
 		sed -i "s/^HOST_DOMAIN=.*/HOST_DOMAIN=$$HOST_DOMAIN/" .env; \
 	else \
@@ -73,7 +79,8 @@ clean: stop
 	rm -rf Server/*.json
 	@echo "containers, images and network are removed"
 
-re:	clean up
+# re:	clean up
+re:	backend server-build-fast up
 
 prune: clean clean_volumes
 	docker system prune -a --volumes -f

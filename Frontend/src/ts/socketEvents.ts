@@ -9,6 +9,7 @@ import { populateDashboard } from './Dashboard/dashboardContents.js'
 import { actionInitOnlineGame } from './Game/initGame.js'
 import { actionTournament } from './Tournament/tournamentContent.js'
 import { actionUserDataMenu } from './Menu/userDataMenu.js'
+import { getGameStats } from './Game/gameStats.js'
 import { validateURL } from './Dashboard/exists.js'
 import * as S from './structs.js'
 
@@ -78,6 +79,9 @@ export function receiveFromWS(data: any) {
 			break ;
 		case 'initOnlineGame':
 			actionInitOnlineGame(data);
+			break ;
+		case 'gameStats':
+			getGameStats(data);
 			break ;
 		case 'game':
 			actionGame(data);

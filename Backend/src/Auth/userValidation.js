@@ -1,20 +1,29 @@
-import { addUserToDB, getOnlineUsers, getUserByEmail } from '../Database/users.js';
+import { addUserToDB, getOnlineUsers, getUserByEmail, nameAlreadyExist, emailAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js' // DELETE THIS LATER
 
-export function checkName(name) {
+export async function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
+	let exists = null;
+	try {
+		exists = await nameAlreadyExist(db, name);
+	} catch (err) {
+		console.log('Error checkName: ', err);
+	}
 	if (!name.length)
 		return ('Name can not be empty');
 	else if (name.length > 10)
-		return ('Name is too long');
+		return ("Name is too long (min 10 characters)");
 	else if (!nameRegex.test(name))
 		return ("Only letters, numbers, spaces, '-' and '_' are allowed.");
+	else if (exists)
+		return ("That username is already taken");
 	return (null);
 }
 
-function checkEmail(email) {
+export async function checkEmail(email) {
 	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	const exists = await emailAlreadyExist(db, email);
 	if (!email.length)
 		return ('Email can not be empty');
 	else if (email.length < 3)
@@ -23,10 +32,12 @@ function checkEmail(email) {
 		return ('Email is too long');
 	else if (!emailRegex.test(email))
 		return ('Email has no @ and dot or forbidden characters');
+	else if (exists)
+		return ("That email is already taken");
 	return (null);
 }
 
-function checkPassword(password) {
+export function checkPassword(password) {
 	const passwordRegex = /^\S+$/;
 	if (!password.length)
 		return ('Password can not be empty');
@@ -42,44 +53,34 @@ function checkPassword(password) {
 export async function addUser(msg) {
 	let errorMsg;
 
-	errorMsg = checkName(msg.name);
+	errorMsg = await checkName(msg.name);
 	if (errorMsg)
 		return (errorMsg);
-	errorMsg = checkEmail(msg.email);
+	errorMsg = await checkEmail(msg.email);
 	if (errorMsg)
 		return (errorMsg);
 	errorMsg = checkPassword(msg.password);
 	if (errorMsg)
 		return (errorMsg);
 	try {
-		const userId = await addUserToDB(db, msg);
-		return (''); // Should we not return the userId?
+		await addUserToDB(db, msg);
+		return ('');
 	}
 	catch(err) {
-		if (err.code === 'SQLITE_CONSTRAINT') {
-			if (err.message.includes('Users.email')) {
-				return ('That email is already registered.');
-			}
-			if (err.message.includes('Users.name')) {
-				return ('That username is already taken.');
-			}
-		}
 		console.error('addUser:', err);
 		return ('Unknown error occurred while adding user.');
 	}
 }
 
 export async function validateLogin(msg, fastify) {
-	let user;
-
+	let user = null;
 	try {
 		user = await getUserByEmail(db, msg.email);
+		if (!user || !user.password)
+			return ({ error: 'User not found' });
 	} catch (err) {
-		console.error('Error with getting user by email');
-		return (err);
-	}
-	if (!user || !user.password)
 		return ({ error: 'User not found' });
+	}
 
 	const isValidPassword = await bcrypt.compare(msg.password, user.password);
 	if (!isValidPassword)
@@ -87,7 +88,6 @@ export async function validateLogin(msg, fastify) {
 
 	try {
 		const onlineUsers = await getOnlineUsers(db);
-		console.log('Online users:', onlineUsers.map(u => u.id));
 		for (const onlineUser of onlineUsers) {
 			if (onlineUser.id === user.id) {
 				return ({ error: 'You are already logged in!' });
