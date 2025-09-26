@@ -17,12 +17,6 @@ function getGameOverContext(): { matchId: number | null; result: string, matchTy
 	return { matchId, result, matchType };
 }
 
-function clearGameOverContext() {
-	sessionStorage.removeItem('lastMatchId');
-	sessionStorage.removeItem('lastResult');
-	sessionStorage.removeItem('matchType');
-}
-
 function getWinnerResult() {
 	let winnerName = null;
 	console.log(`winner ID ${Game.match.winnerID}`);
@@ -37,12 +31,6 @@ function getWinnerResult() {
 
 export function getGameOver() {
 	const { matchId, result, matchType } = getGameOverContext();
-	const game = document.getElementById('game');
-	if (game)
-		game.remove();
-	const startGameField = document.getElementById('startGame');
-	if (startGameField)
-		startGameField.remove();
 
 	const gameOver = document.createElement('div');
 	gameOver.id = 'gameOver';
@@ -128,7 +116,7 @@ export function getGameOver() {
 	const body = document.getElementById('body');
 	if (!body)
 		return;
-	document.getElementById('backgroundText')?.remove();
+	body.innerHTML = "";
 	body.appendChild(gameOver);
 }
 

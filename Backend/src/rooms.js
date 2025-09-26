@@ -10,6 +10,6 @@ export function leaveRoom(socket, roomname) {
 	try {
 		socket.leave(roomname);
 	} catch (err) {
-		console.error(`No room with name ${roomname}`, err);
+		console.error(`ROOM_LEAVE No room with name ${roomname}`, err.message || err, "leaveRoom");
 	}
 }

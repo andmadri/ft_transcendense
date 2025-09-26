@@ -45,10 +45,10 @@ function getIdFromHash(hash: string, type: string): number | null {
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string, query: string) {
+export function renderPage (newState: string, query: string, infoIsChecked: boolean) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
-	if (!unprotecedPages.includes(newState)) {
+	if (!unprotecedPages.includes(newState) && !infoIsChecked) {
 		fetch('/api/playerInfo', {
 			credentials: 'include',
 			method: 'POST',
@@ -132,7 +132,8 @@ export function doRenderPage(newState: string, query?: string) {
 		default:
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
-		}
+	}
+
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
@@ -168,14 +169,14 @@ export function navigateTo(newState: any, fromHash = false) {
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				continueNavigation(page, query);
+				continueNavigation(page, query, true);
 			})
 			.catch(() => {
-				continueNavigation('LoginP1', query);
+				continueNavigation('LoginP1', query, true);
 			});
 		return;
 	}
-	continueNavigation(newState, query);
+	continueNavigation(newState, query, false);
 }
 
 /**
@@ -184,14 +185,14 @@ export function navigateTo(newState: any, fromHash = false) {
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
  */
-function continueNavigation(newState: string, query: string) {
+function continueNavigation(newState: string, query: string, infoIsChecked: boolean) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
 	if (newState !== 'GameOver' && query && query.length > 0)
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
 	else
 		history.pushState(stateObj, '', `#${newState}`);
-	renderPage(newState, query);
+	renderPage(newState, query, infoIsChecked);
 }
 
 function stopCurrentGame() {
@@ -229,6 +230,13 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
+	if (currentState == 'Game' && newState == 'Game') {
+		if (Game.match.state != state.End) {
+			Game.match.state = state.End;
+			return ('GameOver');
+		}
+	}
+
 	if (currentState == 'Menu' && (newState === 'Game' || newState === 'GameOver')) {
 		return ('Menu');
 	}
@@ -248,7 +256,7 @@ export function getValidState(newState: string, currentState: string): string {
  * @param event PopStateEvent
  */
 export async function controlBackAndForward(event: PopStateEvent) {
-	// console.log('popstate event:', event.state, 'hash:', window.location.hash);
+	console.log('popstate event:', event.state, 'hash:', window.location.hash);
 	
 	let newState = event.state?.page;
 	if (!newState) {
@@ -267,8 +275,9 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	}
 	
 	const currentState = sessionStorage.getItem("currentState");
+	console.log('BEFORE state', newState, currentState);
 	const validState = getValidState(page, currentState ? currentState : '');
-	console.log('state to valid', newState, validState, currentState);
+	console.log('AFTER state', validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 	
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
@@ -287,8 +296,8 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	}
 
 	if (validState) {
-		renderPage(validState, query);
+		renderPage(validState, query, false);
 	} else {
-		renderPage('Menu', ''); // fallback
+		renderPage('Menu', '', false); // fallback
 	}
 }

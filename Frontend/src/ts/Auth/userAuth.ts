@@ -93,46 +93,47 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 async function requestTwofaCode(playerNr: number, userId: number) {
 	console.log(`Requesting 2FA code for player ${playerNr} with userId ${userId}`);
 
-	// Create overlay
 	const overlay = document.createElement('div');
-	Object.assign(overlay.style, {
-		position: 'fixed',
-		top: '0',
-		left: '0',
-		width: '100vw',
-		height: '100vh',
-		background: 'rgba(0,0,0,0.7)',
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: '1000'
+	overlay.style.position = 'fixed';
+	overlay.style.top = '0';
+	overlay.style.left = '0';
+	overlay.style.width = '100vw';
+	overlay.style.height = '100vh';
+	overlay.style.background = 'rgba(0,0,0,0.25)';
+	overlay.style.display = 'flex';
+	overlay.style.flexDirection = 'column';
+	overlay.style.justifyContent = 'center';
+	overlay.style.alignItems = 'center';
+	overlay.style.zIndex = '1000';
+	overlay.addEventListener('click', () => overlay.remove());
+	
+	const formDiv = document.createElement('div');
+	formDiv.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
+	formDiv.style.padding = '40px';
+	formDiv.style.borderRadius = '10px';
+	formDiv.style.display = 'flex';
+	formDiv.style.border = '12px solid black';
+	formDiv.style.flexDirection = 'column';
+	formDiv.style.alignItems = 'center';
+	formDiv.style.boxShadow = 'rgba(0, 0, 0, 0.5) 0px 10px 25px';
+	formDiv.style.position = 'relative';
+	formDiv.addEventListener('click', (e) => {
+		e.stopPropagation();
 	});
 
 	const closeBtn = document.createElement('button');
 	closeBtn.textContent = 'X';
-	Object.assign(closeBtn.style, {
-		position: 'absolute',
-		top: '30px',
-		right: '30px',
-		fontSize: '2em',
-		background: 'transparent',
-		border: 'none',
-		color: 'white',
-		cursor: 'pointer'
-	});
+	closeBtn.style.position = 'absolute';
+	closeBtn.style.top = '0px';
+	closeBtn.style.right = '0px';
+	closeBtn.style.fontFamily = '"Horizon", sans-serif';
+	closeBtn.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
+	closeBtn.style.background = 'transparent';
+	closeBtn.style.border = 'none';
+	closeBtn.style.color = 'black';
+	closeBtn.style.cursor = 'pointer';
 	closeBtn.addEventListener('click', () => overlay.remove());
-	overlay.appendChild(closeBtn);
-
-	const formDiv = document.createElement('div');
-	Object.assign(formDiv.style, {
-		background: 'white',
-		padding: '30px',
-		borderRadius: '10px',
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center'
-	});
+	formDiv.appendChild(closeBtn);
 
 	const label = document.createElement('div');
 	label.textContent = 'Enter your 6-digit 2FA code:';
@@ -149,15 +150,27 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 	codeInput.maxLength = 6;
 	codeInput.pattern = '\\d{6}';
 	codeInput.autocomplete = 'one-time-code';
-	codeInput.style.fontSize = '1.5em';
+	codeInput.style.fontSize = 'clamp(15px, 1.7vw, 18px)';
 	codeInput.style.textAlign = 'center';
 	codeInput.style.margin = '10px 0';
+	codeInput.style.borderRadius = '5px';
+	codeInput.style.background = '#363430';
+	codeInput.style.border = 'none';
+	codeInput.style.color = 'white';
+	codeInput.style.boxShadow = 'rgba(0, 0, 0, 0.5) 0px 10px 25px';
 	form.appendChild(codeInput);
 
 	const submitBtn = document.createElement('button');
 	submitBtn.type = 'submit';
 	submitBtn.textContent = 'Verify 2FA';
-	submitBtn.style.fontSize = '1em';
+	submitBtn.style.border = 'none';
+	submitBtn.style.borderRadius = '5px';
+	submitBtn.style.textAlign = 'center';
+	submitBtn.style.fontFamily = '"RobotoCondensed", sans-serif';
+	submitBtn.style.color = 'white';
+	submitBtn.style.background = '#363430';
+	submitBtn.style.fontSize = 'clamp(15px, 1.7vw, 18px)';
+	submitBtn.style.boxShadow = 'rgba(0, 0, 0, 0.5) 0px 10px 25px';
 	form.appendChild(submitBtn);
 
 	form.addEventListener('submit', async (e) => {

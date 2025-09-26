@@ -234,7 +234,7 @@ export function getOnlineUsers(db) {
 				sql_error(err, `getOnlineUsers`);
 				reject(err);
 			} else {
-				resolve(rows)
+				resolve(rows || []);
 			}
 		});
 	});
@@ -268,7 +268,7 @@ export async function getAllPlayers(db) {
 				sql_error(err, `getAllPlayers`);
 				reject(err);
 			} else {
-				resolve(rows);
+				resolve(rows || []);
 			}
 		});
 	});
