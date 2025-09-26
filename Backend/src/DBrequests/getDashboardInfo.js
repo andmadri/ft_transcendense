@@ -10,7 +10,7 @@ async function getDashboardInfo(socket, playerID) {
 		const stats = await getUserMatchStatsDB(db, playerID);
 		const matches = await getMatchHistoryDB(db, playerID);
 		const log_time = await getUserStateDurationsDB(db, playerID);
-	
+
 		const returnMsg = {
 			action: "dashboardInfo",
 			subaction: "receivePlayerData",

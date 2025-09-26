@@ -45,7 +45,6 @@ function updateButton(player: any, match:any, box: HTMLElement) {
 	// console.log(`${match}`);
 	const parent = box.parentElement;
 	if (!parent) {
-		// console.log('no parent');
 		return;
 	}
 	const existingBtn = parent.querySelector('button');

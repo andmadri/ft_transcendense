@@ -54,11 +54,12 @@ export async function remotePlayer(page, browser, URL, name, name2, email2, pass
 	const paddle2 = await page.locator('#rPlayer');
 	const paddleRect2_1 = await paddle2.boundingBox();
 
-	for(let i = 0; i < 20; i++) {
-		await page.keyboard.press('ArrowDown'); 
-		await page2.keyboard.press('ArrowDown'); 
-		await timeout(page, page2, 100);
-	}
+	await page.keyboard.down('ArrowDown');
+	await page2.keyboard.down('ArrowDown');
+	await timeout(page, page2, 200); // geef game tijd om te bewegen
+	await page.keyboard.up('ArrowDown');
+	await page2.keyboard.up('ArrowDown');
+
 	const paddleRect2 = await paddle.boundingBox();
 	const paddleRect2_2 = await paddle2.boundingBox();
 	expect(paddleRect1).not.toEqual(paddleRect2);

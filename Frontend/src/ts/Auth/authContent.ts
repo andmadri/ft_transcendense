@@ -1,9 +1,6 @@
 import { submitAuthForm } from './userAuth.js'
-import { log } from '../logging.js'
 import * as S from '../structs.js'
-import { movePadel } from '../Game/gameLogic.js';
 import { navigateTo } from '../history.js';
-import { text } from 'stream/consumers';
 
 export let authenticationMode = 'Sign Up';
 
@@ -40,6 +37,26 @@ function getInputField(label_name: string, name: string, player: number) {
 	inputWithIcon.appendChild(input);
 	inputSingle.append(label, inputWithIcon);
 	return (inputSingle);
+}
+
+function getExitBtn() {
+	const exitButton = document.createElement('button');
+	exitButton.id = 'exitButton';
+	exitButton.textContent = 'X';
+	exitButton.style.color = 'black';
+	exitButton.style.fontSize = 'clamp(10px, 1.5vw, 15px)';
+	exitButton.style.position = 'fixed';
+	exitButton.style.top = '1rem';
+	exitButton.style.right = '1rem';
+	exitButton.style.background = 'transparent';
+	exitButton.style.border = 'transparent';
+	exitButton.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	exitButton.style.fontFamily = '"Horizon", sans-serif';
+
+	exitButton.addEventListener('click', () => {
+		navigateTo('Menu');
+	});
+	return (exitButton);
 }
 
 export function getAuthField(player: number, mandatory: boolean): HTMLElement {
@@ -114,6 +131,8 @@ export function getAuthField(player: number, mandatory: boolean): HTMLElement {
 	animationContainer.appendChild(ball);
 
 	authContainer.append(authForm, animationContainer);
+	if (player == 2)
+		authContainer.appendChild(getExitBtn());
 	return (authContainer);
 }
 

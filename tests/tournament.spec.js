@@ -16,7 +16,8 @@ async function pressBtnPages(pages, btnTxt) {
 async function clickQuitIfExist(pages) {
 	for (let i = 0; i < 4; i++) {
 		const quitBtn = pages[i].locator('button', { hasText: 'QUIT' });
-		if (quitBtn) {
+		const count = await quitBtn.count();
+		if (count > 0) {
 			if (await quitBtn.isVisible()) {
 				await quitBtn.click();
 			}
@@ -31,26 +32,25 @@ export async function tournament(p1, p2, p3, p4, name) {
 	await timeoutForPages(pages, 2000);
 
 	await pressBtnPages(pages, 'Ready');
-	await timeoutForPages(pages, 2000);
-
-	await clickQuitIfExist(pages);
-	await pressBtnPages(pages, `BACK TO MENU`);
-	await timeoutForPages(pages, 2000);
-
-	await pressBtnPages(pages, 'Ready');
-	await timeoutForPages(pages, 2000);
+	await timeoutForPages(pages, 3000);
 
 	await clickQuitIfExist(pages);
 	await timeoutForPages(pages, 1000);
-	await pressBtnPages(pages, `BACK TO MENU`);
+	await pressBtnPages(pages, `BACK TO TOURNAMENT`);
+	await timeoutForPages(pages, 2000);
 
-	await expect(p1.locator('#playerPodium')).toBeVisible();
-	await expect(p2.locator('#playerPodium')).toBeVisible();
-	await expect(p3.locator('#playerPodium')).toBeVisible();
-	await expect(p4.locator('#playerPodium')).toBeVisible();
+	await pressBtnPages(pages, 'Ready');
+	await timeoutForPages(pages, 3000);
 
-	// await pressBtnPages(pages, 'BACK TO MENU');
-	// for (let i = 0; i < 4; i++) {
-	// 	await isInMenu(pages[i], false, name + (i + 1), '');
-	// }
+	await clickQuitIfExist(pages);
+	await timeoutForPages(pages, 1000);
+
+	for (const p of pages) {
+  		await expect(p.locator('#playerPodium').first()).toBeVisible();
+	}
+
+	for (const p of pages) {
+		const btn = p.locator('#exitButton').nth(1);
+		await btn.click();
+	}
 }
