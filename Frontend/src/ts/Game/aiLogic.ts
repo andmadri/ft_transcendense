@@ -34,10 +34,10 @@ function	followBall(match : matchInfo) {
 function setErrorMargin(match: matchInfo){
 	const diff = match.player1.score - match.player2.score;
 
-	const base = 0.1;
-	const step = 0.03;
+	const base = 0.05;
+	const step = 0.01;
 	const min = 0;
-	const max = 0.4;
+	const max = 0.1;
 
 	const margin = base + diff * step;
 	AI.prediction.errorMargin = Math.max(Math.min(max, margin), min);
