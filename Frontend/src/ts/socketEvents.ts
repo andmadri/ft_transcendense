@@ -1,7 +1,7 @@
 import { actionGame } from './Game/game.js'
 import { actionPlayers } from './Menu/players.js'
 import { Game, UI } from "./gameData.js"
-import { getPlayerData, actionPlayerInfo } from './SideMenu/updatePlayerData.js'
+import { actionPlayerInfo } from './updateInfo/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
 import { populateDashboard } from './Dashboard/dashboardContents.js'
@@ -20,7 +20,6 @@ export function startSocketListeners() {
 		console.log('Connected with id:', socket.id);
 		if (document.getElementById('loadingpage'))
 			document.body.removeChild(document.getElementById('loadingpage')!);
-		getPlayerData();
 	});
 
 	socket.on('message', (msg: any)=> {

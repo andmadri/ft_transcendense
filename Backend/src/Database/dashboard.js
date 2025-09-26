@@ -28,7 +28,7 @@ export function getAllUserStateDurationsDB(db) {
 				sql_error(err, `getAllUserStateDurationsDB`);
 				reject(err);
 			} else {
-				resolve(rows);
+				resolve(rows || []);
 			}
 		});
 	});

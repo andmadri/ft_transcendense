@@ -1,8 +1,5 @@
 import { UI, Game } from "../gameData.js"
-import { navigateTo, getValidState } from '../history.js';
 import { customAlert } from '../Alerts/customAlert.js';
-
-
 
 export function actionPlayerInfo(data: any) {
 	if (!data.subaction) {
@@ -27,7 +24,7 @@ function updateProfileSettings(msg: any) {
 		}
 	} else {
 		if (msg.msg)
-			customAlert("Unable to change username"); //needed customAlert
+			customAlert(msg.msg); //needed customAlert
 	}
 }
 
@@ -50,9 +47,4 @@ export function getPlayerData() {
 		action: 'playerInfo',
 		subaction: 'getPlayerData'
 	});
-}
-
-export function updatePlayerData(player: number) {
-	if (player != 0) // guest
-		getPlayerData();
 }
