@@ -284,7 +284,7 @@ export async function getOpenFriendRequestsDB(db, player_id) {
 				sql_error(err, `getOpenFriendRequestsDB | player_id=${player_id}`);
 				reject(err);
 			} else {
-				resolve(rows);
+				resolve(rows || []);
 			}
 		});
 	});
@@ -331,7 +331,7 @@ export async function getFriendsDB(db, player_id) {
 				sql_error(err, `getFriendsDB | player_id=${player_id}`);
 				return reject(err);
 			} else {
-				resolve(rows);
+				resolve(rows || []);
 			}
 		});
 	});

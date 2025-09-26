@@ -9,7 +9,7 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { onUserLogout } from './Services/sessionsService.js';
+import { onUserLogin, onUserLogout } from './Services/sessionsService.js';
 import { handleError } from './errors.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
@@ -20,6 +20,7 @@ import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
 import { removeFromWaitinglist } from './Pending/onlinematch.js';
+// import { getOnlineUsers } from './Database/users.js';
 
 export const db = await createDatabase();
 
@@ -142,6 +143,7 @@ fastify.ready().then(() => {
 		socket.on('heartbeat', (msg) => {
 			try {
 				if (userId1) {
+					// console.log(`Online userId1=${userId1}`);
 					usersLastSeen.set(userId1, {
 						userId2,
 						lastSeen: Date.now()
@@ -194,10 +196,55 @@ setInterval(async () => {
 				}
 			}
 		}
+		// syncOnlinePlayers(db, usersLastSeen);
 	} catch (err) {
 		console.error(`HEARTBEAT_INTERVAL Error during user session cleanup`, err.message || err , "setInterval");
 	}
 }, 5000); // check every 5 seconds
+
+// export async function syncOnlinePlayers(db, usersLastSeen) {
+// 	try {
+// 		const onlineUsersDB = await getOnlineUsers(db);
+
+// 		const dbIds = [];
+// 		for (const r of onlineUsersDB || []) {
+// 			if (r.id > 2) {
+// 				dbIds.push(Number(r.id));
+// 			}
+// 		}
+// 		dbIds.sort((a, b) => a - b);
+
+// 		// console.log("onlineUsersDB: ", dbIds);
+
+// 		const onlineUsersBE = new Set();
+// 		for (const [userId1, data] of usersLastSeen.entries()) {
+// 			onlineUsersBE.add(userId1);
+// 			if (data && data.userId2) {
+// 				onlineUsersBE.add(data.userId2);
+// 			}
+// 		}
+// 		const beIds = [...onlineUsersBE];
+// 		beIds.sort((a, b) => a - b);
+// 		// console.log("onlineUsersBE: ", beIds);
+
+// 		const dbSet = new Set(dbIds);
+// 		const needLogin = beIds.filter(id => !dbSet.has(id));
+
+// 		const beSetForLogout = new Set(beIds);
+// 		const needLogout = dbIds.filter(id => !beSetForLogout.has(id));
+
+// 		console.log("needLogin (present in BE, missing in DB):", needLogin);
+// 		console.log("needLogout (present in DB, missing in BE):", needLogout);
+// 		for (const id of needLogin) {
+// 			await onUserLogin(db, id);
+// 		}
+// 		for (const id of needLogout) {
+// 			await onUserLogout(db, id);
+// 		}
+// 	} catch (err) {
+// 		console.error(`Error syncOnlinePlayers: `, err);
+// 	}
+// }
 
 try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });
