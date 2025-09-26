@@ -62,19 +62,19 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 			gameState: {
 				time: 0,
 				field: { size: {width: 1, height: 0.75}},
-				ball: { 
+				ball: {
 					size: { width: 0.05, height: 0.05 },
 					pos: { x: 0.5, y: 0.75 / 2 },
 					velocity: { vx: 0, vy: 0 },
 					movement: { speed: 0.5 },
 					},
-				paddle1: { 
+				paddle1: {
 					size: { width: 0.02, height: 0.14},
 					pos: { x: 0.02, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
 					movement: { speed: 0.6 },
 					},
-				paddle2: { 
+				paddle2: {
 					size: { width: 0.02, height: 0.14 },
 					pos: { x: 0.98, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
@@ -83,7 +83,7 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 			}
 		});
 		return (1);
-	} catch (err) {	
+	} catch (err) {
 		console.error(`GEN_UNKNOWN newMatch - Error creating match: ${err.message || err}`, 'newMatch');
 		return (-1);
 	}
@@ -126,11 +126,11 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 	try {
 		// CREATE MATCH IN DB
 		let MatchIsTournament = false;
-		if (tournamentContext) {
+		if (mf === MF.Tournament || tournamentContext) {
 			MatchIsTournament = true;
 		}
-		const matchID = await handleMatchStartDB(db, { 
-			player_1_id: userId1, 
+		const matchID = await handleMatchStartDB(db, {
+			player_1_id: userId1,
 			player_2_id: userId2,
 			isTournament: MatchIsTournament
 		});

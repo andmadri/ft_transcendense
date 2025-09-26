@@ -5,6 +5,7 @@ import { createMatch } from '../InitGame/match.js';
 import { saveMatch } from '../End/endGame.js';
 import { leaveRoom } from '../rooms.js';
 import { OT, state, MF } from '../SharedBuild/enums.js'
+import { setUserSession } from '../Services/sessionsService.js';
 
 export const tournament = {
 	players: [],		// [{id, name, socket, ready ...}]
@@ -43,7 +44,7 @@ function checkPlayerInTournament() {
 	}
 }
 
-function joinTournament(msg, userId, socket, io) {
+async function joinTournament(msg, userId, socket, io) {
 	if (tournament.state !== 'waiting' && !tournament.players.find(p => p.id === userId)) {
 		console.log('Tournament already in progress, cannot join');
 		socket.emit('message', {
@@ -63,6 +64,12 @@ function joinTournament(msg, userId, socket, io) {
 	}
 
 	socket.join('tournament_1');
+	try {
+		await setUserSession(db, userId, 'in_lobby');
+	} catch (err) {
+		console.error('Error adding user session to DB on joinTournament:', err);
+	}
+
 	// Add player to the tournament if not already present
 	if (!tournament.players.find(p => p.id === userId)) {
 		tournament.players.push({ id: userId, name: msg.name, socket: socket, ready: false });
@@ -87,7 +94,7 @@ function joinTournament(msg, userId, socket, io) {
 }
 
 
-export function leaveTournament(msg, userId, socket, io) {
+export async function leaveTournament(msg, userId, socket, io) {
 	if (tournament.state === 'waiting') {
 		leaveRoom(socket, 'tournament_1');
 		tournament.players = tournament.players.filter(p => p.id !== userId);
@@ -97,10 +104,18 @@ export function leaveTournament(msg, userId, socket, io) {
 			subaction: 'update',
 			tournamentState: getTournamentStateForFrontend()
 		});
-		socket.emit('message', {
-			action: 'tournament',
-			subaction: 'left'
-		});
+		if (socket) {
+			socket.emit('message', {
+				action: 'tournament',
+				subaction: 'left'
+			});
+		}
+
+		try {
+			await setUserSession(db, userId, 'in_menu');
+		} catch (err) {
+			console.error('Error adding user session to DB on leaveTournament:', err);
+		}
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'in_progress') {
 		const player = tournament.players.find(p => p.id === userId);
@@ -109,10 +124,13 @@ export function leaveTournament(msg, userId, socket, io) {
 			player.socket = null;	// Mark as disconnected
 			leaveRoom(socket, 'tournament_1');
 		}
-		socket.emit('message', {
-			action: 'tournament',
-			subaction: 'left'
-		});
+		if (socket) {
+			socket.emit('message', {
+				action: 'tournament',
+				subaction: 'left'
+			});
+		}
+
 		if (tournament.matches.length < 2) {
 			startFirstTournamentMatches(io);
 		} else {
@@ -120,18 +138,34 @@ export function leaveTournament(msg, userId, socket, io) {
 		}
 		checkPlayerInTournament();
 		// Print in console for debugging
+
+		try {
+			await setUserSession(db, userId, 'in_menu');
+		} catch (err) {
+			console.error('Error adding user session to DB on leaveTournament:', err);
+		}
+
 		console.log('Player left tournament (forfeit):', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'finished') {
 		const player = tournament.players.find(p => p.id === userId);
 		if (player) {
 			player.socket = null;	// Mark as disconnected
-			socket.leave('tournament_1');
+			leaveRoom(socket, 'tournament_1');
 		}
-		socket.emit('message', {
-			action: 'tournament',
-			subaction: 'left'
-		});
+		if (socket) {
+			socket.emit('message', {
+				action: 'tournament',
+				subaction: 'left'
+			});
+		}
 		checkPlayerInTournament();
+
+		try {
+			await setUserSession(db, userId, 'in_menu');
+		} catch (err) {
+			console.error('Error adding user session to DB on leaveTournament:', err);
+		}
+
 		console.log('Player left tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else {
 		console.log('Unknown tournament state on leave:', tournament.state);
@@ -168,7 +202,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		match.state = state.End;
 		player1.ready = true;
 		player2.ready = false;
-		saveMatch(matchId);
+		saveMatch(matchId, match.winnerID);
+		reportTournamentMatchResult(match);
 	} else if (!player2.socket) {
 		console.log(`Player ${player2.name} disconnected, cannot start match.`);
 		matchId = await createMatch(db, OT.Online, player1.socket, player1.id, player2.id, null, MF.Tournament);
@@ -181,7 +216,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		match.state = state.End;
 		player1.ready = false;
 		player2.ready = true;
-		saveMatch(matchId);
+		saveMatch(matchId, match.winnerID);
+		reportTournamentMatchResult(match);
 	} else {
 		console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
 		matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament);
@@ -239,7 +275,7 @@ export function reportTournamentMatchResult(match) {
 			tournamentState: getTournamentStateForFrontend()
 		});
 	} catch (error) {
-		console.error('TOURNAMENT_ERROR', error.message || error, 'reportTournamentMatchResult');		
+		console.error('TOURNAMENT_ERROR', error.message || error, 'reportTournamentMatchResult');
 	}
 }
 

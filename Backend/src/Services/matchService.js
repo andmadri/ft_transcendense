@@ -19,7 +19,7 @@ export async function handleMatchStartDB(db, { player_1_id, player_2_id, isTourn
 		if ((player_1_id === 1 && player_2_id === 2) ||
 			(player_1_id === 2 && player_2_id === 1))
 				throw new Error('Matches between Guest (1) and AI (2) are not allowed');
-	
+
 		// Find out the correct the match_type
 		let match_type;
 		if (isTournament) {
@@ -31,17 +31,17 @@ export async function handleMatchStartDB(db, { player_1_id, player_2_id, isTourn
 		} else {
 			match_type = '1v1';
 		}
-	
+
 		// Insert the match
 		const matchID = await addMatchToDB(db, {
 			player_1_id,
 			player_2_id,
 			match_type
 		});
-	
+
 		// Add the players to 'in_game' in UserSessions
 		await updatePlayersSessionDB(db, [player_1_id, player_2_id], 'in_game');
-	
+
 		// Return the match row
 		return (matchID);
 	} catch (err) {
@@ -63,14 +63,14 @@ export async function handleMatchStartDB(db, { player_1_id, player_2_id, isTourn
 export async function handleMatchEventDB(db, event) {
 	try {
 		await addMatchEventToDB(db, event);
-	
+
 		// If the event is a goal update the match row
 		if (event.event_type === 'goal') {
 			const match = await getMatchByID(db, event.match_id);
 			if (!match) {
 				throw new Error(`Match ID ${event.match_id} not found`);
 			}
-	
+
 			let updated = {
 				match_id: event.match_id
 			};
@@ -95,37 +95,46 @@ export async function handleMatchEventDB(db, event) {
  * @return {Promise<object>}      Resolves to the updated match row.
  * @throws {Error}                If the match is not found.
  */
-export async function handleMatchEndedDB(db, match_id) {
+export async function handleMatchEndedDB(db, match_id, winnerID) {
 	try {
 		// Fetch the excisting match to get the player IDs
 		const match = await getMatchByID(db, match_id);
 		if (!match) {
 			throw new Error(`Match ID ${match_id} not found`);
 		}
-	
+
 		// Find out who is the winner
 		let winner_id = null;
-		if (match.winnerID) {
-			if (match.winnerID == -1) {
-				return;
+		if (winnerID) {
+			winner_id = winnerID;
+		} else {
+			if (match.winnerID) {
+				if (match.winnerID == -1) {
+					return;
+				}
+				winner_id = match.winnerID;
 			}
-			winner_id = match.winnerID;
+			else if (match.player_1_score > match.player_2_score) {
+				winner_id = match.player_1_id;
+			} else if (match.player_1_score < match.player_2_score) {
+				winner_id = match.player_2_id;
+			}
 		}
-		else if (match.player_1_score > match.player_2_score) {
-			winner_id = match.player_1_id;
-		} else if (match.player_1_score < match.player_2_score) {
-			winner_id = match.player_2_id;
-		}
-	
+
 		// Update the match row, so we have a winner and an end_time
 		await updateMatchInDB(db, {
 			match_id: match_id,
 			winner_id: winner_id,
 			end_time: true
-		})
-	
+		});
+
+		console.log(`match ended: `, match);
 		// Add the players to 'in_menu' in UserSessions
-		await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_menu');
+		if (match.match_type === 'tournament') {
+			await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_lobby');
+		} else {
+			await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_menu');
+		}
 	} catch (err) {
 		console.error('DB_ERROR', `handleMatchEndedDB failed for match ${match_id}: ${err.message || err}`, 'handleMatchEndedDB');
 	}

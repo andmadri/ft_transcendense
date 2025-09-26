@@ -21,6 +21,7 @@ import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
 import { removeFromWaitinglist } from './Pending/onlinematch.js';
 // import { getOnlineUsers } from './Database/users.js';
+import { getLastUserSession } from './Database/sessions.js';
 
 export const db = await createDatabase();
 
@@ -164,8 +165,8 @@ fastify.ready().then(() => {
 				removeFromWaitinglist(userId1);
 				await stopMatchAfterRefresh(fastify.io, userId1);
 				const player = tournament.players.find(p => p.id === userId1);
-				if (player) {
-					leaveTournament({name: player.name}, userId1, socket, fastify.io);
+				if (player.socket) {
+					leaveTournament({name: player.name}, userId1, player.socket, fastify.io);
 				}
 			} catch (err) {
 				console.error(`Error during disconnecting`, err);
@@ -179,6 +180,15 @@ setInterval(async () => {
 		const now = Date.now();
 		for (const [userId1, data] of usersLastSeen.entries()) {
 			const { userId2, lastSeen } = data;
+			const userP1inTournament = tournament.players.find(p => p.id === userId1);
+			if (userP1inTournament && userP1inTournament.socket) {
+				const playerState = await getLastUserSession(db, userId1);
+				if (playerState && (playerState.state !== 'in_game' && playerState.state !== 'in_lobby')) {
+					console.log(`User ${userId1} removed for state ${playerState.state} from tournament`);
+
+					leaveTournament({name: userP1inTournament.name}, userId1, userP1inTournament.socket, fastify.io);
+				}
+			}
 			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 				// Mark user offline in DB
 				try {
