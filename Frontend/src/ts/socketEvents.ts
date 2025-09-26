@@ -42,7 +42,8 @@ export function startSocketListeners() {
 	// custom errors (for our error handling)
 	socket.on('server_error', (err: any) => {
 		console.error(err.code, ' ', err.reason);
-		customAlert("Something went wrong. Please try again.");
+		if (err.code != "AUTH_NO_TOKEN")
+			customAlert("Something went wrong. Please try again.");
 	});
 }
 

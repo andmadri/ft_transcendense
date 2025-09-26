@@ -13,7 +13,7 @@ export function tournamentGameStart(data: any) {
 	Game.match.player2.ID = data.player2;
 	Game.match.player2.name = data.player2Name;
 
-	Game.match.state = state.Init;
+	Game.match.state = state.Init; 
 
 
 	customAlert('Your tournament match is starting!'); //needed customAlert
