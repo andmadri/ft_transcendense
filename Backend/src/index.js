@@ -195,7 +195,7 @@ setInterval(async () => {
 			}
 		}
 	} catch (err) {
-		console.error('Error during interval', err);
+		console.error(`HEARTBEAT_INTERVAL Error during user session cleanup`, err.message || err , "setInterval");
 	}
 }, 5000); // check every 5 seconds
 

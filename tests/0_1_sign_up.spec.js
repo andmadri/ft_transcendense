@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import * as U from './utils.spec.js';
 import { switchLoginTab } from './0_0_auth.spec.js';
 import { sign_up_specials } from './0_3_login_special.spec.js'
+import { checkAlert } from './utils.spec.js';
 /*
 Tests:
 	SIGNUP
@@ -47,14 +48,8 @@ export async function signup_player(page, player, Name, Email, Password) {
 }
 
 async function waitForAlert(page, player, Name, Email, Password, expectedMessage) {
-	const [dialog] = await Promise.all([
-		page.waitForEvent('dialog'),
-		(async () => {
-			await signup_player(page, player, Name, Email, Password);
-		})()
-	]);
-	expect(dialog.message()).toBe(expectedMessage);
-	await dialog.dismiss();
+	await signup_player(page, player, Name, Email, Password);
+	await checkAlert(page, expectedMessage);
 }
 
 // Sign up, go back to sign up and do it again
@@ -95,8 +90,10 @@ export async function sign_in_tests(browser, page, player, Name, Email, Password
 	await switchLoginTab(page, 'Sign Up');
 
 	// Sign up with existing email / username
-	await waitForAlert(page, player, Name, Email, Password, 'That email is already registered.');
-	await waitForAlert(page, player, Name, 'extra' + Email, Password, 'That username is already taken.');
+	await page.waitForTimeout(1000);
+	await waitForAlert(page, player, Name + 'a', Email, Password, 'That email is already taken');
+	await page.waitForTimeout(1000);
+	await waitForAlert(page, player, Name, 'extra' + Email, Password, 'That username is already taken');
 
 	sign_up_specials(browser);
 }

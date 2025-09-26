@@ -30,3 +30,9 @@ export async function checkHash(page, expectedUrl) {
 	const hash = urlObj.hash; 
 	await expect(hash).toContain(expectedUrl);
 };
+
+export async function checkAlert(page, msg) {
+	const alertLocator = page.locator('#custom-customAlert-container div', { hasText: msg });
+	await expect(alertLocator).toHaveCount(1);
+	await expect(alertLocator).toBeVisible();
+}
