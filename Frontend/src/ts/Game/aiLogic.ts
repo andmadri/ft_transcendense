@@ -6,12 +6,10 @@ export const AI: S.AIInfo = {
 	prediction : { 
 		x : 0, 
 		y : 0,
-		dx : 0, 
-		dy : 0 
+		errorMargin : 0.05
 	},
 	reactionTime : 1000, //ms
-	lastView : 0,
-	tick : 0
+	lastView : 0
 }
 
 export function resetAI(match : matchInfo) {
@@ -19,99 +17,102 @@ export function resetAI(match : matchInfo) {
 	AI.lastView = 0;
 	AI.prediction.x = paddle2.pos.x;
 	AI.prediction.y = paddle2.pos.y;
-	AI.prediction.dx = 0;
-	AI.prediction.dy = 0;
-
+	AI.prediction.errorMargin = 0.05;
 }
 
-function	followBall(match : matchInfo, dx : number, dy : number) {
+function	followBall(match : matchInfo) {
 	const { paddle2, ball, field } = match.gameState;
-	const threshold = field.size.height * 0.5;
+	const threshold = paddle2.size.height * 0.1;
 	
 	if (Math.abs(ball.pos.y - paddle2.pos.y) < threshold) {
 		return;
 	}
-	AI.prediction = {
-		x : paddle2.pos.x,
-		y : ball.pos.y,
-		dx : dx,
-		dy : dy,
-	}
+	AI.prediction.x = paddle2.pos.x;
+	AI.prediction.y = ball.pos.y;
 }
 
-function	predictBall(match : matchInfo, dx : number, dy : number) {
+function setErrorMargin(match: matchInfo){
+	const diff = match.player1.score - match.player2.score;
+
+	const base = 0.1;
+	const step = 0.03;
+	const min = 0;
+	const max = 0.4;
+
+	const margin = base + diff * step;
+	AI.prediction.errorMargin = Math.max(Math.min(max, margin), min);
+}
+
+function	predictBall(match : matchInfo) {
 
 	const { ball, field, paddle2 } = match.gameState;
 
-	const ballCopy = { x: ball.pos.x, y: ball.pos.y};
+	const ballCopy = { x: ball.pos.x, y: ball.pos.y, vy: ball.velocity.vy, vx: ball.velocity.vx};
 	const ballRadius = ball.size.width / 2;
 
+	const paddleHalfHeight = paddle2.size.height / 2;
+	const paddleHalfWidth = paddle2.size.width / 2;
+
 	//simulate ball movement to anticipate bounces
-	while (ballCopy.x + ballRadius < paddle2.pos.x - paddle2.size.width / 2) {
-		ballCopy.x += dx;
-		ballCopy.y += dy;
+	while (ballCopy.x + ballRadius < paddle2.pos.x - paddleHalfWidth) {
+		ballCopy.x += ballCopy.vx;
+		ballCopy.y += ballCopy.vy;
 		if (ballCopy.y <= 0 || ballCopy.y >= field.size.height) {
 			ballCopy.y = Math.max(0, Math.min(ballCopy.y, field.size.height));
-			dy *= -1;
+			ballCopy.vy *= -1;
 		}
 	}
 	
-	//add error margin
-	let errorMargin = 0.15;
-	const errorOffset = Math.random() * field.size.height * errorMargin;
-	const sign = Math.random() < 0.5 ? -1 : 1;
-	const Offset = errorOffset * sign;
-	const predictedY = ballCopy.y; + Offset;
-
-	AI.prediction = {
-		x : paddle2.pos.x,
-		y : predictedY,
-		dx : dx,
-		dy : dy,
-	}
+	AI.prediction.x = paddle2.pos.x;
+	AI.prediction.y = Math.min(Math.max(paddleHalfHeight, ballCopy.y), field.size.height - paddleHalfHeight);
 }
 
 function	predictAction(match : matchInfo) {
 	//calculate dx and dy
 
-	const { ball } = match.gameState;
-	const dx = ball.velocity.vx * ball.movement.speed;
-	const dy = ball.velocity.vy * ball.movement.speed;
-
-	if (dx <= 0) {
-		followBall(match, dx, dy);
-		return;
+	const { ball, paddle2  } = match.gameState;
+	if (ball.velocity.vx <= 0) {
+		followBall(match);
 	}
 	else {
-		predictBall(match, dx, dy);
+		predictBall(match);
 	}
+
+	//add error margin
+	setErrorMargin(match);
+	const distance = Math.abs(AI.prediction.y - paddle2.pos.y);
+	const errorOffset = Math.random() * Math.random() * AI.prediction.errorMargin * distance;
+	const sign = Math.random() < 0.5 ? -1 : 1;
+	const offset = errorOffset * sign;
+
+	AI.prediction.y += offset;
+	console.log(`predicted Y = ${AI.prediction.y}`);
+	console.log(`offset = ${offset}`);
 }
 
 export function aiAlgorithm(match : matchInfo){
 	const { paddle2 } = match.gameState;
 
-	const paddleCenter = paddle2.pos.y + paddle2.size.height / 2;
-	if (match.gameState.time - AI.lastView > AI.reactionTime) {
-		AI.lastView = match.gameState.time;
+	const paddleCenter = paddle2.pos.y;
+	if (match.lastUpdateTime - AI.lastView > AI.reactionTime) {
+		AI.lastView = match.lastUpdateTime;
 		predictAction(match);
+		//hesitation chance
+		if (Math.random() < 0.2) {
+			paddle2.velocity.vy = 0;
+			return;
+		}
 	}
-	if (AI.prediction.y > paddleCenter + paddle2.size.height * 0.1) {
-		paddle2.velocity.vy = 1 * paddle2.movement.speed;
+
+	const threshold = paddle2.size.height * 0.1;
+	if (AI.prediction.y > paddleCenter + threshold) {
+		paddle2.velocity.vy = paddle2.movement.speed;
 	}
-	else if (AI.prediction.y < paddleCenter - paddle2.size.height * 0.1) {
-		paddle2.velocity.vy = -1 * paddle2.movement.speed;
+	else if (AI.prediction.y < paddleCenter - threshold) {
+		paddle2.velocity.vy = -paddle2.movement.speed;
 	}
 	else {
 		paddle2.velocity.vy = 0;
 	}
-	// test needs work
-	// const hesitationChance = 0.1;
-	// const wrongDirChance = 0.1;
-	// if (Math.random() < hesitationChance) {
-	// 	paddle2.velocity.vy = 0;
-	// }
-	// else if (Math.random() < wrongDirChance) {
-	// 	paddle2.velocity.vy *= -1;
-	// }
 
 }

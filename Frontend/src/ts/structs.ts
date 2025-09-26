@@ -22,6 +22,12 @@ export enum pendingState {
 	Friend
 }
 
+export enum AIbehavior {
+	wrongDir,
+	hesitate,
+	normal
+}
+
 export type update = {
 	time: number;
 	player: [number, boolean, boolean];
@@ -64,17 +70,15 @@ export const Keys: {[key: string]: Key} = {
 
 // AI
 type AIPrediction = {
-	x: number;
-	y: number;
-	dx: number;
-	dy: number;
+	x: number,
+	y: number,
+	errorMargin : number
 };
 
 export type AIInfo = {
-	prediction: AIPrediction;
-	reactionTime: number; // ms
-	lastView: number; // timestamp of last view of the game
-	tick: number;
+	prediction: AIPrediction,
+	reactionTime: number, // ms
+	lastView: number // timestamp of last view of the game
 };
 
 //export const host = window.location.host;
