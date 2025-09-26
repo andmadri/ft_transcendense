@@ -5,6 +5,7 @@ import { db } from '../index.js';
 import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+import { getOnlineUsers } from '../Database/users.js';
 
 
 /**
@@ -35,13 +36,12 @@ async function handleGoogleAuth(user) {
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
 				exists.user_id = exists.id; // for updateUserInDB
-				exists.name = user.name.trim().slice(0, 10);;
+				exists.name = user.name.trim().slice(0, 10);
 				exists.email = user.email.toLowerCase().trim();
 				exists.avatar_url = user.picture;
 				await updateUserInDB(db, exists);
 			}
 		} else {
-
 			await addUserToDB(db, {
 				email: user.email,
 				name: user.name,
@@ -101,7 +101,7 @@ export default async function googleAuthRoutes(fastify) {
 
 			if (!tokenRes || !tokenRes.data || !tokenRes.data.access_token) {
 				console.error('GOOGLE_AUTH_ERROR', 'Invalid token response from Google', 'googleAuthRoutes');
-				return reply.code(500).send('OAuth login failed.');
+				return reply.code(500).send('OAuth login failed: Invalid token from Google.');
 			}
 
 			const { access_token } = tokenRes.data;
@@ -118,6 +118,17 @@ export default async function googleAuthRoutes(fastify) {
 			if (!user) {
 				console.error('user returned:', user);
 				return reply.code(500).send('User already exists - please log in with your username and password.');
+			} else if (user) {
+				try {
+					const onlineUsers = await getOnlineUsers(db);
+					if (onlineUsers.find(u => u.id === user.id)) {
+						console.error('USER_ALREADY_LOGGED_IN', `User: ${user.name} is already logged in`, 'googleAuthRoutes');
+						return reply.code(500).send('User is already logged in.');
+					}
+				} catch (err) {
+					console.error('FETCH_ONLINE_USERS_ERROR', err.message || err, 'googleAuthRoutes');
+					return reply.code(500).send('OAuth login failed: Database error');
+				}
 			}
 
 			try {

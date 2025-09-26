@@ -34,7 +34,7 @@ export function onHashChange() {
 function getIdFromHash(hash: string, type: string): number | null {
 	const params = new URLSearchParams(hash);
 	const id = params.get(type);
-	if (!id) 
+	if (!id)
 		return null;
 	const n = Number(id);
 	return (Number.isFinite(n) ? n : null);
@@ -158,7 +158,14 @@ export function navigateTo(newState: any, fromHash = false) {
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
 	console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
-	
+
+	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID != -1) {
+		// Prevent infinite loop when already on LoginP2
+		console.log('Already logged in P2, navigating to menu instead');
+		newState = 'Menu';
+		page = 'Menu';
+	}
+
 	// Central auth check for protected pages
 	const unprotecedPages = ['LoginP1'];
 	if (!unprotecedPages.includes(page)) {
@@ -193,7 +200,7 @@ function continueNavigation(newState: string, query: string) {
 }
 
 function stopCurrentGame() {
-	Game.socket.emit('message', { 
+	Game.socket.emit('message', {
 		action: 'game',
 		subaction: 'quit',
 		matchID: Game.match.matchID,
@@ -222,7 +229,7 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-	// When logged in not back to loginpage	
+	// When logged in not back to loginpage
 	if (currentState == 'Menu' && newState == 'LoginP1') {
 		return ('Menu');
 	}
@@ -247,7 +254,7 @@ export function getValidState(newState: string, currentState: string): string {
  */
 export async function controlBackAndForward(event: PopStateEvent) {
 	// console.log('popstate event:', event.state, 'hash:', window.location.hash);
-	
+
 	let newState = event.state?.page;
 	if (!newState) {
 		newState = window.location.hash || 'Menu';
@@ -263,12 +270,12 @@ export async function controlBackAndForward(event: PopStateEvent) {
 		page = 'Menu';
 		query = '';
 	}
-	
+
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
 	console.log('state to valid', newState, validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
-	
+
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
