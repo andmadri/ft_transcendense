@@ -130,7 +130,8 @@ export function doRenderPage(newState: string, query?: string) {
 		default:
 			console.warn(`Page does not exist: ${newState}`);
 			navigateTo('Menu');
-		}
+	}
+
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (query && query != '' && pagesWithQuery.includes(newState))
 		sessionStorage.setItem("currentState", newState + '?' + query);
@@ -227,6 +228,13 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
+	if (currentState == 'Game' && newState == 'Game') {
+		if (Game.match.state != state.End) {
+			Game.match.state = state.End;
+			return ('GameOver');
+		}
+	}
+
 	if (currentState == 'Menu' && (newState === 'Game' || newState === 'GameOver')) {
 		return ('Menu');
 	}
@@ -246,7 +254,7 @@ export function getValidState(newState: string, currentState: string): string {
  * @param event PopStateEvent
  */
 export async function controlBackAndForward(event: PopStateEvent) {
-	// console.log('popstate event:', event.state, 'hash:', window.location.hash);
+	console.log('popstate event:', event.state, 'hash:', window.location.hash);
 	
 	let newState = event.state?.page;
 	if (!newState) {
@@ -265,8 +273,9 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	}
 	
 	const currentState = sessionStorage.getItem("currentState");
+	console.log('BEFORE state', newState, currentState);
 	const validState = getValidState(page, currentState ? currentState : '');
-	console.log('state to valid', newState, validState, currentState);
+	console.log('AFTER state', validState, currentState);
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 	
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
