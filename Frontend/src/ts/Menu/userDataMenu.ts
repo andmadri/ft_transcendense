@@ -246,6 +246,11 @@ function createTopRightButtonContainer(): HTMLDivElement {
 }
 
 function createUserContainer(user_info: any, stats: any, playerNr: number): HTMLDivElement {
+	if (playerNr === 1 && user_info.id > 2)
+		UI.user1.name = user_info.name;
+	else if (playerNr === 2 && user_info.id > 2)
+		UI.user2.name = user_info.name;
+
 	const userContainer = document.createElement('div');
 	userContainer.style.display = 'flex';
 	userContainer.style.width = '100%';
