@@ -20,13 +20,14 @@ import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
 import { removeFromWaitinglist } from './Pending/onlinematch.js';
+import { onUserLogin } from './Services/sessionsService.js';
 
 export const db = await createDatabase();
 
 const fastify = await initFastify();
 
 // Map to track last seen timestamps for users
-const usersLastSeen = new Map();
+export const usersLastSeen = new Map();
 
 function installShutdownHandlers(fastify, db) {
 	const shutdown = async (signal) => {
@@ -63,6 +64,9 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId1 = decoded.userId;
+					if (userId1) {
+						onUserLogin(db, userId1);
+					}
 				} catch (err) {
 					console.error('AUTH_JWT_INVALID', 'JWT1 verification failed: Invalid cookie', err.message || err, 'index');
 				}
@@ -76,6 +80,9 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId2 = decoded.userId;
+					if (userId2) {
+						onUserLogin(db, userId2);
+					}
 					// Use userId or decoded as needed for player 2
 				} catch (err) {
 					console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', err.message || err, 'index');
@@ -88,7 +95,6 @@ fastify.ready().then(() => {
 			handleError(socket, 'AUTH_NO_TOKEN', 'Unauthorized: No authentication token provided.', '', '', 'index');
 			return ;
 		}
-
 		// add user to main room
 		addUserToRoom(socket, 'main');
 

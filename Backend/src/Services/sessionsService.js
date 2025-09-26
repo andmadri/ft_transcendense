@@ -1,5 +1,7 @@
 import { addUserSessionToDB } from '../Database/sessions.js'
 import { tournament, leaveTournament } from '../Tournament/tournament.js';
+import { usersLastSeen } from '../index.js'
+import { getLastUserSession } from '../Database/sessions.js';
 
 export async function updatePlayersSessionDB(db, user_ids, state) {
 	await Promise.all(
@@ -9,8 +11,10 @@ export async function updatePlayersSessionDB(db, user_ids, state) {
 
 export async function onUserLogin(db, user_id) {
 	try {
-		await addUserSessionToDB(db, { user_id, state: 'login' });
-		await addUserSessionToDB(db, { user_id, state: 'in_menu' });
+		const lastSession = await getLastUserSession(db, user_id);
+		if (!(lastSession && lastSession.state != 'logout'))
+			await addUserSessionToDB(db, { user_id, state: 'login' });
+		await addUserSessionToDB(db, { user_id, state: 'in_menu' });	
 	} catch (err) {
 		console.error('LOGIN_SESSION_ERROR', err.message || err, 'onUserLogin');
 	}

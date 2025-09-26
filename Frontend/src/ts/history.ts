@@ -6,6 +6,7 @@ import { getGameOver } from './Game/endGame.js';
 import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
+import { requestLeaveTournament } from './Tournament/tournamentContent.js'
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
