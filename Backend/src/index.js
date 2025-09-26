@@ -180,15 +180,15 @@ setInterval(async () => {
 		const now = Date.now();
 		for (const [userId1, data] of usersLastSeen.entries()) {
 			const { userId2, lastSeen } = data;
-			const userP1inTournament = tournament.players.find(p => p.id === userId1);
-			if (userP1inTournament && userP1inTournament.socket) {
-				const playerState = await getLastUserSession(db, userId1);
-				if (playerState && (playerState.state !== 'in_game' && playerState.state !== 'in_lobby')) {
-					console.log(`User ${userId1} removed for state ${playerState.state} from tournament`);
-
-					leaveTournament({name: userP1inTournament.name}, userId1, userP1inTournament.socket, fastify.io);
-				}
-			}
+			// Depending on UserSessions being set perfectly
+			// const userP1inTournament = tournament.players.find(p => p.id === userId1);
+			// if (userP1inTournament && userP1inTournament.socket) {
+			// 	const playerState = await getLastUserSession(db, userId1);
+			// 	if (playerState && (playerState.state !== 'in_game' && playerState.state !== 'in_lobby')) {
+			// 		console.log(`User ${userId1} removed for state ${playerState.state} from tournament`);
+			// 		leaveTournament({name: userP1inTournament.name}, userId1, userP1inTournament.socket, fastify.io);
+			// 	}
+			// }
 			if (now - lastSeen > (USERLOGIN_TIMEOUT * 1000)) { // * 1000 to convert sec to ms
 				// Mark user offline in DB
 				try {
