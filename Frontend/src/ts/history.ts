@@ -44,10 +44,10 @@ function getIdFromHash(hash: string, type: string): number | null {
  * @brief Checks auth for protected pages and renders page
  * @param state new state
  */
-export function renderPage (newState: string, query: string) {
+export function renderPage (newState: string, query: string, infoIsChecked: boolean) {
 	// Protect Menu and other pages
 	const unprotecedPages = ['LoginP1'];
-	if (!unprotecedPages.includes(newState)) {
+	if (!unprotecedPages.includes(newState) && !infoIsChecked) {
 		fetch('/api/playerInfo', {
 			credentials: 'include',
 			method: 'POST',
@@ -166,14 +166,14 @@ export function navigateTo(newState: any, fromHash = false) {
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				continueNavigation(page, query);
+				continueNavigation(page, query, true);
 			})
 			.catch(() => {
-				continueNavigation('LoginP1', query);
+				continueNavigation('LoginP1', query, true);
 			});
 		return;
 	}
-	continueNavigation(newState, query);
+	continueNavigation(newState, query, false);
 }
 
 /**
@@ -182,14 +182,14 @@ export function navigateTo(newState: any, fromHash = false) {
  * @param subState Game.match.state as string
  * @param gameData Extra information if needed
  */
-function continueNavigation(newState: string, query: string) {
+function continueNavigation(newState: string, query: string, infoIsChecked: boolean) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
 	if (newState !== 'GameOver' && query && query.length > 0)
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
 	else
 		history.pushState(stateObj, '', `#${newState}`);
-	renderPage(newState, query);
+	renderPage(newState, query, infoIsChecked);
 }
 
 function stopCurrentGame() {
@@ -285,8 +285,8 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	}
 
 	if (validState) {
-		renderPage(validState, query);
+		renderPage(validState, query, false);
 	} else {
-		renderPage('Menu', ''); // fallback
+		renderPage('Menu', '', false); // fallback
 	}
 }
