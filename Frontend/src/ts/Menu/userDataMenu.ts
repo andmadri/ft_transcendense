@@ -343,11 +343,28 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 	user2_block.appendChild(buttonsContainer2);
 }
 
+function updateUiUsers(data: any) {
+	console.log('Updating UI user data:', data);
+	if (data.user_info1 && data.user_info1.id > 2) {
+		UI.user1.ID = data.user_info1.id;
+		UI.user1.name = data.user_info1.name;
+		UI.user1.Twofa = data.user_info1.twofa_enabled;
+		UI.user1.Google = data.user_info1.twofa_secret === 'google';
+	}
+	if (data.user_info2 && data.user_info2.id > 2) {
+		UI.user2.ID = data.user_info2.id;
+		UI.user2.name = data.user_info2.name;
+		UI.user2.Twofa = data.user_info2.twofa_enabled;
+		UI.user2.Google = data.user_info2.twofa_secret === 'google';
+	}
+}
+
 export function actionUserDataMenu(data: any) {
 	if (!data.subaction) {
 		console.error('MSG_MISSING_ACTION', 'Invalid message format:', 'missing subaction', 'actionUserDataMenu');
 		return ;
 	} else if (data.subaction === 'receivedUserDataMenu') {
+		updateUiUsers(data);
 		renderUserCardMenu(data.user_info1, data.stats1, data.user_info2, data.stats2); ;
 	} else {
 		console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', data.subaction, 'actionUserDataMenu');

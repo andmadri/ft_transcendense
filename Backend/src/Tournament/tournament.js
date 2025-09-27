@@ -143,6 +143,7 @@ export function leaveTournament(msg, userId, socket, io) {
 async function createTournamentMatch(player1, player2, matchNumber, io) {
 	if (!player1 || !player2) {
 		console.error('TOURNAMENT_ERROR', 'Player(s) not found', { player1, player2 }, 'createTournamentMatch');
+		return;
 	}
 	if (!player1.ready || !player2.ready) {
 		console.log("Tournament: players not ready");
@@ -239,7 +240,7 @@ export function reportTournamentMatchResult(match) {
 			tournamentState: getTournamentStateForFrontend()
 		});
 	} catch (error) {
-		console.error('TOURNAMENT_ERROR', error.message || error, 'reportTournamentMatchResult');		
+		console.error('TOURNAMENT_ERROR', error.message || error, 'reportTournamentMatchResult');
 	}
 }
 

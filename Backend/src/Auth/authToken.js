@@ -68,7 +68,7 @@ export async function verifyPendingTwofaCookie(request, reply) {
 	const userId = request.body.userId;
 	const playerNr = request.body.playerNr;
 	console.log('Verifying pending 2FA token for userId:', userId, 'playerNr:', playerNr);
-	console.log('Cookies:', cookies);
+	// console.log('Cookies:', cookies);
 	const token = cookies['pendingTwofaToken' + playerNr];
 	if (!token) {
 		reply.code(401).send({ error: 'Unauthorized: No token' });
