@@ -90,7 +90,7 @@ export async function validateLogin(msg, fastify) {
 		const onlineUsers = await getOnlineUsers(db);
 		for (const onlineUser of onlineUsers) {
 			if (onlineUser.id === user.id) {
-				return ({ error: 'You are already logged in!' });
+				return ({ error: 'You are already logged in! Try it again after 60sec' });
 			}
 		}
 	} catch (err) {

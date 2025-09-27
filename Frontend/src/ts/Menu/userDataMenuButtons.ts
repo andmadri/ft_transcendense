@@ -24,6 +24,7 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	overlay.style.justifyContent = 'center';
 	overlay.style.alignItems = 'center';
 	overlay.style.zIndex = '1000';
+	overlay.addEventListener('click', () => overlay.remove());
 
 	const formDiv = document.createElement('div');
 	formDiv.style.background = 'linear-gradient(90deg, #ff6117, #ffc433, #ffc433)';
@@ -35,6 +36,9 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	formDiv.style.alignItems = 'center';
 	formDiv.style.boxShadow = 'rgba(0, 0, 0, 0.5) 0px 10px 25px';
 	formDiv.style.position = 'relative';
+	formDiv.addEventListener('click', (e) => {
+		e.stopPropagation();
+	});
 
 	const closeBtn = document.createElement('button');
 	closeBtn.textContent = 'X';
@@ -42,7 +46,7 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	closeBtn.style.top = '0px';
 	closeBtn.style.right = '0px';
 	closeBtn.style.fontFamily = '"Horizon", sans-serif';
-	closeBtn.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	closeBtn.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
 	closeBtn.style.background = 'transparent';
 	closeBtn.style.border = 'none';
 	closeBtn.style.color = 'black';
@@ -73,7 +77,6 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	codeInput.style.border = 'none';
 	codeInput.style.color = 'white';
 	codeInput.style.boxShadow = 'rgba(0, 0, 0, 0.5) 0px 10px 25px';
-
 	form.appendChild(codeInput);
 
 	const submitBtn = document.createElement('button');
@@ -169,7 +172,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 	closeBtn.style.fontFamily = '"Horizon", sans-serif';
 	closeBtn.style.top = '0px';
 	closeBtn.style.right = '0px';
-	closeBtn.style.fontSize = 'clamp(10px, 2vw, 30px)';
+	closeBtn.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
 	closeBtn.style.background = 'transparent';
 	closeBtn.style.border = 'none';
 	closeBtn.style.color = 'black';
