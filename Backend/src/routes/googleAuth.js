@@ -35,7 +35,7 @@ async function handleGoogleAuth(user) {
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
-				exists.user_id = exists.id; // for updateUserInDB
+				exists.user_id = user.id; // for updateUserInDB
 				exists.name = user.name.trim().slice(0, 10);
 				exists.email = user.email.toLowerCase().trim();
 				exists.avatar_url = user.picture;
@@ -43,8 +43,8 @@ async function handleGoogleAuth(user) {
 			}
 		} else {
 			await addUserToDB(db, {
-				email: user.email,
-				name: user.name,
+				email: user.email.toLowerCase().trim(),
+				name: user.name.trim().slice(0, 10),
 				password: user.id,
 				avatar_url: user.picture,
 				twofa_secret: 'google'
