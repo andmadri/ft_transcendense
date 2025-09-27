@@ -95,35 +95,39 @@ export async function handleMatchEventDB(db, event) {
  * @return {Promise<object>}      Resolves to the updated match row.
  * @throws {Error}                If the match is not found.
  */
-export async function handleMatchEndedDB(db, match_id) {
+export async function handleMatchEndedDB(db, match_id, winnerID) {
 	try {
 		// Fetch the excisting match to get the player IDs
 		const match = await getMatchByID(db, match_id);
 		if (!match) {
 			throw new Error(`Match ID ${match_id} not found`);
 		}
-	
+
 		// Find out who is the winner
 		let winner_id = null;
-		if (match.winnerID) {
-			if (match.winnerID == -1) {
-				return;
+		if (winnerID && winnerID != -1) {
+			winner_id = winnerID;
+		} else {
+			if (match.winnerID) {
+				if (match.winnerID == -1) {
+					return;
+				}
+				winner_id = match.winnerID;
 			}
-			winner_id = match.winnerID;
+			else if (match.player_1_score > match.player_2_score) {
+				winner_id = match.player_1_id;
+			} else if (match.player_1_score < match.player_2_score) {
+				winner_id = match.player_2_id;
+			}
 		}
-		else if (match.player_1_score > match.player_2_score) {
-			winner_id = match.player_1_id;
-		} else if (match.player_1_score < match.player_2_score) {
-			winner_id = match.player_2_id;
-		}
-	
+
 		// Update the match row, so we have a winner and an end_time
 		await updateMatchInDB(db, {
 			match_id: match_id,
 			winner_id: winner_id,
 			end_time: true
-		})
-	
+		});
+
 		// Add the players to 'in_menu' in UserSessions
 		await updatePlayersSessionDB(db, [match.player_1_id, match.player_2_id], 'in_menu');
 	} catch (err) {

@@ -33,7 +33,13 @@ export async function handleGame(db, msg, socket, io) {
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
-			saveMatch(match.matchID);
+			if (match && match.winnerID) {
+				console.log(`handleGame | winnerID=${match.winnerID}`);
+				saveMatch(match.matchID, match.winnerID);
+			} else {
+				console.log("No match || winnerID in handleGame");
+				saveMatch(match.matchID, null);
+			}
 			break ;
 		case 'quit':
 			quitMatch(match, msg, socket, io);
