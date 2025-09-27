@@ -1,6 +1,6 @@
 import { addUserSessionToDB, getLastUserSession } from '../Database/sessions.js'
 import { tournament, leaveTournament } from '../Tournament/tournament.js';
-import { getOnlineUserByID } from '../Database/users.js';
+import { getUserByID, getOnlineUserByID } from '../Database/users.js';
 
 export async function updatePlayersSessionDB(db, user_ids, state) {
 	await Promise.all(user_ids.map(user_id => setUserSession(db, user_id, state)));
@@ -12,6 +12,13 @@ export async function onUserLogin(db, user_id) {
 		await setUserSession(db, user_id, 'in_menu');
 	} catch (err) {
 		console.error('LOGIN_SESSION_ERROR', err.message || err, 'onUserLogin');
+	}
+}
+
+export async function loginUsers(db, user_id1, user_id2) {
+	await onUserLogin(db, user_id1);
+	if (user_id2) {
+		await onUserLogin(db, user_id2);
 	}
 }
 
@@ -35,15 +42,31 @@ export async function onUserLogout(db, user_id) {
 
 export async function setUserSession(db, user_id, state) {
 	try {
-		const isOnline = await getOnlineUserByID(db, user_id);
-		if (state === 'login' && !isOnline) {
-			await addUserSessionToDB(db, { user_id, state });
-		} else if (state === 'logout' && isOnline) {
-			await addUserSessionToDB(db, { user_id, state });
-		} else {
+		const user = await getUserByID(db, user_id);
+		if (!user) {
+			return ;
+		}
+
+		const isOnlineRow = await getOnlineUserByID(db, user_id);
+		const isOnline = !!isOnlineRow;
+
+		if (state === 'login') {
+			if (!isOnline) {
+				await addUserSessionToDB(db, { user_id, state });
+			}
+			return ;
+		}
+		if (state === 'logout') {
+			if (isOnline) {
+				await addUserSessionToDB(db, { user_id, state });
+			}
+			return ;
+		}
+		if (isOnline) {
 			const lastUserSession = await getLastUserSession(db, user_id);
+			// console.log(`lastUserSession.state=${lastUserSession.state} != state=${state}`);
 			const allowedStates = ['in_menu', 'in_lobby', 'in_game'];
-			if (isOnline && lastUserSession && lastUserSession.state !== state && allowedStates.includes(state)) {
+			if (lastUserSession && lastUserSession.state != state && allowedStates.includes(state)) {
 				await addUserSessionToDB(db, { user_id, state });
 			}
 		}

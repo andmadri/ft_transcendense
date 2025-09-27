@@ -254,9 +254,6 @@ export async function getOnlineUserByID(db, user_id) {
 				sql_error(err, `getOnlineUserByID | id=${user_id}`);
 				reject(err);
 			} else {
-				if (!row) {
-					sql_log(`getOnlineUserByID | user_id not found! user_id=${user_id}`);
-				}
 				resolve(row || null);
 			}
 		});

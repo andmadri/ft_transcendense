@@ -9,7 +9,7 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { onUserLogin, onUserLogout } from './Services/sessionsService.js';
+import { loginUsers, onUserLogin, onUserLogout, setUserSession } from './Services/sessionsService.js';
 import { handleError } from './errors.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
@@ -88,6 +88,8 @@ fastify.ready().then(() => {
 		if (!userId1) {
 			handleError(socket, 'AUTH_NO_TOKEN', 'Unauthorized: No authentication token provided.', '', '', 'index');
 			return ;
+		} else {
+			loginUsers(db, userId1, userId2);
 		}
 
 		// add user to main room

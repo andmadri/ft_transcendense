@@ -3,8 +3,10 @@ import { addUserToRoom } from "../rooms.js";
 import { createMatch, matches } from "../InitGame/match.js";
 import { OT, state } from '../SharedBuild/enums.js'
 import { getUserByID } from "../Database/users.js";
+import { setUserSession } from "../Services/sessionsService.js";
 import { matchInterval } from "./onlinematch.js";
 import { leaveRoom } from "../rooms.js";
+import { db } from "../index.js";
 
 let friendInvites = new Map();
 
@@ -54,12 +56,12 @@ async function challengeFriend(io, db, socket, challenger, responder) {
 			console.error('PLAYER_NOT_FOUND Error getUserByID', 'challengeFriend');
 			return ;
 		}
+		friendInvites.set(tempMatchID, {socket, invite :{challenger, responder, requester_name: user.name, id: tempMatchID}});
+		await setUserSession(db, challenger, 'in_lobby');
 	} catch (err) {
 		console.error('PLAYER_NOT_FOUND Error getUserByID', err.message || err, 'challengeFriend');
 		return ;
 	}
-
-	friendInvites.set(tempMatchID, {socket, invite :{challenger, responder, requester_name: user.name, id: tempMatchID}});
 }
 
 async function startChallenge(io, db, socket, msg) {
@@ -120,7 +122,7 @@ function stopChallenge(msg, disconnectedSocket) {
 	friendInvites.delete(msg.tempMatchID);
 }
 
-function cancelChallengeFriend(socket, userID) {
+async function cancelChallengeFriend(socket, userID) {
 	let invite = null;
 	for (const data of friendInvites.values()) {
 		invite = data.invite;
@@ -130,13 +132,17 @@ function cancelChallengeFriend(socket, userID) {
 	}
 	if (invite)
 		friendInvites.delete(invite.id);
+	await setUserSession(db, userID, 'in_menu');
 }
 
-async function receiveResponseChallenge(io, db, socket, msg) {
-	if (msg.answer == true)
+async function receiveResponseChallenge(io, db, socket, msg, userID) {
+	if (msg.answer == true) {
 		startChallenge(io, db, socket, msg);
-	else
+	}
+	else {
 		stopChallenge(msg, false);
+		await setUserSession(db, userID, 'in_menu');
+	}
 }
 
 export function handleMatchmaking(db, msg, socket, userID, io) {
@@ -148,7 +154,7 @@ export function handleMatchmaking(db, msg, socket, userID, io) {
 			challengeFriend(io, db, socket, msg.challenger, msg.responder);
 			break ;
 		case 'challengeFriendAnswer':
-			receiveResponseChallenge(io, db, socket, msg);
+			receiveResponseChallenge(io, db, socket, msg, userID);
 			break ;
 		case 'createOnlineMatch':
 			handleOnlineMatch(db, socket, userID, io);
