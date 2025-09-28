@@ -344,7 +344,7 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 }
 
 function updateUiUsers(data: any) {
-	console.log('Updating UI user data:', data);
+	// console.log('Updating UI user data:', data);
 	if (data.user_info1 && data.user_info1.id > 2) {
 		UI.user1.ID = data.user_info1.id;
 		UI.user1.name = data.user_info1.name;
