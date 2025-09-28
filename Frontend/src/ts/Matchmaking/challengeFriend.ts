@@ -18,8 +18,8 @@ export function inviteFriendForGame(responder: string) {
 // STEP: 4: send back response to server
 export function responseChallenge(answer: boolean, req: any) {
 	if (answer == true) {
-		UI.state = S.stateUI.Game;
 		navigateTo('Pending');
+		Game.pendingState = S.pendingState.Friend;
 	}
 	Game.socket.emit('message', {
 		action: 'matchmaking',
