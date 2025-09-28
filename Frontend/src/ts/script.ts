@@ -23,31 +23,32 @@ import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
 import { requestJoinTournament} from './Tournament/tournamentContent.js'
 import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
+import { submitLogout } from './Auth/logout.js'
 
 createLog();
 
 startSocketListeners();
 
+async function refreshToken(playerNr: number) {
+	const response = await fetch('/api/refresh-token', {
+		method: 'POST',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ playerNr })
+		});
+
+	if (!response.ok && playerNr == 1)
+		navigateTo('LoginP1');
+}
+
 // Send a heartbeat every 5 seconds
-setInterval(() => {
+setInterval(async () => {
 	if (Game.socket && Game.socket.connected && UI.state !== S.stateUI.LoginP1) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
-		if (UI.user1.ID !== -1) {
-			fetch('/api/refresh-token', {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ playerNr: 1 })
-			});
-		}
-		if (UI.user2.ID !== 1) {	// if user2 is not guest
-			fetch('/api/refresh-token', {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ playerNr: 2 })
-			});
-		}
+		if (UI.user1.ID !== -1)
+			await refreshToken(1);
+		if (UI.user2.ID !== 1)	// if user2 is not guest
+			await refreshToken(2);
 	}
 }, 5000);
 
