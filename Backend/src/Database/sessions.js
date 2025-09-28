@@ -69,7 +69,7 @@ export async function getLastUserSession(db, user_id) {
 export async function getLatestSessionByState(db, user_id, state) {
 	const allowedStates = Array.isArray(state) ? state : [state];
 	const placeholders = allowedStates.map(() => '?').join(', ');
-	
+
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM UserSessions WHERE user_id = ? AND state IN (${placeholders}) ORDER BY timestamp DESC LIMIT 1`;
 		db.get(sql, [user_id, ...allowedStates], (err, row) => {

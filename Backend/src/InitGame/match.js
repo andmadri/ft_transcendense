@@ -66,20 +66,20 @@ async function newMatch(db, matchnr, id, id2, mode, tournamentContext, mf) {
 					size: { width: 0.05, height: 0.05 },
 					pos: { x: 0.5, y: 0.75 / 2 },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.5 },
-					},
+					movement: { speed: 0.6 },
+				},
 				paddle1: { 
 					size: { width: 0.02, height: 0.14},
 					pos: { x: 0.02, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.6 },
-					},
+					movement: { speed: 0.7 },
+				},
 				paddle2: { 
 					size: { width: 0.02, height: 0.14 },
 					pos: { x: 0.98, y: (0.75 / 2) },
 					velocity: { vx: 0, vy: 0 },
-					movement: { speed: 0.6 },
-					},
+					movement: { speed: 0.7 },
+				},
 			}
 		});
 		return (1);
@@ -126,11 +126,11 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 	try {
 		// CREATE MATCH IN DB
 		let MatchIsTournament = false;
-		if (tournamentContext) {
+		if (mf === MF.Tournament || tournamentContext) {
 			MatchIsTournament = true;
 		}
 		const matchID = await handleMatchStartDB(db, { 
-			player_1_id: userId1, 
+			player_1_id: userId1,
 			player_2_id: userId2,
 			isTournament: MatchIsTournament
 		});
