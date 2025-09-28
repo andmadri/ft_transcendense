@@ -5,6 +5,7 @@ import { db } from '../index.js';
 import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
+import { getOnlineUsers } from '../Database/users.js';
 
 
 /**
@@ -34,19 +35,27 @@ async function handleGoogleAuth(user) {
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
-				exists.user_id = exists.id; // for updateUserInDB
-				exists.name = user.name;
-				exists.email = user.email;
+				exists.user_id = user.id; // for updateUserInDB
+				exists.name = user.name.trim().slice(0, 10);
+				exists.email = user.email.toLowerCase().trim();
 				exists.avatar_url = user.picture;
 				await updateUserInDB(db, exists);
 			}
 		} else {
-
 			await addUserToDB(db, {
-				email: user.email,
-				name: user.name,
+				email: user.email.toLowerCase().trim(),
+				name: user.name.trim().slice(0, 10),
 				password: user.id,
-				avatar_url: user.picture,
+				avatar_url: user.picture
+			});
+			const newUser = await getUserByEmail(db, user.email);
+			if (!newUser) {
+				console.error('USER_CREATION_FAILED', `Failed to create user: ${user.name}`, 'handleGoogleLogin');
+				return null;
+			}
+			await updateUserInDB(db, { 
+				user_id: newUser.id, 
+				twofa_active: 0,
 				twofa_secret: 'google'
 			});
 		}
@@ -76,7 +85,7 @@ async function handleGoogleAuth(user) {
  */
 export default async function googleAuthRoutes(fastify) {
 	fastify.get('/api/auth/google', async (request, reply) => {
-		const playerNr = request.query.playerNr || '1';
+		const playerNr = request.query.state || '1';
 		const redirectUri = "https://" + process.env.HOST_DOMAIN + process.env.GOOGLE_REDIRECT_PATH;
 		console.log('Redirect URI:', redirectUri);
 		const baseURL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -101,7 +110,7 @@ export default async function googleAuthRoutes(fastify) {
 
 			if (!tokenRes || !tokenRes.data || !tokenRes.data.access_token) {
 				console.error('GOOGLE_AUTH_ERROR', 'Invalid token response from Google', 'googleAuthRoutes');
-				return reply.code(500).send('OAuth login failed.');
+				return reply.code(500).send('OAuth login failed: Invalid token from Google.');
 			}
 
 			const { access_token } = tokenRes.data;
@@ -111,22 +120,24 @@ export default async function googleAuthRoutes(fastify) {
 			});
 			if (!userRes || !userRes.data || !userRes.data.email) {
 				console.error('INVALID_GOOGLE_USER_DATA', 'Invalid user data received from Google', 'googleAuthRoutes');
-				return reply.code(500).send('OAuth login failed.');
+				return reply.code(500).send('OAuth login failed: Invalid user data from Google.');
 			}
 
 			const user = await handleGoogleAuth(userRes.data);
 			if (!user) {
-				console.error('GOOGLE_AUTH_FAILED', 'handleGoogleAuth returned null or undefined user', 'googleAuthRoutes');
-				return reply.code(500).send('OAuth login failed.');
-			}
-
-			try {
-				// CHRISS LOOK AT THIS!! addUser2faSecretToDB is deleted, but this { google: 'true' } didn't make sense before as well
-				await updateUserInDB(db, { user_id: user.id, twofa_secret:  'google' });
-				// await addUser2faSecretToDB(db, user.id, { google: 'true' }); // Ensure 2FA is disabled for Google login
-			} catch (err) {
-				console.error('GOOGLE_2FA_UPDATE_ERROR', err.message || err, 'googleAuthRoutes');
-				return reply.code(500).send('OAuth login failed.');
+				console.error('user returned:', user);
+				return reply.code(500).send('User already exists - please log in with your username and password.');
+			} else if (user) {
+				try {
+					const onlineUsers = await getOnlineUsers(db);
+					if (onlineUsers.find(u => u.id === user.id)) {
+						console.error('USER_ALREADY_LOGGED_IN', `User: ${user.name} is already logged in`, 'googleAuthRoutes');
+						return reply.code(500).send('User is already logged in.');
+					}
+				} catch (err) {
+					console.error('FETCH_ONLINE_USERS_ERROR', err.message || err, 'googleAuthRoutes');
+					return reply.code(500).send('OAuth login failed: Database error');
+				}
 			}
 
 			try {
