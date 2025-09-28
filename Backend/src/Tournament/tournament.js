@@ -4,7 +4,8 @@ import { matches } from '../InitGame/match.js';
 import { createMatch } from '../InitGame/match.js';
 import { saveMatch } from '../End/endGame.js';
 import { leaveRoom } from '../rooms.js';
-import { OT, state, MF } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js';
+import { setUserSession } from '../Services/sessionsService.js';
 
 export const tournament = {
 	players: [],		// [{id, name, socket, ready ...}]
@@ -312,6 +313,7 @@ export function handleTournament(db, msg, socket, io, userId) {
 		tournament.io = io;
 	console.log('Tournament message:', JSON.stringify(msg));
 	if (msg.subaction === 'join') {
+		setUserSession(db, userId, 'in_lobby');
 		joinTournament(msg, userId, socket, io);
 	} else if (msg.subaction === 'ready') {
 		const player = tournament.players.find(p => p.id === userId);
