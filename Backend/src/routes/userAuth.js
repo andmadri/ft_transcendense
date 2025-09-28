@@ -92,7 +92,7 @@ export default async function userAuthRoutes(fastify) {
 				name: user.name,
 				email: user.email,
 				twofa: user.twofa_active,
-				inTournament
+				inTournament: inTournament
 			});
 		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });

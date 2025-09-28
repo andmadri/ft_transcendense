@@ -162,7 +162,7 @@ export function navigateTo(newState: any, fromHash = false) {
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
 	console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
 
-	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID != -1) {
+	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID > 1) {
 		// Prevent infinite loop when already on LoginP2
 		console.log('Already logged in P2, navigating to menu instead');
 		newState = 'Menu';

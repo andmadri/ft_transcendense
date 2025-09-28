@@ -64,9 +64,16 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 		UI.user1.ID = data.userId; // Need to check later in validatePage
 		const currentState = sessionStorage.getItem("currentState");
 		console.log('current state script:', currentState);
-		if (data.inTournament && data.inTournament == true)
+		console.log('data:', data);
+		if (data.inTournament && data.inTournament === true) {
+			console.log('User is in tournament, navigating to tournament page');
 			requestJoinTournament();
-		else if (currentState && currentState !== 'LoginP1')
+			UI.user1.name = data.name;
+		}
+		else if (currentState === 'Tournament')
+			navigateTo('Menu');
+		
+		if (currentState && currentState !== 'LoginP1')
 			navigateTo(currentState, true);
 		else
 			navigateTo('Menu');
