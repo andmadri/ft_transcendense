@@ -6,10 +6,13 @@ import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall, setWin
 import { sendGameStateUpdate, sendScoreUpdate, sendWinnerResult, updateMatchEventsDB } from "../Game/gameStateSync.js";
 import { saveMatch } from "../End/endGame.js";
 import { reportTournamentMatchResult } from "../Tournament/tournament.js";
+import { setUserSession } from "../Services/sessionsService.js";
+import { db } from "../index.js";
 
 async function addToWaitinglist(socket, userID) {
 	console.log(`Add ${userID} to waiting list`);
 	waitlist.set(waitlist.size, { socket, userID });
+	await setUserSession(db, userID, 'in_lobby');
 }
 
 export async function removeFromWaitinglist(userID) {
@@ -17,6 +20,7 @@ export async function removeFromWaitinglist(userID) {
 		if (userInfo.userID == userID) {
 			waitlist.delete(nr);
 			console.log(`Removed ${userID} from waiting list`);
+			await setUserSession(db, userID, 'in_menu');
 			return ;
 		}
 	}

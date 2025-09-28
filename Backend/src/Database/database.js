@@ -2,13 +2,12 @@ import sqlite3 from "sqlite3";
 import path from "path";
 import fs from "fs";
 import { createTables } from './schema.js'
-import { createNewUserToDB } from './users.js';
-import { onUserLogin } from '../Services/sessionsService.js';
+import { createNewUserToDB, getUserByEmail } from './users.js';
+import { onUserLogin, setUserSession } from '../Services/sessionsService.js';
 import { sql_log, sql_error } from './dblogger.js';
 
 const { Database } = sqlite3.verbose();
 const DB_PATH = process.env.DB_PATH || "/data/pong.db";
-
 
 /**
  * @brief Opens (or creates) a SQLite database at the given path.
@@ -101,9 +100,9 @@ export async function createDatabase() {
 
 	const created = await ensureSchema(db);
 
+	let guest_id = null;
+	let ai_id = null;
 	if (created) {
-		let guest_id = null;
-		let ai_id = null;
 		try {
 			guest_id = await createNewUserToDB(db, {
 				name: 'Guest',
@@ -121,11 +120,34 @@ export async function createDatabase() {
 		}
 		if (!guest_id || !ai_id) {
 			console.error('CREATE_USER_ERROR', 'guest_id and/or ai_id missing after account creation', 'createDatabase');
-			return db;
 		}
 		try {
-			await onUserLogin(db, guest_id);
-			await onUserLogin(db, ai_id);
+			if (guest_id) {
+				await onUserLogin(db, guest_id);
+				await setUserSession(db, guest_id, 'in_menu');
+			}
+			if (ai_id) {
+				await onUserLogin(db, ai_id);
+				await setUserSession(db, ai_id, 'in_menu');
+			}
+		} catch(err) {
+			console.error('LOGIN_ERROR', 'onUserLogin failed for guest or AI id', err.message || err, 'createDatabase');
+			return db;
+		}
+	} else {
+		try {
+			guest_id = await getUserByEmail(db, 'guest@guest.guest');
+			if (guest_id) {
+				guest_id = guest_id.id;
+				await onUserLogin(db, guest_id);
+				await setUserSession(db, guest_id, 'in_menu');
+			}
+			ai_id = await getUserByEmail(db, 'ai@ai.ai');
+			if (ai_id) {
+				ai_id = ai_id.id;
+				await onUserLogin(db, ai_id);
+				await setUserSession(db, ai_id, 'in_menu');
+			}
 		} catch(err) {
 			console.error('LOGIN_ERROR', 'onUserLogin failed for guest or AI id', err.message || err, 'createDatabase');
 			return db;

@@ -240,6 +240,26 @@ export function getOnlineUsers(db) {
 	});
 }
 
+/**
+ * @brief Retrieves a user by ID from the OnlineUsers table.
+ *
+ * @param {number} user_id - The user ID to look up.
+ * @returns {Promise<Object|null>} - Resolves with user data or null if not found.
+ */
+export async function getOnlineUserByID(db, user_id) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM OnlineUsers WHERE id = ?`;
+		db.get(sql, [user_id], (err, row) => {
+			if (err) {
+				sql_error(err, `getOnlineUserByID | id=${user_id}`);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
+
 export async function getAllPlayers(db) {
 	const sql = `
 		SELECT 
