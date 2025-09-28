@@ -54,24 +54,6 @@ export default async function twoFactor(fastify) {
 			if (user.twofa_secret === 'google') {
 				return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
 			}
-			// console.log(`user.twofa_secret: ${user.twofa_secret}`);
-			// if (user.twofa_secret) {
-			// 	console.log(`user.twofa_secret: ${user.twofa_secret}`);
-			// 	const userSecret = JSON.parse(user.twofa_secret);
-			// 	console.log(`userSecret: ${userSecret}`);
-
-			// 	// IF THESE LOGS ABOVE ARE THE SAME THEN THIS STATEMENT CAN GO SEPERATE AND THE OTHER CODE CAN BE DELETED!
-			// 	if (user.twofa_secret === 'google') {
-			// 		console.log(`PLEASE DELETE SOME CODE HERE!! - Not this current ifstatement, but the nested ifstatement`);
-			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
-			// 	}
-
-
-			// 	if (userSecret.google == "true") {
-			// 		return reply.status(404).send({ success: false, message: '2FA not available for Google user.' });
-			// 	}
-			// }
-			
 
 			const encryptedSecret = encryptSecret(secret.base32);
 			await updateUserInDB(db, { user_id: user.id, twofa_secret: normalizeJSON(encryptedSecret) });
@@ -231,4 +213,3 @@ export default async function twoFactor(fastify) {
 		return { success: true };
 	});
 }
-

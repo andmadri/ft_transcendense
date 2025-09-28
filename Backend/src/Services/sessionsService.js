@@ -1,4 +1,4 @@
-import { addUserSessionToDB, getLastUserSession } from '../Database/sessions.js'
+import { addUserSessionToDB, getLastUserSession } from '../Database/sessions.js';
 import { tournament, leaveTournament } from '../Tournament/tournament.js';
 import { getUserByID, getOnlineUserByID } from '../Database/users.js';
 

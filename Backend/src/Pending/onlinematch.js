@@ -1,5 +1,5 @@
 import { waitlist, matches } from "../InitGame/match.js";
-import { OT, state, MF } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js';
 import { assert } from "console";
 import { createMatch } from "../InitGame/match.js";
 import { randomizeBallAngle, updateGameState, updatePaddlePos, resetBall, setWinner } from "../SharedBuild/gameLogic.js";

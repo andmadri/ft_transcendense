@@ -7,7 +7,8 @@ export default async function avatarRoutes(fastify) {
 		preHandler: verifyAuthCookie
 	}, async (request, reply) => {
 		try {
-			const data = await request.file(); // get the uploaded file
+			// get the uploaded file
+			const data = await request.file();
 			if (!data) {
 				console.error('FILE_UPLOAD_ERROR', 'No file uploaded', 'avatarRoutes');
 				reply.code(400).send({ error: 'No file uploaded' });
@@ -57,12 +58,10 @@ export default async function avatarRoutes(fastify) {
 		if (!fs.existsSync(avatarDir))
 		{
 			const filePath = path.join(process.cwd(), 'uploads', 'avatars', '-1', `avatar.png`);
-			// console.log('File not found:', filePath);
 			return fs.createReadStream(filePath);
 		} else {
 			for (const ext of exts) {
 				const filePath = path.join(avatarDir, `avatar${ext}`);
-				// console.log('Checking file path:', filePath);
 				if (fs.existsSync(filePath)) {
 					reply.type(`image/${ext.replace('.', '')}`);
 					return fs.createReadStream(filePath);

@@ -2,7 +2,6 @@ import * as friendsDB from '../Database/friends.js';
 import { getAllPlayerInclFriends } from './getPlayers.js';
 import { getChallengesFriends } from '../Pending/matchmaking.js';
 import { handleError } from '../errors.js'
-import { setUserSession } from '../Services/sessionsService.js';
 import { db } from '../index.js';
 
 function sendContentToFrontend(socket, actionable, sub, content) {

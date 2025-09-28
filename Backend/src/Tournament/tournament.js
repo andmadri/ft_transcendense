@@ -4,7 +4,7 @@ import { matches } from '../InitGame/match.js';
 import { createMatch } from '../InitGame/match.js';
 import { saveMatch } from '../End/endGame.js';
 import { leaveRoom } from '../rooms.js';
-import { OT, state, MF } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js';
 
 export const tournament = {
 	players: [],		// [{id, name, socket, ready ...}]
@@ -15,7 +15,6 @@ export const tournament = {
 
 // Helper to format the state for the frontend
 function getTournamentStateForFrontend() {
-	// console.log(`tournament matches:`, tournament.matches);
 	return {
 		players: tournament.players.map(p => ({ id: p.id, name: p.name, ready: p.ready })),
 		matches: tournament.matches.map(m => ({
@@ -86,7 +85,6 @@ function joinTournament(msg, userId, socket, io) {
 	}
 }
 
-
 export function leaveTournament(msg, userId, socket, io) {
 	if (tournament.state === 'waiting') {
 		leaveRoom(socket, 'tournament_1');
@@ -137,8 +135,6 @@ export function leaveTournament(msg, userId, socket, io) {
 		console.log('Unknown tournament state on leave:', tournament.state);
 	}
 }
-
-
 
 async function createTournamentMatch(player1, player2, matchNumber, io) {
 	if (!player1 || !player2) {
@@ -200,7 +196,6 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 	});
 }
 
-
 export function reportTournamentMatchResult(match) {
 	try {
 		const matchIndex = tournament.matches.findIndex(m => m.match.player1.ID === match.player1.ID && m.match.player2.ID === match.player2.ID);
@@ -252,7 +247,6 @@ export function isTournamentReadyToStart() {
 }
 
 async function startFirstTournamentMatches(io) {
-	// console.log('Starting for players: ', tournament.players.id, tournament.players.name);
 	// Create Match 1: p1 vs p2
 	await createTournamentMatch(tournament.players[0], tournament.players[1], 1, io);
 	// Create Match 2: p3 vs p4
@@ -261,7 +255,6 @@ async function startFirstTournamentMatches(io) {
 
 export async function triggerNextTournamentMatch(tournamentId, io) {
 	// Check if both Game 1 and Game 2 are finished
-
 	if (!tournament.matches[0].match.winnerID || !tournament.matches[1].match.winnerID) {
 		console.log("Both initial matches not finished yet.");
 		console.log("match 1 state:", tournament.matches[0].match.state, "match 2 state:", tournament.matches[1].match.state);
@@ -334,9 +327,6 @@ export function handleTournament(db, msg, socket, io, userId) {
 			subaction: 'update',
 			tournamentState: getTournamentStateForFrontend()
 		});
-
-		// Print in console for debugging
-		console.log('Player updated tournament:', msg.name, userId, getTournamentStateForFrontend());
 	} else if (msg.subaction === 'leave') {
 		leaveTournament(msg, userId, socket, io);
 	}

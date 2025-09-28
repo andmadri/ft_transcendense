@@ -1,12 +1,11 @@
 import axios from 'axios';
-import { signFastifyJWT, signFastifyPendingTwofa } from "../utils/jwt.js";
+import { signFastifyJWT } from "../utils/jwt.js";
 import bcrypt from 'bcrypt';
 import { db } from '../index.js';
 import { addUserToDB, getUserByEmail, updateUserInDB } from '../Database/users.js';
 import { onUserLogin } from '../Services/sessionsService.js';
 import { USERLOGIN_TIMEOUT } from '../structs.js';
 import { getOnlineUsers } from '../Database/users.js';
-
 
 /**
  * Handles the Google authentication process.
@@ -35,7 +34,7 @@ async function handleGoogleAuth(user) {
 				return null;
 			}
 			if (exists.name !== user.name || exists.avatar_url !== user.picture) {
-				exists.user_id = user.id; // for updateUserInDB
+				exists.user_id = user.id;
 				exists.name = user.name.trim().slice(0, 10);
 				exists.email = user.email.toLowerCase().trim();
 				exists.avatar_url = user.picture;
@@ -65,7 +64,6 @@ async function handleGoogleAuth(user) {
 		return null;
 	}
 }
-
 
 /**
  * Sets up the Google authentication routes for Fastify.

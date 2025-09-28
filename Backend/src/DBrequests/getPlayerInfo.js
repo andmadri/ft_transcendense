@@ -1,7 +1,7 @@
 import * as userDB from '../Database/users.js';
 import { checkName, checkPassword, checkEmail } from '../Auth/userValidation.js';
 import { db } from '../index.js';
-import { handleError } from '../errors.js'
+import { handleError } from '../errors.js';
 
 async function getPlayerData(msg, socket, userId1, userId2) {
 	console.log(`getPlayerData | userId1=${userId1} - userId2=${userId2}`);

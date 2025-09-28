@@ -1,6 +1,6 @@
 import { handleMatchStartDB } from '../Services/matchService.js';
 import { getUserByID } from "../Database/users.js";
-import { OT, state, MF } from '../SharedBuild/enums.js'
+import { OT, state, MF } from '../SharedBuild/enums.js';
 
 export const 	matches = new Map();
 export const	waitlist = new Map();

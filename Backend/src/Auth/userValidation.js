@@ -1,6 +1,6 @@
 import { addUserToDB, getOnlineUsers, getUserByEmail, nameAlreadyExist, emailAlreadyExist } from '../Database/users.js';
 import bcrypt from 'bcrypt';
-import { db } from '../index.js' // DELETE THIS LATER
+import { db } from '../index.js';
 
 export async function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;

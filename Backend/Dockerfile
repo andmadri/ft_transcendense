@@ -6,9 +6,6 @@ COPY Shared ./src/Shared
 
 RUN apk add --no-cache \
     sqlite sqlite-libs sqlite-dev \
-    # python3 py3-pip \
-    # make g++ \
-    # && apk del make g++ \
     && npm install
 
 RUN npx tsc

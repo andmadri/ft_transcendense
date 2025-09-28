@@ -1,7 +1,7 @@
 import { getUserByID } from '../Database/users.js';
 import { getMatchByID } from '../Database/match.js';
 import { getMatchHistoryDB, getUserMatchStatsDB, getUserStateDurationsDB } from '../Database/dashboard.js';
-import { handleError } from '../errors.js'
+import { handleError } from '../errors.js';
 import { db } from '../index.js';
 
 async function getDashboardInfo(socket, playerID) {

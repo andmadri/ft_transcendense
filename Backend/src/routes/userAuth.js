@@ -21,7 +21,6 @@ import { tournament } from '../Tournament/tournament.js'
 export default async function userAuthRoutes(fastify) {
 	fastify.post('/api/refresh-token', { preHandler: verifyAuthCookie }, async (request, reply) => {
 		const playerNr = request.body.playerNr;
-		// console.log('Refreshing token for playerNr: ', playerNr);
 		if (playerNr === 2 ) {
 			const cookies = request.cookies;
 			const token = cookies['jwtAuthToken2'];
@@ -36,15 +35,16 @@ export default async function userAuthRoutes(fastify) {
 			}
 			try {
 				const decoded = await fastify.jwt.verify(unsigned.value);
-				request.user = decoded; // Attach user info to request if needed
+				request.user = decoded;
 			} catch (err) {
 				reply.code(401).send({ error: 'Unauthorized: Invalid token' });
 			}
 		}
 
-		const userId = request.user.userId;
+		let userId = null;
 		let user = null;
 		try {
+			userId = request.user.userId;
 			user = await getUserByID(fastify.db || db, userId);
 			if (!user) {
 				return reply.status(401).send({ error: 'Unauthorized' });

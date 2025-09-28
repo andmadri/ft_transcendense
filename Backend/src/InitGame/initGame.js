@@ -1,5 +1,5 @@
 import { createMatch } from "./match.js";
-import { MF } from "../SharedBuild/enums.js"
+import { MF } from "../SharedBuild/enums.js";
 
 // To frontend: players get msg that server is ready with init, game can start
 function sendStartMsgToPlayers(matchID) {

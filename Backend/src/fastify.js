@@ -11,7 +11,6 @@ import avatarRoutes from './routes/avatar.js';
 
 export async function initFastify() {
 	// FASTIFY => API SERVER
-	// const fastify = Fastify({ logger: true });
 	const fastify = Fastify({ level: 'error' });
 
 	// fastify-socket.io enables the use of Socket.io in a Fastify application.

@@ -1,6 +1,6 @@
 import { getUserByID } from '../Database/users.js';
 import { getUserMatchStatsDB } from '../Database/dashboard.js';
-import { handleError } from '../errors.js'
+import { handleError } from '../errors.js';
 import { db } from '../index.js';
 
 async function getUserDataMenu(msg, socket, userId1, userId2)

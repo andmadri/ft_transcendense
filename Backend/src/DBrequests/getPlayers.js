@@ -1,5 +1,5 @@
 import * as userDB from '../Database/users.js';
-import * as friendDB from '../Database/friends.js'
+import * as friendDB from '../Database/friends.js';
 
 function sendContentToFrontend(actionable, sub, socket, accessible, content) {
 	const msg = {

@@ -9,7 +9,7 @@ import { handleInitGame } from './InitGame/initGame.js';
 import { handleMatchmaking } from './Pending/matchmaking.js';
 import { parseAuthTokenFromCookies } from './Auth/authToken.js';
 import { addUserToRoom } from './rooms.js';
-import { loginUsers, onUserLogin, onUserLogout, setUserSession } from './Services/sessionsService.js';
+import { loginUsers, onUserLogout } from './Services/sessionsService.js';
 import { handleError } from './errors.js';
 import { performCleanupDB } from './Database/cleanup.js';
 import { handleTournament, leaveTournament } from './Tournament/tournament.js';
@@ -20,13 +20,11 @@ import { generateAllChartsForMatch } from './Charts/createGameStats.js';
 import { stopMatchAfterRefresh } from './End/endGame.js';
 import { tournament } from './Tournament/tournament.js';
 import { removeFromWaitinglist } from './Pending/onlinematch.js';
-// import { getOnlineUsers } from './Database/users.js';
 
 export const db = await createDatabase();
 
 const fastify = await initFastify();
 
-// Map to track last seen timestamps for users
 const usersLastSeen = new Map();
 
 function installShutdownHandlers(fastify, db) {
@@ -43,7 +41,6 @@ function installShutdownHandlers(fastify, db) {
 			process.exit(1);
 		}
 	};
-
 	process.on('SIGTERM', () => shutdown('SIGTERM'));
 	process.on('SIGINT', () => shutdown('SIGINT'));
 }
@@ -77,7 +74,6 @@ fastify.ready().then(() => {
 				try {
 					decoded = fastify.jwt.verify(unsigned.value);
 					userId2 = decoded.userId;
-					// Use userId or decoded as needed for player 2
 				} catch (err) {
 					console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', err.message || err, 'index');
 				}
@@ -115,7 +111,6 @@ fastify.ready().then(() => {
 						loginUsers(db, userId1, userId2);
 						return handleFriends(msg, socket, userId1);
 					case 'dashboard': {
-					//if there is no player id it is specify whether to use userID1 or userID2
 						if (!msg.playerId) {
 							msg.playerId = (msg.playerNr === 1 ? userId1 : userId2);
 						}
@@ -144,7 +139,6 @@ fastify.ready().then(() => {
 		socket.on('heartbeat', (msg) => {
 			try {
 				if (userId1) {
-					// console.log(`Online userId1=${userId1}`);
 					usersLastSeen.set(userId1, {
 						userId2,
 						lastSeen: Date.now()
