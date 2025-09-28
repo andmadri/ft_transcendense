@@ -6,10 +6,10 @@ COPY Shared ./src/Shared
 
 RUN apk add --no-cache \
     sqlite sqlite-libs sqlite-dev \
-    python3 py3-pip \
-    make g++ \
-    && npm install \
-    && apk del make g++
+    # python3 py3-pip \
+    # make g++ \
+    # && apk del make g++ \
+    && npm install
 
 RUN npx tsc
 RUN mkdir -p /data && chown -R node:node /data

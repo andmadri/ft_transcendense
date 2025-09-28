@@ -88,9 +88,7 @@ fastify.ready().then(() => {
 		if (!userId1) {
 			handleError(socket, 'AUTH_NO_TOKEN', 'Unauthorized: No authentication token provided.', '', '', 'index');
 			return ;
-		} else {
-			loginUsers(db, userId1, userId2);
-		}
+		} 
 
 		// add user to main room
 		addUserToRoom(socket, 'main');
@@ -114,6 +112,7 @@ fastify.ready().then(() => {
 					case 'players':
 						return handlePlayers(db, msg, socket, userId1);
 					case 'friends':
+						loginUsers(db, userId1, userId2);
 						return handleFriends(msg, socket, userId1);
 					case 'dashboard': {
 					//if there is no player id it is specify whether to use userID1 or userID2
@@ -198,55 +197,10 @@ setInterval(async () => {
 				}
 			}
 		}
-		// syncOnlinePlayers(db, usersLastSeen);
 	} catch (err) {
 		console.error(`HEARTBEAT_INTERVAL Error during user session cleanup`, err.message || err , "setInterval");
 	}
 }, 5000); // check every 5 seconds
-
-// export async function syncOnlinePlayers(db, usersLastSeen) {
-// 	try {
-// 		const onlineUsersDB = await getOnlineUsers(db);
-
-// 		const dbIds = [];
-// 		for (const r of onlineUsersDB || []) {
-// 			if (r.id > 2) {
-// 				dbIds.push(Number(r.id));
-// 			}
-// 		}
-// 		dbIds.sort((a, b) => a - b);
-
-// 		// console.log("onlineUsersDB: ", dbIds);
-
-// 		const onlineUsersBE = new Set();
-// 		for (const [userId1, data] of usersLastSeen.entries()) {
-// 			onlineUsersBE.add(userId1);
-// 			if (data && data.userId2) {
-// 				onlineUsersBE.add(data.userId2);
-// 			}
-// 		}
-// 		const beIds = [...onlineUsersBE];
-// 		beIds.sort((a, b) => a - b);
-// 		// console.log("onlineUsersBE: ", beIds);
-
-// 		const dbSet = new Set(dbIds);
-// 		const needLogin = beIds.filter(id => !dbSet.has(id));
-
-// 		const beSetForLogout = new Set(beIds);
-// 		const needLogout = dbIds.filter(id => !beSetForLogout.has(id));
-
-// 		console.log("needLogin (present in BE, missing in DB):", needLogin);
-// 		console.log("needLogout (present in DB, missing in BE):", needLogout);
-// 		for (const id of needLogin) {
-// 			await onUserLogin(db, id);
-// 		}
-// 		for (const id of needLogout) {
-// 			await onUserLogout(db, id);
-// 		}
-// 	} catch (err) {
-// 		console.error(`Error syncOnlinePlayers: `, err);
-// 	}
-// }
 
 try {
 	await fastify.listen({ port: 3000, host: '0.0.0.0' });

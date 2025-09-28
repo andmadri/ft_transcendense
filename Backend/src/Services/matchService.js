@@ -102,7 +102,7 @@ export async function handleMatchEndedDB(db, match_id) {
 		if (!match) {
 			throw new Error(`Match ID ${match_id} not found`);
 		}
-	
+
 		// Find out who is the winner
 		let winner_id = null;
 		if (match.winnerID) {
@@ -113,10 +113,10 @@ export async function handleMatchEndedDB(db, match_id) {
 		}
 		else if (match.player_1_score > match.player_2_score) {
 			winner_id = match.player_1_id;
-		} else if (match.player_1_score < match.player_2_score) {
+		} else {
 			winner_id = match.player_2_id;
 		}
-	
+
 		// Update the match row, so we have a winner and an end_time
 		await updateMatchInDB(db, {
 			match_id: match_id,

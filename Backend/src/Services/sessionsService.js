@@ -9,7 +9,6 @@ export async function updatePlayersSessionDB(db, user_ids, state) {
 export async function onUserLogin(db, user_id) {
 	try {
 		await setUserSession(db, user_id, 'login');
-		await setUserSession(db, user_id, 'in_menu');
 	} catch (err) {
 		console.error('LOGIN_SESSION_ERROR', err.message || err, 'onUserLogin');
 	}
@@ -17,8 +16,10 @@ export async function onUserLogin(db, user_id) {
 
 export async function loginUsers(db, user_id1, user_id2) {
 	await onUserLogin(db, user_id1);
-	if (user_id2) {
+	await setUserSession(db, user_id1, 'in_menu');
+	if (user_id2 && user_id2 > 2) {
 		await onUserLogin(db, user_id2);
+		await setUserSession(db, user_id2, 'in_menu');
 	}
 }
 
@@ -64,7 +65,6 @@ export async function setUserSession(db, user_id, state) {
 		}
 		if (isOnline) {
 			const lastUserSession = await getLastUserSession(db, user_id);
-			// console.log(`lastUserSession.state=${lastUserSession.state} != state=${state}`);
 			const allowedStates = ['in_menu', 'in_lobby', 'in_game'];
 			if (lastUserSession && lastUserSession.state != state && allowedStates.includes(state)) {
 				await addUserSessionToDB(db, { user_id, state });

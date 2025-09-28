@@ -74,7 +74,6 @@ export async function openFriendRequest(userId1, socket) {
 }
 
 export async function handleFriends(msg, socket, userId1) {
-	await setUserSession(db, userId1, 'in_menu');
 	switch (msg.subaction) {
 		case 'getFriends':
 			getFriends(userId1, socket);
