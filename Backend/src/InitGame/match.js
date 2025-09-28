@@ -126,11 +126,11 @@ export async function createMatch(db, mode, socket, userId1, userId2, tournament
 	try {
 		// CREATE MATCH IN DB
 		let MatchIsTournament = false;
-		if (tournamentContext) {
+		if (mf === MF.Tournament || tournamentContext) {
 			MatchIsTournament = true;
 		}
 		const matchID = await handleMatchStartDB(db, { 
-			player_1_id: userId1, 
+			player_1_id: userId1,
 			player_2_id: userId2,
 			isTournament: MatchIsTournament
 		});
