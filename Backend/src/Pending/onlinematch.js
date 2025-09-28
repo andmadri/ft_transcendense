@@ -40,7 +40,7 @@ let deltaTime;
 export function matchInterval(match, io) {
 	match.intervalID = setInterval(() => {
 		now = performance.now();
-		deltaTime = (now - match.lastUpdateTime) / 600;
+		deltaTime = (now - match.lastUpdateTime) / 1000;
 		switch (match.state) {
 			case (state.Init) : {
 				if (match.pauseTimeOutID == null) {
@@ -96,7 +96,7 @@ export function matchInterval(match, io) {
 					reportTournamentMatchResult(match);
 				}
 				sendWinnerResult(match, io);
-				saveMatch(match.matchID);
+				saveMatch(match.matchID, match.winnerID);
 				clearInterval(match.intervalID);
 				break;
 			}
