@@ -1,6 +1,6 @@
-import { gameState } from '@shared/types'
-import { state } from '@shared/enums'
-import { UI, Game } from '../gameData.js'
+import { gameState } from '@shared/types';
+import { state } from '@shared/enums';
+import { UI, Game } from '../gameData.js';
 
 const INTERPOLATION_DELAY = 100;
 const MAX_SNAPSHOT_AGE = 2000;
@@ -112,7 +112,7 @@ export function renderGameInterpolated() {
 		interpolateSnapshot(snap1, snap2, renderTime, playerNr);
 		deleteOldSnapshots(renderTime);
 	} 
-	if (Game.match.state == state.Score) { //clear snapshots on score/pause when ball is reset
+	if (Game.match.state == state.Score) {
 		snapshots.length = 0;
 		return ;
 	}

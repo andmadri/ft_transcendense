@@ -1,5 +1,5 @@
-import { Game, UI } from "../gameData.js";
-import { OT, state } from '@shared/enums'
+import { Game } from "../gameData.js";
+import { OT } from '@shared/enums';
 import { pauseBallTemporarily } from "./gameLogic.js";
 
 function getKey(keyContent: string | null) {
@@ -58,7 +58,7 @@ function getPlayerColom(playerNr: number) {
     keys.style.alignItems = 'center';
     keys.style.gap = '15px';
 
-	if (Game.match.mode == OT.ONEvsCOM && playerNr == 2) { // AI has no keys
+	if (Game.match.mode == OT.ONEvsCOM && playerNr == 2) {
 		keys.append(getKey(null), getKey(null));
 	} else if (playerNr == 1 && Game.match.mode == OT.ONEvsONE) {
 		keys.append(getKey('W'), getKey('S'));
@@ -113,7 +113,7 @@ export function startGameField(duration : number) {
     txtstartGame.style.animation = 'pulse 1s ease-in-out infinite';
 	setTimeout(() => {
     	txtstartGame.textContent = "GO!";
-	}, duration * 0.75); //3000
+	}, duration * 0.75);
 
 	const players = document.createElement('div');
 	players.style.display = 'flex';
@@ -134,6 +134,6 @@ export function startGameField(duration : number) {
 
 	setTimeout(() => {
 		startGame.style.display = "none";
-		pauseBallTemporarily(duration * 0.25); //1000
-	}, duration); //4000
+		pauseBallTemporarily(duration * 0.25);
+	}, duration);
 }

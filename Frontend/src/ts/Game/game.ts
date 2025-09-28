@@ -1,12 +1,7 @@
-import { log } from '../logging.js'
-import { UI, Game } from "../gameData.js"
-import * as S from "../structs.js";
-import { getGameField } from "./gameContent.js"
-import { OT, state } from '@shared/enums'
+import { Game } from "../gameData.js";
+import { OT, state } from '@shared/enums';
 import { navigateTo } from "../history.js";
 import { applyGameStateUpdate, applyScoreUpdate, applyWinner } from './gameStateSync.js'
-
-// import { receiveUpdateFromServer } from "./updateServer.js";
 
 function processMatch(data: any) {
 	console.log("inited game with id: " + data.id);
@@ -26,13 +21,11 @@ function processQuitMatch(data: any) {
 	console.log(data.reason);
 }
 
-
 export function actionGame(data: any) {
 	if (!data.subaction) {
 		console.error('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', data, 'actionGame');
 		return ;
 	}
-
 	switch(data.subaction) {
 		case 'init':
 			console.log(`MatchID frontend: ${data.id}`);

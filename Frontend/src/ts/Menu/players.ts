@@ -1,9 +1,7 @@
-import { log } from '../logging.js'
-import { Game, UI } from "../gameData.js"
-import { styleRow, styleListBtns } from './menuContent.js'
+import { Game, UI } from "../gameData.js";
+import { styleRow, styleListBtns } from './menuContent.js';
 import { navigateTo } from '../history.js';
 import { customAlert } from '../Alerts/customAlert.js';
-
 
 function createPlayerList(): HTMLDivElement {
 	const playerList = document.createElement('div');
@@ -58,7 +56,6 @@ export function insertPlayers(players: any) {
 	html_list.innerHTML = "";
 	html_list.className = 'playerOfList';
 	for (const player of players) {
-		//I don't want to show the current player
 		if (player.id > 2 && player.id !== UI.user1.ID && !player.isFriend) {
 			const row = styleRow(player.name);
 			const status = player.online_status == 0 ? 'offline' : 'online';
@@ -68,18 +65,15 @@ export function insertPlayers(players: any) {
 			btnContainer.style.display = 'flex';
 			btnContainer.style.gap = '0.3rem';
 
-			//what about player2
-			// if (!player.isFriend) {
 			const addFriendBtn = document.createElement('button');
 			styleListBtns(addFriendBtn, 'url("../../images/add_friend.png")');
 			addFriendBtn.addEventListener("click", () => {
-				customAlert(`You send ${player.name} a friend request`); //needed customAlert
+				customAlert(`You send ${player.name} a friend request`);
 				const id = UI.user1.ID;
 				const friendID = player.id;
 				Game.socket.emit('message', { action: "friends", subaction: "friendRequest", id, friendID });
 			});
 			btnContainer.appendChild(addFriendBtn);
-			// }
 
 			const dashboardBtn = document.createElement('button');
 			styleListBtns(dashboardBtn, 'url("../../images/dashboard.png")');

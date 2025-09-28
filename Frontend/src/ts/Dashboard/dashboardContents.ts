@@ -1,9 +1,9 @@
-import { Game, UI } from '../gameData'
-import * as S from '../structs.js'
-import { renderPlayingTimeCard } from './playingTime'
-import { renderUserStatsCard } from './userStats'
-import { navigateTo } from '../history'
-import { createBackgroundText } from '../Menu/menuContent'
+import { Game, UI } from '../gameData';
+import * as S from '../structs.js';
+import { renderPlayingTimeCard } from './playingTime';
+import { renderUserStatsCard } from './userStats';
+import { navigateTo } from '../history';
+import { createBackgroundText } from '../Menu/menuContent';
 
 function formatDurationSecs(sec: unknown): string {
 	const n = Math.round(Number(sec));
@@ -82,7 +82,7 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.style.flex = '1 1 25%';
 	card.style.flexDirection = 'column';
 	card.style.gap = '1rem'
-	card.style.alignItems = 'center';  // Center contents horizontally
+	card.style.alignItems = 'center';
 	card.style.justifyContent = 'center'; 
 
 	const userPic = document.createElement('img')
@@ -113,7 +113,6 @@ function renderUserInfoCard(user_info: any, infoCardsContainer: HTMLElement)
 	card.appendChild(userDateCreation);
 	infoCardsContainer.appendChild(card);
 }
-
 
 export function populateDashboard(msg: any)
 {

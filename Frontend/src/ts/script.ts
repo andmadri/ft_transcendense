@@ -1,31 +1,23 @@
-//Initialize the game by setting up the WebSocket connection, the login system, the game state
-//importing functionality from different files
-import * as S from './structs.js' //imports structures from the file structs.js
-import { Game, UI } from "./gameData.js"
-import { navigateTo, controlBackAndForward } from './history.js'
-import { createLog, log } from './logging.js'
-import { pressButton, releaseButton } from './windowEvents.js'
-import { startSocketListeners } from './socketEvents.js'
-import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js'
-import { initGame } from './Game/initGame.js'
-import { getPending } from './Game/pendingContent.js'
-import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js'
+import * as S from './structs.js';
+import { Game, UI } from "./gameData.js";
+import { navigateTo, controlBackAndForward } from './history.js';
+import { pressButton, releaseButton } from './windowEvents.js';
+import { startSocketListeners } from './socketEvents.js';
+import { game, pauseBallTemporarily, updateDOMElements} from './Game/gameLogic.js';
+import { initGame } from './Game/initGame.js';
+import { getPending } from './Game/pendingContent.js';
+import { sendScoreUpdate, sendPadelHit, sendServe } from './Game/gameStateSync.js';
 import { saveGame } from './Game/endGame.js';
-import { getGameField } from './Game/gameContent.js'
-import { startGameField } from './Game/startGameContent.js'
-import { getLoginFields } from './Auth/authContent.js'
-import { getMenu , getCreditsPage } from './Menu/menuContent.js'
-import { getOpponentMenu } from './opponentTypeMenu/opponentType.js'
-import { getLoadingPage } from './Loading/loadContent.js'
-import { OT, state} from '@shared/enums'
-import { resetBall, setWinner } from '@shared/gameLogic'
-import { renderGameInterpolated } from './Game/renderSnapshots.js'
-
-import { requestJoinTournament} from './Tournament/tournamentContent.js'
-import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
-import { submitLogout } from './Auth/logout.js'
-
-createLog();
+import { getGameField } from './Game/gameContent.js';
+import { startGameField } from './Game/startGameContent.js';
+import { getLoginFields } from './Auth/authContent.js';
+import { getMenu , getCreditsPage } from './Menu/menuContent.js';
+import { getOpponentMenu } from './opponentTypeMenu/opponentType.js';
+import { getLoadingPage } from './Loading/loadContent.js';
+import { OT, state} from '@shared/enums';
+import { resetBall, setWinner } from '@shared/gameLogic';
+import { requestJoinTournament} from './Tournament/tournamentContent.js';
+import { showTournamentScreen } from './Tournament/tournamentDisplay.js';
 
 startSocketListeners();
 
@@ -47,7 +39,7 @@ setInterval(async () => {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
 		if (UI.user1.ID !== -1)
 			await refreshToken(1);
-		if (UI.user2.ID !== 1)	// if user2 is not guest
+		if (UI.user2.ID !== 1)
 			await refreshToken(2);
 	}
 }, 5000);
@@ -60,8 +52,7 @@ window.addEventListener('popstate', (event: PopStateEvent) => { controlBackAndFo
 fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 	.then(res => res.ok ? res.json() : Promise.reject())
 	.then(data => {
-		// User is authenticated, go to menu
-		UI.user1.ID = data.userId; // Need to check later in validatePage
+		UI.user1.ID = data.userId;
 		const currentState = sessionStorage.getItem("currentState");
 		console.log('current state script:', currentState);
 		if (data.inTournament && data.inTournament == true)
@@ -72,7 +63,6 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 			navigateTo('Menu');
 	})
 	.catch(() => {
-		// Not authenticated, show login
 		navigateTo('LoginP1');
 });
 
@@ -116,7 +106,7 @@ function gameLoop() {
 		}
 		case state.Playing: {
 			document.getElementById('auth1')?.remove();
-			document.getElementById('auth2')?.remove(); //do we need this here still?
+			document.getElementById('auth2')?.remove();
 			game(Game.match);
 			break ;
 		}
@@ -198,17 +188,10 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Tournament: {
-			if (!document.getElementById('tournamentScreen'))
+				if (!document.getElementById('tournamentScreen'))
 					showTournamentScreen();
-				}
-				//requestUpdateTournament();
-			break ;
-			//  case S.stateUI.Dashboard: {
-			// 	if (!document.getElementById('dashboard')) {
-			// 		getDashboard();
-			// 	}
-			// break;
-			// }
+				break ;
+			}
 			default:
 		}
 	} else {

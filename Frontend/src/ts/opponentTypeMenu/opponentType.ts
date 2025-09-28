@@ -2,7 +2,6 @@ import { changeOpponentType, changeMatchFormat, startGame } from "../Game/initGa
 import { navigateTo } from "../history.js";
 import { UI } from "../gameData.js";
 import { getMenu } from "../Menu/menuContent.js";
-import { game } from "../Game/gameLogic.js";
 
 export function styleSettingTitle(text: string): HTMLDivElement {
 	const title = document.createElement('div');
@@ -13,9 +12,7 @@ export function styleSettingTitle(text: string): HTMLDivElement {
 	title.style.display = 'flex';
 	title.style.justifyContent = 'center';
 	title.style.alignItems = 'center';
-	// title.style.whiteSpace = 'nowrap';
 	title.style.textAlign = 'center';
-
 	return title;
 }
 
@@ -33,7 +30,6 @@ function styleSettingsBttns(text: string, opponent_type: string): HTMLButtonElem
 	button.style.borderRadius = '5px';
 	button.style.justifyContent = 'center';
 	button.style.alignItems = 'center';
-	// button.style.height = '10%';
 
 	button.addEventListener("click", () => {
 		const container = button.parentElement;
@@ -56,7 +52,6 @@ function styleContainerButtons(): HTMLDivElement {
 	buttonContainer.style.width = '85%';
 	buttonContainer.style.alignItems = 'center';
 	buttonContainer.style.justifyContent = 'space-around';
-	// buttonContainer.style.flex = '1';
 	buttonContainer.style.display = 'flex';
 	buttonContainer.style.gap = '0.5rem';
 	buttonContainer.style.height = '10%';
@@ -74,29 +69,12 @@ function stylePlayGameBttn(text: string): HTMLButtonElement {
 	button.style.background = '#363430';
 	button.style.color = 'white';
 	button.style.border = 'none';
-	// button.style.flex = '1';
 	button.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	button.style.fontSize = 'clamp(10px, 2.5vw, 22px)';
 	button.style.borderRadius = '5px';
 	button.style.justifyContent = 'center';
 	button.style.alignItems = 'center';
-	// if (match_type == 'play game') {
-	// button.addEventListener('click', () => startGame());
 	return button;
-	// }
-	// button.addEventListener("click", () => {
-	// 	const container = button.parentElement;
-	// 	if (!container)
-	// 		return;
-	// 	container.querySelectorAll("button").forEach((btn) => {
-	// 		(btn as HTMLButtonElement).style.background = '#363430';
-	// 		(btn as HTMLButtonElement).style.color = 'white';
-	// 	});
-	// 	button.style.background = '#0000003d';
-	// 	button.dataset.active = 'true';
-	// 	changeMatchFormat(match_type);
-	// });
-	// return button;
 }
 
 export function getOpponentMenu() {

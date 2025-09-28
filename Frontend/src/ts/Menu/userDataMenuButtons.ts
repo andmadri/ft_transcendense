@@ -1,10 +1,9 @@
-import { Game, UI } from "../gameData";
+import { UI } from "../gameData";
 import { navigateTo } from "../history";
 import { submitLogout } from "../Auth/logout";
 import { changeAvatar } from "./avatar";
 import { getProfileSettings } from "./profileSettings.js";
 import { customAlert } from '../Alerts/customAlert.js';
-
 
 function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	const twofaDisableBtn = document.createElement('button');
@@ -96,7 +95,7 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 		e.preventDefault();
 		const code = codeInput.value.trim();
 		if (!/^\d{6}$/.test(code)) {
-			customAlert('Please enter a valid 6-digit code.'); //needed customAlert
+			customAlert('Please enter a valid 6-digit code.');
 			return;
 		}
 		try {
@@ -111,16 +110,16 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 				label.textContent = '2FA disabled successfully!';
 				form.remove();
 				if (data.playerNr == 1)
-					UI.user1.Twofa = false; //changed this line with the new main
+					UI.user1.Twofa = false;
 				else
-					UI.user2.Twofa = false; //changed this line with the new main
+					UI.user2.Twofa = false;
 				setTimeout(() => overlay.remove(), 1000);
 				document.getElementById('menu')?.remove();
 			} else {
-				customAlert('Failed to disable 2FA.'); //needed customAlert
+				customAlert('Failed to disable 2FA.');
 			}
 		} catch (err) {
-			customAlert('Error disabling 2FA.'); ////needed customAlert
+			customAlert('Error disabling 2FA.');
 		}
 	});
 
@@ -201,7 +200,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 		});
 		const data = await res.json();
 		if (data.success === false) {
-			customAlert(data.message || 'Failed to generate QR code.'); //needed customAlert
+			customAlert(data.message || 'Failed to generate QR code.');
 			return;
 		} else if (data.qrCodeDataURL) {
 			qrImg.src = data.qrCodeDataURL;
@@ -257,7 +256,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 		e.preventDefault();
 		const code = codeInput.value.trim();
 		if (!/^\d{6}$/.test(code)) {
-			customAlert('Please enter a valid 6-digit code.'); //needed customAlert
+			customAlert('Please enter a valid 6-digit code.');
 			return;
 		}
 		try {
@@ -276,12 +275,11 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 					overlay.remove();
 				}, 1000); // 1000 ms = 1 second
 				document.getElementById('menu')?.remove();
-				// Optionally update UI or state here
 			} else {
-				customAlert(data.message || '2FA verification failed.'); //needed customAlert
+				customAlert(data.message || '2FA verification failed.');
 			}
 		} catch (err) {
-			customAlert('Error verifying 2FA.'); //needed customAlert
+			customAlert('Error verifying 2FA.');
 		}
 	});
 

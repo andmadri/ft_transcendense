@@ -6,8 +6,6 @@ export function updateBall(match, msg, socket) {
 	match.ball.angle = msg.ballAngle;
 	match.ball.x = msg.ballX;
 	match.ball.y = msg.ballY;
-
-	// NOW the msg is just send back instead of updated (online if online)
 	socket.emit('message', msg);
 }
 
@@ -22,7 +20,5 @@ export function updatePadel(match, msg, socket) {
 	msg.player2Paddle = match.player2.paddle;
 	msg.player2Up = match.player2.input.pressUP;
 	msg.player2Down = match.player2.input.pressDOWN;
-	
-	// NOW the msg is just send back instead of updated (online if online)
 	socket.emit('message', msg);
 }

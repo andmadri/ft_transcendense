@@ -1,5 +1,4 @@
-import { get } from "http";
-import { Game, UI } from "../gameData.js";
+import { Game } from "../gameData.js";
 import { responseChallenge } from "../Matchmaking/challengeFriend.js";
 
 let friendRequestsDiv: HTMLDivElement | null = null;

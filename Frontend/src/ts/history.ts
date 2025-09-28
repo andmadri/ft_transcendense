@@ -1,5 +1,5 @@
-import * as S from './structs.js'
-import { state } from '@shared/enums'
+import * as S from './structs.js';
+import { state } from '@shared/enums';
 import { Game, UI, newMatch } from './gameData.js';
 import { cancelOnlineMatch } from './Matchmaking/onlineMatch.js';
 import { getGameOver } from './Game/endGame.js';
@@ -123,7 +123,6 @@ export function doRenderPage(newState: string, query?: string) {
 			let userId = null;
 			if (query)
 				userId = getIdFromHash(query, "userId");
-			// Add a check that the number is in range of userId
 			if (userId != null) {
 				requestAnimationFrame(() => getDashboard(userId, 1));
 			} else {
@@ -300,7 +299,6 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	else
 		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
 
-	// Always go back to menu and stop game
 	if (currentState === 'Game' && validState !== 'Game') {
 		stopCurrentGame();
 		navigateTo('Menu', false);
@@ -322,6 +320,6 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	if (validState) {
 		renderPage(validState, query, false);
 	} else {
-		renderPage('Menu', '', false); // fallback
+		renderPage('Menu', '', false);
 	}
 }

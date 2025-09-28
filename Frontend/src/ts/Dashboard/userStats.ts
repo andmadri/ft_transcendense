@@ -1,4 +1,3 @@
-
 function formatDurationSecs(sec: unknown): string {
 	const n = Math.round(Number(sec));
 	if (!Number.isFinite(n)) {
@@ -111,11 +110,11 @@ export function renderUserStatsCard(stats: any, infoCardsContainer: HTMLElement)
 	const winBar = document.createElement('div');
 	winBar.style.height = '100%';
 	winBar.style.float = 'left';
-	winBar.style.background = '#4caf50'; // green
+	winBar.style.background = '#4caf50';
 	const lossBar = document.createElement('div');
 	lossBar.style.height = '100%';
 	lossBar.style.float = 'left';
-	lossBar.style.background = '#f44336'; // red
+	lossBar.style.background = '#f44336';
 
 	const total = stats.wins + stats.losses;
 	const winPct = total > 0 ? (stats.wins / total) * 100 : 0;

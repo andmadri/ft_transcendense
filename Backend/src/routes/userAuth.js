@@ -165,7 +165,6 @@ export default async function userAuthRoutes(fastify) {
 		const playerNr = request.body.playerNr;
 		console.log(`Logging out player ${playerNr}`);
 		const cookies = request.cookies;
-		// console.log('Cookies:', cookies);
 		if (!cookies) {
 			reply.status(401).send({ error: 'Unauthorized: No cookies found' });
 			return;

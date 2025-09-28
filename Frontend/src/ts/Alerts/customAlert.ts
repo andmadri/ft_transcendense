@@ -1,7 +1,5 @@
-// customAlert.ts
-
 export function customAlert(message: string, duration: number = 3000) {
-	// Create container if it doesn't exist
+	// Create container
 	let container = document.getElementById("custom-customAlert-container");
 	if (!container) {
 		container = document.createElement("div");
@@ -40,7 +38,6 @@ export function customAlert(message: string, duration: number = 3000) {
 		alertBox.style.opacity = "0";
 		alertBox.addEventListener("transitionend", () => {
 			alertBox.remove();
-			// remove container if empty
 			if (container && container.children.length === 0) {
 				container.remove();
 			}

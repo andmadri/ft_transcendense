@@ -1,7 +1,5 @@
-import { log } from "../logging.js";
-import { Game, UI } from "../gameData.js";
+import { UI } from "../gameData.js";
 import { customAlert } from '../Alerts/customAlert.js';
-
 
 export async function changeAvatar(file: File, playerNr: number) {
 	console.log("File: " + file.name + " " + file.size);
@@ -24,7 +22,7 @@ export async function changeAvatar(file: File, playerNr: number) {
 		const user = playerNr == 1 ? UI.user1.ID : UI.user2.ID;
 		avatar.src = `/api/avatar/${user}?ts=${Date.now()}`
 	} else {
-		customAlert("Upload failed: " + response.statusText); //needed customAlert
+		customAlert("Upload failed: " + response.statusText);
 		console.error('UPLOAD_ERROR', 'Error with upload avatar', 'changeAvatar'); 
 	}
 }

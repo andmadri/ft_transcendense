@@ -1,16 +1,14 @@
-import { UI, Game } from "../gameData.js"
-import { OT, state } from '@shared/enums'
-import { matchInfo, gameState } from '@shared/types'
-import { updatePaddlePos, updateGameState } from '@shared/gameLogic'
-import { aiAlgorithm } from './aiLogic.js'
-import { renderGameInterpolated } from "./renderSnapshots.js"
+import { UI, Game } from "../gameData.js";
+import { OT, state } from '@shared/enums';
+import { matchInfo, gameState } from '@shared/types';
+import { updatePaddlePos, updateGameState } from '@shared/gameLogic';
+import { aiAlgorithm } from './aiLogic.js';
+import { renderGameInterpolated } from "./renderSnapshots.js";
 
 export function updateDOMElements(match : matchInfo) {
 	const gameState = match.gameState;
 	const ballRadius = gameState.ball.size.height / 2;
 	const paddleHalfHeight = gameState.paddle1.size.height / 2;
-
-	//divElements
 	const paddle1Div = document.getElementById('lPlayer');
 	const paddle2Div = document.getElementById('rPlayer');
 	const ballDiv = document.getElementById('ball');

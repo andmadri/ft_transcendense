@@ -1,6 +1,5 @@
-import * as S from '../structs.js'
-import { Game } from "../gameData.js"
-import { matchInfo } from '@shared/types'
+import * as S from '../structs.js';
+import { matchInfo } from '@shared/types';
 
 export const AI: S.AIInfo = {
 	prediction : { 
@@ -69,7 +68,6 @@ function	predictBall(match : matchInfo) {
 
 function	predictAction(match : matchInfo) {
 	//calculate dx and dy
-
 	const { ball, paddle2  } = match.gameState;
 	if (ball.velocity.vx <= 0) {
 		followBall(match);
@@ -114,5 +112,4 @@ export function aiAlgorithm(match : matchInfo){
 	else {
 		paddle2.velocity.vy = 0;
 	}
-
 }

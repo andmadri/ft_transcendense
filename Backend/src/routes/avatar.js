@@ -26,13 +26,11 @@ export default async function avatarRoutes(fastify) {
 			const ext = path.extname(data.filename) || '.png';
 
 			const uploadDir = path.join(process.cwd(), 'uploads', 'avatars', String(request.user.userId));
-			// console.log('Upload directory:', uploadDir);
 			if (fs.existsSync(uploadDir))
 				fs.rmSync(uploadDir, { recursive: true, force: true });
 			fs.mkdirSync(uploadDir, { recursive: true });
 
 			const filePath = path.join(uploadDir, `avatar${ext}`);
-			// console.log('File path:', filePath);
 			const writeStream = fs.createWriteStream(filePath);
 			data.file.pipe(writeStream);
 

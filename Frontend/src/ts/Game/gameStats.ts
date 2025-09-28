@@ -1,5 +1,5 @@
 import { navigateTo } from '../history.js';
-import { Game } from '../gameData.js'
+import { Game } from '../gameData.js';
 
 export function askForGamestats(matchID: number) {
 	Game.socket.emit('message', {

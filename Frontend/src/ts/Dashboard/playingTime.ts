@@ -1,5 +1,3 @@
-
-
 export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer: HTMLElement)
 {
 	const card = document.createElement('div');
@@ -27,7 +25,6 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	title.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
 	card.appendChild(title);
 
-	// ===== Block where the donut will be placed ============================
 	const stage = document.createElement('div');
 	stage.id = "stage";
 	stage.style.width = '100%';
@@ -38,7 +35,6 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	stage.style.overflow = 'hidden';
 	card.appendChild(stage);
 
-	// ===== Wrapper for the donut, keeps donut centered ============================
 	const wrapper = document.createElement('div');
 	wrapper.id = "wrapper";
 	wrapper.style.width = '100%';
@@ -49,14 +45,14 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	wrapper.style.overflow = 'hidden';
 	stage.appendChild(wrapper);
 
-	// ===== Square, the pie chart itself ============================
+	// Square (pie chart)
 	const square = document.createElement('div');
 	square.id = 'donutSquare';
 	square.style.position = 'relative';
 	square.style.boxSizing = 'border-box';
 	square.style.borderRadius = '50%';
-	square.style.inlineSize = 'var(--size, 0px)'; // width from ResizeObserver
-	square.style.blockSize = 'var(--size, 0px)'; // width from ResizeObserver
+	square.style.inlineSize = 'var(--size, 0px)';
+	square.style.blockSize = 'var(--size, 0px)';
 	wrapper.appendChild(square);
 
 	// Calculate the data for the pie chart
@@ -77,14 +73,13 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	const stop1 = gamePct;
 	const stop2 = gamePct + lobbyPct;
 
-	// Game -> Lobby -> Menu, start at 12 o’clock
 	square.style.background = `conic-gradient(
 		${gameColor} 0% ${stop1}%,
 		${lobbyColor} ${stop1}% ${stop2}%,
 		${menuColor} ${stop2}% 100%
 	)`;
 
-	// ===== Donut hole =========================================
+	// Donut hole
 	const hole = document.createElement('div');
 	hole.id = 'donutHole';
 	hole.style.position = 'relative';
@@ -104,21 +99,19 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	hole.style.pointerEvents = 'none';
 	square.appendChild(hole);
 
-	// ===== Wrapper for text in the middle of the donut =========================================
+	// text in the middle of the donut
 	const labelWrap = document.createElement('div');
 	labelWrap.id = 'labelWrap';
 	labelWrap.style.color = '#ffffff';
 	labelWrap.style.fontFamily = 'RobotoCondensed, sans-serif';
 	labelWrap.style.lineHeight = '1.1';
 
-	// ===== "Total" text in the middle of the donut =========================================
 	const smallTotal = document.createElement('div');
 	smallTotal.id = 'smallTotal';
 	smallTotal.textContent = 'Total';
 	smallTotal.style.fontSize = '10px';
 	smallTotal.style.opacity = '0.8';
 
-	// ===== "'x'm" text in the middle of the donut =========================================
 	const bigGameTime = document.createElement('div');
 	bigGameTime.id = 'bigGameTime';
 	bigGameTime.textContent = `${Math.round(Number(user_playing_time.login_secs) / 60)}m`;
@@ -130,7 +123,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	hole.appendChild(labelWrap);
 	square.appendChild(hole);
 
-	// ===== Legend ===============================================
+	// Legend
 	const slices = [
 		{ name: 'Game',  color: gameColor, pct: gamePct  },
 		{ name: 'Lobby', color: lobbyColor, pct: lobbyPct },
@@ -144,7 +137,6 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	legend.style.alignItems = 'center';
 	legend.style.gap = '0.5rem';
 	legend.style.flexWrap = 'wrap';
-	// legend.style.padding = '0px 0px 8px';
 	legend.style.color = 'white';
 	legend.style.fontFamily = 'RobotoCondensed-ui, sans-serif';
 	legend.style.fontSize = 'clamp(8px, 1vw, 12px)';
@@ -173,8 +165,7 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 
 	card.appendChild(legend);
 
-	// ===== Keep the donut perfectly inside the stage =========================
-	const MARGIN = 8; // px gap from the stage edges
+	const MARGIN = 8;
 	function layoutSquare() {
 		const r = stage.getBoundingClientRect();
 		const size = Math.max(0, Math.min(r.width, r.height) - MARGIN * 2);
@@ -184,6 +175,5 @@ export function renderPlayingTimeCard(user_playing_time: any, infoCardsContainer
 	ro.observe(stage);
 	layoutSquare();
 
-	// ===== Mount it in the dashboard =========================
 	infoCardsContainer.appendChild(card);
 }

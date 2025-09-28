@@ -29,7 +29,7 @@ export async function initFastify() {
 	
 	// Register Multipart for handling file uploads
 	await fastify.register(fastifyMultipart, {
-		limits: { fileSize: 5 * 1024 * 1024, } // 5MB file size limit
+		limits: { fileSize: 5 * 1024 * 1024, }
 	});
 	
 	// Register the auth route plugins for HTTPS API Auth endpoints:

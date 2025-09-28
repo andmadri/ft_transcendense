@@ -1,24 +1,18 @@
-// Tells how the code has to compilerOptions
 {
   "compilerOptions": {
-    "target": "ES2019", //"ES6",
-    "outDir": "./build/js",
-    "rootDir": "./src",
-    "strict": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types", "./src/ts/types"],
-    "lib": ["ES2019", "DOM", "DOM.Iterable"], // maybe not needed //"ES2019", 
-    "module": "ES2020",
-	"baseUrl":".",
-	"paths": {
-		"@shared/*":["src/Shared/*"]
-	}
-    // "typeRoots": ["./node_modules/@types"], not needed I think
-    // "module": "commonjs",
-    // "noImplicitAny": "any",
-    // "strictNullChecks": false,
-
+      "target": "ES2019",
+      "outDir": "./build/js",
+      "rootDir": "./src",
+      "strict": true,
+      "skipLibCheck": true,
+      "moduleResolution": "node",
+      "typeRoots": ["./node_modules/@types", "./src/ts/types"],
+      "lib": ["ES2019", "DOM", "DOM.Iterable"],
+      "module": "ES2020",
+    "baseUrl":".",
+    "paths": {
+      "@shared/*":["src/Shared/*"]
+    }
   },
-  "include": ["src/**/*", "src/Shared/**/*"] // everything in src folder
+  "include": ["src/**/*", "src/Shared/**/*"]
 }

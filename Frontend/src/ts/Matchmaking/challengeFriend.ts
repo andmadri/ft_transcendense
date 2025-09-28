@@ -1,11 +1,8 @@
-import * as S from '../structs.js'
-import { Game, UI } from "../gameData.js"
-import { log } from "../logging.js";
+import * as S from '../structs.js';
+import { Game, UI } from "../gameData.js";
 import { navigateTo } from '../history.js';
 import { customAlert } from '../Alerts/customAlert.js';
 
-
-// STEP 1: after push button invite friend..
 export function inviteFriendForGame(responder: string) {
 	Game.socket.emit('message', {
 		action: 'matchmaking',
@@ -15,7 +12,6 @@ export function inviteFriendForGame(responder: string) {
 	});
 }
 
-// STEP: 4: send back response to server
 export function responseChallenge(answer: boolean, req: any) {
 	if (answer == true) {
 		navigateTo('Pending');
@@ -32,12 +28,12 @@ export function responseChallenge(answer: boolean, req: any) {
 }
 
 function challengeDeclined() {
-	customAlert('Your invitation is denied'); //needed customAlert
+	customAlert('Your invitation is denied');
 	navigateTo('Menu', false);
 }
 
 function msgMatchIsRemoved() {
-	customAlert('This challenge is removed'); //needed customAlert
+	customAlert('This challenge is removed');
 	navigateTo('Menu', false);
 }
 

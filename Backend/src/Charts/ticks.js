@@ -20,10 +20,7 @@ export function ticksStep(domainMin, domainMax, count = 5) {
 	const center = step / 2;
 	const out = [];
 	for (let i = 0; i < count; i++) {
-		if (i === 0) {
-			// out.push(domainMin + i * step);
-			;
-		} else {
+		if (i != 0) {
 			out.push(domainMin - center + i * step);
 		}
 	}

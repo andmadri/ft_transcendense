@@ -1,7 +1,6 @@
-import { log } from '../logging.js'
-import { UI, Game } from "../gameData.js"
-import * as S from '../structs.js'
-import { navigateTo } from '../history.js'
+import { UI, Game } from "../gameData.js";
+import * as S from '../structs.js';
+import { navigateTo } from '../history.js';
 
 export async function submitLogout(e: Event | null, playerNr: number) {
 	console.log(`Submitting logout for playerNr ${playerNr}`);
@@ -9,7 +8,7 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 		e.preventDefault();
 
 	const payload = { playerNr };
-	if (playerNr == 1 && UI.user2.ID != 1) {  // Ensure player 2 is logged out too
+	if (playerNr == 1 && UI.user2.ID != 1) {
 		console.log(`Player 2 is logged in, logging out player 2 as well.`);
 		submitLogout(null, 2);
 	}
@@ -27,7 +26,6 @@ export async function submitLogout(e: Event | null, playerNr: number) {
 			document.getElementById('menu')?.remove();
 			Game.socket.disconnect();
 			Game.socket.connect();
-			// Clear user data
 			if (playerNr == 1) {
 				UI.user1.ID = -1;
 				UI.user1.name = "";

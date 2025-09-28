@@ -18,8 +18,6 @@ export function parseAuthTokenFromCookies(cookieHeader) {
 			tokens.jwtAuthToken2 = value;
 		}
 	}
-
-	// Return null if neither token is found
 	return Object.keys(tokens).length > 0 ? tokens : null;
 }
 
@@ -50,7 +48,7 @@ export async function verifyAuthCookie(request, reply) {
 	}
 	try {
 		const decoded = await request.server.jwt.verify(unsigned.value);
-		request.user = decoded; // Attach user info to request if needed
+		request.user = decoded;
 	} catch (err) {
 		reply.code(401).send({ error: 'Unauthorized: Invalid token' });
 	}
@@ -68,7 +66,6 @@ export async function verifyPendingTwofaCookie(request, reply) {
 	const userId = request.body.userId;
 	const playerNr = request.body.playerNr;
 	console.log('Verifying pending 2FA token for userId:', userId, 'playerNr:', playerNr);
-	// console.log('Cookies:', cookies);
 	const token = cookies['pendingTwofaToken' + playerNr];
 	if (!token) {
 		reply.code(401).send({ error: 'Unauthorized: No token' });
@@ -85,7 +82,7 @@ export async function verifyPendingTwofaCookie(request, reply) {
 			reply.code(401).send({ error: 'Unauthorized: Invalid token for user' });
 			return;
 		}
-		request.user = decoded; // Attach user info to request if needed
+		request.user = decoded;
 	} catch (err) {
 		reply.code(401).send({ error: 'Unauthorized: Invalid token' });
 	}

@@ -1,10 +1,8 @@
-import { Game, UI } from '../gameData.js'
-import { log } from '../logging.js';
+import { Game, UI } from '../gameData.js';
 import { showFriendAndChallengeRequests } from './friendRequests.js';
-import { styleRow, styleListBtns } from './menuContent.js'
+import { styleRow, styleListBtns } from './menuContent.js';
 import { navigateTo } from '../history.js';
-import { state } from '@shared/enums'
-import * as S from '../structs.js' 
+import * as S from '../structs.js';
 
 function insertFriends(friends: any) {
 	const html_list = document.getElementById('friends_list') as HTMLUListElement;

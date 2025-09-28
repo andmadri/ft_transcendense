@@ -1,15 +1,5 @@
-import { UI, Game } from "../gameData.js"
-import * as S from '../structs.js'
-// import { getFriendsList } from './friends.js';
-// import { getOnlineList } from './online.js';
-// import { getStatsList } from './stats.js';
-// import { getHighscores } from './highscore.js'
-// import { getSettingsPage  } from '../SettingMenu/settings.js';
-import { submitLogout } from '../Auth/logout.js';
-import { changeAvatar } from './avatar.js';
-import { log } from '../logging.js';
-import { navigateTo } from "../history.js"; //USE THIS!!!
-import { getDashboard } from "../Dashboard/dashboardContents.js";
+import { UI, Game } from "../gameData.js";
+import { navigateTo } from "../history.js";
 import { requestJoinTournament } from "../Tournament/tournamentContent.js";
 
 export function styleMainBtns(button: HTMLButtonElement, text: string) {

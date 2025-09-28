@@ -26,7 +26,6 @@ function styleTabButton(button: HTMLButtonElement) {
 	button.style.textAlign = 'center';
 	button.style.fontFamily = '"Horizon", sans-serif';
 	button.style.fontSize = 'clamp(12px, 1.2vw, 16px)';
-	// button.style.cursor = 'pointer';
 	button.style.padding = '0.5rem 1rem'; 
 	button.style.borderRadius = '10px 10px 0 0';
 	button.style.border = 'none';
@@ -46,7 +45,6 @@ function setupBlockStyling(user1_block: HTMLElement, user2_block: HTMLElement) {
 	user1_block.style.alignItems = 'center';
 	user1_block.style.padding = '1rem';
 	user1_block.style.gap = '1rem';
-	// user1_block.style.borderRadius = '10px';
 	user1_block.style.flex = '1 1 50%';
 	user1_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 
@@ -58,7 +56,6 @@ function setupBlockStyling(user1_block: HTMLElement, user2_block: HTMLElement) {
 	user2_block.style.alignItems = 'center';
 	user2_block.style.padding = '1rem';
 	user2_block.style.gap = '1rem';
-	// user2_block.style.borderRadius = '10px';
 	user2_block.style.flex = '1 1 50%';
 	user2_block.style.boxShadow = '4.8px 9.6px 9.6px hsl(0deg 0% 0% / 0.35)';
 	user2_block.style.borderRadius = '0px 10px 10px 10px';
@@ -110,34 +107,6 @@ function createUserPicture(user_info: any, playerNr: number): HTMLImageElement {
 	return userPic;
 }
 
-// function createUserInfoSection(user_info: any, stats: any): HTMLDivElement {
-// 	const userInfoContainer = document.createElement('div');
-// 	userInfoContainer.style.display = 'flex';
-// 	userInfoContainer.style.flexDirection = 'column';
-// 	userInfoContainer.style.gap = '0.7rem';
-// 	userInfoContainer.style.height = '30%';
-// 	userInfoContainer.style.padding = '1rem';
-
-// 	const userName = document.createElement('div');
-// 	userName.textContent = user_info.name;
-// 	userName.style.fontFamily = '"Horizon", monospace';
-// 	userName.style.webkitTextStroke = '0.1rem #ffffff';
-// 	userName.style.color = 'transparent';
-// 	userName.style.fontSize = 'clamp(18px, 2.5vw, 26px)';
-// 	userName.style.whiteSpace = 'nowrap';
-// 	userInfoContainer.appendChild(userName);
-
-// 	const userStats = document.createElement('div');
-// 	userStats.textContent = `Games: ${stats.total_matches} W: ${stats.wins} L: ${stats.losses}`;
-// 	userStats.style.fontFamily = '"RobotoCondensed", monospace';
-// 	userStats.style.color = 'white';
-// 	userStats.style.fontSize = 'clamp(15px, 1.5vw, 20px)';
-// 	userStats.style.whiteSpace = 'nowrap';
-// 	userInfoContainer.appendChild(userStats);
-
-// 	return userInfoContainer;
-// }
-
 function createDashboardButton(userID: number): HTMLButtonElement {
 	const dashboardBtn = document.createElement('button');
 	dashboardBtn.id = 'dashboardBtn';
@@ -188,7 +157,7 @@ function createNotificationButtons(): HTMLButtonElement {
 	closeBtnItem.style.padding = '4px 8px';
 
 	const closeBtn = document.createElement('button');
-	closeBtn.textContent = 'Close'; // Or "Close"
+	closeBtn.textContent = 'Close';
 	closeBtn.style.fontFamily = '"RobotoCondensed", sans-serif';
 	closeBtn.style.background = 'transparent';
 	closeBtn.style.border = 'none';
@@ -331,8 +300,8 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 	const user1Container = createUserContainer(user1_info, user1_stats, 1);
 	const user2Container = createUserContainer(user2_info, user2_stats, 2);
 
-	const buttonsContainer1 = createButtonsContainer(1); // Player 1 doesn't get login button
-	const buttonsContainer2 = createButtonsContainer(2);  // Player 2 gets login button
+	const buttonsContainer1 = createButtonsContainer(1);
+	const buttonsContainer2 = createButtonsContainer(2);
 
 	user1_block.parentElement?.insertBefore(tabContainer1, user1_block);
 	user1_block.appendChild(user1Container);
@@ -344,7 +313,6 @@ function renderUserCardMenu(user1_info: any, user1_stats: any, user2_info: any, 
 }
 
 function updateUiUsers(data: any) {
-	// console.log('Updating UI user data:', data);
 	if (data.user_info1 && data.user_info1.id > 2) {
 		UI.user1.ID = data.user_info1.id;
 		UI.user1.name = data.user_info1.name;

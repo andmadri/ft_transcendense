@@ -1,12 +1,9 @@
 import { requestLeaveTournament, requestUpdateTournament } from './tournamentContent.js';
 import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
 import { UI } from '../gameData.js';
-import * as S from '../structs.js'
 import { createBackgroundText } from '../Menu/menuContent.js';
-import { pressButton } from '../windowEvents.js';
 import { navigateTo } from '../history.js';
 import { styleSettingTitle } from '../opponentTypeMenu/opponentType.js';
-import { log } from '../logging.js';
 
 function createButton():HTMLButtonElement {
 	const readyBtn = document.createElement('button');
@@ -37,12 +34,7 @@ function createButton():HTMLButtonElement {
 	return readyBtn;
 }
 
-function isUserInMatch(match: any) {
-	return match && (UI.user1.ID === match?.player1 || UI.user1.ID === match?.player2);
-}
-
 function updateButton(player: any, match:any, box: HTMLElement) {
-	// console.log(`${match}`);
 	const parent = box.parentElement;
 	if (!parent) {
 		return;
@@ -69,7 +61,6 @@ function updateBoxBorder(matches:any, players:any) {
 	let box2: HTMLElement | null;
 	// const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box', 'loser1Box', 'loser2Box', 'winner1Box', 'winner2Box'];
 	matches.forEach((match: any) => {
-		// console.log('Match:', match, 'match.matchNumber:', match.matchNumber);
 		if (match && (match.matchNumber === 1 || match.matchNumber === 2)) {
 			box1 = document.getElementById('player' + (match.matchNumber * 2 - 1) + 'Box');
 			box2 = document.getElementById('player' + (match.matchNumber * 2) + 'Box');
@@ -80,7 +71,6 @@ function updateBoxBorder(matches:any, players:any) {
 			box1 = document.getElementById('winner1Box');
 			box2 = document.getElementById('winner2Box');
 		}
-		// console.log(`box1: ${box1?.id} - box2: ${box2?.id}`, box1, box2);
 		if (match && match.winnerID) {
 			if (box1 && box2) {
 				const winner1 = players.find((p: any) => p.id === match.winnerID);

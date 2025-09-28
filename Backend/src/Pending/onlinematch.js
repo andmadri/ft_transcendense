@@ -131,7 +131,6 @@ export async function startOnlineMatch(db, socket1, socket2, userID1, userID2, i
 		action: 'initOnlineGame',
 		matchID: matchID,
 		match: match
-		// more info about the game
 	});
 
 	//set interval for online gamelogic
@@ -153,7 +152,6 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			socket.emit('message', {
 				action: 'initOnlineGame',
 				match: null
-				// more info about the game
 			});
 			return ;
 		}

@@ -1,6 +1,6 @@
-import * as S from '../structs.js'
-import { Game, UI } from "../gameData.js"
-import { OT, state } from '@shared/enums'
+import * as S from '../structs.js';
+import { Game, UI } from "../gameData.js";
+import { OT, state } from '@shared/enums';
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 import { reconcilePaddle } from './gameLogic.js';
 
@@ -42,15 +42,6 @@ export function sendKeyPressUpdate(key : string) {
 		matchID: Game.match.matchID
 	});
 }
-
-// export function sendGameState() {
-// 	Game.socket.emit('message',{
-// 		action: 'game',
-// 		subaction: 'gameStateUpdate',
-// 		matchID: Game.match.matchID,
-// 		gameState: Game.match.gameState
-// 	});
-// }
 
 export function sendPadelHit() {
 	Game.socket.emit('message',{

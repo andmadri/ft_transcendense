@@ -1,4 +1,4 @@
-import { Game } from "../gameData.js"
+import { Game } from "../gameData.js";
 
 export function cancelOnlineMatch() {
 	Game.socket.emit('message',{ 
@@ -8,7 +8,6 @@ export function cancelOnlineMatch() {
 	});
 }
 
-// send when player wants to play an online game
 export function searchMatch(userID: number) {
 	
 	Game.socket.emit('message',{

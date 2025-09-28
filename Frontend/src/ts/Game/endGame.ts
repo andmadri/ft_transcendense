@@ -1,6 +1,6 @@
 import { Game } from "../gameData.js"
 import { navigateTo } from "../history.js";
-import { OT, MF } from '@shared/enums'
+import { OT, MF } from '@shared/enums';
 
 function setGameOverContext(matchId: number, resultText: string, matchTypeText: string) {
 	sessionStorage.setItem('lastMatchId', String(matchId));
@@ -22,7 +22,6 @@ function getWinnerResult() {
 	console.log(`winner ID ${Game.match.winnerID}`);
 	if (Game.match.winnerID == -1) {
 		winnerName = Game.match.player2.name;
-		// return "Match interrupted...";
 	}
 	else if (Game.match.winnerID) {
 		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
@@ -138,7 +137,6 @@ export function saveGame() {
 		Game.match.pauseTimeOutID = null;
 	}
 
-	// Save the result to show in the GameOver function
 	const result = getWinnerResult();
 	let matchType = 'single';
 	if (Game.match.matchFormat === MF.Tournament) {

@@ -1,4 +1,4 @@
-import { Game, UI } from "../gameData.js";
+import { Game } from "../gameData.js";
 import { navigateTo } from "../history.js";
 import { getGameField } from "../Game/gameContent.js";
 import { state } from '@shared/enums';
@@ -16,8 +16,7 @@ export function tournamentGameStart(data: any) {
 	Game.match.state = state.Init;
 
 
-	customAlert('Your tournament match is starting!'); //needed customAlert
-	// Transition to game UI
+	customAlert('Your tournament match is starting!');
 	getGameField();
 	navigateTo('Game');
 }

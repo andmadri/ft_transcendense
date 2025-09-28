@@ -1,7 +1,7 @@
 import { cancelOnlineMatch } from '../Matchmaking/onlineMatch.js';
 import { navigateTo } from "../history.js";
-import { Game }	from '../gameData.js'
-import * as S from '../structs.js'
+import { Game }	from '../gameData.js';
+import * as S from '../structs.js';
 
 export function getPending() {
 	const Pending = document.createElement('div');

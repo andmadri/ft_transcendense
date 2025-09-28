@@ -1,5 +1,4 @@
-import { Game, UI } from '../gameData'
-import * as S from '../structs.js'
+import { Game } from '../gameData';
 
 const pendingUser = new Map<number, (ok: boolean) => void>();
 const pendingMatch = new Map<number, (ok: boolean) => void>();

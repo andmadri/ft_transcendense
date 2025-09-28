@@ -1,12 +1,9 @@
-import * as S from '../structs.js'
-import { UI, Game } from '../gameData.js'
-import { log } from '../logging.js'
-import { authenticationMode, changeAuthMode } from './authContent.js'
+import * as S from '../structs.js';
+import { UI, Game } from '../gameData.js';
+import { authenticationMode, changeAuthMode } from './authContent.js';
 import { navigateTo } from '../history.js';
 import { getLoadingPage } from '../Loading/loadContent.js';
 import { customAlert } from '../Alerts/customAlert.js';
-
-
 
 export async function submitAuthForm(e: Event, player: number) {
 	e.preventDefault();
@@ -20,7 +17,7 @@ export async function submitAuthForm(e: Event, player: number) {
 	const endpoint = isSignup ? '/api/signup' : '/api/login';
 
 	if (!email || !password || (isSignup && !username)) {
-		customAlert("Please fill in all required fields"); //needed customAlert
+		customAlert("Please fill in all required fields");
 		return;
 	}
 
@@ -54,7 +51,7 @@ export async function submitAuthForm(e: Event, player: number) {
 		} else {
 			console.log(`Authentication failed for player ${playerNr}: ${response.statusText}`);
 			const error = await response.json();
-			customAlert(error.message || "Authentication failed");  //needed customAlert
+			customAlert(error.message || "Authentication failed");
 		}
 	} catch (err) {
 		console.error('NETWORK_ERROR', 'Network error during sign up', 'submitAuthForm');
@@ -83,7 +80,6 @@ export function loginSuccessfull(player: number, userId: number, name: string, t
 	Game.socket.disconnect();
 	Game.socket.connect();
 
-	// Wait till connected to the socket server
 	Game.socket.once("connect", () => {
 		console.log("Connection with the server!");
 		navigateTo("Menu");
@@ -177,7 +173,7 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 		e.preventDefault();
 		const code = codeInput.value.trim();
 		if (!/^\d{6}$/.test(code)) {
-			customAlert('Please enter a valid 6-digit code.'); //needed customAlert
+			customAlert('Please enter a valid 6-digit code.');
 			return;
 		}
 		try {
@@ -197,10 +193,10 @@ async function requestTwofaCode(playerNr: number, userId: number) {
 				}, 1000); // 1000 ms = 1 second
 				loginSuccessfull(playerNr, userId, data.name, data.twofa);
 			} else {
-				customAlert(data.message || '2FA verification failed.'); //needed customAlert
+				customAlert(data.message || '2FA verification failed.');
 			}
 		} catch (err) {
-			customAlert('Error verifying 2FA.'); //needed customAlert
+			customAlert('Error verifying 2FA.');
 		}
 	});
 

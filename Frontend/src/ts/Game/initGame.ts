@@ -1,13 +1,10 @@
-import { Game, UI, newMatch } from "../gameData.js"
-import * as S from "../structs.js"
-import { log } from '../logging.js'
-import { OT, state, MF } from '@shared/enums'
+import { Game, UI } from "../gameData.js";
+import * as S from "../structs.js";
+import { OT, state, MF } from '@shared/enums';
 import { randomizeBallAngle } from '@shared/gameLogic';
 import { initAfterResize } from '../windowEvents.js';
 import { navigateTo } from "../history.js";
 import { customAlert } from '../Alerts/customAlert.js';
-
-
 
 export function startGame() {
 	console.log(`function startGame() ${Game.match.mode}`);
@@ -15,12 +12,8 @@ export function startGame() {
 		case MF.SingleGame: {
 			break;
 		}
-		case MF.Tournament: {
-			// create tournament once?
-			break;
-		}
 		default: {
-			customAlert("Please select single game or tournament"); //needed customAlert
+			customAlert("Please select single game or tournament");
 			return;
 		}
 	}
@@ -52,7 +45,7 @@ export function startGame() {
 			break;
 		}
 		default: {
-			customAlert('Please select an opponent'); //needed customAlert
+			customAlert('Please select an opponent');
 			return;
 		}
 	}
@@ -78,7 +71,6 @@ export function changeOpponentType(option: string) {
 }
 
 export function changeMatchFormat(option: string) {
-	// Game.match = newMatch();
 	switch (option) {
 		case 'single game':
 			Game.match.matchFormat = MF.SingleGame;
@@ -96,7 +88,7 @@ export function changeMatchFormat(option: string) {
 
 export function initGameServer() {
 	if (Game.socket.connected) {
-		log("server init")
+		console.log("server init")
 		const initGame = {
 			action: 'init',
 			subaction: 'createMatch',
@@ -127,16 +119,6 @@ export function initGame() {
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
 	}
-	// else {
-	// 	// Send server msg that player is ready with init game
-	// 	const readyToPlay = {
-	// 		action: 'init',
-	// 		subaction: 'start',
-	// 		matchID: Game.match.matchID,
-	// 		userID: UI.user1.ID //user check
-	// 	}
-	// 	Game.socket.emit('message',readyToPlay);
-	// }
 	const fieldDiv = document.getElementById('field');
 	if (fieldDiv) {
 		const resizeObserver = new ResizeObserver(() => {
@@ -144,25 +126,21 @@ export function initGame() {
 		})
 		resizeObserver.observe(fieldDiv);
 	}
-	// updateNamesMenu();
-	// resetScoreMenu();
 }
 
 export function actionInitOnlineGame(data: any) {
 	const match = data.match;
 
 	console.log("actionInitOnlineGame - matchID: " + data.matchID);
-	if (match == null) { // something went wrong
-		customAlert('Could not start a new game'); //needed customAlert
+	if (match == null) {
+		customAlert('Could not start a new game');
 		navigateTo('Menu');
 		return;
 	}
-	//getGameField();
 
 	Game.match = match;
 	console.log(`actionINitOnlineGame() MatchFormat = ${Game.match.matchFormat}`);
-	// Function to set all data sync with match in game...
 
-	navigateTo('Game'); //think we don't need this
+	navigateTo('Game');
 	console.log("Start online game...");
 }

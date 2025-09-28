@@ -15,7 +15,6 @@ export async function stopMatchAfterRefresh(io, userId1) {
 					name = match.player2.name;
 				}
 				if (match.mode !== OT.Online) {
-					// Martijn: Decide who is the winner
 					match.winnerID = match.player2.ID;
 					await saveMatch(match.matchID, match.winnerID);
 				}

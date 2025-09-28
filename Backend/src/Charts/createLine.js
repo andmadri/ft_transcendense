@@ -73,9 +73,9 @@ export function renderLines(series, xScale, yScale, colorOf) {
 			const Y = yScale(cur.y);
 
 			if (cur.t !== prev.t) {
-				d += ` H ${X}`; // flat segment forward in time
+				d += ` H ${X}`;
 			} else {
-				d += ` V ${Y}`; // jump up at the same time
+				d += ` V ${Y}`;
 				dots.push(`<circle cx="${X}" cy="${Y}" r="7" fill="${fill}" />`);
 			}
 		}

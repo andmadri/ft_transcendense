@@ -1,4 +1,4 @@
-import { UI, Game } from "../gameData.js"
+import { UI, Game } from "../gameData.js";
 import { customAlert } from '../Alerts/customAlert.js';
 
 export function actionPlayerInfo(data: any) {
@@ -24,7 +24,7 @@ function updateProfileSettings(msg: any) {
 		}
 	} else {
 		if (msg.msg)
-			customAlert(msg.msg); //needed customAlert
+			customAlert(msg.msg);
 	}
 }
 

@@ -44,7 +44,7 @@ function getChangeDiv(id: string): HTMLDivElement {
 	cnDiv.style.left = '0';
 	cnDiv.style.display = 'flex';
 	cnDiv.style.flexDirection = 'column',
-		cnDiv.style.justifyContent = 'center';
+	cnDiv.style.justifyContent = 'center';
 	cnDiv.style.alignItems = 'center';
 	cnDiv.style.backdropFilter = 'blur(6px)';
 	cnDiv.style.backgroundColor = 'rgb(54, 52, 48);';
@@ -149,7 +149,6 @@ function getSubMitBtn(txt: string, input: HTMLInputElement): HTMLButtonElement{
 				submitBtn.textContent = 'Change';
 			}
 		}
-		
 		Game.socket.emit('message', {
 			action: 'playerInfo',
 			subaction: 'profileSettings',

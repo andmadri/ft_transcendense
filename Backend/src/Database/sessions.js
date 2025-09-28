@@ -29,10 +29,6 @@ export async function addUserSessionToDB(db, session) {
 
 	return new Promise((resolve, reject) => {
 		const sql = `INSERT INTO UserSessions (user_id, state) VALUES (?, ?)`;
-		// const sql = `INSERT INTO UserSessions (user_id, state) SELECT ?, ?
-		// 			WHERE COALESCE((SELECT state FROM UserSessions WHERE user_id = ?
-		// 				ORDER BY id DESC LIMIT 1), '__NONE__') <> ?`;
-		// db.run(sql, [session.user_id, session.state, session.user_id, session.state], function (err) {
 		db.run(sql, [session.user_id, session.state], function (err) {
 			if (err) {
 				sql_error(err, `addUserSessionToDB | user_id=${user.id} state=${session.state}`);

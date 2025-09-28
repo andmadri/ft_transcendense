@@ -1,5 +1,5 @@
-import { submitAuthForm } from './userAuth.js'
-import * as S from '../structs.js'
+import { submitAuthForm } from './userAuth.js';
+import * as S from '../structs.js';
 import { navigateTo } from '../history.js';
 
 export let authenticationMode = 'Sign Up';
@@ -143,7 +143,6 @@ export function getLoginFields(player: number) {
 	body.innerHTML = '';
 	body.appendChild(getAuthField(player, true));
 
-	// addEventListeners for Login form
 	document.getElementById('authForm' + player)?.addEventListener('submit', (e) => submitAuthForm(e, player));
 	document.getElementById('google-login-btn' + player)?.addEventListener('click', (e) => {
 		window.location.href = `https://${S.host}/api/auth/google?state=` + player;

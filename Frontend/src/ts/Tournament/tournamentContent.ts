@@ -1,22 +1,15 @@
-import { Game, UI } from "../gameData.js"
+import { Game, UI } from "../gameData.js";
 import { navigateTo } from "../history.js";
-import { showTournamentScreen, updateNameTagsTournament, showTournamentEndScreen } from './tournamentDisplay.js';
-import { tournamentGameStart } from "./tournamentGameStart.js";
-import { createLog, log } from '../logging.js';
+import { updateNameTagsTournament, showTournamentEndScreen } from './tournamentDisplay.js';
 import { customAlert } from '../Alerts/customAlert.js';
-
 
 export function actionTournament(data: any) {
 	if (data.subaction === 'update') {
 		tournamentUpdate(data);
-		// } else if (data.subaction === 'gameStart') {
-		// 	tournamentGameStart(data);
-		// } else if (data.subaction === 'result') {
-		// 	tournamentResult(data);
 	} else if (data.subaction === 'left') {
 		navigateTo('Menu');
 	} else if (data.subaction === 'joinRejected') {
-		customAlert('Tournament join rejected: ' + (data.reason || 'Unknown reason')); //needed customAlert
+		customAlert('Tournament join rejected: ' + (data.reason || 'Unknown reason'));
 		navigateTo('Menu');
 	} else if (data.subaction === 'error') {
 		tournamentError;
@@ -25,20 +18,13 @@ export function actionTournament(data: any) {
 
 function tournamentUpdate(data: any) {
 	console.log('Tournament update:', data);
-	//document.getElementById('tournamentScreen')?.remove();
 	console.log('Tournament update received: ' + JSON.stringify(data.tournamentState));
 	if (data.tournamentState.state === 'finished')
 		showTournamentEndScreen(data.tournamentState);
-	// updateNameTagsTournament(data.tournamentState);
 	setTimeout(() => {
 		updateNameTagsTournament(data.tournamentState);
 	}, 500);
 }
-
-// function tournamentResult(data: any) {
-// 	tournamentUpdate(data);
-// 	customAlert('Tournament result: ' + JSON.stringify(data));
-// }
 
 function tournamentError(data: any) {
 	console.error('TOURNAMENT_ERROR', data.reason || 'Unknown error', 'tournamentError');
