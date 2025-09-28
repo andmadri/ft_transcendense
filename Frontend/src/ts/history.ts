@@ -6,6 +6,7 @@ import { getGameOver } from './Game/endGame.js';
 import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
+import { resetAI } from './Game/aiLogic.js';
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
@@ -87,6 +88,7 @@ export function doRenderPage(newState: string, query?: string) {
 			break ;
 		case 'OpponentMenu':
 			Game.match = newMatch(); // IDK if this is the best spot for it, but anywhere else causes issues
+			resetAI(Game.match);
 			UI.state = S.stateUI.OpponentMenu;
 			break ;
 		case 'Game':

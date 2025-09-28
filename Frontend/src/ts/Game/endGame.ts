@@ -21,7 +21,8 @@ function getWinnerResult() {
 	let winnerName = null;
 	console.log(`winner ID ${Game.match.winnerID}`);
 	if (Game.match.winnerID == -1) {
-		return "Match interrupted..."
+		winnerName = Game.match.player2.name;
+		// return "Match interrupted...";
 	}
 	else if (Game.match.winnerID) {
 		winnerName = Game.match.winnerID == Game.match.player1.ID ? Game.match.player1.name : Game.match.player2.name;
