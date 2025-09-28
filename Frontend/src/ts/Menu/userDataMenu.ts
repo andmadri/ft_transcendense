@@ -348,14 +348,14 @@ function updateUiUsers(data: any) {
 	if (data.user_info1 && data.user_info1.id > 2) {
 		UI.user1.ID = data.user_info1.id;
 		UI.user1.name = data.user_info1.name;
-		UI.user1.Twofa = data.user_info1.twofa_enabled;
-		UI.user1.Google = data.user_info1.twofa_secret === 'google';
+		UI.user1.Twofa = data.user_info1.twofa_active;
+		UI.user1.Google = data.user_info1.google;
 	}
 	if (data.user_info2 && data.user_info2.id > 2) {
 		UI.user2.ID = data.user_info2.id;
 		UI.user2.name = data.user_info2.name;
-		UI.user2.Twofa = data.user_info2.twofa_enabled;
-		UI.user2.Google = data.user_info2.twofa_secret === 'google';
+		UI.user2.Twofa = data.user_info2.twofa_active;
+		UI.user2.Google = data.user_info2.google;
 	}
 }
 

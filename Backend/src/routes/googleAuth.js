@@ -46,7 +46,16 @@ async function handleGoogleAuth(user) {
 				email: user.email.toLowerCase().trim(),
 				name: user.name.trim().slice(0, 10),
 				password: user.id,
-				avatar_url: user.picture,
+				avatar_url: user.picture
+			});
+			const newUser = await getUserByEmail(db, user.email);
+			if (!newUser) {
+				console.error('USER_CREATION_FAILED', `Failed to create user: ${user.name}`, 'handleGoogleLogin');
+				return null;
+			}
+			await updateUserInDB(db, { 
+				user_id: newUser.id, 
+				twofa_active: 0,
 				twofa_secret: 'google'
 			});
 		}
