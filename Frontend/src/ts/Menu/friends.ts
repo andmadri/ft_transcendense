@@ -28,8 +28,7 @@ function insertFriends(friends: any) {
 				const challengeFriendBtn = document.createElement('button');
 				styleListBtns(challengeFriendBtn, 'url("../../images/battle_friend.png")');
 				challengeFriendBtn.addEventListener("click", () => {
-					UI.state = S.stateUI.Game;
-					Game.match.state = state.Pending;
+					navigateTo('Pending');
 					Game.pendingState = S.pendingState.Friend;
 					Game.socket.emit('message', {
 						action: 'matchmaking',

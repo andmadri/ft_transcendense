@@ -87,7 +87,7 @@ export function doRenderPage(newState: string, query?: string) {
 			UI.state = S.stateUI.Credits;
 			break ;
 		case 'OpponentMenu':
-			Game.match = newMatch(); // IDK if this is the best spot for it, but anywhere else causes issues
+			Game.match = newMatch();
 			resetAI(Game.match);
 			UI.state = S.stateUI.OpponentMenu;
 			break ;
@@ -95,6 +95,8 @@ export function doRenderPage(newState: string, query?: string) {
 			UI.state = S.stateUI.Game;
 			break ;
 		case 'Pending':
+			Game.match = newMatch();
+			UI.state = S.stateUI.Game;
 			Game.match.state = state.Pending;
 			break ;
 		case 'Tournament':
@@ -248,6 +250,10 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
+	if (currentState == 'Pending') {
+		return ('Menu');
+	}
+
 	const allowedPages = ['Menu', 'Game', 'Credits', 'LoginP1', 'LoginP2',
 		'OpponentMenu', 'Dashboard', 'Tournament', 'GameStats', 'GameOver'];
 	for (const page of allowedPages) {
@@ -296,10 +302,21 @@ export async function controlBackAndForward(event: PopStateEvent) {
 
 	// Always go back to menu and stop game
 	if (currentState === 'Game' && validState !== 'Game') {
-		cancelOnlineMatch();
 		stopCurrentGame();
 		navigateTo('Menu', false);
 		return ;
+	}
+
+	if (currentState === 'Pending') {
+		if (Game.pendingState === S.pendingState.Friend) {
+			Game.socket.emit('message', {
+					action: 'matchmaking',
+					subaction: 'cancelChallengeFriend',
+			});
+		}
+		else {
+			cancelOnlineMatch();
+		}
 	}
 
 	if (validState) {
