@@ -1,4 +1,5 @@
 import { Game, UI, newMatch } from "../gameData.js"
+import * as S from "../structs.js"
 import { log } from '../logging.js'
 import { OT, state, MF } from '@shared/enums'
 import { randomizeBallAngle } from '@shared/gameLogic';
@@ -41,8 +42,8 @@ export function startGame() {
 			break;
 		}
 		case OT.Online: {
-			navigateTo('Game');
-			Game.match.state = state.Pending;
+			navigateTo('Pending');
+			Game.pendingState = S.pendingState.Online;
 			console.log("Send online request to backend");
 			Game.socket.emit('message', {
 				action: 'matchmaking',
