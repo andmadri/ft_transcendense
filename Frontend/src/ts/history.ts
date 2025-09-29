@@ -124,7 +124,6 @@ export function doRenderPage(newState: string, query?: string) {
 			let userId = null;
 			if (query)
 				userId = getIdFromHash(query, "userId");
-			// Add a check that the number is in range of userId
 			if (userId != null) {
 				requestAnimationFrame(() => getDashboard(userId, 1));
 			} else {
@@ -163,7 +162,6 @@ export function navigateTo(newState: any, fromHash = false) {
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
-	// console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
 
 	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID > 1) {
 		// Prevent infinite loop when already on LoginP2
@@ -240,18 +238,14 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-<<<<<<< HEAD
-		if (currentState == 'Tournament' && newState == 'Menu') {
+	if (currentState == 'Tournament' && newState == 'Menu') {
 		//only if the tournament has not yet started
 		requestLeaveTournament();
 		return ('Menu');
 	}
 
-=======
 	if (currentState == 'Game' && newState != 'GameOver') {
->>>>>>> origin/main
 		if (Game.match.state != state.End) {
-			console.log('quit match history');
 			quitGame();
 		}
 		return (''); // redirect after save match
