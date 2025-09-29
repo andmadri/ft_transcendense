@@ -1,5 +1,5 @@
-import { OT, state, MF } from '@shared/enums'
-import * as S from './structs.js'
+import { OT, state, MF } from '@shared/enums';
+import * as S from './structs.js';
 
 declare const io: any;
 
@@ -77,6 +77,5 @@ export const Game : S.Game = {
 		secure: true,
 	}),
 	pendingState: S.pendingState.Online,
-	match: newMatch(),
-	colletedSteps: [], //not used i think
+	match: newMatch()
 }

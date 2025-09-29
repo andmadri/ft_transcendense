@@ -54,7 +54,6 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(data => {
 		UI.user1.ID = data.userId;
 		const currentState = sessionStorage.getItem("currentState");
-		console.log('current state script:', currentState);
 		if (data.inTournament && data.inTournament == true)
 			requestJoinTournament();
 		else if (currentState && currentState !== 'LoginP1')

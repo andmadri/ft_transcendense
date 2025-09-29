@@ -3,7 +3,6 @@ import { state } from '@shared/enums';
 import { UI, Game } from '../gameData.js';
 
 const INTERPOLATION_DELAY = 100;
-const MAX_SNAPSHOT_AGE = 2000;
 
 interface Snapshot {
 	ballX: number;

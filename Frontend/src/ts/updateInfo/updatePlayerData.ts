@@ -19,8 +19,9 @@ function updateProfileSettings(msg: any) {
 		if (msg.field == 'name') {
 			UI.user1.name = msg.msg;
 			const playerNameField = document.getElementById('userNameMenu1')
-			if (playerNameField)
+			if (playerNameField) {
 				playerNameField.textContent = msg.msg;
+			}
 		}
 	} else {
 		if (msg.msg)

@@ -16,19 +16,33 @@ async function getUserDataMenu(msg, socket, userId1, userId2)
 		player2.google = false;
 
 		// Remove password fields if present
-		if (player1 && player1.password) delete player1.password;
-		if (player2 && player2.password) delete player2.password;
+		if (player1 && player1.password) {
+			delete player1.password;
+		}
+		if (player2 && player2.password) {
+			delete player2.password;
+		}
 		// Remove email fields if present
-		if (player1 && player1.email) delete player1.email;
-		if (player2 && player2.email) delete player2.email;
+		if (player1 && player1.email) {
+			delete player1.email;
+		}
+		if (player2 && player2.email) {
+			delete player2.email;
+		}
 		// if twofa_secret is 'google' set .google true else false
-		if (player1 && player1.twofa_secret && player1.twofa_secret === 'google')
+		if (player1 && player1.twofa_secret && player1.twofa_secret === 'google') {
 			player1.google = true;
-		if (player2 && player2.twofa_secret && player2.twofa_secret === 'google')
+		}
+		if (player2 && player2.twofa_secret && player2.twofa_secret === 'google') {
 			player2.google = true;
+		}
 		// Remove twofa_secret fields if present
-		if (player1 && player1.twofa_secret) delete player1.twofa_secret;
-		if (player2 && player2.twofa_secret) delete player2.twofa_secret;
+		if (player1 && player1.twofa_secret) {
+			delete player1.twofa_secret;
+		}
+		if (player2 && player2.twofa_secret) {
+			delete player2.twofa_secret;
+		}
 
 		const stats1 = await getUserMatchStatsDB(db, userId1);
 		const stats2 = await getUserMatchStatsDB(db, userId2);

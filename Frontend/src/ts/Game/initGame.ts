@@ -1,19 +1,18 @@
-import { Game, UI } from "../gameData.js";
-import * as S from "../structs.js";
+import { Game, UI } from '../gameData.js';
+import * as S from '../structs.js';
 import { OT, state, MF } from '@shared/enums';
 import { randomizeBallAngle } from '@shared/gameLogic';
 import { initAfterResize } from '../windowEvents.js';
-import { navigateTo } from "../history.js";
+import { navigateTo } from '../history.js';
 import { customAlert } from '../Alerts/customAlert.js';
 
 export function startGame() {
-	console.log(`function startGame() ${Game.match.mode}`);
 	switch (Game.match.matchFormat) {
 		case MF.SingleGame: {
 			break;
 		}
 		default: {
-			customAlert("Please select single game or tournament");
+			customAlert('Please select single game or tournament');
 			return;
 		}
 	}
@@ -37,7 +36,7 @@ export function startGame() {
 		case OT.Online: {
 			navigateTo('Pending');
 			Game.pendingState = S.pendingState.Online;
-			console.log("Send online request to backend");
+			console.log('Send online request to backend');
 			Game.socket.emit('message', {
 				action: 'matchmaking',
 				subaction: 'createOnlineMatch',
@@ -88,7 +87,7 @@ export function changeMatchFormat(option: string) {
 
 export function initGameServer() {
 	if (Game.socket.connected) {
-		console.log("server init")
+		console.log('Init Server')
 		const initGame = {
 			action: 'init',
 			subaction: 'createMatch',
@@ -106,15 +105,13 @@ export function initGame() {
 	if (Game.match.mode != OT.Online) {
 		Game.match.player1.ID = UI.user1.ID;
 		Game.match.player1.name = UI.user1.name;
-		console.log(`initGame() OT = ${Game.match.mode}`);
 		if (Game.match.mode != OT.ONEvsCOM) {
 			Game.match.player2.ID = UI.user2.ID;
 			Game.match.player2.name = UI.user2.name;
 		}
 		else {
 			Game.match.player2.ID = 2;
-			Game.match.player2.name = "AI";
-			console.log(`initGame() ${Game.match.player2.ID}`);
+			Game.match.player2.name = 'AI';
 		}
 		randomizeBallAngle(Game.match.gameState.ball);
 		initGameServer();
@@ -131,16 +128,13 @@ export function initGame() {
 export function actionInitOnlineGame(data: any) {
 	const match = data.match;
 
-	console.log("actionInitOnlineGame - matchID: " + data.matchID);
 	if (match == null) {
 		customAlert('Could not start a new game');
 		navigateTo('Menu');
 		return;
 	}
-
 	Game.match = match;
-	console.log(`actionINitOnlineGame() MatchFormat = ${Game.match.matchFormat}`);
 
 	navigateTo('Game');
-	console.log("Start online game...");
+	console.log(`${match.id} - Start online game...`);
 }

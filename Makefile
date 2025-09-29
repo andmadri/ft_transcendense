@@ -4,7 +4,6 @@ NAME	= transcendence
 rand_b64_32 = $(shell openssl rand -base64 32 | tr -d '\n')
 rand_b64_64 = $(shell openssl rand -base64 64 | tr -d '\n')
 
-
 all:	up
 
 up:
@@ -33,13 +32,7 @@ server: Frontend/*
 	cp -r Frontend/* Server/
 	docker compose up -d --build --force-recreate server
 
-server-build-fast:
-	@echo "=== Building server image (cache) and restarting server only ==="
-	docker compose -f docker-compose.yml build server
-	docker compose -f docker-compose.yml up -d --no-deps server
-
 backend:
-# 	docker compose up -d --build --force-recreate backend
 	docker compose -f docker-compose.yml up -d --build --no-deps backend
 
 update-host-env:
@@ -79,16 +72,9 @@ clean: stop
 	rm -rf Server/*.json
 	@echo "containers, images and network are removed"
 
-# re:	clean up
-re:	backend server-build-fast up
+re:	clean up
 
 prune: clean clean_volumes
 	docker system prune -a --volumes -f
 
-.PHONY: all up down start stop build server backend test clean_volumes clean re prune
-
-
-# TESTER:
-# npx install --save-dev @playwright/test
-# npx playwright install
-# npx playwright test --ui (IN VSC)
+.PHONY: all up down start stop build server backend update-host-env refresh-secrets clean_volumes clean re prune

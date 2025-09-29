@@ -1,10 +1,8 @@
 import { applyGameStateUpdate, applyKeyPressUpdate, updateMatchEventsDB, applyScoreUpdate } from "./gameStateSync.js";
 import { saveMatch, quitMatch } from "../End/endGame.js";
 import { matches } from '../InitGame/match.js';
-import { MF } from '../SharedBuild/enums.js';
-import { reportTournamentMatchResult } from '../Tournament/tournament.js';
 
-export async function handleGame(db, msg, socket, io) {
+export async function handleGame(msg, socket, io) {
 	if (!msg.subaction)
 		return handleError('MSG_MISSING_SUBACTION', 'Invalid message format', 'missing subaction', msg, 'handleGame');
 
@@ -20,24 +18,22 @@ export async function handleGame(db, msg, socket, io) {
 			applyGameStateUpdate(match, msg);
 			break;
 		case 'serve':
-			updateMatchEventsDB(match, msg, msg.gameState, "serve");
+			updateMatchEventsDB(match, msg.gameState, "serve");
 			break;
 		case 'padelHit':
-			updateMatchEventsDB(match, msg, msg.gameState, "hit");
+			updateMatchEventsDB(match, msg.gameState, "hit");
 			break;
 		case 'scoreUpdate':
 			applyScoreUpdate(match, msg);
-			updateMatchEventsDB(match, msg, msg.gameState, "goal");
+			updateMatchEventsDB(match, msg.gameState, "goal");
 			break;
 		case 'keyPressUpdate':
 			applyKeyPressUpdate(match, msg, socket);
 			break;
 		case 'save':
 			if (match && match.winnerID) {
-				console.log(`handleGame | winnerID=${match.winnerID}`);
 				saveMatch(match.matchID, match.winnerID);
 			} else {
-				console.log("No match || winnerID in handleGame");
 				saveMatch(match.matchID, null);
 			}
 			break ;

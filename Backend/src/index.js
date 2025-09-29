@@ -121,7 +121,7 @@ fastify.ready().then(() => {
 					case 'init':
 						return handleInitGame(db, msg, socket);
 					case 'game':
-						return handleGame(db, msg, socket, fastify.io);
+						return handleGame(msg, socket, fastify.io);
 					case 'tournament':
 						return handleTournament(db, msg, socket, fastify.io, userId1);
 					case 'error':
@@ -132,7 +132,7 @@ fastify.ready().then(() => {
 						return ;
 				}
 			} catch (err) {
-				console.error('Error during receiving msg', err);
+				console.error('SOCKET_RECV_ERR Error during receiving msg', err.message || err);
 			}
 		});
 
@@ -148,7 +148,7 @@ fastify.ready().then(() => {
 					}
 				}
 			} catch (err) {
-				console.error('Error during heartbeat', err);
+				console.error('HEARTBEAT_ERR Error during heartbeat', err.message || err);
 			}
 		});
 
@@ -163,7 +163,7 @@ fastify.ready().then(() => {
 					leaveTournament({name: player.name}, userId1, socket, fastify.io);
 				}
 			} catch (err) {
-				console.error(`Error during disconnecting`, err);
+				console.error(`DISCONNECT_ERR Error during disconnecting`, err.message || err);
 			}
 		});
 	});
@@ -187,7 +187,7 @@ setInterval(async () => {
 					}
 					usersLastSeen.delete(userId1);
 				} catch (err) {
-					console.error(`Error setting user1 (${userId1}) and/or user2 (${userId2}) offline: `, err);
+					console.error(`LOGOUT_ERR Error setting user1 (${userId1}) and/or user2 (${userId2}) offline: `, err.message || err);
 				}
 			}
 		}

@@ -27,8 +27,9 @@ export async function getAllPlayerInclFriends(db, userID, socket) {
 }
 
 export async function handlePlayers(db, msg, socket, userId) {
-	if (msg.subaction == 'getAllPlayers')
+	if (msg.subaction == 'getAllPlayers') {
 		return getAllPlayerInclFriends(db, userId, socket);
+	}
 	handleError(socket, 'MSG_UNKNOWN_SUBACTION', 'Invalid message format', `Unknown: ${msg.subaction}`, 'handlePlayers');
 }
 

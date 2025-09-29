@@ -3,7 +3,7 @@ import { MF } from "../SharedBuild/enums.js";
 
 // To frontend: players get msg that server is ready with init, game can start
 function sendStartMsgToPlayers(matchID) {
-	console.log("both players are ready to play! START");
+	console.log("Both players are ready to play! START");
 	io.to(matchID).emit('message', {
 		action: 'game',
 		subaction: 'start',
@@ -25,7 +25,7 @@ function handleStartOnlineMatch(msg, match) {
 	if (match.player1.ready && match.player2.ready) {
 		sendStartMsgToPlayers(match.matchID);
 	} else {
-		console.log("waiting till the opponent is ready");
+		console.log("Waiting till the opponent is ready");
 		return true;
 	}
 	return false;

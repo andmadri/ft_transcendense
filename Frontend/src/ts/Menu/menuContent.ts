@@ -57,7 +57,6 @@ export function getCreditsPage() {
 	creditImg.style.maxWidth = '90vw';
 	creditImg.style.maxHeight = '90vh';
 	creditImg.style.objectFit = 'contain';
-	
 
 	const closeBtn = document.createElement('button');
 	styleMainBtns(closeBtn, 'X');
@@ -233,7 +232,6 @@ export function createBackgroundText(body: HTMLElement) {
 
 	const rows = 200;
 	const cols = 100;
-			
 	for (let row = 0; row < rows; row++) {
 		const rowDiv = document.createElement('div');
 		rowDiv.style.display = 'flex';

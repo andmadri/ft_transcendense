@@ -2,7 +2,7 @@ import { UI } from "../gameData.js";
 import { customAlert } from '../Alerts/customAlert.js';
 
 export async function changeAvatar(file: File, playerNr: number) {
-	console.log("File: " + file.name + " " + file.size);
+	console.log(`File: ${file.name} ${file.size}`);
 
 	const formData = new FormData();
 	formData.append('avatar', file);

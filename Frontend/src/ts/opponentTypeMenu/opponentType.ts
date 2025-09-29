@@ -171,9 +171,7 @@ export function getOpponentMenu() {
 	gameModeContainer.appendChild(gameModeTitle);
 	gameModeContainer.appendChild(gameModeButtonsContainer);
 	gameModeContainer.appendChild(playGameButton);
-
 	blackContainer.appendChild(gameModeContainer);
-
 	opponentMenu.appendChild(blackContainer);
 	body.append(opponentMenu);
 }

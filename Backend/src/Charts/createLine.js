@@ -46,7 +46,6 @@ export function buildStepSeries(data) {
 			pts.push({ t: endT, y: finalY });
 		}
 	}
-
 	return { series, endT };
 }
 

@@ -50,11 +50,9 @@ export type UI = {
 export type Game = {
 	socket: Socket,
 	pendingState: pendingState,
-	match: matchInfo,
-	colletedSteps: [],
+	match: matchInfo
 }
 
-// KEYS
 type Key = {
 	pressed: boolean;
 	dir: number;
@@ -67,7 +65,6 @@ export const Keys: {[key: string]: Key} = {
 	"s": 			{pressed: false, dir: 1}
 }
 
-// AI
 type AIPrediction = {
 	x: number,
 	y: number,
@@ -76,9 +73,8 @@ type AIPrediction = {
 
 export type AIInfo = {
 	prediction: AIPrediction,
-	reactionTime: number, // ms
-	lastView: number // timestamp of last view of the game
+	reactionTime: number, // milliseconds
+	lastView: number
 };
 
-//export const host = window.location.host;
 export const host = window.location.host;

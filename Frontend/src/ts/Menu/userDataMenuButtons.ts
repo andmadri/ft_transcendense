@@ -9,7 +9,6 @@ function get2faDisableBtn(playerNr: number): HTMLButtonElement {
 	const twofaDisableBtn = document.createElement('button');
 	twofaDisableBtn.textContent = 'Disable 2FA';
 	twofaDisableBtn.addEventListener('click', async () => {
-	console.log('2FA Disable button clicked for player ' + playerNr);
 
 	const overlay = document.createElement('div');
 	overlay.style.position = 'fixed';
@@ -135,7 +134,6 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 	const twoFABtn = document.createElement('button');
 	twoFABtn.textContent = 'Set Up 2FA';
 	twoFABtn.addEventListener('click', async () => {
-	console.log('2FA button clicked for player ' + playerNr);
 
 	const overlay = document.createElement('div');
 	overlay.style.position = 'fixed';
@@ -273,7 +271,7 @@ function get2faSetupBtn(playerNr: number): HTMLButtonElement {
 				UI.user1.Twofa = playerNr === 1 ? true : UI.user1.Twofa;
 				setTimeout(() => {
 					overlay.remove();
-				}, 1000); // 1000 ms = 1 second
+				}, 1000);
 				document.getElementById('menu')?.remove();
 			} else {
 				customAlert(data.message || '2FA verification failed.');

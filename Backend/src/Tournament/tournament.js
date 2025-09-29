@@ -119,8 +119,6 @@ export function leaveTournament(msg, userId, socket, io) {
 			triggerNextTournamentMatch(null, io)
 		}
 		checkPlayerInTournament();
-		// Print in console for debugging
-		console.log('Player left tournament (forfeit):', msg.name, userId, getTournamentStateForFrontend());
 	} else if (tournament.state === 'finished') {
 		const player = tournament.players.find(p => p.id === userId);
 		if (player) {
@@ -259,8 +257,7 @@ export async function triggerNextTournamentMatch(tournamentId, io) {
 	// Check if both Game 1 and Game 2 are finished
 	if (!tournament.matches[0].match.winnerID || !tournament.matches[1].match.winnerID) {
 		console.log("Both initial matches not finished yet.");
-		console.log("match 1 state:", tournament.matches[0].match.state, "match 2 state:", tournament.matches[1].match.state);
-		console.log('enum state.End:', state.End);
+		console.log("Match 1 state:", tournament.matches[0].match.state, "match 2 state:", tournament.matches[1].match.state);
 		return;
 	} else {
 		console.log("Both initial matches finished.");

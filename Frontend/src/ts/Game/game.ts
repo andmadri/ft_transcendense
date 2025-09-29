@@ -4,8 +4,6 @@ import { navigateTo } from "../history.js";
 import { applyGameStateUpdate, applyScoreUpdate, applyWinner } from './gameStateSync.js';
 
 function processMatch(data: any) {
-	console.log("inited game with id: " + data.id);
-	console.log("players: " + data.player1ID + " " + data.player2ID);
 	Game.match.matchID = data.id;
 	Game.match.player1.ID = data.player1ID;
 	Game.match.player2.ID = data.player2ID;
@@ -13,12 +11,11 @@ function processMatch(data: any) {
 }
 
 function processQuitMatch(data: any) {
-	console.log("processQuitMatch()");
 	Game.match.winnerID = data.winner;
 	if (Game.match.OT !== OT.Online) {
 		Game.match.state = state.End;
 	}
-	console.log(data.reason);
+	console.log('QuitMatch:', data.reason);
 }
 
 export function actionGame(data: any) {
@@ -28,7 +25,6 @@ export function actionGame(data: any) {
 	}
 	switch(data.subaction) {
 		case 'init':
-			console.log(`MatchID frontend: ${data.id}`);
 			processMatch(data);
 			break ;
 		case 'gameStateUpdate':

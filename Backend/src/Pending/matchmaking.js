@@ -42,8 +42,7 @@ async function challengeFriend(io, db, socket, challenger, responder) {
 	if (friendInvites.has(tempMatchID))
 		return ;
 
-	if (friendInvites.has(reverseMatchID))
-	{
+	if (friendInvites.has(reverseMatchID)) {
 		const socket2 = friendInvites.get(reverseMatchID).socket;
 		startChallenge(io, db, socket, {challenger, responder, tempMatchID: reverseMatchID, socket2});
 		return ;

@@ -4,7 +4,7 @@ import { OT, state } from '@shared/enums';
 import { renderGameInterpolated, makeSnapshot } from './renderSnapshots.js';
 import { reconcilePaddle } from './gameLogic.js';
 
-export function applyGameStateUpdate(data : any) {
+export function applyGameStateUpdate(data: any) {
 	if (Game.match.mode == OT.Online) {
 		const playerNr = Game.match.player1.ID == UI.user1.ID ? 1 : 2;
 		if (Game.match.state != state.Hit && Game.match.state != state.Serve) {
@@ -32,7 +32,7 @@ export function applyScoreUpdate(data: any) {
 	}
 }
 
-export function sendKeyPressUpdate(key : string) {
+export function sendKeyPressUpdate(key: string) {
 	Game.socket.emit('message',{
 		action: 'game',
 		subaction: 'keyPressUpdate',
@@ -71,8 +71,7 @@ export function sendScoreUpdate() {
 	});
 }
 
-export function applyWinner(data : any) {
-	console.log(`applyWinner() winner ID = ${data.winnerID}`);
+export function applyWinner(data: any) {
 	Game.match.winnerID = data.winnerID;
 	Game.match.state = data.state;
 } 

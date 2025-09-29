@@ -19,12 +19,12 @@ export function resetAI(match : matchInfo) {
 	AI.prediction.errorMargin = 0.05;
 }
 
-function	followBall(match : matchInfo) {
+function	followBall(match: matchInfo) {
 	const { paddle2, ball, field } = match.gameState;
 	const threshold = paddle2.size.height * 0.1;
 	
 	if (Math.abs(ball.pos.y - paddle2.pos.y) < threshold) {
-		return;
+		return ;
 	}
 	AI.prediction.x = paddle2.pos.x;
 	AI.prediction.y = ball.pos.y;
@@ -32,7 +32,6 @@ function	followBall(match : matchInfo) {
 
 function setErrorMargin(match: matchInfo){
 	const diff = match.player1.score - match.player2.score;
-
 	const base = 0.05;
 	const step = 0.01;
 	const min = 0;
@@ -42,13 +41,11 @@ function setErrorMargin(match: matchInfo){
 	AI.prediction.errorMargin = Math.max(Math.min(max, margin), min);
 }
 
-function	predictBall(match : matchInfo) {
-
+function	predictBall(match: matchInfo) {
 	const { ball, field, paddle2 } = match.gameState;
 
 	const ballCopy = { x: ball.pos.x, y: ball.pos.y, vy: ball.velocity.vy, vx: ball.velocity.vx};
 	const ballRadius = ball.size.width / 2;
-
 	const paddleHalfHeight = paddle2.size.height / 2;
 	const paddleHalfWidth = paddle2.size.width / 2;
 
@@ -61,12 +58,11 @@ function	predictBall(match : matchInfo) {
 			ballCopy.vy *= -1;
 		}
 	}
-	
 	AI.prediction.x = paddle2.pos.x;
 	AI.prediction.y = Math.min(Math.max(paddleHalfHeight, ballCopy.y), field.size.height - paddleHalfHeight);
 }
 
-function	predictAction(match : matchInfo) {
+function	predictAction(match: matchInfo) {
 	//calculate dx and dy
 	const { ball, paddle2  } = match.gameState;
 	if (ball.velocity.vx <= 0) {
@@ -84,11 +80,9 @@ function	predictAction(match : matchInfo) {
 	const offset = errorOffset * sign;
 
 	AI.prediction.y += offset;
-	// console.log(`predicted Y = ${AI.prediction.y}`);
-	// console.log(`offset = ${offset}`);
 }
 
-export function aiAlgorithm(match : matchInfo){
+export function aiAlgorithm(match: matchInfo){
 	const { paddle2 } = match.gameState;
 
 	const paddleCenter = paddle2.pos.y;
@@ -105,11 +99,9 @@ export function aiAlgorithm(match : matchInfo){
 	const threshold = paddle2.size.height * 0.1;
 	if (AI.prediction.y > paddleCenter + threshold) {
 		paddle2.velocity.vy = paddle2.movement.speed;
-	}
-	else if (AI.prediction.y < paddleCenter - threshold) {
+	} else if (AI.prediction.y < paddleCenter - threshold) {
 		paddle2.velocity.vy = -paddle2.movement.speed;
-	}
-	else {
+	} else {
 		paddle2.velocity.vy = 0;
 	}
 }

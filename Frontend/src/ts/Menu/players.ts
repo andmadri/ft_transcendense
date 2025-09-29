@@ -28,17 +28,13 @@ export function getPlayerList(): HTMLDivElement {
 	let playerList = document.getElementById('players') as HTMLDivElement;
 
 	if (!playerList) {
-
-		console.log("createPlayerList getting called");
 		playerList = createPlayerList();
 	}
 	else {
-		console.log("createPlayerList emptied");
 		const list = document.getElementById('htmllistPlayers') as HTMLUListElement;
 		if (list)
 			list.innerHTML = '';
 	}
-	console.log("getPlayerList send request to backend");
 	Game.socket.emit('message', {
 		action: 'players',
 		subaction: 'getAllPlayers'
@@ -50,7 +46,6 @@ export function insertPlayers(players: any) {
 	const html_list = document.getElementById('players_list') as HTMLUListElement;
 	if (!html_list) {
 		console.error('HTML_NOT_FOUND', 'HTML List for Friends Not Found', 'insertPlayers');
-
 		return;
 	}
 	html_list.innerHTML = "";
@@ -90,8 +85,6 @@ export function insertPlayers(players: any) {
 function processPlayers(data: any) {
 	if (data.access && data.access == "yes")
 		insertPlayers(data.content);
-	else
-		console.log("Access to DB: " + data.access + " " + data.content);
 }
 
 export function actionPlayers(data: any) {

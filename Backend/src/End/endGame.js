@@ -33,7 +33,7 @@ export async function quitMatch(match, msg, io) {
 		match.winnerID = match.player2.ID;
 	}
 	match.state = state.End;
-	console.log(`match quit by ${msg.player} | WinnerID = ${match.winnerID}`);
+	console.log(`Match quit by ${msg.player} | WinnerID = ${match.winnerID}`);
 	io.to(match.matchID).emit('message', {
 		action: 'game',
 		subaction: 'quit',

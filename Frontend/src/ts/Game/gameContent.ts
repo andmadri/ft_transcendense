@@ -1,12 +1,9 @@
-import { UI, Game } from "../gameData.js"
-import { OT, state } from '@shared/enums'
+import { UI, Game } from "../gameData.js";
+import { OT, state } from '@shared/enums';
 import { createBackgroundText } from '../Menu/menuContent.js';
 
 export function quitGame() {
-	//determine winner in local game
-	//if online -> winnerID stays undefined -> backend will determine winner
 	if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
-		console.log(`quit button eventlistener: ${Game.match.player2.ID}`);
 		Game.match.winnerID = Game.match.player2.ID;
 	}
 	else if (Game.match.mode == OT.ONEvsONE) {
@@ -40,7 +37,6 @@ function getQuitBtn() {
 	quitButton.style.pointerEvents = 'auto';
 
 	quitButton.addEventListener('click', () => {
-		console.log("pushed quit button");
 		quitGame();
 	})
 	return (quitButton);

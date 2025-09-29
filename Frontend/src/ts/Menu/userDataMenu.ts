@@ -1,5 +1,5 @@
 import { navigateTo } from "../history.js";
-import { UI } from "../gameData.js"
+import { UI } from "../gameData.js";
 import { styleListBtns } from "./menuContent.js";
 import { get2faBtn, getLoginBtn, getAvatarBtn, getProfileSettingsBtn } from "./userDataMenuButtons.js";
 
@@ -177,7 +177,6 @@ function createNotificationButtons(): HTMLButtonElement {
 		} else {
 			notificationBtnList.style.display = 'none';
 		}
-		console.log('Notifications clicked');
 	});
 
 	const notificationBadge = document.createElement('span');

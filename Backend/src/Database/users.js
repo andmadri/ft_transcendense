@@ -5,44 +5,6 @@ import { sql_log, sql_error } from './dblogger.js';
 //                             ADD ROW TO SQL TABLE                            //
 // *************************************************************************** //
 
-export function nameAlreadyExist(db, name) {
-	const username = name.toLowerCase(); 
-
-	return new Promise((resolve, reject) => {
-		const sql = `SELECT 1 FROM Users WHERE LOWER(name) = ? LIMIT 1`;
-		db.get(sql,	[username], (err, row) => {
-			if (err) {
-				sql_error(err, `nameAlreadyExist | name=${name}`);
-				return reject(err);
-			} else {
-				if (row) {
-					sql_log(`Name already exist: ${name}`);
-				}
-				resolve(row || null);
-			}
-		});
-	});
-	if (exists)
-		console.log("Username already exists");
-	return (exists);
-}
-
-export async function emailAlreadyExist(db, emailadress) {
-	const email = emailadress.toLowerCase(); 
-
-	const exists = await new Promise((resolve, reject) => {
-		db.get(`SELECT 1 FROM Users WHERE LOWER(email) = ? LIMIT 1`,
-			[email], (err, row) => {
-			if (err)
-				return reject(err);
-			resolve(!!row);
-		});
-	});
-	if (exists)
-		console.log("Email already exists");
-	return (exists);
-}
-
 /**
  * @brief Adds a new user to the SQL Users table.
  *
@@ -162,7 +124,7 @@ export async function updateUserInDB(db, user) {
 				sql_error(err, `updateUserInDB | id=${user.user_id} name=${existing.name} email=${existing.email}`);
 				reject(err);
 			} else {
-				sql_log(`User updated: [${user.user_id}] ${existing.name} | Number of changes=${this.changes}\n${changes}`);
+				sql_log(`User updated: [${user.user_id}] ${existing.name} | Number of changes=${this.changes}`);
 				resolve(this.changes);
 			}
 		});
@@ -197,9 +159,9 @@ export async function getUserByID(db, user_id) {
 }
 
 /**
- * @brief Retrieves a user by ID from the Users table.
+ * @brief Retrieves a user by email from the Users table.
  *
- * @param {number} user_id - The user ID to look up.
+ * @param {number} email - The user email to look up.
  * @returns {Promise<Object|null>} - Resolves with user data or null if not found.
  */
 export async function getUserByEmail(db, email) {
@@ -210,14 +172,33 @@ export async function getUserByEmail(db, email) {
 				sql_error(err, `getUserByEmail | email=${email}`);
 				reject(err);
 			} else {
-				if (!row) {
-					sql_log(`getUserByEmail | email not found! email=${email}`);
-				}
 				resolve(row || null);
 			}
 		});
 	});
 }
+
+/**
+ * @brief Retrieves a user by name from the Users table.
+ *
+ * @param {number} name - The user name to look up.
+ * @returns {Promise<Object|null>} - Resolves with user data or null if not found.
+ */
+export function getUserByName(db, name) {
+	const username = name.toLowerCase();
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM Users WHERE LOWER(name) = ?`;
+		db.get(sql, [username], (err, row) => {
+			if (err) {
+				sql_error(err, `getUserByName | email=${email}`);
+				reject(err);
+			} else {
+				resolve(row || null);
+			}
+		});
+	});
+}
+
 
 // *************************************************************************** //
 //                         VIEW DATA FROM VIEW TABLES                          //

@@ -1,7 +1,6 @@
-import { state } from "../SharedBuild/enums.js"
+import { state } from "../SharedBuild/enums.js";
 import { handleMatchEventDB } from '../Services/matchService.js';
 import { db } from '../index.js';
-import { updatePaddlePos } from "../SharedBuild/gameLogic.js"
 
 export function applyGameStateUpdate(match, msg) {
 	match.gameState = msg.gameState;
@@ -29,7 +28,7 @@ export function applyKeyPressUpdate(match, msg) {
 	if (msg.key == 'ArrowUp') paddle.velocity.vy = msg.pressed ? -paddle.movement.speed : 0;
 }
 
-export async function updateMatchEventsDB(match, msg, gameState, event) {
+export async function updateMatchEventsDB(match, gameState, event) {
 	if (event !== "serve" && event !== "goal" && event !== "hit") {
 		console.error('INVALID_EVENT', `updateMatchEventsDB: invalid event - ${event}. Expected 'serve', 'goal', or 'hit'.`, 'applyKeyPressUpdate');
 		return ;

@@ -2,8 +2,9 @@ import { linearScale } from './scales.js';
 
 // Evenly-spaced numeric ticks (e.g., 0, 0.25, 0.5, 0.75, 1)
 export function ticksLinear(domainMin, domainMax, count = 5) {
-	if (count < 2)
+	if (count < 2) {
 		return [domainMin, domainMax];
+	}
 	const step = (domainMax - domainMin) / (count - 1);
 	const out = [];
 	for (let i = 0; i < count; i++) {
@@ -14,8 +15,9 @@ export function ticksLinear(domainMin, domainMax, count = 5) {
 
 // Evenly-spaced numeric ticks (e.g., 0, 0.25, 0.5, 0.75, 1)
 export function ticksStep(domainMin, domainMax, count = 5) {
-	if (count < 2)
+	if (count < 2) {
 		return [domainMin, domainMax];
+	}
 	const step = (domainMax - domainMin) / (count - 1);
 	const center = step / 2;
 	const out = [];
@@ -67,9 +69,7 @@ export function drawXAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	const labelFormat = (v) => formatNumber(v, decimals);
 
 	const xScale = linearScale(domainMin, domainMax, plot.x, plot.x + plot.width - 1);
-	const ticks = (linear === true)
-		? ticksLinear(domainMin, domainMax, numberOfTicks)
-		: ticksStep(domainMin, domainMax, numberOfTicks);
+	const ticks = (linear === true)	? ticksLinear(domainMin, domainMax, numberOfTicks) : ticksStep(domainMin, domainMax, numberOfTicks);
 	const baseY  = plot.y + plot.height;
 
 	let grid = '';
@@ -98,9 +98,7 @@ export function drawYAxisTicks(plot, domainMin, domainMax, numberOfTicks, gridLi
 	const labelFormat  = (v) => formatNumber(v, decimals);
 
 	const yScale = linearScale(domainMin, domainMax, plot.y + plot.height, plot.y + 1);
-	const ticks = (linear === true)
-		? ticksLinear(domainMin, domainMax, numberOfTicks)
-		: ticksStep(domainMin, domainMax, numberOfTicks);
+	const ticks = (linear === true) ? ticksLinear(domainMin, domainMax, numberOfTicks) : ticksStep(domainMin, domainMax, numberOfTicks);
 	const baseX  = plot.x;
 
 	let grid = '';

@@ -1,5 +1,4 @@
-import { requestLeaveTournament, requestUpdateTournament } from './tournamentContent.js';
-import { readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
+import { requestLeaveTournament, requestUpdateTournament,readyTournamentPlayer, notReadyTournamentPlayer } from './tournamentContent.js';
 import { UI } from '../gameData.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
 import { navigateTo } from '../history.js';
@@ -16,7 +15,6 @@ function createButton():HTMLButtonElement {
 	readyBtn.style.marginTop = '0.5rem';
 
 	let isReady = false;
-
 	readyBtn.addEventListener('click', () => {
 		isReady = !isReady;
 		if (isReady) {
@@ -34,20 +32,17 @@ function createButton():HTMLButtonElement {
 	return readyBtn;
 }
 
-function updateButton(player: any, match:any, box: HTMLElement) {
+function updateButton(player: any, match: any, box: HTMLElement) {
 	const parent = box.parentElement;
 	if (!parent) {
 		return;
 	}
 	const existingBtn = parent.querySelector('button');
 	if (existingBtn && match) {
-		console.log('This button should be removed');
 		existingBtn.remove();
 		return;
 	}
-
 	if (player?.name === UI.user1.name && !existingBtn && !match) {
-		console.log('Button created');
 		parent.appendChild(createButton());
 	}
 }
@@ -56,10 +51,9 @@ function getName(id: number, players: any) {
 	return players.find((p: any) => p.id === id)?.name || '-';
 }
 
-function updateBoxBorder(matches:any, players:any) {
+function updateBoxBorder(matches: any, players: any) {
 	let box1: HTMLElement | null;
 	let box2: HTMLElement | null;
-	// const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box', 'loser1Box', 'loser2Box', 'winner1Box', 'winner2Box'];
 	matches.forEach((match: any) => {
 		if (match && (match.matchNumber === 1 || match.matchNumber === 2)) {
 			box1 = document.getElementById('player' + (match.matchNumber * 2 - 1) + 'Box');
@@ -92,10 +86,6 @@ function updateBoxBorder(matches:any, players:any) {
 }
 
 export function updateNameTagsTournament(tournamentState: any) {
-	// if (document.getElementById('tournamentScreen') === null && UI.state === S.stateUI.Tournament) {
-	// 	showTournamentScreen();
-	// }
-	//check if the matches array length is bigger than 2 and if so check if the
 	const playerBoxIds = ['player1Box', 'player2Box', 'player3Box', 'player4Box'];
 	const players = tournamentState.players || [];
 	const matches = tournamentState.matches || [];
@@ -114,12 +104,9 @@ export function updateNameTagsTournament(tournamentState: any) {
 		if (box) {
 			box.textContent = player?.name || '-';
 			if (players.length == 4) {
-				console.log(`box exists - playedID = ${player.id} - boxID = ${boxId}`);
-				//only if there are four players you should have a button otherwise weird things happen if someone presses the button and there are no four players
 				updateButton(player, playerMatch, box);
 			}
 			else {
-				//if there were four people but someone leaves
 				box.parentElement?.querySelector('button')?.remove();
 			}
 		}
@@ -136,7 +123,7 @@ export function updateNameTagsTournament(tournamentState: any) {
 				winner_match = matches[3];
 			else if (matches[2] && matches[2].matchNumber === 4)
 				winner_match = matches[2];
-			updateButton(winner1Player, winner_match, winner1Box); //winnermatch is not necessarily index 4 -> winnermatch is matchNumber 3
+			updateButton(winner1Player, winner_match, winner1Box);
 		}
 
 		const loser1Box = document.getElementById('loser1Box');
@@ -161,7 +148,6 @@ export function updateNameTagsTournament(tournamentState: any) {
 			const winner2ID = matches[1]?.winnerID;
 			const winner2Player = players.find((p: any) => p.id === winner2ID);
 			winner2Box.textContent = getName(winner2ID, tournamentState.players);
-			//function to find the match for corresponding match number
 			let winner_match = null;
 			if (matches[3] && matches[3].matchNumber === 4)
 				winner_match = matches[3];
@@ -185,13 +171,14 @@ export function updateNameTagsTournament(tournamentState: any) {
 			updateButton(loser2Player, losers_match, loser2Box);
 		}
 	}
-
 	updateBoxBorder(matches, players);
 }
 
 export function showTournamentScreen() {
 	const body = document.getElementById('body');
-	if (!body) return;
+	if (!body) {
+		return ;
+	}
 	body.innerHTML = '';
 	createBackgroundText(body);
 
@@ -293,7 +280,6 @@ export function showTournamentScreen() {
 
 	const round1Section = roundSection('Round 1', 'player1Box', 'player2Box', '0.05rem #ffffffff');
 	round1Section.style.flex ='1';
-
 	const round2Section = roundSection('Round 2', 'player3Box', 'player4Box', '0.05rem #ffffffff');
 	round2Section.style.flex ='1';
 
@@ -305,9 +291,7 @@ export function showTournamentScreen() {
 	middleSection.style.flex = '1';
 
 	const winnersSection = roundSection('Winners Final', 'winner1Box', 'winner2Box', '0.05rem #7ed957ff');
-
 	const losersSection = roundSection('Losers Final', 'loser1Box', 'loser2Box', '0.05rem #ff6117ff');
-
 	middleSection.appendChild(winnersSection);
 	middleSection.appendChild(losersSection);
 

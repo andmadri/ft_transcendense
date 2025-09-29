@@ -1,4 +1,4 @@
-import { Game } from "../gameData.js"
+import { Game } from "../gameData.js";
 import { navigateTo } from "../history.js";
 import { OT, MF } from '@shared/enums';
 
@@ -19,7 +19,6 @@ function getGameOverContext(): { matchId: number | null; result: string, matchTy
 
 function getWinnerResult() {
 	let winnerName = null;
-	console.log(`winner ID ${Game.match.winnerID}`);
 	if (Game.match.winnerID == -1) {
 		winnerName = Game.match.player2.name;
 	}

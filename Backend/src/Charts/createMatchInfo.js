@@ -104,7 +104,7 @@ export async function generateMatchInfo(db, matchID, data, colorOf) {
 	const chartTitle = drawTitle({ width, height }, margins, `MATCH ${matchID} STATS`);
 
 	const frame1 = getSquare(1, player1.name, data.player_1_score, colorOf.get(data.player_1_id));
-	const frame2 = getSquare(2, player2.name, data.player_2_score, colorOf.get(data.player_2_id))
+	const frame2 = getSquare(2, player2.name, data.player_2_score, colorOf.get(data.player_2_id));
 	// DATA
 	const svgtext = await getGameStatsSVG(db, data);
 

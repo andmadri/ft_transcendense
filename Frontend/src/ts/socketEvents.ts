@@ -62,8 +62,6 @@ export function receiveFromWS(data: any) {
 	if (!action)
 		return console.error('MSG_MISSING_ACTION', 'Invalid message format:', 'action missing', 'receiveFromWS');
 
-	// log(`receiveFromWS - action: ${action} - subaction: ${data.subaction}`);
-	//when is this called: playerInfo?
 	switch(action) {
 		case 'playerInfo':
 			actionPlayerInfo(data);

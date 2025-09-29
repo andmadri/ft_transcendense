@@ -1,4 +1,4 @@
-import { state } from "../SharedBuild/enums.js"
+import { state } from "../SharedBuild/enums.js";
 
 export function updateBall(match, msg, socket) {
 	if (match.state != state.Playing)

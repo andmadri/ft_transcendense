@@ -93,7 +93,7 @@ export default async function twoFactor(fastify) {
 		if (!userSecret) {
 			return reply.status(400).send({ success: false, message: '2FA secret not set' });
 		}
-		console.log(`user encyptedUserSecret: ${user.twofa_secret}\nuser userSecret: ${userSecret}`);
+		console.log(`User encyptedUserSecret: ${user.twofa_secret}\nuser userSecret: ${userSecret}`);
 
 		const verified = speakeasy.totp.verify({
 			secret: userSecret,

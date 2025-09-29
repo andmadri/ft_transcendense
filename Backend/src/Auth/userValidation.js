@@ -1,4 +1,4 @@
-import { addUserToDB, getOnlineUsers, getUserByEmail, nameAlreadyExist, emailAlreadyExist } from '../Database/users.js';
+import { addUserToDB, getOnlineUsers, getUserByEmail, getUserByName } from '../Database/users.js';
 import bcrypt from 'bcrypt';
 import { db } from '../index.js';
 
@@ -6,47 +6,52 @@ export async function checkName(name) {
 	const nameRegex = /^[a-zA-Z0-9 _-]+$/;
 	let exists = null;
 	try {
-		exists = await nameAlreadyExist(db, name);
+		exists = await getUserByName(db, name);
 	} catch (err) {
 		console.error('CHECK_NAME_ERROR', `Error checking if name exists: ${err.message || err}`, 'checkName');
 	}
-	if (!name.length)
+	if (!name.length) {
 		return ('Name can not be empty');
-	else if (name.length > 10)
+	} else if (name.length > 10) {
 		return ("Name is too long (min 10 characters)");
-	else if (!nameRegex.test(name))
+	} else if (!nameRegex.test(name)) {
 		return ("Only letters, numbers, spaces, '-' and '_' are allowed.");
-	else if (exists)
+	} else if (exists) {
 		return ("That username is already taken");
+	}
 	return (null);
 }
 
 export async function checkEmail(email) {
 	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-	const exists = await emailAlreadyExist(db, email);
-	if (!email.length)
+	const exists = await getUserByEmail(db, email);
+	if (!email.length) {
 		return ('Email can not be empty');
-	else if (email.length < 3)
+	} else if (email.endsWith('.')) {
+		return ('Email cannot end with a dot');		
+	} else if (email.length < 3) {
 		return ('Email is too short');
-	else if (email.length > 254)
+	} else if (email.length > 254) {
 		return ('Email is too long');
-	else if (!emailRegex.test(email))
+	} else if (!emailRegex.test(email)) {
 		return ('Email has not a valid format');
-	else if (exists)
+	} else if (exists) {
 		return ("That email is already taken");
+	}
 	return (null);
 }
 
 export function checkPassword(password) {
 	const passwordRegex = /^\S+$/;
-	if (!password.length)
+	if (!password.length) {
 		return ('Password can not be empty');
-	else if (password.length < 8)
+	} else if (password.length < 8) {
 		return ('Password has less than 8 characters');
-	else if (password.length > 64)
+	} else if (password.length > 64) {
 		return ('Password is too long');
-	else if (!passwordRegex.test(password))
+	} else if (!passwordRegex.test(password)) {
 		return ('Password contains whitespace');
+	}
 	return (null);
 }
 
@@ -54,14 +59,17 @@ export async function addUser(msg) {
 	let errorMsg;
 
 	errorMsg = await checkName(msg.name);
-	if (errorMsg)
+	if (errorMsg) {
 		return (errorMsg);
+	}
 	errorMsg = await checkEmail(msg.email);
-	if (errorMsg)
+	if (errorMsg) {
 		return (errorMsg);
+	}
 	errorMsg = checkPassword(msg.password);
-	if (errorMsg)
+	if (errorMsg) {
 		return (errorMsg);
+	}
 	try {
 		await addUserToDB(db, msg);
 		return ('');
@@ -72,19 +80,21 @@ export async function addUser(msg) {
 	}
 }
 
-export async function validateLogin(msg, fastify) {
+export async function validateLogin(msg) {
 	let user = null;
 	try {
 		user = await getUserByEmail(db, msg.email);
-		if (!user || !user.password)
+		if (!user || !user.password) {
 			return ({ error: 'User not found' });
+		}
 	} catch (err) {
 		return ({ error: 'User not found' });
 	}
 
 	const isValidPassword = await bcrypt.compare(msg.password, user.password);
-	if (!isValidPassword)
+	if (!isValidPassword) {
 		return ({ error: 'Incorrect password' });
+	}
 
 	try {
 		const onlineUsers = await getOnlineUsers(db);

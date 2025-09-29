@@ -123,7 +123,7 @@ export default async function googleAuthRoutes(fastify) {
 
 			const user = await handleGoogleAuth(userRes.data);
 			if (!user) {
-				console.error('user returned:', user);
+				console.error('USER_EXISTS User already exists', 'handleGoogleAuth');
 				return reply.code(500).send('User already exists - please log in with your username and password.');
 			} else if (user) {
 				try {

@@ -6,8 +6,8 @@ import { handleError } from '../errors.js';
 async function getPlayerData(msg, socket, userId1, userId2) {
 	console.log(`getPlayerData | userId1=${userId1} - userId2=${userId2}`);
 	let returnMsg = {
-		action: "playerInfo",
-		subaction: "receivePlayerData"
+		action: 'playerInfo',
+		subaction: 'receivePlayerData'
 	};
 	let player1 = null;
 	let player2 = null;
@@ -54,7 +54,7 @@ function sendProfileSettingsMsg(socket, msg, success, returnMsg) {
 
 export async function changeProfileSettings(socket, db, msg) {
 	if (!msg.user_id || ! msg.field || !msg.new) {
-		handleError(socket, 'MSG_MISSING_FIELD', "Missing information", msg, 'changeName');
+		handleError(socket, 'MSG_MISSING_FIELD', 'Missing information', msg, 'changeName');
 		return ;
 	}
 	let user = null;
@@ -63,7 +63,7 @@ export async function changeProfileSettings(socket, db, msg) {
 		user = await userDB.getUserByID(db, msg.user_id);
 		updateMsg.user_id = msg.user_id;
 	} catch(err) {
-		console.error("User does not exist Profile Settings");
+		console.error('USER_NOT_EXIST User does not exist Profile Settings', 'changeProfileSettings');
 		return ;
 	}
 
@@ -72,8 +72,9 @@ export async function changeProfileSettings(socket, db, msg) {
 			return (sendProfileSettingsMsg(socket, msg, 0, 'You are already using this name.'));
 		} else {
 			const errMsg = await checkName(msg.new);
-			if (errMsg)
+			if (errMsg) {
 				return (sendProfileSettingsMsg(socket, msg, 0, errMsg));
+			}
 		}
 		updateMsg.name = msg.new;
 	} else if (msg.field == 'password') {
@@ -91,7 +92,7 @@ export async function changeProfileSettings(socket, db, msg) {
 		}
 		updateMsg.email = msg.new;
 	}
-	console.log(updateMsg);
+
 	try {
 		await userDB.updateUserInDB(db, updateMsg);
 		sendProfileSettingsMsg(socket, msg, 1, msg.new);
@@ -110,7 +111,6 @@ export function handlePlayerInfo(msg, socket, userId1, userId2) {
 	}
 
 	if (msg.subaction == 'getPlayerData') {
-		console.log('Received request for player data:', msg, userId1, userId2);
 		getPlayerData(msg, socket, userId1, userId2);
 		return true;
 	} else if (msg.subaction == 'profileSettings') {

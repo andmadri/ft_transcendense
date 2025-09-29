@@ -50,7 +50,6 @@ export function matchInterval(match, io) {
 				if (match.pauseTimeOutID == null) {
 					randomizeBallAngle(match.gameState.ball);
 					match.resumeTime = Date.now() + 4000;
-					console.log(`resumetime = ${match.resumeTime}`);
 					match.pauseTimeOutID = setTimeout(() => {
 						match.state = state.Playing;
 						match.pauseTimeOutID = null
@@ -78,17 +77,17 @@ export function matchInterval(match, io) {
 				break;
 			}
 			case (state.Serve) : {
-				updateMatchEventsDB(match, null, match.gameState, "serve");
+				updateMatchEventsDB(match, match.gameState, "serve");
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Hit) : {
-				updateMatchEventsDB(match, null, match.gameState, "hit");
+				updateMatchEventsDB(match, match.gameState, "hit");
 				match.state = state.Playing;
 				break ;
 			}
 			case (state.Score) : {
-				updateMatchEventsDB(match, null, match.gameState, "goal");
+				updateMatchEventsDB(match, match.gameState, "goal");
 				resetBall(match.gameState.ball, match.gameState.field);
 				sendScoreUpdate(match, io);
 				match.state = state.Paused;
@@ -155,9 +154,7 @@ export async function handleOnlineMatch(db, socket, userID, io) {
 			});
 			return ;
 		}
-
 		await startOnlineMatch(db, socket, socket2, userID, userID2, io, null, MF.SingleGame);
-
 	} else {
 		console.log("No open match found...adding player to waitinglist");
 		addToWaitinglist(socket, userID);

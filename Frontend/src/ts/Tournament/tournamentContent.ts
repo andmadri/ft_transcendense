@@ -17,7 +17,6 @@ export function actionTournament(data: any) {
 }
 
 function tournamentUpdate(data: any) {
-	console.log('Tournament update:', data);
 	console.log('Tournament update received: ' + JSON.stringify(data.tournamentState));
 	if (data.tournamentState.state === 'finished')
 		showTournamentEndScreen(data.tournamentState);

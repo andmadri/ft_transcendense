@@ -4,8 +4,9 @@
  * @returns {object|null} - An object with jwtAuthToken1 and/or jwtAuthToken2 if found, or null if neither is present.
  */
 export function parseAuthTokenFromCookies(cookieHeader) {
-	if (typeof cookieHeader !== 'string')
+	if (typeof cookieHeader !== 'string') {
 		return null;
+	}
 
 	const tokens = {};
 	const cookies = cookieHeader.split(';');

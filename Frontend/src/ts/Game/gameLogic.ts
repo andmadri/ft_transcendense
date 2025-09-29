@@ -20,7 +20,7 @@ export function updateDOMElements(match : matchInfo) {
 		leftScore.textContent = match.player1.score.toString();
 		rightScore.textContent = match.player2.score.toString();
 
-		ballDiv.style.left = `${(gameState.ball.pos.x * fieldDiv.clientWidth) - (ballRadius * fieldDiv.clientWidth)}px`; // i dont understand why i shouldn't subtract radius but it only works like this
+		ballDiv.style.left = `${(gameState.ball.pos.x * fieldDiv.clientWidth) - (ballRadius * fieldDiv.clientWidth)}px`;
 		ballDiv.style.top = `${(gameState.ball.pos.y * fieldDiv.clientWidth) - (ballRadius * fieldDiv.clientWidth)}px`;
 		
 		paddle1Div.style.top = `${(gameState.paddle1.pos.y * fieldDiv.clientWidth) - (paddleHalfHeight * fieldDiv.clientWidth)}px`;
