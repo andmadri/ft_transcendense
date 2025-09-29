@@ -26,6 +26,8 @@ export async function checkEmail(email) {
 	const exists = await emailAlreadyExist(db, email);
 	if (!email.length)
 		return ('Email can not be empty');
+	else if (email.endsWith('.'))
+		return ('Email cannot end with a dot');
 	else if (email.length < 3)
 		return ('Email is too short');
 	else if (email.length > 254)

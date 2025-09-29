@@ -7,6 +7,7 @@ import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 import { resetAI } from './Game/aiLogic.js';
+import { requestLeaveTournament } from './Tournament/tournamentContent.js';
 import { quitGame } from './Game/gameContent.js';
 
 function splitHash(hash: string) {
@@ -123,7 +124,6 @@ export function doRenderPage(newState: string, query?: string) {
 			let userId = null;
 			if (query)
 				userId = getIdFromHash(query, "userId");
-			// Add a check that the number is in range of userId
 			if (userId != null) {
 				requestAnimationFrame(() => getDashboard(userId, 1));
 			} else {
@@ -162,9 +162,8 @@ export function navigateTo(newState: any, fromHash = false) {
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
-	// console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
 
-	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID != -1) {
+	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID > 1) {
 		// Prevent infinite loop when already on LoginP2
 		console.log('Already logged in P2, navigating to menu instead');
 		newState = 'Menu';
@@ -239,9 +238,14 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
+	if (currentState == 'Tournament' && newState == 'Menu') {
+		//only if the tournament has not yet started
+		requestLeaveTournament();
+		return ('Menu');
+	}
+
 	if (currentState == 'Game' && newState != 'GameOver') {
 		if (Game.match.state != state.End) {
-			console.log('quit match history');
 			quitGame();
 		}
 		return (''); // redirect after save match
@@ -271,7 +275,7 @@ export function getValidState(newState: string, currentState: string): string {
  */
 export async function controlBackAndForward(event: PopStateEvent) {
 	console.log('popstate event:', event.state, 'hash:', window.location.hash);
-	
+
 	let newState = event.state?.page;
 	if (!newState) {
 		newState = window.location.hash || 'Menu';
