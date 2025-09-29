@@ -17,8 +17,9 @@ export function startSocketListeners() {
 
 	socket.on('connect', () => {
 		console.log('Connected with id:', socket.id);
-		if (document.getElementById('loadingpage'))
+		if (document.getElementById('loadingpage')) {
 			document.body.removeChild(document.getElementById('loadingpage')!);
+		}
 	});
 
 	socket.on('message', (msg: any)=> {
@@ -41,8 +42,9 @@ export function startSocketListeners() {
 	// custom errors (for our error handling)
 	socket.on('server_error', (err: any) => {
 		console.error(err.code, ' ', err.reason);
-		if (err.code != 'AUTH_NO_TOKEN')
+		if (err.code != 'AUTH_NO_TOKEN') {
 			customAlert("Something went wrong. Please try again.");
+		}
 	})
 }
 
@@ -97,10 +99,11 @@ export function receiveFromWS(data: any) {
 			validateURL(data);
 			break;
 		case 'error':
-			if (data.reason)
+			if (data.reason) {
 				console.error('GEN_ERROR', data.reason, 'receiveFromWS');
-			else
+			} else {
 				console.error('GEN_ERROR', 'Unknown error', 'receiveFromWS');
+			}
 			break ;
 		default:
 			console.error('MSG_UNKNOWN_SUBACTION', 'Invalid message format:', action, 'receiveFromWS');

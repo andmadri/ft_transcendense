@@ -1,7 +1,7 @@
-import * as S from './structs.js'
-import { Game, UI } from "./gameData.js"
+import * as S from './structs.js';
+import { Game, UI } from "./gameData.js";
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
-import { OT } from '@shared/enums'
+import { OT } from '@shared/enums';
 
 export function releaseButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;
@@ -16,7 +16,7 @@ export function releaseButton(e: KeyboardEvent) {
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = 0;
-		S.Keys[e.key].pressed = false; // DOES THIS DO ANYTHING RIGHT NOW?
+		S.Keys[e.key].pressed = false;
 		sendKeyPressUpdate(e.key);
 		return ;
 	}
@@ -38,22 +38,22 @@ export function pressButton(e: KeyboardEvent) {
 	}
 	if (Game.match.mode == OT.ONEvsCOM && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
-		return;
+		return ;
 	}
 	if (Game.match.mode == OT.Online && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		const myPaddle = UI.user1.ID == Game.match.player1.ID ? paddle1 : paddle2;
 		myPaddle.velocity.vy = S.Keys[e.key].dir * myPaddle.movement.speed;
 		S.Keys[e.key].pressed = true;
 		sendKeyPressUpdate(e.key);
-		return;
+		return ;
 	}
 	if (Game.match.mode == OT.ONEvsONE && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
 		paddle2.velocity.vy = S.Keys[e.key].dir * paddle2.movement.speed;
-		return;
+		return ;
 	}
 	if (Game.match.mode == OT.ONEvsONE && (e.key === 'w' || e.key === 's')) {
 		paddle1.velocity.vy = S.Keys[e.key].dir * paddle1.movement.speed;
-		return;
+		return ;
 	}
 }
 
@@ -76,8 +76,6 @@ export function initAfterResize() {
 
 	if (ballDiv && rPlayer && lPlayer && fieldDiv && game) {
 		const newWidth = fieldDiv.clientWidth;
-		const newHeight = fieldDiv.clientHeight;
-
 		ballDiv.style.left = `${(ball.pos.x * newWidth) - (ballRadius * newWidth)}px`;
 		ballDiv.style.top = `${(ball.pos.y * newWidth) - (ballRadius * newWidth)}px`;
 		lPlayer.style.left = `${paddle1.pos.x * newWidth - (paddleHalfWidth * newWidth)}px`;

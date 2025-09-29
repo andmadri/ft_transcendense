@@ -37,10 +37,12 @@ async function refreshToken(playerNr: number) {
 setInterval(async () => {
 	if (Game.socket && Game.socket.connected && UI.state !== S.stateUI.LoginP1) {
 		Game.socket.emit('heartbeat', {menu: UI.state === S.stateUI.Menu});
-		if (UI.user1.ID !== -1)
+		if (UI.user1.ID !== -1){
 			await refreshToken(1);
-		if (UI.user2.ID !== 1)
+		}
+		if (UI.user2.ID !== 1) {
 			await refreshToken(2);
+		}
 	}
 }, 5000);
 
@@ -54,12 +56,13 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(data => {
 		UI.user1.ID = data.userId;
 		const currentState = sessionStorage.getItem("currentState");
-		if (data.inTournament && data.inTournament == true)
+		if (data.inTournament && data.inTournament == true) {
 			requestJoinTournament();
-		else if (currentState && currentState !== 'LoginP1')
+		} else if (currentState && currentState !== 'LoginP1') {
 			navigateTo(currentState, true);
-		else
+		} else {
 			navigateTo('Menu');
+		}
 	})
 	.catch(() => {
 		navigateTo('LoginP1');
@@ -68,8 +71,9 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 function gameLoop() {
 	switch (Game.match.state) {
 		case state.Pending: {
-			if (!document.getElementById('Pending'))
+			if (!document.getElementById('Pending')) {
 				getPending();
+			}
 			break ;
 		}
 		case state.Init: {
@@ -80,8 +84,7 @@ function gameLoop() {
 			if (!document.getElementById('startGame')) {
 				if (Game.match.mode == OT.Online) {
 					startDuration = Game.match.resumeTime - Date.now();
-				}
-				else {
+				} else {
 					startDuration = 4000;
 				}
 				initGame();
@@ -93,8 +96,7 @@ function gameLoop() {
 			let pauseDuration;
 			if (Game.match.mode == OT.Online) {
 				pauseDuration = Game.match.resumeTime - Date.now();
-			}
-			else {
+			} else {
 				pauseDuration = 3000;
 			}
 			if (Game.match.pauseTimeOutID === null) {
@@ -135,8 +137,7 @@ function gameLoop() {
 		case state.End: {
 			if (Game.match.winnerID) {
 				saveGame();
-			}
-			else if (Game.match.mode !== OT.Online){
+			} else if (Game.match.mode !== OT.Online){
 				setWinner(Game.match);
 			}
 			break ;
@@ -149,13 +150,15 @@ function mainLoop() {
 	if (Game.socket.connected) {
 		switch (UI.state) {
 			case S.stateUI.LoginP1: {
-				if (!document.getElementById('auth1'))
+				if (!document.getElementById('auth1')) {
 					getLoginFields(1);
+				}
 				break ;
 			}
 			case S.stateUI.LoginP2: {
-				if (!document.getElementById('auth2'))
+				if (!document.getElementById('auth2')) {
 					getLoginFields(2);
+				}
 				break ;
 			}
 			case S.stateUI.Menu: {
@@ -168,18 +171,21 @@ function mainLoop() {
 				document.getElementById("dashboard")?.remove();
 				document.getElementById("tournamentScreen")?.remove();
 				document.getElementById("tournamentEndScreen")?.remove();
-				if (!document.getElementById('menu'))
+				if (!document.getElementById('menu')) {
 					getMenu();
+				}
 				break ;
 			}
 			case S.stateUI.OpponentMenu: {
-				if (!document.getElementById('opponentMenu'))
+				if (!document.getElementById('opponentMenu')) {
 					getOpponentMenu();
+				}
 				break;
 			}
 			case S.stateUI.Credits: {
-				if (!document.getElementById('creditDiv'))
+				if (!document.getElementById('creditDiv')) {
 					getCreditsPage();
+				}
 				break ;
 			}
 			case S.stateUI.Game: {
@@ -187,8 +193,9 @@ function mainLoop() {
 				break ;
 			}
 			case S.stateUI.Tournament: {
-				if (!document.getElementById('tournamentScreen'))
+				if (!document.getElementById('tournamentScreen')) {
 					showTournamentScreen();
+				}
 				break ;
 			}
 			default:

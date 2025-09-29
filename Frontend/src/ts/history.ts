@@ -12,10 +12,11 @@ import { quitGame } from './Game/gameContent.js';
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
 	const indexQ = cleanHash.indexOf('?');
-	if (indexQ == -1)
+	if (indexQ == -1) {
 		return [ cleanHash || 'Menu', ''];
-	else
+	} else {
 		return [ cleanHash.slice(0, indexQ), cleanHash.slice(indexQ + 1)];
+	}
 }
 
 /**
@@ -35,8 +36,9 @@ export function onHashChange() {
 function getIdFromHash(hash: string, type: string): number | null {
 	const params = new URLSearchParams(hash);
 	const id = params.get(type);
-	if (!id)
+	if (!id) {
 		return null;
+	}
 	const n = Number(id);
 	return (Number.isFinite(n) ? n : null);
 }
@@ -109,8 +111,9 @@ export function doRenderPage(newState: string, query?: string) {
 		case 'GameStats':
 			UI.state = S.stateUI.GameStats;
 			let id = null;
-			if (query)
+			if (query) {
 				id = getIdFromHash(query, "matchId");
+			}
 			if (id != null) {
 				requestAnimationFrame(() => askForGamestats(id));
 			} else {
@@ -121,8 +124,9 @@ export function doRenderPage(newState: string, query?: string) {
 		case 'Dashboard':
 			UI.state = S.stateUI.Dashboard;
 			let userId = null;
-			if (query)
+			if (query) {
 				userId = getIdFromHash(query, "userId");
+			}
 			if (userId != null) {
 				requestAnimationFrame(() => getDashboard(userId, 1));
 			} else {
@@ -136,10 +140,11 @@ export function doRenderPage(newState: string, query?: string) {
 	}
 
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
-	if (query && query != '' && pagesWithQuery.includes(newState))
+	if (query && query != '' && pagesWithQuery.includes(newState)) {
 		sessionStorage.setItem("currentState", newState + '?' + query);
-	else
+	} else {
 		sessionStorage.setItem("currentState", newState);
+	}
 }
 
 /**
@@ -151,19 +156,18 @@ export function doRenderPage(newState: string, query?: string) {
  */
 export function navigateTo(newState: any, fromHash = false) {
 	if (!newState) {
-		return;
+		return ;
 	}
 	let [ page, query ] = splitHash(newState);
 	if (page === 'GameOver') {
 		newState = page;
 	}
 
-	if (fromHash)
+	if (fromHash) {
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
+	}
 
 	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID > 2) {
-		// Prevent infinite loop when already on LoginP2
-		console.log('Already logged in P2, navigating to menu instead');
 		newState = 'Menu';
 		page = 'Menu';
 	}
@@ -180,7 +184,7 @@ export function navigateTo(newState: any, fromHash = false) {
 			.catch(() => {
 				continueNavigation('LoginP1', query, true);
 			});
-		return;
+		return ;
 	}
 	continueNavigation(newState, query, false);
 }
@@ -194,10 +198,11 @@ export function navigateTo(newState: any, fromHash = false) {
 function continueNavigation(newState: string, query: string, infoIsChecked: boolean) {
 	sessionStorage.setItem('history', newState);
 	const stateObj = { page: newState, ts: Date.now(), query:  query};
-	if (newState !== 'GameOver' && query && query.length > 0)
+	if (newState !== 'GameOver' && query && query.length > 0) {
 		history.pushState(stateObj, '',  query ? `#${newState}?${query}` : `#${newState}`);
-	else
+	} else {
 		history.pushState(stateObj, '', `#${newState}`);
+	}
 	renderPage(newState, query, infoIsChecked);
 }
 
@@ -284,16 +289,16 @@ export async function controlBackAndForward(event: PopStateEvent) {
 
 	const currentState = sessionStorage.getItem("currentState");
 	const validState = getValidState(page, currentState ? currentState : '');
-	if (validState === '')
+	if (validState === '') {
 		return ;
+	}
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
-
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
 	if (pagesWithQuery.includes(validState)) {
 		history.replaceState({ page: validState, query }, '', fullHash);
-	}
-	else
+	} else {
 		history.replaceState({ page: validState, query: null }, '', `#${validState}`);
+	}
 
 	if (currentState === 'Game' && validState !== 'Game') {
 		stopCurrentGame();
@@ -307,8 +312,7 @@ export async function controlBackAndForward(event: PopStateEvent) {
 					action: 'matchmaking',
 					subaction: 'cancelChallengeFriend',
 			});
-		}
-		else {
+		} else {
 			cancelOnlineMatch();
 		}
 	}
