@@ -1,9 +1,32 @@
-import { log } from '../logging.js'
 import { UI, Game } from "../gameData.js"
 import { OT, state } from '@shared/enums'
-import * as S from '../structs.js'
-import { navigateTo } from '../history.js';
 import { createBackgroundText } from '../Menu/menuContent.js';
+
+export function quitGame() {
+	//determine winner in local game
+	//if online -> winnerID stays undefined -> backend will determine winner
+	if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
+		console.log(`quit button eventlistener: ${Game.match.player2.ID}`);
+		Game.match.winnerID = Game.match.player2.ID;
+	}
+	else if (Game.match.mode == OT.ONEvsONE) {
+		Game.match.winnerID = -1;
+	}
+	Game.socket.emit('message',{
+		action: 'game',
+		subaction: 'quit',
+		matchID: Game.match.matchID,
+		player: UI.user1.ID,
+		name: UI.user1.name,
+		winner: Game.match.winnerID
+	});
+	if (Game.match.mode != OT.Online) {
+		Game.match.state = state.End;
+	}
+	if (document.getElementById('startGame')) {
+		document.getElementById('startGame')?.remove();
+	}
+}
 
 function getQuitBtn() {
 	const	quitButton = document.createElement('button');
@@ -18,29 +41,7 @@ function getQuitBtn() {
 
 	quitButton.addEventListener('click', () => {
 		console.log("pushed quit button");
-		//determine winner in local game
-		//if online -> winnerID stays undefined -> backend will determine winner
-		if (Game.match.mode == OT.ONEvsCOM || (Game.match.mode == OT.ONEvsONE && Game.match.player2.ID == 1)) {
-			console.log(`quit button eventlistener: ${Game.match.player2.ID}`);
-			Game.match.winnerID = Game.match.player2.ID;
-		}
-		else if (Game.match.mode == OT.ONEvsONE) {
-			Game.match.winnerID = -1;
-		}
-		Game.socket.emit('message',{
-			action: 'game',
-			subaction: 'quit',
-			matchID: Game.match.matchID,
-			player: UI.user1.ID,
-			name: UI.user1.name,
-			winner: Game.match.winnerID
-		});
-		if (Game.match.mode != OT.Online) {
-			Game.match.state = state.End;
-		}
-		if (document.getElementById('startGame')) {
-			document.getElementById('startGame')?.remove();
-		}
+		quitGame();
 	})
 	return (quitButton);
 }
