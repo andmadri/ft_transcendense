@@ -21,9 +21,9 @@ export function getPending() {
 	if (Game.pendingState == S.pendingState.Online)
 		txtPending.textContent = "Waiting for an opponent...";
 	else
-		txtPending.textContent = "Waiting for your friend to join the game";
+		txtPending.textContent = "Waiting for your friend...";
 	txtPending.style.color = 'transparent';
-	txtPending.style.fontSize = '10vw';
+	txtPending.style.fontSize = '5vw';
 	txtPending.style.webkitTextStroke = '0.2rem #000';
 
 	const	ball = document.createElement('div');
