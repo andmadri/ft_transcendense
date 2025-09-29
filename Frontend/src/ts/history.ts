@@ -7,6 +7,7 @@ import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 import { resetAI } from './Game/aiLogic.js';
+import { requestLeaveTournament } from './Tournament/tournamentContent.js';
 import { quitGame } from './Game/gameContent.js';
 
 function splitHash(hash: string) {
@@ -238,6 +239,12 @@ export function getValidState(newState: string, currentState: string): string {
 
 	// When logged in not back to loginpage
 	if (currentState == 'Menu' && newState == 'LoginP1') {
+		return ('Menu');
+	}
+
+	if (currentState == 'Tournament' && newState == 'Menu') {
+		//only if the tournament has not yet started
+		requestLeaveTournament();
 		return ('Menu');
 	}
 

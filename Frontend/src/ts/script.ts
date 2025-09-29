@@ -16,7 +16,7 @@ import { getOpponentMenu } from './opponentTypeMenu/opponentType.js';
 import { getLoadingPage } from './Loading/loadContent.js';
 import { OT, state} from '@shared/enums';
 import { resetBall, setWinner } from '@shared/gameLogic';
-import { requestJoinTournament} from './Tournament/tournamentContent.js';
+import { requestJoinTournament, requestLeaveTournament } from './Tournament/tournamentContent.js';
 import { showTournamentScreen } from './Tournament/tournamentDisplay.js';
 
 startSocketListeners();
@@ -56,7 +56,7 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(data => {
 		UI.user1.ID = data.userId;
 		const currentState = sessionStorage.getItem("currentState");
-		if (data.inTournament && data.inTournament == true) {
+		if (data.inTournament && data.inTournament === true) {
 			requestJoinTournament();
 		} else if (currentState && currentState !== 'LoginP1') {
 			navigateTo(currentState, true);
