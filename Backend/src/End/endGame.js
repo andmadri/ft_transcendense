@@ -5,6 +5,7 @@ import { db } from "../index.js";
 
 export async function stopMatchAfterRefresh(io, userId1) {
 	try {
+		console.log('stopMatchAfterRefresh');
 		for (const [, match] of matches) {
 			let name = '';
 			if (userId1 === match.player1.ID) {
@@ -14,9 +15,11 @@ export async function stopMatchAfterRefresh(io, userId1) {
 			}
 			if (match.mode !== OT.Online) {
 				match.winnerID = match.player2.ID;
+				console.log(`save match [${match.matchID}]`);
 				await saveMatch(match.matchID, match.winnerID);
 			}
 			if (name) {
+				console.log(`quit match [${match.matchID}]`);
 				await quitMatch(match, {name, player: userId1}, io);
 			}
 		}
