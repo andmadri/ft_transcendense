@@ -7,6 +7,7 @@ import { askForGamestats } from './Game/gameStats.js';
 import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 import { resetAI } from './Game/aiLogic.js';
+import { requestLeaveTournament } from './Tournament/tournamentContent.js';
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
@@ -57,7 +58,6 @@ export function renderPage (newState: string, query: string, infoIsChecked: bool
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
 				// User is authenticated, continue rendering
-				console.log('AAAA newState (renderPage):', newState);
 				doRenderPage(newState, query);
 			})
 			.catch(() => {
@@ -179,7 +179,6 @@ export function navigateTo(newState: any, fromHash = false) {
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
-				console.log('AAAA page (navigateTo):', page);
 				continueNavigation(page, query, true);
 			})
 			.catch(() => {
@@ -238,6 +237,12 @@ export function getValidState(newState: string, currentState: string): string {
 
 	// When logged in not back to loginpage
 	if (currentState == 'Menu' && newState == 'LoginP1') {
+		return ('Menu');
+	}
+
+	if (currentState == 'Tournament' && newState == 'Menu') {
+		//only if the tournament has not yet started
+		requestLeaveTournament();
 		return ('Menu');
 	}
 

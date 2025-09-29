@@ -21,7 +21,7 @@ import { OT, state} from '@shared/enums'
 import { resetBall, setWinner } from '@shared/gameLogic'
 import { renderGameInterpolated } from './Game/renderSnapshots.js'
 
-import { requestJoinTournament} from './Tournament/tournamentContent.js'
+import { requestJoinTournament, requestLeaveTournament} from './Tournament/tournamentContent.js'
 import { showTournamentScreen } from './Tournament/tournamentDisplay.js'
 import { submitLogout } from './Auth/logout.js'
 
@@ -71,7 +71,6 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 			UI.user1.name = data.name;
 		}
 		else if (currentState === 'Tournament') {
-			console.log('AAAAAAAAAAAAAAA');
 			navigateTo('Menu');
 			return ;
 		}
