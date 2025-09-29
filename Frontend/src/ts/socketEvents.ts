@@ -1,6 +1,6 @@
 import { actionGame } from './Game/game.js'
 import { actionPlayers } from './Menu/players.js'
-import { Game, UI } from "./gameData.js"
+import { Game } from "./gameData.js"
 import { actionPlayerInfo } from './updateInfo/updatePlayerData.js'
 import { actionFriends } from './Menu/friends.js'
 import { actionMatchmaking } from './Matchmaking/challengeFriend.js'
@@ -11,7 +11,6 @@ import { actionUserDataMenu } from './Menu/userDataMenu.js'
 import { getGameStats } from './Game/gameStats.js'
 import { validateURL } from './Dashboard/exists.js'
 import { customAlert } from './Alerts/customAlert.js';
-import * as S from './structs.js'
 
 export function startSocketListeners() {
 	const socket = Game.socket;

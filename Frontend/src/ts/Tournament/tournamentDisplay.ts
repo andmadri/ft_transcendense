@@ -102,8 +102,6 @@ export function updateNameTagsTournament(tournamentState: any) {
 	const round1 = matches[0] || null ;
 	const round2 = matches[1] || null ;
 
-	// const getName = (id: number) => tournamentState.players?.find((p: any) => p.id === id)?.name || '-';
-
 	playerBoxIds.forEach((boxId, index) => {
 		const box = document.getElementById(boxId);
 		const player = players[index];
@@ -330,7 +328,6 @@ export function showTournamentScreen() {
 	body.appendChild(tournamentContainer);
 	requestUpdateTournament();
 }
-
 
 function styleText(playerName: string): HTMLDivElement {
 	const playerNamePodium = document.createElement('div');

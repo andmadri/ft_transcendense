@@ -1,7 +1,7 @@
 import * as S from './structs.js'
 import { Game, UI } from "./gameData.js"
 import { sendKeyPressUpdate } from './Game/gameStateSync.js';
-import { OT, state } from '@shared/enums'
+import { OT } from '@shared/enums'
 
 export function releaseButton(e: KeyboardEvent) {
 	const paddle1 = Game.match.gameState.paddle1;

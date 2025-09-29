@@ -5,6 +5,7 @@ import { createMatch } from '../InitGame/match.js';
 import { saveMatch } from '../End/endGame.js';
 import { leaveRoom } from '../rooms.js';
 import { OT, state, MF } from '../SharedBuild/enums.js';
+import { setUserSession } from '../Services/sessionsService.js';;
 
 export const tournament = {
 	players: [],		// [{id, name, socket, ready ...}]
@@ -62,6 +63,7 @@ function joinTournament(msg, userId, socket, io) {
 	}
 
 	socket.join('tournament_1');
+	setUserSession(db, userId, 'in_lobby');
 	// Add player to the tournament if not already present
 	if (!tournament.players.find(p => p.id === userId)) {
 		tournament.players.push({ id: userId, name: msg.name, socket: socket, ready: false });

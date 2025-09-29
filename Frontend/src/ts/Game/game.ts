@@ -1,7 +1,7 @@
 import { Game } from "../gameData.js";
 import { OT, state } from '@shared/enums';
 import { navigateTo } from "../history.js";
-import { applyGameStateUpdate, applyScoreUpdate, applyWinner } from './gameStateSync.js'
+import { applyGameStateUpdate, applyScoreUpdate, applyWinner } from './gameStateSync.js';
 
 function processMatch(data: any) {
 	console.log("inited game with id: " + data.id);
