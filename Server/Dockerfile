@@ -15,7 +15,6 @@ RUN npm install
 
 # TS will compile to JS -> works only if defined in package.json
 RUN npm run build
-# WHERE will this be stored?
 
 # folder with all the stuff for the frontend
 RUN mkdir -p build \
@@ -38,10 +37,3 @@ RUN chmod 600 /etc/nginx/ssl
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
-
-
-# FILES now in:
-	# /usr/share/nginx/html/index.html
-	# /usr/share/nginx/html/html/*
-	# /usr/share/nginx/html/css/*
-	# /usr/share/nginx/html/js/*
