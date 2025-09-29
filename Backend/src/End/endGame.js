@@ -6,22 +6,18 @@ import { db } from "../index.js";
 export async function stopMatchAfterRefresh(io, userId1) {
 	try {
 		for (const [, match] of matches) {
-			if (match.state !== state.Start && match.state !== state.Pending &&
-				match.state !== state.Init && match.state !== state.End) {
-				let name = '';
-				if (userId1 === match.player1.ID) {
-					name = match.player1.name;
-				} else if (userId1 === match.player2.ID) {
-					name = match.player2.name;
-				}
-				if (match.mode !== OT.Online) {
-					// Martijn: Decide who is the winner
-					match.winnerID = match.player2.ID;
-					await saveMatch(match.matchID, match.winnerID);
-				}
-				if (name) {
-					await quitMatch(match, {name, player: userId1}, io);
-				}
+			let name = '';
+			if (userId1 === match.player1.ID) {
+				name = match.player1.name;
+			} else if (userId1 === match.player2.ID) {
+				name = match.player2.name;
+			}
+			if (match.mode !== OT.Online) {
+				match.winnerID = match.player2.ID;
+				await saveMatch(match.matchID, match.winnerID);
+			}
+			if (name) {
+				await quitMatch(match, {name, player: userId1}, io);
 			}
 		}
 	} catch (err) {
