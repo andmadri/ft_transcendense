@@ -191,7 +191,6 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
 	}
 
-
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {
 		action: 'tournament',
