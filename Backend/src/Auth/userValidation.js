@@ -31,7 +31,7 @@ export async function checkEmail(email) {
 	else if (email.length > 254)
 		return ('Email is too long');
 	else if (!emailRegex.test(email))
-		return ('Email has no @ and dot or forbidden characters');
+		return ('Email has not a valid format');
 	else if (exists)
 		return ("That email is already taken");
 	return (null);
