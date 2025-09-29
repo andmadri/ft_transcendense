@@ -86,8 +86,8 @@ function	predictAction(match : matchInfo) {
 	const offset = errorOffset * sign;
 
 	AI.prediction.y += offset;
-	console.log(`predicted Y = ${AI.prediction.y}`);
-	console.log(`offset = ${offset}`);
+	// console.log(`predicted Y = ${AI.prediction.y}`);
+	// console.log(`offset = ${offset}`);
 }
 
 export function aiAlgorithm(match : matchInfo){
