@@ -57,6 +57,7 @@ export function renderPage (newState: string, query: string, infoIsChecked: bool
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
 				// User is authenticated, continue rendering
+				console.log('AAAA newState (renderPage):', newState);
 				doRenderPage(newState, query);
 			})
 			.catch(() => {
@@ -178,6 +179,7 @@ export function navigateTo(newState: any, fromHash = false) {
 		fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.stringify({ action: 'playerInfo', subaction: 'getPlayerData' }) })
 			.then(res => res.ok ? res.json() : Promise.reject())
 			.then(data => {
+				console.log('AAAA page (navigateTo):', page);
 				continueNavigation(page, query, true);
 			})
 			.catch(() => {
@@ -270,7 +272,7 @@ export function getValidState(newState: string, currentState: string): string {
  */
 export async function controlBackAndForward(event: PopStateEvent) {
 	console.log('popstate event:', event.state, 'hash:', window.location.hash);
-	
+
 	let newState = event.state?.page;
 	if (!newState) {
 		newState = window.location.hash || 'Menu';

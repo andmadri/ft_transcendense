@@ -70,9 +70,11 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 			requestJoinTournament();
 			UI.user1.name = data.name;
 		}
-		else if (currentState === 'Tournament')
+		else if (currentState === 'Tournament') {
+			console.log('AAAAAAAAAAAAAAA');
 			navigateTo('Menu');
-		
+			return ;
+		}
 		if (currentState && currentState !== 'LoginP1')
 			navigateTo(currentState, true);
 		else

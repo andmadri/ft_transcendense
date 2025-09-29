@@ -170,6 +170,8 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		player1.ready = true;
 		player2.ready = false;
 		saveMatch(matchId, match.winnerID);
+		tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
+		reportTournamentMatchResult(match);
 	} else if (!player2.socket) {
 		console.log(`Player ${player2.name} disconnected, cannot start match.`);
 		matchId = await createMatch(db, OT.Online, player1.socket, player1.id, player2.id, null, MF.Tournament);
@@ -183,14 +185,16 @@ async function createTournamentMatch(player1, player2, matchNumber, io) {
 		player1.ready = false;
 		player2.ready = true;
 		saveMatch(matchId, match.winnerID);
+		tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
+		reportTournamentMatchResult(match);
 	} else {
 		console.log(`Creating Tournament Match ${matchNumber}: ${player1.name} socket: ${player1.socket.id} vs ${player2.name} socket: ${player2.socket.id}`);
 		matchId = await startOnlineMatch(db, player1.socket, player2.socket, player1.id, player2.id, io, null, MF.Tournament);
 		player1.ready = false;
 		player2.ready = false;
+		tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
 	}
 
-	tournament.matches.push({ matchNumber: matchNumber, match: matches.get(matchId) });
 
 	// Notify all tournament participants in the room
 	io.to('tournament_1').emit('message', {
