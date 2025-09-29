@@ -86,13 +86,28 @@ export default async function userAuthRoutes(fastify) {
 					break ;
 				}
 			}
+			const cookie2 = cookies['jwtAuthToken2'];
+			let decoded2 = null;
+			if (cookie2) {
+				const unsigned2 = fastify.unsignCookie(cookie2);
+				if (unsigned2.valid) {
+					try {
+						decoded2 = fastify.jwt.verify(unsigned2.value);
+					} catch (err) {
+						console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', err.message || err, 'userInfo');
+					}
+				} else {
+					console.error('AUTH_JWT_INVALID', 'JWT2 verification failed: Invalid cookie', 'userInfo');
+				}
+			}
 			reply.send({
 				success: true,
 				userId: user.id,
 				name: user.name,
 				email: user.email,
 				twofa: user.twofa_active,
-				inTournament: inTournament
+				inTournament: inTournament,
+				userId2: (decoded2 && decoded2.userId) ? decoded2.userId : null
 			});
 		} catch (err) {
 			return reply.status(401).send({ error: 'Unauthorized' });

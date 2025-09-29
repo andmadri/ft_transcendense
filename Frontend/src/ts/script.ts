@@ -55,6 +55,10 @@ fetch('/api/playerInfo', { credentials: 'include', method: 'POST', body: JSON.st
 	.then(res => res.ok ? res.json() : Promise.reject())
 	.then(data => {
 		UI.user1.ID = data.userId;
+		if (data.userId2)
+			UI.user2.ID = data.userId2;
+		else
+			UI.user2.ID = 1; // Guest
 		const currentState = sessionStorage.getItem("currentState");
 		if (data.inTournament && data.inTournament === true) {
 			requestJoinTournament();
