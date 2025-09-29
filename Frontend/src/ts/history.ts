@@ -8,6 +8,7 @@ import { getDashboard } from './Dashboard/dashboardContents.js';
 import { validateQuery } from './Dashboard/exists.js';
 import { resetAI } from './Game/aiLogic.js';
 import { requestLeaveTournament } from './Tournament/tournamentContent.js';
+import { quitGame } from './Game/gameContent.js';
 
 function splitHash(hash: string) {
 	const cleanHash = hash.replace(/^#/, '');
@@ -23,7 +24,6 @@ function splitHash(hash: string) {
  */
 export function onHashChange() {
 	const [ page, query ] = splitHash(window.location.hash);
-	console.log('onHashChange -> page:', page, 'query:', query);
 	navigateTo(page + (query ? `?${query}` : ''), true);
 };
 
@@ -163,7 +163,7 @@ export function navigateTo(newState: any, fromHash = false) {
 
 	if (fromHash)
 		page = getValidState(page, sessionStorage.getItem("currentState") || '');
-	console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
+	// console.log('newState', newState, 'page', page, 'current', sessionStorage.getItem("currentState"), 'id', Game.match.matchID)
 
 	if (newState === 'LoginP2' && page === 'LoginP2' && sessionStorage.getItem("currentState") === 'LoginP2' && UI.user1.ID != -1 && UI.user2.ID > 1) {
 		// Prevent infinite loop when already on LoginP2
@@ -240,17 +240,21 @@ export function getValidState(newState: string, currentState: string): string {
 		return ('Menu');
 	}
 
-	if (currentState == 'Tournament' && newState == 'Menu') {
+<<<<<<< HEAD
+		if (currentState == 'Tournament' && newState == 'Menu') {
 		//only if the tournament has not yet started
 		requestLeaveTournament();
 		return ('Menu');
 	}
 
-	if (currentState == 'Game' && newState == 'Game') {
+=======
+	if (currentState == 'Game' && newState != 'GameOver') {
+>>>>>>> origin/main
 		if (Game.match.state != state.End) {
-			Game.match.state = state.End;
-			return ('GameOver');
+			console.log('quit match history');
+			quitGame();
 		}
+		return (''); // redirect after save match
 	}
 
 	if (currentState == 'Menu' && (newState === 'Game' || newState === 'GameOver')) {
@@ -295,9 +299,9 @@ export async function controlBackAndForward(event: PopStateEvent) {
 	}
 
 	const currentState = sessionStorage.getItem("currentState");
-	console.log('BEFORE state', newState, currentState);
 	const validState = getValidState(page, currentState ? currentState : '');
-	console.log('AFTER state', validState, currentState);
+	if (validState === '')
+		return ;
 	const fullHash = query != '' ? `#${validState}?${query}` : `#${validState}`;
 
 	const pagesWithQuery = ['Dashboard', 'GameStats'];
