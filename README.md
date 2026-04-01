@@ -21,6 +21,3 @@ docker-compose.yml -> defines all services
 Throubleshooting
 - If Docker says command not found, install Docker Desktop
 - If HTTPS doesn't load, make sure ports 8443 is free
-
-Look of Login Page
-![LogInRecording-ezgif com-optimize](https://github.com/user-attachments/assets/b83c007d-069c-4696-b4d9-283746d00fdd)
